@@ -14,6 +14,11 @@ let project = Project(
                         "UIColorName": "",
                         "UIImageName": "",
                     ],
+                    "UIAppFonts": [
+                        "Pretendard-ExtraBold.ttf",
+                        "Pretendard-Bold.ttf",
+                        "Pretendard-Medium.ttf",
+                    ],
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
