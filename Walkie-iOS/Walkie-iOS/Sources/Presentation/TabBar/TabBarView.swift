@@ -29,7 +29,7 @@ struct TabBarView: View {
                                 .frame(width: 24, height: 24)
                             
                             Text(item.title)
-                                .font(.caption)
+                                .font(.C2)
                                 .foregroundColor(selectedTab == item ? item.selectedTitleColor : item.normalTitleColor)
                         }
                     }
