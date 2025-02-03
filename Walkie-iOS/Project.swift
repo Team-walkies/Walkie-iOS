@@ -23,7 +23,12 @@ let project = Project(
             ),
             sources: ["Walkie-iOS/Sources/**"],
             resources: ["Walkie-iOS/Resources/**"],
-            dependencies: []
+            dependencies: [],
+            settings: .settings(
+                base: [
+                    "ENABLE_ASSET_SYMBOL_EXTENSIONS": "YES"
+                ]
+            )
         ),
     ]
 )
