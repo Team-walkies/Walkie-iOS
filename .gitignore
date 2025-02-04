@@ -4,6 +4,7 @@
 
 ## User settings
 xcuserdata/
+*.xcconfig
 
 ## Obj-C/Swift specific
 *.hmap
@@ -12,6 +13,12 @@ xcuserdata/
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
 
 ## Playgrounds
 timeline.xctimeline
