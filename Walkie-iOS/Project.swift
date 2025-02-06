@@ -26,7 +26,8 @@ let project = Project(
             dependencies: [],
             settings: .settings(
                 base: [
-                    "ENABLE_ASSET_SYMBOL_EXTENSIONS": "YES"
+                    "ENABLE_ASSET_SYMBOL_EXTENSIONS": "YES",
+                    "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES"
                 ]
             )
         ),
