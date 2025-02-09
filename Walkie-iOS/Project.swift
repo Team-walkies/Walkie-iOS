@@ -23,7 +23,9 @@ let project = Project(
             ),
             sources: ["Walkie-iOS/Sources/**"],
             resources: ["Walkie-iOS/Resources/**"],
-            dependencies: [],
+            dependencies: [
+                .external(name: "Lottie")
+            ],
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES"
