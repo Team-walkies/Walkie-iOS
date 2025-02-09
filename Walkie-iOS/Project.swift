@@ -5,7 +5,7 @@ let project = Project(
     targets: [
         .target(
             name: "Walkie-iOS",
-            destinations: .iOS,
+            destinations: [.iPhone],
             product: .app,
             bundleId: "io.tuist.Walkie-iOS",
             infoPlist: .extendingDefault(
