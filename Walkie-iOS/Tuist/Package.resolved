@@ -1,11 +1,11 @@
 {
   "pins" : [
     {
-      "identity" : "lottie-ios",
+      "identity" : "lottie-spm",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "location" : "https://github.com/airbnb/lottie-spm",
       "state" : {
-        "revision" : "047aa81b77adcbf583a966dfef620d17650cc656",
+        "revision" : "8c6edf4f0fa84fe9c058600a4295eb0c01661c69",
         "version" : "4.5.1"
       }
     }

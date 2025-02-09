@@ -15,7 +15,7 @@ import PackageDescription
 let package = Package(
     name: "Walkie-iOS",
     dependencies: [
-        .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.5.1")
+        .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.5.1")
     ],
     targets: [
         .target(
