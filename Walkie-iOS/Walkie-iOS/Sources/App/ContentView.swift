@@ -6,7 +6,7 @@ public struct ContentView: View {
     public var body: some View {
         Text("Hello, World!")
             .padding()
-        LottieView(fileName: "walkie_EggGreen")
+        LottieView(fileType: .eggGreen)
             .frame(width: 200, height: 200)
     }
 }
