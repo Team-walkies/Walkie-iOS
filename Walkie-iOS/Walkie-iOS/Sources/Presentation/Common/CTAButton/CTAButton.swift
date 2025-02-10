@@ -15,6 +15,7 @@ enum ButtonStyleType {
 enum ButtonSizeType {
     case large
     case small
+    case modal
 }
 
 struct CTAButton: View {
@@ -43,7 +44,7 @@ struct CTAButton: View {
     private var height: CGFloat {
         switch size {
         case .large: return 54
-        case .small: return 50
+        case .small, .modal: return 50
         }
     }
     
@@ -51,7 +52,7 @@ struct CTAButton: View {
     
     var body: some View {
         Button(action: {
-            if isEnabled {
+            if isEnabled || size == .modal {
                 buttonAction()
             }
         }) {
@@ -64,7 +65,7 @@ struct CTAButton: View {
                 .cornerRadius(12)
                 .animation(.easeInOut(duration: 0.2), value: isEnabled)
         }
-        .disabled(!isEnabled)
+        .disabled(size == .modal ? false : !isEnabled)
         .padding(.horizontal, 16)
     }
 }
