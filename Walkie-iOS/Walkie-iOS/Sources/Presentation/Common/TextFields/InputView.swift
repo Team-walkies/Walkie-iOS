@@ -26,40 +26,47 @@ struct InputView: View {
     }
     
     var body: some View {
-        ZStack {
-            VStack(alignment: .leading) {
-                HStack {
-                    TextField(placeholderText, text: self.$input)
-                        .padding()
-                        .background(.clear)
-                        .autocorrectionDisabled(true)
-                        .disabled(input.count >= limitation)
-                        .font(.B1)
-                        .foregroundStyle(inputState.textColor)
-                        .onChange(of: input){ oldValue ,newValue in
-                            self.inputState = newValue.isEmpty ? .default : .focus
-                            if onlyText {
-                                filterInput(newValue)
-                            }
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .center, spacing: 0) {
+                TextField(placeholderText, text: self.$input)
+                    .background(.clear)
+                    .autocorrectionDisabled(true)
+                    .font(.B1)
+                    .frame(height: 24)
+                    .foregroundStyle(inputState.textColor)
+                    .onChange(of: input){ oldValue ,newValue in
+                        self.inputState = newValue.isEmpty ? .default : .focus
+                        if onlyText {
+                            filterInput(newValue)
                         }
-                    if !input.isEmpty {
-                        Button(action: {
-                            input = ""
-                            errorMessage = nil
-                        }) {
-                            Image(.icTextDelete)
+                        if newValue.count > limitation {
+                            input = String(newValue.prefix(limitation))
+                            inputState = .error
                         }
                     }
+                if !input.isEmpty {
+                    Button(action: {
+                        input = ""
+                        errorMessage = nil
+                        inputState = .default
+                    }) {
+                        Image(.icTextDelete)
+                            .frame(width: 24, height: 24)
+                    }
                 }
-                Rectangle()
-                    .frame(height: 2)
-                    .foregroundStyle(inputState.barColor)
-                HStack {
-                    Text("\(input.count)/\(limitation)")
-                        .foregroundStyle(.gray400)
-                    Text(errorMessage ?? "")
-                        .foregroundStyle(.red100)
-                }
+            }.padding(.bottom, 5)
+            Rectangle()
+                .frame(height: 2)
+                .foregroundStyle(inputState.barColor)
+                .padding(.bottom, 11)
+            HStack(alignment: .center) {
+                Text("\(input.count)/\(limitation)")
+                    .foregroundStyle(.gray400)
+                    .font(.B1)
+                Spacer()
+                Text(errorMessage ?? "")
+                    .foregroundStyle(.red100)
+                    .font(.C1)
             }
         }
     }
@@ -67,10 +74,10 @@ struct InputView: View {
     private func filterInput(_ newValue: String) {
         let filtered = newValue.unicodeScalars.filter { allowedCharacterSet.contains($0) }
         let filteredString = String(filtered)
-
+        
         if newValue != filteredString {
             errorMessage = "특수문자 및 기호는 사용할 수 없습니다"
-            input = filteredString
+            inputState = .error
         } else {
             errorMessage = nil
         }
