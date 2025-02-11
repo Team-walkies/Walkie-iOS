@@ -76,7 +76,7 @@ struct InputView: View {
         let filteredString = String(filtered)
         
         if newValue != filteredString {
-            errorMessage = "특수문자 및 기호는 사용할 수 없습니다"
+            errorMessage = StringLiterals.InputView.onlyText
             inputState = .error
         } else {
             errorMessage = nil

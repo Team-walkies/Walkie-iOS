@@ -1,5 +1,5 @@
 //
-//  TextFieldsLiteral.swift
+//  InputState.swift
 //  Walkie-iOS
 //
 //  Created by 황채웅 on 2/10/25.
@@ -15,20 +15,20 @@ enum InputState {
     var barColor: Color {
         switch self {
         case .default:
-                .gray200
+            .gray200
         case .focus:
-                .blue300
+            .blue300
         case .error:
-                .red100
+            .red100
         }
     }
     
     var textColor: Color {
         switch self {
         case .default:
-                .gray400
+            .gray400
         case .focus, .error:
-                .gray700
+            .gray700
         }
     }
 }
