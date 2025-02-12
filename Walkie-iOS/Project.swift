@@ -23,6 +23,16 @@ let project = Project(
             ),
             sources: ["Walkie-iOS/Sources/**"],
             resources: ["Walkie-iOS/Resources/**"],
+            scripts: [
+                .pre(
+                    script: """
+                       ROOT_DIR="$(pwd)"
+                       "$ROOT_DIR/swiftlint" --config "$ROOT_DIR/.swiftlint.yml"
+                       """,
+                    name: "SwiftLint",
+                    basedOnDependencyAnalysis: false
+                )
+            ],
             dependencies: [
                 .external(name: "Lottie")
             ],

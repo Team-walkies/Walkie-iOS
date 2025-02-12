@@ -1,0 +1,18 @@
+# .swiftlint.yml
+
+disabled_rules:
+  - trailing_whitespace   # 줄 끝 공백 허용
+  - identifier_name       # 변수, 함수 이름 길이 제한 해제
+
+analyzer_rules:
+  - unused_import
+
+line_length:
+  warning: 120  # 120자 이상이면 경고
+  error: 140    # 140자 이상이면 에러
+
+included:
+  - Walkie-iOS/Sources
+
+excluded:
+  - Walkie-iOS/Resources
