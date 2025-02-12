@@ -51,20 +51,23 @@ struct CTAButton: View {
     // MARK: - Body
     
     var body: some View {
-        Button(action: {
-            if isEnabled || size == .modal {
-                buttonAction()
+        Button(
+            action: {
+                if isEnabled || size == .modal {
+                    buttonAction()
+                }
+            },
+            label: {
+                Text(title)
+                    .font(.B1)
+                    .foregroundColor(textColor)
+                    .frame(height: height)
+                    .frame(maxWidth: .infinity)
+                    .background(backgroundColor)
+                    .cornerRadius(12)
+                    .animation(.easeInOut(duration: 0.2), value: isEnabled)
             }
-        }) {
-            Text(title)
-                .font(.B1)
-                .foregroundColor(textColor)
-                .frame(height: height)
-                .frame(maxWidth: .infinity)
-                .background(backgroundColor)
-                .cornerRadius(12)
-                .animation(.easeInOut(duration: 0.2), value: isEnabled)
-        }
+        )
         .disabled(size == .modal ? false : !isEnabled)
         .padding(.horizontal, 16)
     }
@@ -73,25 +76,28 @@ struct CTAButton: View {
 // MARK: - Preview
 
 #Preview {
-    CTAButton(title: "버튼",
-              style: .primary,
-              size: .large,
-              isEnabled: true,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .primary,
-              size: .large,
-              isEnabled: false,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .danger,
-              size: .large,
-              isEnabled: true,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .danger,
-              size: .large,
-              isEnabled: false,
-              buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .primary,
+        size: .large,
+        isEnabled: true,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .primary,
+        size: .large,
+        isEnabled: false,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .danger,
+        size: .large,
+        isEnabled: true,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .danger,
+        size: .large,
+        isEnabled: false,
+        buttonAction: {})
 }
-    

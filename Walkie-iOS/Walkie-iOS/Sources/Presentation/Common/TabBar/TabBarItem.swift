@@ -52,11 +52,11 @@ enum TabBarItem: CaseIterable {
     var targetView: AnyView {
         switch self {
         case .home:
-            return AnyView(VStack{})
+            return AnyView(VStack { })
         case .map:
-            return AnyView(VStack{})
+            return AnyView(VStack { })
         case .mypage:
-            return AnyView(VStack{})
+            return AnyView(VStack { })
         }
     }
 }

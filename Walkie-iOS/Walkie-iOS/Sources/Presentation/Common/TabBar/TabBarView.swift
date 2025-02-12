@@ -19,40 +19,47 @@ struct TabBarView: View {
             
             HStack {
                 ForEach([TabBarItem.home, TabBarItem.mypage], id: \.self) { item in
-                    Button(action: {
-                        selectedTab = item
-                    }) {
-                        VStack {
-                            (selectedTab == item ? item.selectedItem : item.normalItem)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                            
-                            Text(item.title)
-                                .font(.C2)
-                                .foregroundColor(selectedTab == item ? item.selectedTitleColor : item.normalTitleColor)
+                    let isSelected = selectedTab == item
+                    Button(
+                        action: {
+                            selectedTab = item
+                        },
+                        label: {
+                            VStack {
+                                (isSelected ? item.selectedItem : item.normalItem)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
+                                
+                                Text(item.title)
+                                    .font(.C2)
+                                    .foregroundColor(isSelected ? item.selectedTitleColor : item.normalTitleColor)
+                            }
                         }
-                    }
+                    )
                     .frame(maxWidth: .infinity)
                 }
             }
             .frame(height: 52)
             
-            Button(action: {
-                selectedTab = .map
-            }) {
-                ZStack {
-                    Circle()
-                        .fill(.gray50)
-                        .frame(width: 57, height: 57)
-                    
-                    TabBarItem.map.selectedItem
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 53, height: 56)
-                        .foregroundColor(.white)
+            Button(
+                action: {
+                    selectedTab = .map
+                },
+                label: {
+                    ZStack {
+                        Circle()
+                            .fill(.gray50)
+                            .frame(width: 57, height: 57)
+                        
+                        TabBarItem.map.selectedItem
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 53, height: 56)
+                            .foregroundColor(.white)
+                    }
                 }
-            }
+            )
             .offset(y: -30)
         }
     }
