@@ -39,9 +39,9 @@ struct HighlightTextAttribute: View {
         var attributeString = AttributedString(text)
         attributeString.foregroundColor = textColor
         attributeString.font = .walkieFont(font)
-        if let range = attributeString.range(of: highlightText) {
+        if let range = attributeString.range(of: highlightText), let highlightFont {
             attributeString[range].foregroundColor = highlightColor
-            attributeString[range].font = .walkieFont(font)
+            attributeString[range].font = .walkieFont(highlightFont)
         }
         return Text(attributeString)
     }
