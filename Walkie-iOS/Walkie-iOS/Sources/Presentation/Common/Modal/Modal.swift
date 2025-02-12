@@ -17,7 +17,6 @@ enum ModalButtonType {
     case twobutton
 }
 
-
 struct Modal: View {
     
     // MARK: - Properties

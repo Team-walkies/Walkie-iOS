@@ -13,7 +13,7 @@ struct ProgressBarView: View {
     var current: Double
     var total: Double
     
-    init(isSmall: Bool ,current: Double, total: Double) {
+    init(isSmall: Bool, current: Double, total: Double) {
         self.isSmall = isSmall
         self.current = current
         self.total = total

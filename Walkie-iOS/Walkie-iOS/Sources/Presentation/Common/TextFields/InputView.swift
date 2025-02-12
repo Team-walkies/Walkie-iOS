@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-
 struct InputView: View {
     
     private let allowedCharacterSet = CharacterSet.alphanumerics
@@ -34,7 +33,7 @@ struct InputView: View {
                     .font(.B1)
                     .frame(height: 24)
                     .foregroundStyle(inputState.textColor)
-                    .onChange(of: input){ oldValue ,newValue in
+                    .onChange(of: input) { _, newValue in
                         self.inputState = newValue.isEmpty ? .default : .focus
                         if onlyText {
                             filterInput(newValue)
@@ -49,10 +48,10 @@ struct InputView: View {
                         input = ""
                         errorMessage = nil
                         inputState = .default
-                    }) {
+                    }, label: {
                         Image(.icTextDelete)
                             .frame(width: 24, height: 24)
-                    }
+                    })
                 }
             }.padding(.bottom, 5)
             Rectangle()
