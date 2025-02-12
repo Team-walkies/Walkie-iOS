@@ -11,7 +11,7 @@ class ToastManager: ObservableObject {
     static let shared = ToastManager()
     
     @Published private(set) var message: String = ""
-    @Published private(set) var icon: UIImage? = nil
+    @Published private(set) var icon: UIImage?
     @Published private(set) var isShowing = false
     
     private var dismissWorkItem: DispatchWorkItem?
