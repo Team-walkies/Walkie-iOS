@@ -44,25 +44,28 @@ struct Modal: View {
             
             switch button {
             case .onebutton:
-                CTAButton(title: "확인",
-                          style: style == .primary ? .primary : .danger,
-                          size: .modal,
-                          isEnabled: true) {
-                    checkButtonAction()
-                }
+                CTAButton(
+                    title: "확인",
+                    style: style == .primary ? .primary : .danger,
+                    size: .modal,
+                    isEnabled: true) {
+                        checkButtonAction()
+                    }
             case .twobutton:
                 HStack(spacing: -24) {
-                    CTAButton(title: "취소",
-                              style: style == .primary ? .primary : .danger,
-                              size: .modal,
-                              isEnabled: false) {
-                        cancelButtonAction()
-                    }
-                    CTAButton(title: "확인",
-                              style: style == .primary ? .primary : .danger,
-                              size: .modal,
-                              isEnabled: true) {
-                        checkButtonAction()
+                    CTAButton(
+                        title: "취소",
+                        style: style == .primary ? .primary : .danger,
+                        size: .modal,
+                        isEnabled: false) {
+                            cancelButtonAction()
+                        }
+                    CTAButton(
+                        title: "확인",
+                        style: style == .primary ? .primary : .danger,
+                        size: .modal,
+                        isEnabled: true) {
+                            checkButtonAction()
                     }
                 }
             }
@@ -80,30 +83,34 @@ struct Modal: View {
         Color.gray100
         
         VStack {
-            Modal(title: "제목",
-                  content: "내용입니다",
-                  style: .primary,
-                  button: .onebutton,
-                  cancelButtonAction: {},
-                  checkButtonAction: {print("확인눌럿음")})
-            Modal(title: "제목",
-                  content: "내용입니다",
-                  style: .error,
-                  button: .onebutton,
-                  cancelButtonAction: {},
-                  checkButtonAction: {print("확인눌럿음")})
-            Modal(title: "제목",
-                  content: "내용입니다",
-                  style: .primary,
-                  button: .twobutton,
-                  cancelButtonAction: {print("취소눌럿음")},
-                  checkButtonAction: { print("확인눌럿음") })
-            Modal(title: "제목",
-                  content: "내용입니다",
-                  style: .error,
-                  button: .twobutton,
-                  cancelButtonAction: { print("취소눌럿음")},
-                  checkButtonAction: { print("확인눌럿음") })
+            Modal(
+                title: "제목",
+                content: "내용입니다",
+                style: .primary,
+                button: .onebutton,
+                cancelButtonAction: {},
+                checkButtonAction: {print("확인눌럿음")})
+            Modal(
+                title: "제목",
+                content: "내용입니다",
+                style: .error,
+                button: .onebutton,
+                cancelButtonAction: {},
+                checkButtonAction: {print("확인눌럿음")})
+            Modal(
+                title: "제목",
+                content: "내용입니다",
+                style: .primary,
+                button: .twobutton,
+                cancelButtonAction: {print("취소눌럿음")},
+                checkButtonAction: { print("확인눌럿음") })
+            Modal(
+                title: "제목",
+                content: "내용입니다",
+                style: .error,
+                button: .twobutton,
+                cancelButtonAction: { print("취소눌럿음")},
+                checkButtonAction: { print("확인눌럿음") })
         }
     }
 }

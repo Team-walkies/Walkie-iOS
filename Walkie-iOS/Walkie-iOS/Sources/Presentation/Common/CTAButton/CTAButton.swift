@@ -76,24 +76,28 @@ struct CTAButton: View {
 // MARK: - Preview
 
 #Preview {
-    CTAButton(title: "버튼",
-              style: .primary,
-              size: .large,
-              isEnabled: true,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .primary,
-              size: .large,
-              isEnabled: false,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .danger,
-              size: .large,
-              isEnabled: true,
-              buttonAction: {})
-    CTAButton(title: "버튼",
-              style: .danger,
-              size: .large,
-              isEnabled: false,
-              buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .primary,
+        size: .large,
+        isEnabled: true,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .primary,
+        size: .large,
+        isEnabled: false,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .danger,
+        size: .large,
+        isEnabled: true,
+        buttonAction: {})
+    CTAButton(
+        title: "버튼",
+        style: .danger,
+        size: .large,
+        isEnabled: false,
+        buttonAction: {})
 }
