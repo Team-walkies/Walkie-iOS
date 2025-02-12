@@ -25,6 +25,10 @@ extension View {
     func alignTo(_ alignment: Alignment) -> some View {
         modifier(AlignmentModifier(alignment: alignment))
     }
+    
+    func multiline(lineLimit: Int? = nil) -> some View {
+        modifier(MultilineModifier(lineLimit: lineLimit))
+    }
 }
 
 // MARK: - AlignmentModifier
@@ -49,5 +53,15 @@ struct AlignmentModifier: ViewModifier {
                 Spacer(minLength: 0)
             }
         }
+    }
+}
+
+// MARK: - MultilineModifier
+struct MultilineModifier: ViewModifier {
+    let lineLimit: Int?
+    
+    func body(content: Content) -> some View {
+        content.lineLimit(lineLimit)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
