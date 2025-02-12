@@ -43,7 +43,7 @@ struct SnackBarView: View {
         }
         .padding(.horizontal, 16)
         .frame(height: 56)
-        .background(Color(hex: "#1E2127", alpha: 0.7))
+        .background(.gray900.opacity(0.7))
         .cornerRadius(12)
     }
 }
