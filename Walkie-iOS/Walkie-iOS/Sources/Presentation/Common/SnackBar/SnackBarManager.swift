@@ -24,8 +24,8 @@ class SnackBarManager: ObservableObject {
         highlightedMessage: String,
         message: String,
         state: SnackBarState,
-        buttonTitle: String?,
-        buttonAction: (() -> Void)?) {
+        buttonTitle: String? = nil,
+        buttonAction: (() -> Void)? = nil) {
         self.highlightedMessage = highlightedMessage
         self.message = message
         self.buttonTitle = buttonTitle
