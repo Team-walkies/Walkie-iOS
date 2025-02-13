@@ -34,7 +34,8 @@ let project = Project(
                 )
             ],
             dependencies: [
-                .external(name: "Lottie")
+                .external(name: "Lottie"),
+                .external(name: "ComposableArchitecture")
             ],
             settings: .settings(
                 base: [
