@@ -21,4 +21,47 @@ extension View {
             .padding(.vertical, fontSpacing)
             .lineSpacing(fontSpacing * 2)
     }
+    
+    func alignTo(_ alignment: Alignment) -> some View {
+        modifier(AlignmentModifier(alignment: alignment))
+    }
+    
+    func multiline(lineLimit: Int? = nil) -> some View {
+        modifier(MultilineModifier(lineLimit: lineLimit))
+    }
+}
+
+// MARK: - AlignmentModifier
+struct AlignmentModifier: ViewModifier {
+    let alignment: Alignment
+
+    func body(content: Content) -> some View {
+        VStack(spacing: 0) {
+            if alignment == .bottom || alignment == .bottomLeading || alignment == .bottomTrailing {
+                Spacer(minLength: 0)
+            }
+            HStack(spacing: 0) {
+                if alignment == .trailing || alignment == .bottomTrailing || alignment == .topTrailing {
+                    Spacer(minLength: 0)
+                }
+                content
+                if alignment == .leading || alignment == .bottomLeading || alignment == .topLeading {
+                    Spacer(minLength: 0)
+                }
+            }
+            if alignment == .top || alignment == .topLeading || alignment == .topTrailing {
+                Spacer(minLength: 0)
+            }
+        }
+    }
+}
+
+// MARK: - MultilineModifier
+struct MultilineModifier: ViewModifier {
+    let lineLimit: Int?
+    
+    func body(content: Content) -> some View {
+        content.lineLimit(lineLimit)
+            .fixedSize(horizontal: false, vertical: true)
+    }
 }
