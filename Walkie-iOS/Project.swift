@@ -7,7 +7,7 @@ let project = Project(
             name: "Walkie-iOS",
             destinations: [.iPhone],
             product: .app,
-            bundleId: "io.tuist.Walkie-iOS",
+            bundleId: "com.startup.walkie",
             infoPlist: .extendingDefault(
                 with: [
                     "UILaunchScreen": [
