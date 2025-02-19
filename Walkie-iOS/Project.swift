@@ -22,7 +22,10 @@ let project = Project(
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
-            resources: ["Walkie-iOS/Resources/**"],
+            resources: [
+                "Walkie-iOS/Resources/**",
+                "Walkie-iOS/Resources/GoogleService-Info.plist"
+            ],
             scripts: [
                 .pre(
                     script: """
@@ -35,7 +38,8 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
-                .external(name: "ComposableArchitecture")
+                .external(name: "ComposableArchitecture"),
+                .external(name: "FirebaseAnalytics")
             ],
             settings: .settings(
                 base: [
