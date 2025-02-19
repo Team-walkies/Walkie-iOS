@@ -18,13 +18,5 @@ let package = Package(
         .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.5.1"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.8.1")
     ],
-    targets: [
-        .target(
-            name: "Walkie-iOS",
-            dependencies: [
-                .product(name: "Lottie", package: "lottie-spm"),
-                .product(name: "FirebaseMessaging", package: "firebase-ios-sdk")
-            ]
-        )
-    ]
+    targets: []
 )
