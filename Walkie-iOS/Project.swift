@@ -7,7 +7,7 @@ let project = Project(
             name: "Walkie-iOS",
             destinations: [.iPhone],
             product: .app,
-            bundleId: "io.tuist.Walkie-iOS",
+            bundleId: "com.startup.walkie",
             infoPlist: .extendingDefault(
                 with: [
                     "UILaunchScreen": [
@@ -22,7 +22,10 @@ let project = Project(
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
-            resources: ["Walkie-iOS/Resources/**"],
+            resources: [
+                "Walkie-iOS/Resources/**",
+                "Walkie-iOS/Resources/GoogleService-Info.plist"
+            ],
             scripts: [
                 .pre(
                     script: """
@@ -35,7 +38,7 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
-                .external(name: "ComposableArchitecture")
+                .external(name: "FirebaseMessaging")
             ],
             settings: .settings(
                 base: [

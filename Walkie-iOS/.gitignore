@@ -68,3 +68,5 @@ Derived/
 
 ### Tuist managed dependencies ###
 Tuist/.build
+
+Walkie-iOS/Resources/GoogleService-Info.plist

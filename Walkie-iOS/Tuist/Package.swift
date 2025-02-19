@@ -16,15 +16,7 @@ let package = Package(
     name: "Walkie-iOS",
     dependencies: [
         .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.5.1"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.17.1")
+        .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.8.1")
     ],
-    targets: [
-        .target(
-            name: "Walkie-iOS",
-            dependencies: [
-                .product(name: "Lottie", package: "lottie-spm"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
-        )
-    ]
+    targets: []
 )
