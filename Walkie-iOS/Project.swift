@@ -38,8 +38,7 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
-                .external(name: "ComposableArchitecture"),
-                .external(name: "FirebaseAnalytics")
+                .external(name: "FirebaseMessaging")
             ],
             settings: .settings(
                 base: [
