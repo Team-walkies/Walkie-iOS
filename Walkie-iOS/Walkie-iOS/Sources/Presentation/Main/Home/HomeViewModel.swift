@@ -20,8 +20,7 @@ final class HomeViewModel: ViewModelable {
         let eggImage: ImageResource
         let characterImage: ImageResource
         let characterName: String
-        let eggsCount: EggsCountResponse
-        let characterCount: CharactersCountResponse
+        let eggsCount, characterCount: Int
     }
     
     enum HomeViewState {
@@ -51,10 +50,8 @@ final class HomeViewModel: ViewModelable {
         
         let type = charactersPlay.characterType
         let characterClass = charactersPlay.characterClass
-        guard let characterImage = CharacterType.getCharacterImage(type: type,
-                                                                   characterClass: characterClass) else { return }
-        guard let characterName = CharacterType.getCharacterName(type: type,
-                                                                 characterClass: characterClass) else { return }
+        guard let characterImage = CharacterType.getCharacterImage(type: type, characterClass: characterClass),
+        let characterName = CharacterType.getCharacterName(type: type, characterClass: characterClass) else { return }
         
         let homeState = HomeState(
             needStep: eggsPlay.needStep,
@@ -63,8 +60,8 @@ final class HomeViewModel: ViewModelable {
             eggImage: ImageResource(name: "img_egg\(eggsPlay.eggID)", bundle: .main),
             characterImage: characterImage,
             characterName: characterName,
-            eggsCount: eggsCount,
-            characterCount: charactersCount
+            eggsCount: eggsCount.eggsCount,
+            characterCount: charactersCount.charactersCount
         )
         
         state = .loaded(homeState)
