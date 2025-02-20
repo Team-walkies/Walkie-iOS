@@ -49,14 +49,15 @@ enum TabBarItem: CaseIterable {
         }
     }
     
-    var targetView: AnyView {
+    @ViewBuilder
+    var targetView: some View {
         switch self {
         case .home:
-            return AnyView(VStack { })
+            HomeView(viewModel: HomeViewModel())
         case .map:
-            return AnyView(VStack { })
+            VStack { Text("지도") }
         case .mypage:
-            return AnyView(VStack { })
+            VStack { Text("마이페이지") }
         }
     }
 }
