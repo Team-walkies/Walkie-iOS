@@ -16,7 +16,8 @@ final class HomeViewModel: ViewModelable {
     }
     
     struct HomeState {
-        let needStep, nowStep, distance: Int
+        let needStep, nowStep: Int
+        let distance: Double
         let eggImage: ImageResource
         let characterImage: ImageResource
         let characterName: String
@@ -56,7 +57,7 @@ final class HomeViewModel: ViewModelable {
         let homeState = HomeState(
             needStep: eggsPlay.needStep,
             nowStep: eggsPlay.nowStep,
-            distance: 64,
+            distance: 6.4,
             eggImage: ImageResource(name: "img_egg\(eggsPlay.eggID)", bundle: .main),
             characterImage: characterImage,
             characterName: characterName,

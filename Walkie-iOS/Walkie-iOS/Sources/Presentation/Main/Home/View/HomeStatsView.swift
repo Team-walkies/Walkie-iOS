@@ -28,9 +28,17 @@ struct HomeStatsView: View {
             .padding(.leading, 20)
             
             HStack(alignment: .bottom, spacing: 5) {
-                Text("6.4km")
-                    .font(.H2)
-                    .foregroundColor(.white)
+                HStack(spacing: 0) {
+                    let distanceStr = String(format: "%.1f", homeState.distance)
+                    Text(distanceStr)
+                        .font(.H2)
+                        .foregroundColor(.white)
+                    
+                    Text("km")
+                        .font(.H2)
+                        .foregroundColor(.white)
+                }
+                
                 Text("이동")
                     .font(.B2)
                     .foregroundColor(.white)
