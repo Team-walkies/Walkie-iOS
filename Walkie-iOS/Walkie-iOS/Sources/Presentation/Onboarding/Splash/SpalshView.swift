@@ -12,20 +12,25 @@ struct SplashView: View {
     @State private var showHome: Bool = false
     
     var body: some View {
-        if showHome {
-            TabBarView()
-        } else {
+        ZStack {
             Image(.imgLogoVertical)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 200, height: 200)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        withAnimation {
-                            showHome = true
-                        }
+                        showHome = true
                     }
                 }
         }
+        .fullScreenCover(isPresented: $showHome) {
+            TabBarView()
+        }
+    }
+}
+
+struct SplashView_Previews: PreviewProvider {
+    static var previews: some View {
+        SplashView()
     }
 }
