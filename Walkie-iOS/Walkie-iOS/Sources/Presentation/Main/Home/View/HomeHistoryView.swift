@@ -24,18 +24,20 @@ struct HomeHistoryView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("나의 히스토리")
-                .font(.H4)
-                .foregroundColor(.gray700)
-                .padding(.leading, 16)
-            
-            LazyHGrid(rows: columns, spacing: 8) {
-                ForEach(items) { item in
-                    HomeHistoryItemView(item: item)
+        GeometryReader { geometry in
+            VStack(alignment: .leading, spacing: 8) {
+                Text("나의 히스토리")
+                    .font(.H4)
+                    .foregroundColor(.gray700)
+
+                let width = (geometry.size.width - 48) / 3
+                LazyHGrid(rows: columns) {
+                    ForEach(items) { item in
+                        HomeHistoryItemView(item: item, width: width)
+                    }
                 }
+                .frame(height: 117)
             }
-            .padding(.top, 8)
             .padding(.horizontal, 16)
         }
     }

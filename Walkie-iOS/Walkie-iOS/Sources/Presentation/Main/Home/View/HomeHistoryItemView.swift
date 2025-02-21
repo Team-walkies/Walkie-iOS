@@ -10,13 +10,14 @@ import SwiftUI
 struct HomeHistoryItemView: View {
 
     let item: HomeHistoryItem
+    let width: CGFloat
     
     var body: some View {
         VStack(spacing: 8) {
             Image(item.imageName)
                 .resizable()
-                .scaledToFit()
-                .frame(width: 109, height: 69)
+                .scaledToFill()
+                .frame(width: width, height: 69)
             
             VStack(spacing: 0) {
                 Text(item.title)

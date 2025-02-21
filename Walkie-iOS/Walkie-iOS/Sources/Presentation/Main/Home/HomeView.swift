@@ -27,7 +27,6 @@ struct HomeView: View {
                             HomeStatsView(homeState: homeState, width: width)
                             HomeCharacterView(homeState: homeState, width: width)
                         }
-                        .padding(.leading)
                         
                         Image(homeState.characterImage)
                             .resizable()
