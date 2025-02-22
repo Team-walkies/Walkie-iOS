@@ -8,29 +8,27 @@
 import SwiftUI
 struct MypageMainView: View {
     var body: some View {
+        NavigationBar(
+            showAlarmButton: true,
+            hasAlarm: true)
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 4) {
-                NavigationBar(
-                    showAlarmButton: true,
-                    hasAlarm: true)
-                VStack(spacing: 0) {
-                    ProfileSectionView()
-                        .padding(.bottom, 20)
-                    
-                    MypageMainSettingSectionView()
-                        .padding(.bottom, 8)
-                    
-                    MypageMainServiceSectionView()
-                        .padding(.bottom, 8)
-                    
-                    FeedbackButtonView()
-                        .padding(.bottom, 12)
-                    
-                    AccountActionButtonsView()
-                }
-                .frame(alignment: .top)
-                .padding(.horizontal, 16)
+            VStack(spacing: 0) {
+                ProfileSectionView()
+                    .padding(.bottom, 20)
+                
+                MypageMainSettingSectionView()
+                    .padding(.bottom, 8)
+                
+                MypageMainServiceSectionView()
+                    .padding(.bottom, 8)
+                
+                FeedbackButtonView()
+                    .padding(.bottom, 12)
+                
+                AccountActionButtonsView()
             }
+            .frame(alignment: .top)
+            .padding(.horizontal, 16)
         }
     }
 }
