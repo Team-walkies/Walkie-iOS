@@ -7,46 +7,63 @@
 
 import SwiftUI
 struct MypageMainView: View {
+    
+    @ObservedObject var viewModel: MypageMainViewModel
+    
     var body: some View {
-        NavigationBar(
-            showAlarmButton: true,
-            hasAlarm: true)
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: 0) {
-                ProfileSectionView()
-                    .padding(.bottom, 20)
-                
-                MypageMainSettingSectionView()
-                    .padding(.bottom, 8)
-                    .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
-                
-                MypageMainServiceSectionView()
-                    .padding(.bottom, 8)
-                    .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
-                
-                FeedbackButtonView()
-                    .padding(.bottom, 12)
-                
-                AccountActionButtonsView()
+        NavigationStack {
+            switch viewModel.state {
+            case .loaded(let mypageMainState):
+                NavigationBar(
+                    showAlarmButton: true,
+                    hasAlarm: mypageMainState.hasAlarm)
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ProfileSectionView(mypageMainState: mypageMainState)
+                            .padding(.bottom, 20)
+                        
+                        MypageMainSettingSectionView()
+                            .padding(.bottom, 8)
+                            .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
+                        
+                        MypageMainServiceSectionView()
+                            .padding(.bottom, 8)
+                            .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
+                        
+                        FeedbackButtonView()
+                            .padding(.bottom, 12)
+                        
+                        AccountActionButtonsView()
+                    }
+                    .frame(alignment: .top)
+                    .padding(.horizontal, 16)
+                }
+            default:
+                EmptyView()
             }
-            .frame(alignment: .top)
-            .padding(.horizontal, 16)
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            viewModel.action(.mypageMainWillAppear)
         }
     }
 }
 
 private struct ProfileSectionView: View {
+    
+    let mypageMainState: MypageMainViewModel.MypageMainState
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 0) {
-                Text("승빈짱짱")
+                Text(mypageMainState.nickname)
                     .font(.H2)
                     .foregroundStyle(.gray700)
                 Text("님")
                     .font(.H2)
                     .foregroundStyle(.gray500)
                     .padding(.trailing, 8)
-                Text("초보워키")
+                Text(mypageMainState.userTier)
                     .font(.B2)
                     .foregroundStyle(.blue400)
                     .padding(.horizontal, 8)
@@ -57,43 +74,39 @@ private struct ProfileSectionView: View {
             }
             
             HighlightTextAttribute(
-                text: "지금까지 5개의 스팟을 탐험했어요",
+                text: "지금까지 \(mypageMainState.spotCount)개의 스팟을 탐험했어요",
                 textColor: .gray500,
                 font: .B1,
-                highlightText: "5",
+                highlightText: "\(mypageMainState.spotCount)",
                 highlightColor: .blue400,
                 highlightFont: .H5)
         }
     }
 }
 
-private struct FeedbackButtonView: View {
+struct FeedbackButtonView: View {
     var body: some View {
-        Button(
-            action: {
-                // 피드백 이동
-            },
-            label: {
-                HStack(spacing: 0) {
-                    Image(.icMyFeedback)
-                        .frame(width: 36, height: 36)
-                        .padding(.trailing, 8)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("앱에 대한 의견을 남겨주세요!")
-                            .font(.B2)
-                            .foregroundStyle(.gray700)
-                        Text("더 나은 서비스를 위해 노력할게요")
-                            .font(.C1)
-                            .foregroundStyle(.gray500)
-                    }
-                    Spacer()
-                    Image(.icChevronRight)
-                        .frame(width: 28, height: 28)
-                        .foregroundColor(.gray300)
+        NavigationLink(destination: EmptyView()) {
+            HStack(spacing: 0) {
+                Image(.icMyFeedback)
+                    .frame(width: 36, height: 36)
+                    .padding(.trailing, 8)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("앱에 대한 의견을 남겨주세요!")
+                        .font(.B2)
+                        .foregroundStyle(.gray700)
+                    Text("더 나은 서비스를 위해 노력할게요")
+                        .font(.C1)
+                        .foregroundStyle(.gray500)
                 }
-                .padding(16)
+                Spacer()
+                Image(.icChevronRight)
+                    .frame(width: 28, height: 28)
+                    .foregroundColor(.gray300)
             }
-        )
+            .padding(16)
+        }
+        .buttonStyle(PlainButtonStyle())
         .frame(height: 72)
         .background(.gray100)
         .cornerRadius(12)
@@ -126,5 +139,5 @@ private struct AccountActionButtonsView: View {
 }
 
 #Preview {
-    MypageMainView()
+    MypageMainView(viewModel: MypageMainViewModel())
 }
