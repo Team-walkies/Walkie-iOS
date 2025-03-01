@@ -8,15 +8,18 @@
 import SwiftUI
 
 struct MypageMainServiceSectionView: View {
+    
+    @ObservedObject var viewModel: MypageMainViewModel
+    
     var body: some View {
         MypageMainSectionView(title: MypageItem.service.title) {
-            ForEach([MypageServiceSectionItem.notice, .privacyPolicy, .appVersion], id: \.title) { item in
+            ForEach([MypageServiceSectionItem.notice,
+                     MypageServiceSectionItem.privacyPolicy,
+                     MypageServiceSectionItem.appVersion], id: \.title) { item in
                 MypageMainItemView(
-                    icon: item.icon,
-                    title: item.title,
-                    action: item.action,
-                    isVersion: item == .appVersion
-                )
+                    item: item,
+                    viewModel: viewModel,
+                    versionText: item == .appVersion ? "1.0.0" : nil)
             }
         }
     }

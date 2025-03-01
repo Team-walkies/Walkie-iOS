@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct MypageMainSettingSectionView: View {
+    
+    @ObservedObject var viewModel: MypageMainViewModel
+    
     var body: some View {
         MypageMainSectionView(title: MypageItem.setting.title) {
-            ForEach([MypageSettingSectionItem.myInfo, .pushNotification], id: \.title) { item in
+            ForEach([MypageSettingSectionItem.myInfo,
+                     MypageSettingSectionItem.pushNotification], id: \.title) { item in
                 MypageMainItemView(
-                    icon: item.icon,
-                    title: item.title,
-                    action: item.action,
-                    isVersion: false)
+                    item: item,
+                    viewModel: viewModel)
             }
         }
     }

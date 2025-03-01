@@ -22,10 +22,10 @@ struct MypageMainView: View {
                         ProfileSectionView(mypageMainState: mypageMainState)
                             .padding(.bottom, 20)
                         
-                        MypageMainSettingSectionView()
+                        MypageMainSettingSectionView(viewModel: viewModel)
                             .padding(.bottom, 8)
                         
-                        MypageMainServiceSectionView()
+                        MypageMainServiceSectionView(viewModel: viewModel)
                             .padding(.bottom, 8)
                         
                         FeedbackButtonView()

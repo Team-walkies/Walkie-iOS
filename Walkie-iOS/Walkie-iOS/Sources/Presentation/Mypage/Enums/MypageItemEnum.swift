@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+protocol MypageSectionItem {
+    var title: String { get }
+    var icon: Image { get }
+    var hasNavigation: Bool { get }
+    
+    associatedtype DestinationView: View
+    @ViewBuilder
+    func destinationView(viewModel: MypageMainViewModel) -> DestinationView
+}
+
 enum MypageItem {
     case setting
     case service
@@ -21,7 +31,7 @@ enum MypageItem {
     }
 }
 
-enum MypageSettingSectionItem {
+enum MypageSettingSectionItem: MypageSectionItem {
     case myInfo
     case pushNotification
     
@@ -43,19 +53,22 @@ enum MypageSettingSectionItem {
         }
     }
     
-    var action: () -> Void {
+    var hasNavigation: Bool {
+        return true
+    }
+    
+    @ViewBuilder
+    func destinationView(viewModel: MypageMainViewModel) -> some View {
         switch self {
         case .myInfo:
-            // 내 정보 이동
-            return {}
+            EmptyView()
         case .pushNotification:
-            // 푸시 알림 이동
-            return {}
+            EmptyView()
         }
     }
 }
 
-enum MypageServiceSectionItem {
+enum MypageServiceSectionItem: MypageSectionItem {
     case notice
     case privacyPolicy
     case appVersion
@@ -82,16 +95,24 @@ enum MypageServiceSectionItem {
         }
     }
     
-    var action: () -> Void {
+    var hasNavigation: Bool {
+        switch self {
+        case .appVersion:
+            return false
+        default:
+            return true
+        }
+    }
+    
+    @ViewBuilder
+    func destinationView(viewModel: MypageMainViewModel) -> some View {
         switch self {
         case .notice:
-            // 공지사항 이동
-            return {}
+            EmptyView()
         case .privacyPolicy:
-            // 개인정보처리방침 이동
-            return {}
+            EmptyView()
         case .appVersion:
-            return {}
+            EmptyView()
         }
     }
 }
