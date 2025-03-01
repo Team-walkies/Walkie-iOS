@@ -31,7 +31,7 @@ struct MypageMainView: View {
                         FeedbackButtonView()
                             .padding(.bottom, 12)
                         
-                        AccountActionButtonsView()
+                        AccountActionButtonsView(viewModel: viewModel)
                     }
                     .frame(alignment: .top)
                     .padding(.horizontal, 16)
@@ -113,6 +113,9 @@ struct FeedbackButtonView: View {
 }
 
 private struct AccountActionButtonsView: View {
+    
+    @ObservedObject var viewModel: MypageMainViewModel
+
     var body: some View {
         HStack(spacing: 12) {
             Button {
@@ -125,13 +128,15 @@ private struct AccountActionButtonsView: View {
             Rectangle()
                 .frame(width: 1, height: 16)
                 .foregroundStyle(.gray300)
-            Button {
-                // 탈퇴하기
-            } label: {
+            NavigationLink(
+                destination: MypageWithdrawView(viewModel: viewModel)
+                    .navigationBarBackButtonHidden(),
+                label: {
                 Text("탈퇴하기")
                     .font(.B2)
                     .foregroundStyle(.gray400)
             }
+            )
         }
         .frame(alignment: .center)
     }
