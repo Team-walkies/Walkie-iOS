@@ -11,13 +11,8 @@ struct TextAreaView: View {
     private var limitation: Int
     private var placeholderText: String
     
-    @State private var input: String = ""
+    @Binding var input: String
     @State private var inputState: InputState = .default
-    
-    init(limitation: Int, placeholderText: String) {
-        self.limitation = limitation
-        self.placeholderText = placeholderText
-    }
     
     var body: some View {
         ZStack(alignment: .topLeading) {
