@@ -13,9 +13,11 @@ struct MypageMainServiceSectionView: View {
     
     var body: some View {
         MypageMainSectionView(title: MypageItem.service.title) {
-            ForEach([MypageServiceSectionItem.notice,
-                     MypageServiceSectionItem.privacyPolicy,
-                     MypageServiceSectionItem.appVersion], id: \.title) { item in
+            ForEach([
+                MypageServiceSectionItem.notice,
+                MypageServiceSectionItem.privacyPolicy,
+                MypageServiceSectionItem.appVersion
+            ], id: \.title) { item in
                 MypageMainItemView(
                     item: item,
                     viewModel: viewModel,

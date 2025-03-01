@@ -13,8 +13,10 @@ struct MypageMainSettingSectionView: View {
     
     var body: some View {
         MypageMainSectionView(title: MypageItem.setting.title) {
-            ForEach([MypageSettingSectionItem.myInfo,
-                     MypageSettingSectionItem.pushNotification], id: \.title) { item in
+            ForEach([
+                MypageSettingSectionItem.myInfo,
+                MypageSettingSectionItem.pushNotification
+            ], id: \.title) { item in
                 MypageMainItemView(
                     item: item,
                     viewModel: viewModel)
