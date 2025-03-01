@@ -27,5 +27,6 @@ struct MypageMainSectionView<Content: View>: View {
         .padding(.all, 16)
         .background(.gray100)
         .cornerRadius(12)
+        .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
     }
 }

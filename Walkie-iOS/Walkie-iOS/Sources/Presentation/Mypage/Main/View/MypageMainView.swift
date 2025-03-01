@@ -24,11 +24,9 @@ struct MypageMainView: View {
                         
                         MypageMainSettingSectionView()
                             .padding(.bottom, 8)
-                            .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
                         
                         MypageMainServiceSectionView()
                             .padding(.bottom, 8)
-                            .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
                         
                         FeedbackButtonView()
                             .padding(.bottom, 12)

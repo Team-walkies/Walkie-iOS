@@ -41,7 +41,18 @@ final class MypageMainViewModel: ViewModelable {
     }
     
     func fetchMypageMainData() {
-        let dummy = MypageMainState(nickname: "유저이름", userTier: "초보워키", spotCount: 10, hasAlarm: true)
-        self.state = .loaded(dummy)
+        let dummy = UserInformationResponse.getDummyData()
+        
+        if dummy.success, let userData = dummy.data {
+            let mypageState = MypageMainState(
+                nickname: userData.nickname,
+                userTier: userData.memberTier,
+                spotCount: userData.exploredSpotCount,
+                hasAlarm: true // TODO: 알림 조회 API 연결
+            )
+            self.state = .loaded(mypageState)
+        } else {
+            self.state = .error(dummy.message)
+        }
     }
 }
