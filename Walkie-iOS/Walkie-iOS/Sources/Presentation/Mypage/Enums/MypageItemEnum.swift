@@ -63,7 +63,7 @@ enum MypageSettingSectionItem: MypageSectionItem {
         case .myInfo:
             MypageMyInformationView(viewModel: viewModel)
         case .pushNotification:
-            EmptyView()
+            MypagePushNotificationView(viewModel: viewModel)
         }
     }
 }
