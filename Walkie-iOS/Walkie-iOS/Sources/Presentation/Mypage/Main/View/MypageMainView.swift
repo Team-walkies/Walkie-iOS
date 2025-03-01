@@ -35,6 +35,7 @@ struct MypageMainView: View {
                     }
                     .frame(alignment: .top)
                     .padding(.horizontal, 16)
+                    .padding(.top, 4)
                 }
             default:
                 EmptyView()
@@ -84,7 +85,7 @@ private struct ProfileSectionView: View {
 
 struct FeedbackButtonView: View {
     var body: some View {
-        NavigationLink(destination: EmptyView()) {
+        NavigationLink(destination: EmptyView().navigationBarBackButtonHidden()) {
             HStack(spacing: 0) {
                 Image(.icMyFeedback)
                     .frame(width: 36, height: 36)

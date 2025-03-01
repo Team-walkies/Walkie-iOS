@@ -61,7 +61,7 @@ enum MypageSettingSectionItem: MypageSectionItem {
     func destinationView(viewModel: MypageMainViewModel) -> some View {
         switch self {
         case .myInfo:
-            EmptyView()
+            MypageMyInformationView(viewModel: viewModel)
         case .pushNotification:
             EmptyView()
         }

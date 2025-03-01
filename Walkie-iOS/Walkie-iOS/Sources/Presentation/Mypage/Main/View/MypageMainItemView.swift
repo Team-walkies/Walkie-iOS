@@ -16,6 +16,7 @@ struct MypageMainItemView<Item: MypageSectionItem>: View {
         if item.hasNavigation {
             NavigationLink {
                 item.destinationView(viewModel: viewModel)
+                    .navigationBarBackButtonHidden()
             } label: {
                 itemContent
             }

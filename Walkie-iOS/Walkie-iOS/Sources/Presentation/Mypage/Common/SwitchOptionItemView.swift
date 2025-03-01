@@ -11,7 +11,8 @@ struct SwitchOptionItemView: View {
     
     let title: String
     let subtitle: String
-    @State var isOn: Bool
+    let isOn: Bool
+    let toggle: () -> Void
     
     var body: some View {
         ZStack(alignment: .leading) {
@@ -23,7 +24,10 @@ struct SwitchOptionItemView: View {
                     .font(.C1)
                     .foregroundStyle(.gray500)
             }.padding(.vertical, 10)
-            Toggle(isOn: $isOn) {
+            Toggle(isOn: Binding(
+                get: { isOn },
+                set: { _ in toggle() }
+            )) {
             }.tint(.blue300)
         }
         .padding(.horizontal, 16)
@@ -31,8 +35,4 @@ struct SwitchOptionItemView: View {
         .background(.gray50)
         .cornerRadius(12, corners: .allCorners)
     }
-}
-
-#Preview {
-    SwitchOptionItemView(title: "프로필 공개", subtitle: "내 후기가 다른 사람에게 공개돼요", isOn: true).padding(.horizontal, 16)
 }

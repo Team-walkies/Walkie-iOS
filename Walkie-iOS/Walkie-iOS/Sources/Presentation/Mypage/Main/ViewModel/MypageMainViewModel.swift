@@ -23,12 +23,18 @@ final class MypageMainViewModel: ViewModelable {
         let hasAlarm: Bool
     }
     
+    struct MyInformationState {
+        var isPublic: Bool
+    }
+    
     enum Action {
         case mypageMainWillAppear
+        case toggleMyInformationIsPublic
     }
     
     @Published var state: MypageMainViewState
-    
+    @Published var myInformationState = MyInformationState(isPublic: false)
+
     init() {
         state = .loading
     }
@@ -37,10 +43,12 @@ final class MypageMainViewModel: ViewModelable {
         switch action {
         case .mypageMainWillAppear:
             fetchMypageMainData()
+        case .toggleMyInformationIsPublic:
+            updateMyInformationPublicSetting()
         }
     }
     
-    func fetchMypageMainData() {
+    private func fetchMypageMainData() {
         let dummy = UserInformationResponse.getDummyData()
         
         if dummy.success, let userData = dummy.data {
@@ -50,9 +58,16 @@ final class MypageMainViewModel: ViewModelable {
                 spotCount: userData.exploredSpotCount,
                 hasAlarm: true // TODO: 알림 조회 API 연결
             )
+            self.myInformationState = MyInformationState(isPublic: userData.isPublic)
             self.state = .loaded(mypageState)
         } else {
             self.state = .error(dummy.message)
         }
     }
+    
+    private func updateMyInformationPublicSetting() {
+        // TODO: 내 프로필 공개/비공개 토글 API 연결
+        myInformationState.isPublic.toggle()
+    }
+
 }
