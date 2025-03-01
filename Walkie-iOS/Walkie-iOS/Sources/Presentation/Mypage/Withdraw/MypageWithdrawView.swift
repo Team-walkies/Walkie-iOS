@@ -9,13 +9,18 @@ import SwiftUI
 
 struct MypageWithdrawView: View {
     
+    @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: MypageMainViewModel
     @State var isChecked: Bool = false
     
     var body: some View {
         NavigationBar(
             title: "탈퇴하기",
-            showBackButton: true)
+            showBackButton: true,
+            backButtonAction: {
+                dismiss()
+            }
+        )
         .padding(.bottom, 40)
         switch viewModel.state {
         case .loaded(let mypageMainState):
