@@ -27,6 +27,8 @@ struct Modal: View {
     let button: ModalButtonType
     let cancelButtonAction: () -> Void
     let checkButtonAction: () -> Void
+    var checkButtonTitle: String = "확인"
+    var cancelButtonTitle: String = "취소"
     
     // MARK: - Body
     
@@ -48,7 +50,7 @@ struct Modal: View {
             switch button {
             case .onebutton:
                 CTAButton(
-                    title: "확인",
+                    title: checkButtonTitle,
                     style: style == .primary ? .primary : .danger,
                     size: .modal,
                     isEnabled: true) {
@@ -57,14 +59,14 @@ struct Modal: View {
             case .twobutton:
                 HStack(spacing: -24) {
                     CTAButton(
-                        title: "취소",
-                        style: style == .primary ? .primary : .danger,
+                        title: cancelButtonTitle,
+                        style: .modal,
                         size: .modal,
                         isEnabled: false) {
                             cancelButtonAction()
                         }
                     CTAButton(
-                        title: "확인",
+                        title: checkButtonTitle,
                         style: style == .primary ? .primary : .danger,
                         size: .modal,
                         isEnabled: true) {
