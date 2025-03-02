@@ -32,15 +32,18 @@ struct Modal: View {
     
     var body: some View {
         VStack(
-            alignment: .center
+            alignment: .center,
+            spacing: 0
         ) {
             Text(title)
                 .font(.H4)
                 .foregroundColor(.gray700)
+                .padding(.bottom, 4)
             
             Text(content)
                 .font(.B2)
                 .foregroundColor(.gray500)
+                .padding(.bottom, 20)
             
             switch button {
             case .onebutton:
@@ -70,6 +73,7 @@ struct Modal: View {
                 }
             }
         }
+        .padding(.vertical, 16)
         .frame(width: 280, height: 154)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
