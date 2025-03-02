@@ -13,13 +13,15 @@ struct MypageMainAccountActionButtonsView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Button {
-                // 로그아웃
-            } label: {
+            Button(
+            action: {
+                viewModel.logoutViewState.isPresented.toggle()
+            }, label: {
                 Text("로그아웃")
                     .font(.B2)
                     .foregroundStyle(.gray400)
-            }
+            })
+            
             Rectangle()
                 .frame(width: 1, height: 16)
                 .foregroundStyle(.gray300)

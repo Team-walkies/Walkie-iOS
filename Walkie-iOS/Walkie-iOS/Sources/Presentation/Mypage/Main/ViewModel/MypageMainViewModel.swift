@@ -43,6 +43,10 @@ final class MypageMainViewModel: ViewModelable {
         case withdraw
     }
     
+    struct LogoutViewState {
+        var isPresented: Bool
+    }
+    
     @Published var state: MypageMainViewState
     @Published var myInformationState = MyInformationState(isPublic: false)
     @Published var pushNotificationState = PushNotificationState(
@@ -50,6 +54,7 @@ final class MypageMainViewModel: ViewModelable {
         notifyArrivedSpot: false,
         notifyEggHatches: false
     )
+    @Published var logoutViewState = LogoutViewState(isPresented: false)
     
     init() {
         state = .loading
