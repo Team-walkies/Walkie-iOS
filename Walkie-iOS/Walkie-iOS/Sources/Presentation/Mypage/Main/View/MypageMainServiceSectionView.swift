@@ -21,7 +21,9 @@ struct MypageMainServiceSectionView: View {
                 MypageMainItemView(
                     item: item,
                     viewModel: viewModel,
-                    versionText: item == .appVersion ? "1.0.0" : nil)
+                    versionText: (item == .appVersion)
+                    ? Bundle.main.formattedAppVersion
+                    : nil)
             }
         }
     }
