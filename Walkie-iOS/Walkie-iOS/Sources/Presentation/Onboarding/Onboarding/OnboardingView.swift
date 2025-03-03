@@ -9,6 +9,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     
+    @Environment(\.screenWidth) var screenWidth
     let onboardingPage = OnboardingPageStruct.makeOnboardingPage()
     
     var body: some View {
@@ -31,14 +32,54 @@ struct OnboardingView: View {
                                 .foregroundColor(.gray500)
                                 .multilineTextAlignment(.center)
                         }
+                        Spacer()
                     }
                 }
             }
             .onAppear { setIndicator() }
             .tabViewStyle(.page(indexDisplayMode: .always))
             
-            VStack {
-            }
+            Spacer()
+            
+            Button(action: {
+                print("kakaobutton tapped")
+            }, label: {
+                HStack(spacing: 8) {
+                    Image(.icKakao)
+                        .renderingMode(.original)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                    
+                    Text("카카오 계정으로 계속하기")
+                        .font(.B1)
+                        .foregroundColor(.black)
+                }
+            })
+            .frame(width: screenWidth - 32, height: 54)
+            .background(.yellow100)
+            .cornerRadius(12, corners: .allCorners)
+            .padding(.top, 41)
+            
+            Button(action: {
+                print("applebutton tapped")
+            }, label: {
+                HStack(spacing: 8) {
+                    Image(.icApple)
+                        .renderingMode(.original)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                    
+                    Text("Apple로 시작하기")
+                        .font(.B1)
+                        .foregroundColor(.white)
+                }
+            })
+            .frame(width: screenWidth - 32, height: 54)
+            .background(.black)
+            .cornerRadius(12, corners: .allCorners)
+            .padding(.bottom, 4)
         }
     }
     
