@@ -1,5 +1,5 @@
 //
-//  OnboardingView.swift
+//  LoginView.swift
 //  Walkie-iOS
 //
 //  Created by ahra on 2/28/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OnboardingView: View {
+struct LoginView: View {
     
     @Environment(\.screenWidth) var screenWidth
     let onboardingPage = OnboardingPageStruct.makeOnboardingPage()
@@ -89,8 +89,8 @@ struct OnboardingView: View {
     }
 }
 
-struct OnboardingView_Previews: PreviewProvider {
+struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        OnboardingView()
+        LoginView()
     }
 }

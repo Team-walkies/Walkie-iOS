@@ -4,7 +4,7 @@ import SwiftUI
 struct WalkieIOSApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashView()
+            LoginView()
         }
     }
 }
