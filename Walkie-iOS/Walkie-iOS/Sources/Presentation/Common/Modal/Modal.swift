@@ -27,25 +27,30 @@ struct Modal: View {
     let button: ModalButtonType
     let cancelButtonAction: () -> Void
     let checkButtonAction: () -> Void
+    var checkButtonTitle: String = "확인"
+    var cancelButtonTitle: String = "취소"
     
     // MARK: - Body
     
     var body: some View {
         VStack(
-            alignment: .center
+            alignment: .center,
+            spacing: 0
         ) {
             Text(title)
                 .font(.H4)
                 .foregroundColor(.gray700)
+                .padding(.bottom, 4)
             
             Text(content)
                 .font(.B2)
                 .foregroundColor(.gray500)
+                .padding(.bottom, 20)
             
             switch button {
             case .onebutton:
                 CTAButton(
-                    title: "확인",
+                    title: checkButtonTitle,
                     style: style == .primary ? .primary : .danger,
                     size: .modal,
                     isEnabled: true) {
@@ -54,14 +59,14 @@ struct Modal: View {
             case .twobutton:
                 HStack(spacing: -24) {
                     CTAButton(
-                        title: "취소",
-                        style: style == .primary ? .primary : .danger,
+                        title: cancelButtonTitle,
+                        style: .modal,
                         size: .modal,
                         isEnabled: false) {
                             cancelButtonAction()
                         }
                     CTAButton(
-                        title: "확인",
+                        title: checkButtonTitle,
                         style: style == .primary ? .primary : .danger,
                         size: .modal,
                         isEnabled: true) {
@@ -70,6 +75,7 @@ struct Modal: View {
                 }
             }
         }
+        .padding(.vertical, 16)
         .frame(width: 280, height: 154)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
