@@ -10,6 +10,7 @@ import SwiftUI
 enum ButtonStyleType {
     case primary
     case danger
+    case modal
 }
 
 enum ButtonSizeType {
@@ -34,11 +35,20 @@ struct CTAButton: View {
             return isEnabled ? .blue300 : .gray200
         case .danger:
             return isEnabled ? .red100 : .red50
+        case .modal:
+            return .gray100
         }
     }
     
     private var textColor: Color {
-        return style == .primary && !isEnabled ? .gray400 : .white
+        switch style {
+        case .primary:
+            return isEnabled ? .white : .gray400
+        case .danger:
+            return .white
+        case .modal:
+            return .gray500
+        }
     }
     
     private var height: CGFloat {
