@@ -11,15 +11,16 @@ struct NavigationBar: View {
     
     // MARK: - Properties
     
-    let title: String?
-    let rightButtonTitle: String?
-    let showLogo: Bool
-    let showBackButton: Bool
-    let showRightButton: Bool
-    let showAlarmButton: Bool
-    let hasAlarm: Bool
-    let backButtonAction: () -> Void
-    let rightButtonAction: () -> Void
+    private let title: String?
+    private let rightButtonTitle: String?
+    private let showLogo: Bool
+    private let showBackButton: Bool
+    private let showRightButton: Bool
+    private let showAlarmButton: Bool
+    private let hasAlarm: Bool
+    private let rightButtonEnabled: Bool
+    private let backButtonAction: () -> Void
+    private let rightButtonAction: () -> Void
     
     // MARK: - Initialization
     
@@ -31,6 +32,7 @@ struct NavigationBar: View {
         showRightButton: Bool = false,
         showAlarmButton: Bool = false,
         hasAlarm: Bool = false,
+        rightButtonEnabled: Bool = false,
         backButtonAction: @escaping () -> Void = {},
         rightButtonAction: @escaping () -> Void = {}
     ) {
@@ -41,6 +43,7 @@ struct NavigationBar: View {
         self.showRightButton = showRightButton
         self.showAlarmButton = showAlarmButton
         self.hasAlarm = hasAlarm
+        self.rightButtonEnabled = rightButtonEnabled
         self.backButtonAction = backButtonAction
         self.rightButtonAction = rightButtonAction
     }
@@ -79,13 +82,18 @@ struct NavigationBar: View {
             // right button
             HStack {
                 if showRightButton {
-                    Button(action: rightButtonAction) {
+                    Button(action: {
+                        if rightButtonEnabled { rightButtonAction() }
+                    }, label: {
                         if let title = rightButtonTitle {
                             Text(title)
+                                .frame(width: 48, height: 44)
                                 .font(.H5)
-                                .foregroundColor(.gray400)
+                                .foregroundColor(rightButtonEnabled ? .blue400 : .gray400)
                         }
-                    }
+                    })
+                    .padding(.trailing, 10)
+                    .disabled(!rightButtonEnabled)
                 } else if showAlarmButton {
                     Button(action: rightButtonAction) {
                         Image(hasAlarm ? .icAlertDot : .icAlert)
@@ -93,10 +101,10 @@ struct NavigationBar: View {
                             .scaledToFit()
                             .frame(width: 24, height: 24)
                     }
+                    .padding(.trailing, 16)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .trailing)
-            .padding(.trailing, 16)
         }
         .frame(height: 44)
     }

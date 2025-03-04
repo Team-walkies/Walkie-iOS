@@ -5,7 +5,7 @@
 //  Created by ahra on 2/20/25.
 //
 
-struct EggsPlayResponse: Codable {
+struct EggsPlayEntity: Codable {
     let eggID, needStep, nowStep, rank: Int
     let characterID: Int
     
@@ -16,8 +16,8 @@ struct EggsPlayResponse: Codable {
     }
 }
 
-extension EggsPlayResponse {
-    static func eggsPlayDummy() -> EggsPlayResponse {
-        return EggsPlayResponse(eggID: 0, needStep: 1345, nowStep: 8423, rank: 2, characterID: 1)
+extension EggsPlayEntity {
+    static func eggsPlayDummy() -> EggsPlayEntity {
+        return EggsPlayEntity(eggID: 0, needStep: 1345, nowStep: 8423, rank: 2, characterID: 1)
     }
 }
