@@ -18,7 +18,13 @@ struct InputView: View {
     @Binding var inputState: InputState
     @State private var errorMessage: String?
     
-    init(limitation: Int, placeholderText: String, onlyText: Bool = false, input: Binding<String>, inputState: Binding<InputState>) {
+    init(
+        limitation: Int,
+        placeholderText: String,
+        onlyText: Bool = false,
+        input: Binding<String>,
+        inputState: Binding<InputState>
+    ) {
         self.limitation = limitation
         self.placeholderText = placeholderText
         self.onlyText = onlyText
