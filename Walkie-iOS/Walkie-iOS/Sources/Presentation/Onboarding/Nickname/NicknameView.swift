@@ -50,6 +50,13 @@ struct NicknameView: View {
             }
             .alignTo(.leading)
             .toolbar(.hidden, for: .navigationBar)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                hideKeyboard()
+            }
+            .gesture(DragGesture().onChanged { _ in
+                hideKeyboard()
+            })
         }
         .navigationDestination(isPresented: $isNavigating) {
             OnboardingCompleteView()
