@@ -14,17 +14,24 @@ final class UserManager {
     // MARK: - Properties
     
     @UserDefaultWrapper<String>(key: "userNickname") private(set) var userNickname
+    @UserDefaultWrapper<Bool>(key: "tapStart") private(set) var tapStart
     
     private init() {}
 }
 
 extension UserManager {
     
-    var hasUserNickname: Bool { return self.userNickname != "" }
+    var isUserLogin: Bool { return TokenKeychainManager.shared.hasToken() }
+    var hasUserNickname: Bool { return self.userNickname != nil }
     var getUserNickname: String { return self.userNickname ?? ""}
+    var isTapStart: Bool { return self.tapStart ?? false }
 }
 
 extension UserManager {
+    
+    func setTapStart() {
+        self.tapStart = true
+    }
     
     func setUserNickname(_ nickname: String) {
         self.userNickname = nickname

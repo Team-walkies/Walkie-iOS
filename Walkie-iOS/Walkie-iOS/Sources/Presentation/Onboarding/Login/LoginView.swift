@@ -45,7 +45,11 @@ struct LoginView: View {
                 Spacer()
                 
                 Button(action: {
-                    print("kakaobutton tapped")
+                    do {
+                        try TokenKeychainManager.shared.saveAccessToken("test token")
+                    } catch {
+                        print("토큰 저장 실패..")
+                    }
                     isNavigating = true
                 }, label: {
                     HStack(spacing: 8) {
