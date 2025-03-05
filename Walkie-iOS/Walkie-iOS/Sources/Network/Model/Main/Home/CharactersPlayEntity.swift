@@ -5,7 +5,7 @@
 //  Created by ahra on 2/20/25.
 //
 
-struct CharactersPlayResponse: Codable {
+struct CharactersPlayEntity: Codable {
     let characterID, characterType, characterClass: Int
 
     enum CodingKeys: String, CodingKey {
@@ -15,8 +15,8 @@ struct CharactersPlayResponse: Codable {
     }
 }
 
-extension CharactersPlayResponse {
-    static func charactersPlayDummy() -> CharactersPlayResponse {
-        return CharactersPlayResponse(characterID: 1, characterType: 1, characterClass: 2)
+extension CharactersPlayEntity {
+    static func charactersPlayDummy() -> CharactersPlayEntity {
+        return CharactersPlayEntity(characterID: 1, characterType: 1, characterClass: 2)
     }
 }

@@ -44,10 +44,10 @@ final class HomeViewModel: ViewModelable {
     }
     
     func fetchHomeData() {
-        let eggsPlay = EggsPlayResponse.eggsPlayDummy()
-        let charactersPlay = CharactersPlayResponse.charactersPlayDummy()
-        let eggsCount = EggsCountResponse.eggsCountDummy()
-        let charactersCount = CharactersCountResponse.charactersCountDummy()
+        let eggsPlay = EggsPlayEntity.eggsPlayDummy()
+        let charactersPlay = CharactersPlayEntity.charactersPlayDummy()
+        let eggsCount = EggsCountEntity.eggsCountDummy()
+        let charactersCount = CharactersCountEntity.charactersCountDummy()
         
         let type = charactersPlay.characterType
         let characterClass = charactersPlay.characterClass

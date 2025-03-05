@@ -29,12 +29,16 @@ extension View {
     func multiline(lineLimit: Int? = nil) -> some View {
         modifier(MultilineModifier(lineLimit: lineLimit))
     }
+    
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }
 
 // MARK: - AlignmentModifier
 struct AlignmentModifier: ViewModifier {
     let alignment: Alignment
-
+    
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             if alignment == .bottom || alignment == .bottomLeading || alignment == .bottomTrailing {

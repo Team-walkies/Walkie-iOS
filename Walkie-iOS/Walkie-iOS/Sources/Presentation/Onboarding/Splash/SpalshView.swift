@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SplashView: View {
     
-    @State private var showHome: Bool = false
+    @Binding var showSplash: Bool
     
     var body: some View {
         ZStack {
@@ -19,18 +19,10 @@ struct SplashView: View {
                 .frame(width: 200, height: 200)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        showHome = true
+                        showSplash = true
                     }
                 }
         }
-        .fullScreenCover(isPresented: $showHome) {
-            TabBarView()
-        }
-    }
-}
-
-struct SplashView_Previews: PreviewProvider {
-    static var previews: some View {
-        SplashView()
+        .edgesIgnoringSafeArea(.all)
     }
 }

@@ -15,9 +15,22 @@ struct InputView: View {
     private var onlyText: Bool = false
     
     @Binding var input: String
-    @State private var inputState: InputState = .default
+    @Binding var inputState: InputState
     @State private var errorMessage: String?
     
+    init(
+        limitation: Int,
+        placeholderText: String,
+        onlyText: Bool = false,
+        input: Binding<String>,
+        inputState: Binding<InputState>
+    ) {
+        self.limitation = limitation
+        self.placeholderText = placeholderText
+        self.onlyText = onlyText
+        self._input = input
+        self._inputState = inputState
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
