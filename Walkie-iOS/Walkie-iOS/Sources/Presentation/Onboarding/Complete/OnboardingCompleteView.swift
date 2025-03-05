@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct OnboardingCompleteView: View {
+    
     var body: some View {
         VStack {
             VStack(alignment: .center, spacing: 12) {
@@ -36,7 +37,7 @@ struct OnboardingCompleteView: View {
                 size: .large,
                 isEnabled: true,
                 buttonAction: {
-                    
+                    // TODO: keychain에 nickname 저장
                 }
             )
             .padding(.bottom, 4)

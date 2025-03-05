@@ -57,7 +57,7 @@ enum TabBarItem: CaseIterable {
         case .map:
             MapView(viewModel: MapViewModel())
         case .mypage:
-            VStack { Text("마이페이지") }
+            MypageMainView(viewModel: MypageMainViewModel())
         }
     }
 }
