@@ -22,8 +22,8 @@ struct NicknameView: View {
                     showRightButton: true,
                     rightButtonEnabled: isButtonEnabled,
                     rightButtonAction: {
-                        print("rightbuttontapped")
                         isNavigating = true
+                        UserManager.shared.setUserNickname(userInput)
                     }
                 )
                 

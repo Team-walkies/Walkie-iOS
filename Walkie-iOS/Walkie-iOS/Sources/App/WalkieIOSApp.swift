@@ -7,7 +7,7 @@ struct WalkieIOSApp: App {
     
     // TODO: keychain 구현 후에 로컬 값으로 변경해야함
     @State var hasLogin: Bool = false
-    @State var hasNickname: Bool = false
+    @State var hasNickname: Bool = UserManager.shared.hasUserNickname
     
     var body: some Scene {
         WindowGroup {

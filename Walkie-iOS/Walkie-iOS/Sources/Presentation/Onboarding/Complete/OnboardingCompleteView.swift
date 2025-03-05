@@ -12,7 +12,7 @@ struct OnboardingCompleteView: View {
     var body: some View {
         VStack {
             VStack(alignment: .center, spacing: 12) {
-                Text("짱짱님,\n환영해요")
+                Text("\(UserManager.shared.getUserNickname)님,\n환영해요")
                     .font(.H2)
                     .foregroundColor(.gray700)
                     .multilineTextAlignment(.center)
