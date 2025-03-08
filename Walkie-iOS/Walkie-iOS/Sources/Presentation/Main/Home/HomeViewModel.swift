@@ -30,11 +30,7 @@ final class HomeViewModel: ViewModelable {
         case error(String)
     }
     
-    @Published var state: HomeViewState
-    
-    init() {
-        state = .loading
-    }
+    @Published var state: HomeViewState = .loading
     
     func action(_ action: Action) {
         switch action {
