@@ -48,16 +48,4 @@ enum TabBarItem: CaseIterable {
             return Image(.icMySelected)
         }
     }
-    
-    @ViewBuilder
-    var targetView: some View {
-        switch self {
-        case .home:
-            HomeView(viewModel: HomeViewModel())
-        case .map:
-            MapView(viewModel: MapViewModel())
-        case .mypage:
-            MypageMainView(viewModel: MypageMainViewModel())
-        }
-    }
 }
