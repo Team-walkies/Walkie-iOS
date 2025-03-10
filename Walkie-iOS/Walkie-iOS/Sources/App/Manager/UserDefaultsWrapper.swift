@@ -8,7 +8,7 @@
 import Foundation
 
 @propertyWrapper
-struct UserDefaultWrapper<T> {
+struct UserDefaultsWrapper<T> {
     
     var wrappedValue: T? {
         get {

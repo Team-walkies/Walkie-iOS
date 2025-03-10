@@ -13,8 +13,8 @@ final class UserManager {
     
     // MARK: - Properties
     
-    @UserDefaultWrapper<String>(key: "userNickname") private(set) var userNickname
-    @UserDefaultWrapper<Bool>(key: "tapStart") private(set) var tapStart
+    @UserDefaultsWrapper<String>(key: "userNickname") private(set) var userNickname
+    @UserDefaultsWrapper<Bool>(key: "tapStart") private(set) var tapStart
     
     private init() {}
 }
