@@ -20,6 +20,20 @@ struct SplashView: View {
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         showSplash = true
+                        
+                        print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
+                        do {
+                            let token = try TokenKeychainManager.shared.getAccessToken()
+                            print(token ?? "no token")
+                        } catch {
+                            print("issue;;")
+                        }
+                        print("isUserLogin")
+                        print(UserManager.shared.isUserLogin)
+                        print("nickname")
+                        print(UserManager.shared.userNickname ?? "no nickname")
+                        print("tapstart")
+                        print(UserManager.shared.tapStart ?? false)
                     }
                 }
         }

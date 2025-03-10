@@ -4,25 +4,24 @@ import SwiftUI
 struct WalkieIOSApp: App {
     
     @State var showSplash: Bool = false
+    @State var tapStart: Bool = false
     
-    // TODO: keychain 구현 후에 로컬 값으로 변경해야함
-    @State var hasLogin: Bool = false
-    @State var hasNickname: Bool = false
+    @State private var hasLogin: Bool = UserManager.shared.isUserLogin
+    @State private var hasNickname: Bool = UserManager.shared.hasUserNickname
+    @State private var isTapStart: Bool = UserManager.shared.isTapStart
     
     var body: some Scene {
         WindowGroup {
-            if !showSplash { // 스플래시 안보여줌
+            if !showSplash {
                 SplashView(showSplash: $showSplash)
-            } else { // 스플래시 끝남
-                if hasLogin { // 로그인은 했음
-                    if hasNickname { // 닉네임도 지었음
-                        TabBarView()
-                    } else { // 닉네임은 안지음
-                        NicknameView()
-                    }
-                } else { // 로그인 안했음
-                    LoginView()
-                }
+            } else if !hasLogin {
+                LoginView()
+            } else if !hasNickname {
+                NicknameView()
+            } else if isTapStart || tapStart {
+                TabBarView()
+            } else {
+                OnboardingCompleteView(tapStart: $tapStart)
             }
         }
     }

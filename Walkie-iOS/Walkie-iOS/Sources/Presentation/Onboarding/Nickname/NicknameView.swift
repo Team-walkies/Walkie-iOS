@@ -13,6 +13,7 @@ struct NicknameView: View {
     @State private var isButtonEnabled: Bool = false
     @State private var inputState: InputState = .default
     @State private var isNavigating: Bool = false
+    @State private var tapStart: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -22,8 +23,8 @@ struct NicknameView: View {
                     showRightButton: true,
                     rightButtonEnabled: isButtonEnabled,
                     rightButtonAction: {
-                        print("rightbuttontapped")
                         isNavigating = true
+                        UserManager.shared.setUserNickname(userInput)
                     }
                 )
                 
@@ -57,9 +58,9 @@ struct NicknameView: View {
             .gesture(DragGesture().onChanged { _ in
                 hideKeyboard()
             })
-        }
-        .navigationDestination(isPresented: $isNavigating) {
-            OnboardingCompleteView()
+            .navigationDestination(isPresented: $isNavigating) {
+                OnboardingCompleteView(tapStart: $tapStart)
+            }
         }
     }
 }

@@ -8,13 +8,25 @@
 import SwiftUI
 
 struct TabBarView: View {
+    
+    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var mapViewModel = MapViewModel()
+    @StateObject private var mypageViewModel = MypageMainViewModel()
     @State private var selectedTab: TabBarItem = .home
+    
+    private var viewFactory: TabTargetViewFactory {
+        TabTargetViewFactory(
+            homeViewModel: homeViewModel,
+            mapViewModel: mapViewModel,
+            mypageViewModel: mypageViewModel
+        )
+    }
     
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 
-                selectedTab.targetView
+                viewFactory.makeTargetView(for: selectedTab)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 
                 VStack(spacing: 0) {
@@ -77,11 +89,5 @@ struct TabBarView: View {
             }
             .edgesIgnoringSafeArea(.bottom)
         }
-    }
-}
-
-struct CustomTabBar_Previews: PreviewProvider {
-    static var previews: some View {
-        TabBarView()
     }
 }
