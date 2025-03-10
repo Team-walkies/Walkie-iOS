@@ -40,7 +40,8 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
-                .external(name: "FirebaseMessaging")
+                .external(name: "FirebaseMessaging"),
+                .external(name: "Moya")
             ],
             settings: .settings(
                 base: [
