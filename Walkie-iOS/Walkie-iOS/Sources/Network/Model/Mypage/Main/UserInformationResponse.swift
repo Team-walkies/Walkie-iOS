@@ -21,7 +21,7 @@ struct UserInformationItem: Decodable {
 extension UserInformationResponse {
     static func getDummyData() -> Self {
         return UserInformationResponse(
-            success: true,
+            status: 200,
             message: "성공 메시지",
             data: UserInformationItem(
                 memberId: 12345678,

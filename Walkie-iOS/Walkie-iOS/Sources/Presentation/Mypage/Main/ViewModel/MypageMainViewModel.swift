@@ -82,7 +82,7 @@ final class MypageMainViewModel: ViewModelable {
     private func fetchMypageMainData() {
         let dummy = UserInformationResponse.getDummyData()
         
-        if dummy.success, let userData = dummy.data {
+        if dummy.status == 200, let userData = dummy.data {
             let mypageState = MypageMainState(
                 nickname: userData.nickname,
                 userTier: userData.memberTier,
