@@ -12,10 +12,9 @@ protocol BaseTargetType: TargetType {}
 
 extension BaseTargetType {
     
-    var baseURL: URL? {
+    var baseURL: URL {
         guard let url = URL(string: URLConstant.baseURL) else {
-            print("🚨 Invalid URL 🚨")
-            return nil
+            fatalError("🚨 Invalid URL: \(URLConstant.baseURL) 🚨")
         }
         return url
     }
