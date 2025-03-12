@@ -42,7 +42,8 @@ let project = Project(
             dependencies: [
                 .external(name: "Lottie"),
                 .external(name: "FirebaseMessaging"),
-                .external(name: "Moya")
+                .external(name: "Moya"),
+                .external(name: "CombineMoya")
             ],
             settings: .settings(
                 base: [
