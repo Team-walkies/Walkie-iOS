@@ -10,7 +10,7 @@ import Foundation
 import Moya
 import Combine
 
-extension Publisher where Failure == MoyaError {
+extension Publisher {
     
     func walkieSink<Object: AnyObject>(
         with object: Object,
@@ -24,17 +24,7 @@ extension Publisher where Failure == MoyaError {
             case .finished:
                 onCancel?(object)
             case .failure(let error):
-                switch error {
-                case .underlying(_, let response):
-                    if let statusCode = response?.statusCode,
-                       let networkError = NetworkError(rawValue: statusCode) {
-                        receiveFailure?(object, networkError)
-                    } else {
-                        receiveFailure?(object, nil)
-                    }
-                default:
-                    receiveFailure?(object, nil)
-                }
+                receiveFailure?(object, error as? NetworkError)
                 onCancel?(object)
             }
         } receiveValue: { [weak object] value in
@@ -47,9 +37,25 @@ extension Publisher where Failure == MoyaError {
             onCancel?(object)
         }
     }
+    
+    func mapToNetworkError() -> AnyPublisher<Output, NetworkError> {
+        mapError { error -> NetworkError in
+            if let moyaError = error as? MoyaError {
+                switch moyaError {
+                case .statusCode(let response):
+                    return NetworkError(rawValue: response.statusCode) ?? .unknownError
+                default:
+                    return .unknownError
+                }
+            }
+            return .unknownError
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
-extension Publisher where Output == Moya.Response, Failure == MoyaError {
+extension Publisher where Output == Moya.Response {
+    
     func mapWalkieResponse<Response: Decodable>(_ type: Response.Type) -> AnyPublisher<Response, Error> {
         self
             .map { $0.data }
