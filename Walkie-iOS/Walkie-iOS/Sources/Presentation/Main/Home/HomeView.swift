@@ -42,6 +42,8 @@ struct HomeView: View {
                         
                         HomeHistoryView(homeState: homeState)
                             .padding(.top, 18)
+                    case .error(let message):
+                        Text(message)
                     default:
                         ProgressView()
                     }
