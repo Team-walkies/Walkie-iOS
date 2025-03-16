@@ -20,7 +20,8 @@ let project = Project(
                         "Pretendard-Bold.ttf",
                         "Pretendard-Medium.ttf",
                     ],
-                    "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다."
+                    "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다.",
+                    "BASE_URL": "$(BASE_URL)"
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
@@ -40,12 +41,18 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
-                .external(name: "FirebaseMessaging")
+                .external(name: "FirebaseMessaging"),
+                .external(name: "Moya"),
+                .external(name: "CombineMoya")
             ],
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "MARKETING_VERSION": "1.0.0"
+                ],
+                configurations: [
+                    .debug(name: "Debug", xcconfig: "Config/WalkieConfig.xcconfig"),
+                    .release(name: "Release", xcconfig: "Config/WalkieConfig.xcconfig")
                 ]
             )
         ),

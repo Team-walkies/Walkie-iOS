@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TabBarView: View {
     
-    @StateObject private var homeViewModel = HomeViewModel()
+    @StateObject private var homeViewModel = DIContainer.shared.registerHome()
     @StateObject private var mapViewModel = MapViewModel()
     @StateObject private var mypageViewModel = MypageMainViewModel()
     @State private var selectedTab: TabBarItem = .home
