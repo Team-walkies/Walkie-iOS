@@ -42,14 +42,21 @@ struct WalkieWidgetLiveActivity: Widget {
                     Text("Bottom \(context.state.stepCount)")
                 }
             } compactLeading: {
-                Text("L")
+                Image("ic_widget_distance")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
             } compactTrailing: {
-                Text("T \(context.state.stepCount)")
+                Text("340m")
+                    .font(.C1)
+                    .foregroundColor(.blue200)
             } minimal: {
-                Text("\(context.state.stepCount)")
+                Image("ic_widget_distance")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
             }
-            .widgetURL(URL(string: "http://www.apple.com"))
-            .keylineTint(Color.red)
+            .keylineTint(.blue200)
         }
     }
     
