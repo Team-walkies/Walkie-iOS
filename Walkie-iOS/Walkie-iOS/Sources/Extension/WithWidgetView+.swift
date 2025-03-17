@@ -17,4 +17,8 @@ extension View {
             .padding(.vertical, fontSpacing)
             .lineSpacing(fontSpacing * 2)
     }
+    
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
 }

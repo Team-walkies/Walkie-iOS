@@ -22,12 +22,13 @@ struct ProgressBarView: View {
     var body: some View {
         ZStack(alignment: .leading) {
             Rectangle()
-                .foregroundStyle(.gray200)
+                .foregroundStyle(.gray800)
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
                 .foregroundStyle(.blue300)
                 .frame(width: current/total*(isSmall ? 64 : 180))
                 .cornerRadius(100, corners: .allCorners)
-        }.frame(width: isSmall ? 64 : 180, height: isSmall ? 4 : 8)
+        }
+        .frame(width: isSmall ? 64 : 294, height: isSmall ? 4 : 8)
     }
 }
