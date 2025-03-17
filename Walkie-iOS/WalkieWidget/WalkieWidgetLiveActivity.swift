@@ -22,8 +22,10 @@ struct WalkieWidgetLiveActivity: Widget {
             // Lock screen/banner UI goes here
             VStack {
                 Text("Hello \(context.state.stepCount)")
+                    .font(.B2)
+                    .foregroundColor(.blue300)
             }
-            .activityBackgroundTint(Color.cyan)
+            .activityBackgroundTint(Color.black)
             .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
