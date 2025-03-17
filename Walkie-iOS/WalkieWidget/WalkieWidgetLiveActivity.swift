@@ -9,37 +9,33 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-public struct WalkieWidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var stepCount: Int
-    }
-    var name: String
-}
-
 struct WalkieWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WalkieWidgetAttributes.self) { context in
-            // Lock screen/banner UI goes here
-            VStack {
-                Text("Hello \(context.state.stepCount)")
-                    .font(.B2)
-                    .foregroundColor(.blue300)
-            }
+            WalkieWidgetProgressView(info: ProgressInfoStruct(
+                isLiveActivity: true,
+                place: context.state.place,
+                currentDistance: context.state.currentDistance,
+                totalDistance: context.state.totalDistance)
+            )
             .activityBackgroundTint(Color.black)
             .activitySystemActionForegroundColor(Color.black)
 
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded UI goes here.  Compose the expanded UI through
-                // various regions, like leading/trailing/center/bottom
-                DynamicIslandExpandedRegion(.leading) {
-                    Text("Leading")
-                }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text("Trailing")
+                    Image("img_widget_logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 76, height: 24)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("Bottom \(context.state.stepCount)")
+                    WalkieWidgetProgressView(info: ProgressInfoStruct(
+                        isLiveActivity: false,
+                        place: context.state.place,
+                        currentDistance: context.state.currentDistance,
+                        totalDistance: context.state.totalDistance)
+                    )
                 }
             } compactLeading: {
                 Image("ic_widget_distance")
@@ -47,7 +43,8 @@ struct WalkieWidgetLiveActivity: Widget {
                     .scaledToFit()
                     .frame(width: 22, height: 22)
             } compactTrailing: {
-                Text("340m")
+                let leftDistance = context.state.totalDistance - context.state.currentDistance
+                Text("\(Int(leftDistance))m")
                     .font(.C1)
                     .foregroundColor(.blue200)
             } minimal: {
