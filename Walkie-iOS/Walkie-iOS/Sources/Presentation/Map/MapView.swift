@@ -55,7 +55,7 @@ struct MapView: View {
         
         if Activity<WalkieWidgetAttributes>.activities.isEmpty {
             let attributes = WalkieWidgetAttributes(name: "ExploreStart")
-            let contentState = WalkieWidgetAttributes.ContentState(stepCount: 111)
+            let contentState = WalkieWidgetAttributes.ContentState(place: "다크그림 신논현역점", currentDistance: 660, totalDistance: 1000)
             let content = ActivityContent(state: contentState, staleDate: nil)
             
             do {
@@ -65,7 +65,6 @@ struct MapView: View {
                     pushType: nil
                 )
                 print("다이나믹 아일랜드 시작됨: \(activity?.id ?? "없음")")
-                print("현재 상태: \(activity?.content.state.stepCount ?? -1)")
             } catch {
                 print("다이나믹 아일랜드 시작 실패: \(error)")
             }
