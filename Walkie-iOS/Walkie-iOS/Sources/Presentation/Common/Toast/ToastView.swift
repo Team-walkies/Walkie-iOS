@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct ToastView: View {
     let message: String
     let icon: UIImage?
@@ -27,7 +29,7 @@ struct ToastView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(.gray700)
+        .background(WalkieCommonAsset.gray700.swiftUIColor)
         .cornerRadius(12)
     }
 }

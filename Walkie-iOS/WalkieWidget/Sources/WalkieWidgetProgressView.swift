@@ -2,11 +2,19 @@
 //  WalkieWidgetProgressView.swift
 //  Walkie-iOS
 //
-//  Created by ahra on 3/17/25.
+//  Created by ahra on 3/18/25.
 //
 
 import SwiftUI
 import ActivityKit
+import WalkieCommon
+
+struct ProgressInfoStruct {
+    let isLiveActivity: Bool
+    let place: String
+    let currentDistance: Double
+    let totalDistance: Double
+}
 
 struct WalkieWidgetProgressView: View {
     
@@ -14,7 +22,6 @@ struct WalkieWidgetProgressView: View {
     
     var body: some View {
         let leftDistance = Int(info.totalDistance - info.currentDistance)
-        
         if info.isLiveActivity {
             HStack {
                 Spacer()
@@ -34,7 +41,7 @@ struct WalkieWidgetProgressView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(info.place)")
                     .font(.B2)
-                    .foregroundColor(.gray400)
+                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                 
                 if leftDistance == 0 {
                     Text("도착 완료! 알을 확인해보세요")
@@ -44,7 +51,7 @@ struct WalkieWidgetProgressView: View {
                         textColor: .white,
                         font: .H3,
                         highlightText: "\(leftDistance)m",
-                        highlightColor: .blue200,
+                        highlightColor: WalkieCommonAsset.blue200.swiftUIColor,
                         highlightFont: .H3
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)

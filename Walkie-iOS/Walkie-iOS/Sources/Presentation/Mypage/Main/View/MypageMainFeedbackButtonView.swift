@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct MypageMainFeedbackButtonView: View {
     var body: some View {
         NavigationLink(destination: EmptyView().navigationBarBackButtonHidden()) {
@@ -17,21 +19,21 @@ struct MypageMainFeedbackButtonView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("앱에 대한 의견을 남겨주세요!")
                         .font(.B2)
-                        .foregroundStyle(.gray700)
+                        .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     Text("더 나은 서비스를 위해 노력할게요")
                         .font(.C1)
-                        .foregroundStyle(.gray500)
+                        .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                 }
                 Spacer()
                 Image(.icChevronRight)
                     .frame(width: 28, height: 28)
-                    .foregroundColor(.gray300)
+                    .foregroundColor(WalkieCommonAsset.gray300.swiftUIColor)
             }
             .padding(16)
         }
         .buttonStyle(PlainButtonStyle())
         .frame(height: 72)
-        .background(.gray100)
+        .background(WalkieCommonAsset.gray100.swiftUIColor)
         .cornerRadius(12)
     }
 }

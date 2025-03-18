@@ -8,6 +8,7 @@
 import SwiftUI
 
 import ActivityKit
+import WalkieCommon
 
 struct MapView: View {
     
@@ -55,7 +56,10 @@ struct MapView: View {
         
         if Activity<WalkieWidgetAttributes>.activities.isEmpty {
             let attributes = WalkieWidgetAttributes(name: "ExploreStart")
-            let contentState = WalkieWidgetAttributes.ContentState(place: "다크그림 신논현역점", currentDistance: 660, totalDistance: 1000)
+            let contentState = WalkieWidgetAttributes.ContentState(
+                place: "다크그림 신논현역점",
+                currentDistance: 660,
+                totalDistance: 1000)
             let content = ActivityContent(state: contentState, staleDate: nil)
             
             do {

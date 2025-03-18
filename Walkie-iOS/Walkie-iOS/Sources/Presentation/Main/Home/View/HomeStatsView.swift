@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct HomeStatsView: View {
     
     let homeState: HomeViewModel.HomeState
@@ -58,7 +60,7 @@ struct HomeStatsView: View {
                 HStack(spacing: 0) {
                     Text("부화까지 ")
                         .font(.B2)
-                        .foregroundColor(.gray400)
+                        .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                     
                     Text("\(homeState.needStep)걸음")
                         .font(.B2)
@@ -77,7 +79,9 @@ struct HomeStatsView: View {
         .frame(width: width, height: 371)
         .background(
             LinearGradient(
-                gradient: Gradient(colors: [.blue300, .blue200]),
+                gradient: Gradient(colors: [
+                    WalkieCommonAsset.blue300.swiftUIColor,
+                    WalkieCommonAsset.blue200.swiftUIColor]),
                 startPoint: .center,
                 endPoint: .bottom
             )

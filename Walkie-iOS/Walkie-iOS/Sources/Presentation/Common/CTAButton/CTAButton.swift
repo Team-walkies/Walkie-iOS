@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 enum ButtonStyleType {
     case primary
     case danger
@@ -32,22 +34,22 @@ struct CTAButton: View {
     private var backgroundColor: Color {
         switch style {
         case .primary:
-            return isEnabled ? .blue300 : .gray200
+            return isEnabled ? WalkieCommonAsset.blue300.swiftUIColor : WalkieCommonAsset.gray200.swiftUIColor
         case .danger:
-            return isEnabled ? .red100 : .red50
+            return isEnabled ? WalkieCommonAsset.red100.swiftUIColor : WalkieCommonAsset.red50.swiftUIColor
         case .modal:
-            return .gray100
+            return WalkieCommonAsset.gray100.swiftUIColor
         }
     }
     
     private var textColor: Color {
         switch style {
         case .primary:
-            return isEnabled ? .white : .gray400
+            return isEnabled ? Color.white : WalkieCommonAsset.gray400.swiftUIColor
         case .danger:
-            return .white
+            return Color.white
         case .modal:
-            return .gray500
+            return WalkieCommonAsset.gray500.swiftUIColor
         }
     }
     

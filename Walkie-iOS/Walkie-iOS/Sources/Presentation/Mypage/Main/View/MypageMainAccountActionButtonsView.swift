@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct MypageMainAccountActionButtonsView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
@@ -19,19 +21,19 @@ struct MypageMainAccountActionButtonsView: View {
             }, label: {
                 Text("로그아웃")
                     .font(.B2)
-                    .foregroundStyle(.gray400)
+                    .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
             })
             
             Rectangle()
                 .frame(width: 1, height: 16)
-                .foregroundStyle(.gray300)
+                .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
             NavigationLink(
                 destination: MypageWithdrawView(viewModel: viewModel)
                     .navigationBarBackButtonHidden(),
                 label: {
                 Text("탈퇴하기")
                     .font(.B2)
-                    .foregroundStyle(.gray400)
+                    .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
             }
             )
         }

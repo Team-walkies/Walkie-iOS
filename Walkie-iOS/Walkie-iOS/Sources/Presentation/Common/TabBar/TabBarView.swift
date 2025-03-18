@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WalkieCommon
 
 struct TabBarView: View {
     
@@ -32,7 +33,7 @@ struct TabBarView: View {
                 VStack(spacing: 0) {
                     ZStack(alignment: .bottom) {
                         Rectangle()
-                            .fill(.gray50)
+                            .fill(WalkieCommonAsset.gray50.swiftUIColor)
                             .frame(height: 52)
                             .cornerRadius(20, corners: [.topLeft, .topRight])
                         
@@ -69,7 +70,7 @@ struct TabBarView: View {
                             label: {
                                 ZStack {
                                     Circle()
-                                        .fill(.gray50)
+                                        .fill(WalkieCommonAsset.gray50.swiftUIColor)
                                         .frame(width: 57, height: 57)
                                     
                                     TabBarItem.map.selectedItem
@@ -83,7 +84,7 @@ struct TabBarView: View {
                         .offset(y: -11)
                     }
                     
-                    Color.gray50
+                    WalkieCommonAsset.gray50.swiftUIColor
                         .frame(height: geometry.safeAreaInsets.bottom)
                 }
             }

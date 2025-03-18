@@ -1,8 +1,8 @@
 //
-//  WalkieWidgetBundle.swift
-//  WalkieWidget
+//  Walkie_WidgetBundle.swift
+//  Walkie-Widget
 //
-//  Created by ahra on 3/17/25.
+//  Created by ahra on 3/18/25.
 //
 
 import WidgetKit
@@ -14,3 +14,4 @@ struct WalkieWidgetBundle: WidgetBundle {
         WalkieWidgetLiveActivity()
     }
 }
+

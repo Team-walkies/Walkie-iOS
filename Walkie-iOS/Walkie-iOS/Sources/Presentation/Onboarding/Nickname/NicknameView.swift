@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct NicknameView: View {
     
     @State private var userInput: String = ""
@@ -30,7 +32,7 @@ struct NicknameView: View {
                 
                 Text("워키에서 사용할\n닉네임을 지어주세요")
                     .font(.H2)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .padding(.top, 24)
                     .padding(.leading, 16)
                 
