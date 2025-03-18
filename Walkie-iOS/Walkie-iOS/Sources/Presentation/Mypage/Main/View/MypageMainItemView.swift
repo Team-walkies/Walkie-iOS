@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct MypageMainItemView<Item: MypageSectionItem>: View {
     let item: Item
     let viewModel: MypageMainViewModel
@@ -33,17 +35,17 @@ struct MypageMainItemView<Item: MypageSectionItem>: View {
                 .padding(.trailing, 8)
             Text(item.title)
                 .font(.B2)
-                .foregroundStyle(.gray700)
+                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
             Spacer()
             
             if let versionInfo = versionText, !item.hasNavigation {
                 Text("v\(versionInfo)")
                     .font(.B2)
-                    .foregroundStyle(.gray400)
+                    .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
             } else if item.hasNavigation {
                 Image(.icChevronRight)
                     .frame(width: 28, height: 28)
-                    .foregroundColor(.gray300)
+                    .foregroundColor(WalkieCommonAsset.gray300.swiftUIColor)
             }
         }
         .frame(height: 52)

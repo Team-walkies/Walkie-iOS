@@ -55,7 +55,9 @@ final class HomeViewModel: ViewModelable {
         let type = charactersPlay.characterType
         let characterClass = charactersPlay.characterClass
         guard let characterImage = CharacterType.getCharacterImage(type: type, characterClass: characterClass),
-              let characterName = CharacterType.getCharacterName(type: type, characterClass: characterClass) else { return }
+            let characterName = CharacterType.getCharacterName(
+                type: type,
+                characterClass: characterClass) else { return }
         self.homeUseCase.getEggCount()
             .walkieSink(
                 with: self,

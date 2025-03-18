@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct LoginView: View {
     
     @Environment(\.screenWidth) var screenWidth
@@ -28,11 +30,11 @@ struct LoginView: View {
                             VStack(spacing: 12) {
                                 Text(item.title)
                                     .font(.H3)
-                                    .foregroundColor(.gray700)
+                                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                                 
                                 Text(item.subTitle)
                                     .font(.B1)
-                                    .foregroundColor(.gray500)
+                                    .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                                     .multilineTextAlignment(.center)
                             }
                             Spacer()
@@ -65,7 +67,7 @@ struct LoginView: View {
                     }
                 })
                 .frame(width: screenWidth - 32, height: 54)
-                .background(.yellow100)
+                .background(WalkieCommonAsset.yellow100.swiftUIColor)
                 .cornerRadius(12, corners: .allCorners)
                 .padding(.top, 41)
                 
@@ -98,8 +100,8 @@ struct LoginView: View {
 }
 
 private func setIndicator() {
-    UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.blue300)
-    UIPageControl.appearance().pageIndicatorTintColor = UIColor(Color.gray200)
+    UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(WalkieCommonAsset.blue300.swiftUIColor)
+    UIPageControl.appearance().pageIndicatorTintColor = UIColor(WalkieCommonAsset.gray200.swiftUIColor)
 }
 
 struct LoginView_Previews: PreviewProvider {

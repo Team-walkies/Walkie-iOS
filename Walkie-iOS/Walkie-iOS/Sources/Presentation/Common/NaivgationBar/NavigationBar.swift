@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct NavigationBar: View {
     
     // MARK: - Properties
@@ -75,7 +77,7 @@ struct NavigationBar: View {
             if let title = title {
                 Text(title)
                     .font(.H6)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             
@@ -89,7 +91,10 @@ struct NavigationBar: View {
                             Text(title)
                                 .frame(width: 48, height: 44)
                                 .font(.H5)
-                                .foregroundColor(rightButtonEnabled ? .blue400 : .gray400)
+                                .foregroundColor(
+                                    rightButtonEnabled ?
+                                    WalkieCommonAsset.blue400.swiftUIColor
+                                    : WalkieCommonAsset.gray400.swiftUIColor)
                         }
                     })
                     .padding(.trailing, 10)

@@ -17,7 +17,12 @@ let project = Project(
                     ],
                     "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다.",
                     "BASE_URL": "$(BASE_URL)",
-                    "NSSupportsLiveActivities": true
+                    "NSSupportsLiveActivities": true,
+                    "UIAppFonts": [
+                        "Pretendard-ExtraBold.ttf",
+                        "Pretendard-Bold.ttf",
+                        "Pretendard-Medium.ttf",
+                    ]
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
@@ -64,7 +69,12 @@ let project = Project(
                 "NSExtension": [
                     "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
                 ],
-                "NSSupportsLiveActivities": true
+                "NSSupportsLiveActivities": true,
+                "UIAppFonts": [
+                    "Pretendard-ExtraBold.ttf",
+                    "Pretendard-Bold.ttf",
+                    "Pretendard-Medium.ttf",
+                ]
             ]),
             sources: "WalkieWidget/Sources/**",
             resources: "WalkieWidget/Resources/**",

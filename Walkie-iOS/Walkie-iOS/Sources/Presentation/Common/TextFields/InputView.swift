@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct InputView: View {
     
     private let allowedCharacterSet = CharacterSet.alphanumerics
@@ -68,11 +70,11 @@ struct InputView: View {
                 .padding(.bottom, 11)
             HStack(alignment: .center) {
                 Text("\(input.count)/\(limitation)")
-                    .foregroundStyle(.gray400)
+                    .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
                     .font(.B1)
                 Spacer()
                 Text(errorMessage ?? "")
-                    .foregroundStyle(.red100)
+                    .foregroundStyle(WalkieCommonAsset.red100.swiftUIColor)
                     .font(.C1)
             }
         }

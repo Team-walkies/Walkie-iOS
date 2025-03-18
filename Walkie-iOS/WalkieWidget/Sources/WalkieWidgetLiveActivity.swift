@@ -1,15 +1,17 @@
 //
-//  WalkieWidgetLiveActivity.swift
-//  WalkieWidget
+//  Walkie_WidgetLiveActivity.swift
+//  Walkie-Widget
 //
-//  Created by ahra on 3/17/25.
+//  Created by ahra on 3/18/25.
 //
 
 import ActivityKit
 import WidgetKit
 import SwiftUI
+import WalkieCommon
 
 struct WalkieWidgetLiveActivity: Widget {
+    
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: WalkieWidgetAttributes.self) { context in
             WalkieWidgetProgressView(info: ProgressInfoStruct(
@@ -46,15 +48,16 @@ struct WalkieWidgetLiveActivity: Widget {
                 let leftDistance = context.state.totalDistance - context.state.currentDistance
                 Text("\(Int(leftDistance))m")
                     .font(.C1)
-                    .foregroundColor(.blue200)
+                    .foregroundColor(WalkieCommonAsset.blue200.swiftUIColor)
             } minimal: {
                 Image("ic_widget_distance")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 22, height: 22)
             }
-            .keylineTint(.blue200)
+            .keylineTint(WalkieCommonAsset.blue200.swiftUIColor)
         }
     }
     
 }
+

@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct OnboardingCompleteView: View {
     
     @Binding var tapStart: Bool
@@ -17,12 +19,12 @@ struct OnboardingCompleteView: View {
                 VStack(alignment: .center, spacing: 12) {
                     Text("\(UserManager.shared.getUserNickname)님,\n환영해요")
                         .font(.H2)
-                        .foregroundColor(.gray700)
+                        .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                         .multilineTextAlignment(.center)
                     
                     Text("해파리를 선물로 드릴게요")
                         .font(.B1)
-                        .foregroundColor(.blue400)
+                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
                 }
                 .padding(.top, 136)
                 

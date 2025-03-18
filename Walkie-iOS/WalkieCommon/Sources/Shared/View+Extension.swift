@@ -12,7 +12,7 @@ public extension View {
     func font(_ font: FontLevel) -> some View {
         let fontSpacing = (font.lineHeight - font.fontSize) / 2
         return self
-            .font(font.font)
+            .font(.walkieFont(font))
             .padding(.vertical, fontSpacing)
             .lineSpacing(fontSpacing * 2)
     }

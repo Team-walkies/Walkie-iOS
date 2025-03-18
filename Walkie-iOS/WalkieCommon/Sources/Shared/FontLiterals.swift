@@ -70,6 +70,6 @@ public enum FontLevel {
 extension Font {
     
     static func walkieFont(_ fontLevel: FontLevel) -> Font {
-        return Font.custom(fontLevel.fontWeight, size: fontLevel.fontSize)
+        return fontLevel.font
     }
 }
