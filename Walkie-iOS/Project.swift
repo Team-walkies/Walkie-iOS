@@ -15,13 +15,9 @@ let project = Project(
                         "UIColorName": "",
                         "UIImageName": "",
                     ],
-                    "UIAppFonts": [
-                        "Pretendard-ExtraBold.ttf",
-                        "Pretendard-Bold.ttf",
-                        "Pretendard-Medium.ttf",
-                    ],
                     "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다.",
-                    "BASE_URL": "$(BASE_URL)"
+                    "BASE_URL": "$(BASE_URL)",
+                    "NSSupportsLiveActivities": true
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
@@ -43,7 +39,9 @@ let project = Project(
                 .external(name: "Lottie"),
                 .external(name: "FirebaseMessaging"),
                 .external(name: "Moya"),
-                .external(name: "CombineMoya")
+                .external(name: "CombineMoya"),
+                .target(name: "WalkieWidget"),
+                .target(name: "WalkieCommon")
             ],
             settings: .settings(
                 base: [
@@ -55,6 +53,49 @@ let project = Project(
                     .release(name: "Release", xcconfig: "Config/WalkieConfig.xcconfig")
                 ]
             )
+        ),
+        .target(
+            name: "WalkieWidget",
+            destinations: .iOS,
+            product: .appExtension,
+            bundleId: "com.walkie.ios.widget",
+            infoPlist: .extendingDefault(with: [
+                "CFBundleDisplayName": "$(PRODUCT_NAME)",
+                "NSExtension": [
+                    "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
+                ],
+                "NSSupportsLiveActivities": true
+            ]),
+            sources: "WalkieWidget/Sources/**",
+            resources: "WalkieWidget/Resources/**",
+            dependencies: [
+                .target(name: "WalkieCommon")
+            ],
+            settings: .settings(
+                base: [
+                    "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
+                    "TARGETED_DEVICE_FAMILY": "1"
+                ],
+                configurations: []
+            )
+        ),
+        .target(
+            name: "WalkieCommon",
+            destinations: .iOS,
+            product: .framework,
+            productName: "WalkieCommon",
+            bundleId: "com.walkie.ios.common",
+            infoPlist: .extendingDefault(
+                with: [
+                    "UIAppFonts": [
+                        "Pretendard-ExtraBold.ttf",
+                        "Pretendard-Bold.ttf",
+                        "Pretendard-Medium.ttf",
+                    ]
+                ]
+            ),
+            sources: "WalkieCommon/Sources/**",
+            resources: "WalkieCommon/Resources/**"
         ),
     ]
 )
