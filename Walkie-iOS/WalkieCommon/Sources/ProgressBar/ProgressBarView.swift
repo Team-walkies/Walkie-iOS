@@ -26,7 +26,7 @@ public struct ProgressBarView: View {
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
                 .foregroundStyle(WalkieCommonAsset.blue300.swiftUIColor)
-                .frame(width: current/total*(isSmall ? 64 : 180))
+                .frame(width: current/total*(isSmall ? 64 : 294))
                 .cornerRadius(100, corners: .allCorners)
         }
         .frame(width: isSmall ? 64 : 294, height: isSmall ? 4 : 8)

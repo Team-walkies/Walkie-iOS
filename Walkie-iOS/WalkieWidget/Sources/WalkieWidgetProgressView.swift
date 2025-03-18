@@ -45,6 +45,8 @@ struct WalkieWidgetProgressView: View {
                 
                 if leftDistance == 0 {
                     Text("도착 완료! 알을 확인해보세요")
+                        .font(.H3)
+                        .foregroundColor(.white)
                 } else {
                     HighlightTextAttribute(
                         text: "도착까지 \(leftDistance)m 남음",
