@@ -14,40 +14,48 @@ struct EggView: View {
         GridItem(.flexible())
     ]
     
+    @State var isNavigating: Bool = false
     @State var ex1: Bool = true
     @State var ex2: Double = 3000
     
     var body: some View {
-        NavigationBar(
-            rightButtonTitle: "안내",
-            showBackButton: true,
-            showRightButton: true,
-            rightButtonAction:  {
-                // 알 얻을 확률 안내로 이동
-            })
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .center, spacing: 8) {
-                    Text("보유한 알")
-                        .font(.H2)
-                        .foregroundStyle(.gray700)
-                    Text("7")
-                        .font(.H2)
+        NavigationStack {
+            NavigationBar(
+                rightButtonTitle: "안내",
+                showBackButton: true,
+                showRightButton: true,
+                rightButtonEnabled: true,
+                rightButtonAction: {
+                    isNavigating = true
+                })
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(alignment: .center, spacing: 8) {
+                        Text("보유한 알")
+                            .font(.H2)
+                            .foregroundStyle(.gray700)
+                        Text("7")
+                            .font(.H2)
+                            .foregroundStyle(.gray500)
+                        Spacer()
+                    }.padding(.bottom, 4)
+                    Text("같이 걷고 싶은 알을 선택해 주세요")
+                        .font(.B2)
                         .foregroundStyle(.gray500)
-                    Spacer()
-                }.padding(.bottom, 4)
-                Text("같이 걷고 싶은 알을 선택해 주세요")
-                    .font(.B2)
-                    .foregroundStyle(.gray500)
-                    .padding(.bottom, 20)
-                LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                    ForEach(0..<20, id: \.self) { _ in
-                        EggItemView(eggType: .rare, isWalking: $ex1, currentCount: $ex2)
+                        .padding(.bottom, 20)
+                    LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                        ForEach(0..<20, id: \.self) { _ in
+                            EggItemView(eggType: .rare, isWalking: $ex1, currentCount: $ex2)
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
+            .navigationDestination(isPresented: $isNavigating) {
+                EggGuideView()
+                    .navigationBarBackButtonHidden()
+            }
         }
     }
 }
