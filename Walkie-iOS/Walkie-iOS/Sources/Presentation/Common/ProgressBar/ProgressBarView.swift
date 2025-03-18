@@ -26,7 +26,7 @@ struct ProgressBarView: View {
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
                 .foregroundStyle(.blue300)
-                .frame(width: current/total*(isSmall ? 64 : 180))
+                .frame(width: min(current/total, 1.0) * (isSmall ? 64 : 180))
                 .cornerRadius(100, corners: .allCorners)
         }.frame(width: isSmall ? 64 : 180, height: isSmall ? 4 : 8)
     }
