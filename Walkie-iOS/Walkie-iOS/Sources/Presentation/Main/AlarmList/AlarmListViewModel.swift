@@ -12,6 +12,7 @@ import Combine
 final class AlarmListViewModel: ViewModelable {
     
     @Published var state: AlarmListViewState = .loading
+    @Published var isDeleteMode: Bool = false
     
     enum Action {
         case alarmListWillAppear
@@ -34,6 +35,8 @@ final class AlarmListViewModel: ViewModelable {
         switch action {
         case .alarmListWillAppear:
             getAlarmList()
+        case .tapDeleteButton:
+            isDeleteMode.toggle()
         default:
             break
         }
