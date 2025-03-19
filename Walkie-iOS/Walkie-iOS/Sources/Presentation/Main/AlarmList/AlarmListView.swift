@@ -12,11 +12,15 @@ import WalkieCommon
 struct AlarmListView: View {
     
     @ObservedObject var viewModel: AlarmListViewModel
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
-                showBackButton: true
+                showBackButton: true,
+                backButtonAction: {
+                    dismiss()
+                }
             )
             
             Rectangle()
@@ -39,7 +43,6 @@ struct AlarmListView: View {
                     }
                     .padding(.trailing, 16)
                 })
-                .padding(.bottom, 16)
             
             ScrollView {
                 VStack(spacing: 16) {
@@ -60,6 +63,7 @@ struct AlarmListView: View {
                         ProgressView()
                     }
                 }
+                .padding(.top, 16)
             }
         }
         .onAppear {

@@ -22,4 +22,10 @@ extension DIContainer {
         let homeVM = HomeViewModel(homeUseCase: homeUsecase)
         return homeVM
     }
+    
+    func registerAlarmList() -> AlarmListView {
+        let alarmListVM = AlarmListViewModel()
+        let alarmListView = AlarmListView(viewModel: alarmListVM)
+        return alarmListView
+    }
 }
