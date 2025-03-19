@@ -45,11 +45,14 @@ struct AlarmListView: View {
                 VStack(spacing: 16) {
                     switch viewModel.state {
                     case .loaded(let alarmList):
-                        ForEach(alarmList, id: \.alarm.id) {
+                        ForEach(alarmList, id: \.alarm.id) { item in
                             AlarmItemView(
-                                alarm: $0.alarm.alarmProtocol,
-                                timeLapse: $0.timeLapse,
-                                showDeleteButton: viewModel.isDeleteMode)
+                                alarm: item.alarm.alarmProtocol,
+                                timeLapse: item.timeLapse,
+                                showDeleteButton: viewModel.isDeleteMode,
+                                tapDelete: {
+                                    viewModel.action(.tapDeleteAlarm(id: item.alarm.id))
+                                })
                         }
                     case .error(let message):
                         Text(message)

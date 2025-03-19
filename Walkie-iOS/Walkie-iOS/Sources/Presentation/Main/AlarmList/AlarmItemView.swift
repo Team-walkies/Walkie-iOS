@@ -14,6 +14,7 @@ struct AlarmItemView: View {
     let alarm: AlarmProtocol
     let timeLapse: String
     let showDeleteButton: Bool
+    let tapDelete: () -> Void
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -33,7 +34,7 @@ struct AlarmItemView: View {
                     
                     if showDeleteButton {
                         Button(action: {
-                            print("alarm delete")
+                            tapDelete()
                         }, label: {
                             Image(.icClose)
                                 .resizable()

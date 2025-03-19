@@ -37,8 +37,8 @@ final class AlarmListViewModel: ViewModelable {
             getAlarmList()
         case .tapDeleteButton:
             isDeleteMode.toggle()
-        default:
-            break
+        case .tapDeleteAlarm(id: let id):
+            print("deleteId: \(id)")
         }
     }
     
