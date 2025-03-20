@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct HomeCharacterView: View {
     
     let homeState: HomeViewModel.HomeState
@@ -17,11 +19,11 @@ struct HomeCharacterView: View {
             HStack(spacing: 0) {
                 Text(homeState.characterName)
                     .font(.H6)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                 
                 Text("와 함께 걷는 중..")
                     .font(.B2)
-                    .foregroundColor(.gray500)
+                    .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
             }
             .padding(.leading, 16)
             Spacer()
@@ -30,7 +32,7 @@ struct HomeCharacterView: View {
             width: width,
             height: 52
         )
-        .background(.gray100)
+        .background(WalkieCommonAsset.gray100.swiftUIColor)
         .mask(RoundedRectangle(cornerRadius: 12))
         
     }

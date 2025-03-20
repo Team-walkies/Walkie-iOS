@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct MypageMainSectionView<Content: View>: View {
     let title: String
     let content: Content
@@ -20,12 +22,12 @@ struct MypageMainSectionView<Content: View>: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.H6)
-                .foregroundStyle(.gray500)
+                .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                 .padding(.bottom, 8)
             content
         }
         .padding(.all, 16)
-        .background(.gray100)
+        .background(WalkieCommonAsset.gray100.swiftUIColor)
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
     }

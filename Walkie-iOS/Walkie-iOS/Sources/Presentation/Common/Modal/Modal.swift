@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 enum ModalStyleType {
     case primary
     case error
@@ -39,12 +41,12 @@ struct Modal: View {
         ) {
             Text(title)
                 .font(.H4)
-                .foregroundColor(.gray700)
+                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                 .padding(.bottom, 4)
             
             Text(content)
                 .font(.B2)
-                .foregroundColor(.gray500)
+                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                 .padding(.bottom, 20)
             
             switch button {
@@ -86,7 +88,7 @@ struct Modal: View {
 
 #Preview {
     ZStack {
-        Color.gray100
+        WalkieCommonAsset.gray100.swiftUIColor
         
         VStack {
             Modal(

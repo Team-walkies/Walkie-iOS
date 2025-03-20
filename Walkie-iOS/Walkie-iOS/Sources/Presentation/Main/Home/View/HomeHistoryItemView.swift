@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct HomeHistoryItemView: View {
 
     let item: HomeHistoryItem
@@ -22,11 +24,11 @@ struct HomeHistoryItemView: View {
             VStack(spacing: 0) {
                 Text(item.title)
                     .font(.H6)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                 
                 Text(item.count)
                     .font(.B2)
-                    .foregroundColor(.gray500)
+                    .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
             }
         }
     }
