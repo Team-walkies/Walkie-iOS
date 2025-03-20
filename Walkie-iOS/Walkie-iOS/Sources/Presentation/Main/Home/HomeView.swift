@@ -12,46 +12,56 @@ struct HomeView: View {
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
+    @State var navigateAlarmList: Bool = false
     
     var body: some View {
-        VStack(alignment: .center, spacing: 0) {
-            NavigationBar(
-                showLogo: true,
-                showAlarmButton: true
-            )
-            ScrollView(.vertical) {
-                VStack {
-                    switch viewModel.state {
-                    case .loaded(let homeState):
-                        ZStack(alignment: .bottomTrailing) {
-                            VStack {
-                                let width = screenWidth - 32
-                                HomeStatsView(homeState: homeState, width: width)
-                                HomeCharacterView(homeState: homeState, width: width)
+        NavigationStack {
+            VStack(alignment: .center, spacing: 0) {
+                NavigationBar(
+                    showLogo: true,
+                    showAlarmButton: true,
+                    rightButtonAction: {
+                        navigateAlarmList = true
+                    }
+                )
+                ScrollView(.vertical) {
+                    VStack {
+                        switch viewModel.state {
+                        case .loaded(let homeState):
+                            ZStack(alignment: .bottomTrailing) {
+                                VStack {
+                                    let width = screenWidth - 32
+                                    HomeStatsView(homeState: homeState, width: width)
+                                    HomeCharacterView(homeState: homeState, width: width)
+                                }
+                                
+                                Image(homeState.characterImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(
+                                        width: 120,
+                                        height: 120)
+                                    .padding(.trailing, 8)
                             }
+                            .padding(.top, 8)
                             
-                            Image(homeState.characterImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(
-                                    width: 120,
-                                    height: 120)
-                                .padding(.trailing, 8)
+                            HomeHistoryView(homeState: homeState)
+                                .padding(.top, 18)
+                        case .error(let message):
+                            Text(message)
+                        default:
+                            ProgressView()
                         }
-                        .padding(.top, 8)
-                        
-                        HomeHistoryView(homeState: homeState)
-                            .padding(.top, 18)
-                    case .error(let message):
-                        Text(message)
-                    default:
-                        ProgressView()
                     }
                 }
             }
-        }
-        .onAppear {
-            viewModel.action(.homeWillAppear)
+            .onAppear {
+                viewModel.action(.homeWillAppear)
+            }
+            .navigationDestination(isPresented: $navigateAlarmList) {
+                DIContainer.shared.registerAlarmList()
+                    .navigationBarBackButtonHidden()
+            }
         }
     }
 }
