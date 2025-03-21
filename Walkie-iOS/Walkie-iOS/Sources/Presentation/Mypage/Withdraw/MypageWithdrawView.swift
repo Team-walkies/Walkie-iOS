@@ -16,12 +16,8 @@ struct MypageWithdrawView: View {
     var body: some View {
         NavigationBar(
             title: "탈퇴하기",
-            showBackButton: true,
-            backButtonAction: {
-                dismiss()
-            }
-        )
-        .padding(.bottom, 40)
+            showBackButton: true
+        ).padding(.bottom, 40)
         switch viewModel.state {
         case .loaded(let mypageMainState):
             VStack(alignment: .center, spacing: 0) {

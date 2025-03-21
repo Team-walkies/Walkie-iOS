@@ -12,11 +12,7 @@ struct EggGuideView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        NavigationBar(
-            showBackButton: true,
-            backButtonAction: {
-            dismiss()
-        })
+        NavigationBar(showBackButton: true)
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
                 Text("알 얻을 확률")

@@ -9,16 +9,12 @@ import SwiftUI
 
 struct MypagePushNotificationView: View {
     
-    @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: MypageMainViewModel
     
     var body: some View {
         NavigationBar(
             title: "푸시 알림",
-            showBackButton: true,
-            backButtonAction: {
-                dismiss()
-            }
+            showBackButton: true
         )
         ScrollView {
             VStack(

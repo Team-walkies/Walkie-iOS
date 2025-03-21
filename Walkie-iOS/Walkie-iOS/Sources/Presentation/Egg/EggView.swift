@@ -25,6 +25,7 @@ struct EggView: View {
                 showBackButton: true,
                 showRightButton: true,
                 rightButtonEnabled: true,
+                rightButtonShowsEnabledColor: false,
                 rightButtonAction: {
                     isNavigating = true
                 })
