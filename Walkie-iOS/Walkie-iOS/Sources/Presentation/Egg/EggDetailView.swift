@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EggDetailView: View {
     
+    @Environment(\.screenWidth) var screenWidth
+    
     let eggType: EggLiterals
     let currentCount: Double
     
@@ -48,7 +50,7 @@ struct EggDetailView: View {
                         .font(.H6)
                         .foregroundStyle(.gray700)
                 }
-                .frame(width: (UIScreen.main.bounds.width-41)/2, height: 68)
+                .frame(width: (screenWidth-41)/2, height: 68)
                 .background(.gray50)
                 .cornerRadius(12)
                 VStack(alignment: .center, spacing: 4) {
@@ -59,7 +61,7 @@ struct EggDetailView: View {
                         .font(.H6)
                         .foregroundStyle(.gray700)
                 }
-                .frame(width: (UIScreen.main.bounds.width-41)/2, height: 68)
+                .frame(width: (screenWidth-41)/2, height: 68)
                 .background(.gray50)
                 .cornerRadius(12)
             }

@@ -62,7 +62,7 @@ struct EggView: View {
 
 private struct EggItemView: View {
     
-    let itemWidth = (UIScreen.main.bounds.width - 16*2 - 11)/2
+    @Environment(\.screenWidth) var screenWidth
     
     let eggType: EggLiterals
     @Binding var isWalking: Bool
@@ -96,7 +96,7 @@ private struct EggItemView: View {
                 highlightFont: .H5)
             .padding(.bottom, 16)
         }
-        .frame(width: itemWidth, height: 188)
+        .frame(width: (screenWidth - 16*2 - 11)/2, height: 188)
         .background(.gray100)
         .cornerRadius(20)
         .overlay {
