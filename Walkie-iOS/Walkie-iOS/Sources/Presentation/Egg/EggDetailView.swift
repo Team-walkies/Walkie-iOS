@@ -13,6 +13,8 @@ struct EggDetailView: View {
     
     let eggType: EggLiterals
     let currentCount: Double
+    let isWalking: Bool
+    @Binding var isShowing: Bool
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -29,10 +31,17 @@ struct EggDetailView: View {
                 .cornerRadius(99)
                 .padding(.bottom, 4)
             HighlightTextAttribute(
-                text: String(format: "%.0f / %.0f 걸음", locale: Locale.current, currentCount, eggType.walkCount),
+                text: String(
+                    format: "%.0f / %.0f 걸음",
+                    locale: Locale.init(identifier: "ko"),
+                    currentCount,
+                    eggType.walkCount),
                 textColor: .gray500,
                 font: .B1,
-                highlightText: String(format: "%.0f /", locale: Locale.current, currentCount),
+                highlightText: String(
+                    format: "%.0f /",
+                    locale: Locale.init(identifier: "ko"),
+                    currentCount),
                 highlightColor: .gray700,
                 highlightFont: .H5)
             .padding(.bottom, 12)
@@ -64,23 +73,17 @@ struct EggDetailView: View {
                 .frame(width: (screenWidth-41)/2, height: 68)
                 .background(.gray50)
                 .cornerRadius(12)
-            }
-            Spacer()
+            }.padding(.bottom, 20)
             CTAButton(
-                title: "이 알과 같이 걷기",
+                title: isWalking ? "같이 걷는 중..." : "이 알과 같이 걷기",
                 style: .primary,
                 size: .large,
-                isEnabled: true,
+                isEnabled: !isWalking,
                 buttonAction: {
-                    
-                }).padding(.bottom, 38)
+                    // 이 알과 같이 걷기
+                })
+            Spacer()
         }
         .background(.white)
-        .ignoresSafeArea(edges: .vertical)
-        .padding(.horizontal, 16)
     }
-}
-
-#Preview {
-    EggDetailView(eggType: .epic, currentCount: 100)
 }

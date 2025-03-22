@@ -17,6 +17,7 @@ struct EggView: View {
     @State var isNavigating: Bool = false
     @State var ex1: Bool = true
     @State var ex2: Double = 3000
+    @State var isShowingBottomSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -47,6 +48,9 @@ struct EggView: View {
                     LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
                         ForEach(0..<20, id: \.self) { _ in
                             EggItemView(eggType: .rare, isWalking: $ex1, currentCount: $ex2)
+                                .onTapGesture {
+                                    isShowingBottomSheet = true
+                                }
                         }
                     }
                 }
@@ -57,6 +61,9 @@ struct EggView: View {
                 EggGuideView()
                     .navigationBarBackButtonHidden()
             }
+        }
+        .bottomSheet(isPresented: $isShowingBottomSheet, height: 516) {
+            EggDetailView(eggType: .epic, currentCount: 3000, isWalking: true, isShowing: $isShowingBottomSheet)
         }
     }
 }
