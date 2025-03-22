@@ -21,7 +21,9 @@ let project = Project(
                         "Pretendard-Medium.ttf",
                     ],
                     "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다.",
-                    "BASE_URL": "$(BASE_URL)"
+                    "BASE_URL": "$(BASE_URL)",
+                    "UIUserInterfaceStyle": "Light",
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
