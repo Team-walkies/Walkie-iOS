@@ -22,4 +22,12 @@ extension DIContainer {
         let homeVM = HomeViewModel(homeUseCase: homeUsecase)
         return homeVM
     }
+    
+    func registerEgg() -> EggViewModel {
+        let eggService = DefaultEggService()
+        let eggRepo = DefaultEggRepository(eggService: eggService)
+        let eggUsecase = DefaultEggUseCase(eggRepository: eggRepo)
+        let eggVM = EggViewModel(eggUseCase: eggUsecase)
+        return eggVM
+    }
 }

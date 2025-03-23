@@ -10,10 +10,10 @@ import SwiftUI
 struct ProgressBarView: View {
     
     var isSmall: Bool
-    var current: Double
-    var total: Double
+    var current: Int
+    var total: Int
     
-    init(isSmall: Bool, current: Double, total: Double) {
+    init(isSmall: Bool, current: Int, total: Int) {
         self.isSmall = isSmall
         self.current = current
         self.total = total
@@ -26,7 +26,7 @@ struct ProgressBarView: View {
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
                 .foregroundStyle(.blue300)
-                .frame(width: min(current/total, 1.0) * (isSmall ? 64 : 180))
+                .frame(width: min(Double(current)/Double(total), 1.0) * (isSmall ? 64 : 180))
                 .cornerRadius(100, corners: .allCorners)
         }.frame(width: isSmall ? 64 : 180, height: isSmall ? 4 : 8)
     }

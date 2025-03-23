@@ -39,7 +39,7 @@ enum EggLiterals: String, CaseIterable, Hashable {
         }
     }
     
-    var walkCount: Double {
+    var walkCount: Int {
         switch self {
         case .normal:
             1000
@@ -104,6 +104,21 @@ enum EggLiterals: String, CaseIterable, Hashable {
             "보기 드문 비범한 알"
         case .legendary:
             "전설로만 듣던 알"
+        }
+    }
+    
+    static func from(number: Int) -> EggLiterals {
+        switch number {
+        case 0:
+            return EggLiterals.normal
+        case 1:
+            return EggLiterals.rare
+        case 2:
+            return EggLiterals.epic
+        case 3:
+            return EggLiterals.legendary
+        default:
+            return EggLiterals.normal
         }
     }
 }

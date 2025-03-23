@@ -12,7 +12,7 @@ struct EggDetailView: View {
     @Environment(\.screenWidth) var screenWidth
     
     let eggType: EggLiterals
-    let currentCount: Double
+    let currentCount: Int
     let isWalking: Bool
     @Binding var isShowing: Bool
     

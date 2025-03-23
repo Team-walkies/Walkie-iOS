@@ -16,7 +16,7 @@ struct EggView: View {
     
     @State var isNavigating: Bool = false
     @State var ex1: Bool = true
-    @State var ex2: Double = 3000
+    @State var ex2: Int = 3000
     @State var isShowingBottomSheet: Bool = false
     
     var body: some View {
