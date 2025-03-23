@@ -14,10 +14,9 @@ struct EggView: View {
         GridItem(.flexible())
     ]
     
-    @State var isNavigating: Bool = false
-    @State var ex1: Bool = true
-    @State var ex2: Int = 3000
-    @State var isShowingBottomSheet: Bool = false
+    @ObservedObject var viewModel: EggViewModel
+    @State var isPresentingGuideView: Bool = false
+    @State var isPresentingBottomSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -28,42 +27,53 @@ struct EggView: View {
                 rightButtonEnabled: true,
                 rightButtonShowsEnabledColor: false,
                 rightButtonAction: {
-                    isNavigating = true
+                    isPresentingGuideView = true
                 })
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    HStack(alignment: .center, spacing: 8) {
-                        Text("보유한 알")
-                            .font(.H2)
-                            .foregroundStyle(.gray700)
-                        Text("7")
-                            .font(.H2)
+                    switch self.viewModel.state {
+                    case .loaded(let state):
+                        HStack(alignment: .center, spacing: 8) {
+                            Text("보유한 알")
+                                .font(.H2)
+                                .foregroundStyle(.gray700)
+                            Text("\(state.eggsCount)")
+                                .font(.H2)
+                                .foregroundStyle(.gray500)
+                            Spacer()
+                        }.padding(.bottom, 4)
+                        Text("같이 걷고 싶은 알을 선택해 주세요")
+                            .font(.B2)
                             .foregroundStyle(.gray500)
-                        Spacer()
-                    }.padding(.bottom, 4)
-                    Text("같이 걷고 싶은 알을 선택해 주세요")
-                        .font(.B2)
-                        .foregroundStyle(.gray500)
-                        .padding(.bottom, 20)
-                    LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                        ForEach(0..<20, id: \.self) { _ in
-                            EggItemView(eggType: .rare, isWalking: $ex1, currentCount: $ex2)
-                                .onTapGesture {
-                                    isShowingBottomSheet = true
-                                }
+                            .padding(.bottom, 20)
+                        LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                            ForEach(state.eggs, id: \.eggId) { egg in
+                                EggItemView(state: egg)
+                                    .onTapGesture {
+                                        viewModel.action(.didTapEggDetail(egg))
+                                        isPresentingBottomSheet = true
+                                    }
+                            }
                         }
+                    case .error(let error):
+                        Text(error.description)
+                    default:
+                        ProgressView()
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 16)
+                .onAppear {
+                    viewModel.action(.willAppear)
+                }
             }
-            .navigationDestination(isPresented: $isNavigating) {
+            .navigationDestination(isPresented: $isPresentingGuideView) {
                 EggGuideView()
                     .navigationBarBackButtonHidden()
             }
         }
-        .bottomSheet(isPresented: $isShowingBottomSheet, height: 516) {
-            EggDetailView(eggType: .epic, currentCount: 3000, isWalking: true, isShowing: $isShowingBottomSheet)
+        .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
+            EggDetailView(viewModel: viewModel.eggDetailViewModel!)
         }
     }
 }
@@ -72,34 +82,32 @@ private struct EggItemView: View {
     
     @Environment(\.screenWidth) var screenWidth
     
-    let eggType: EggLiterals
-    @Binding var isWalking: Bool
-    @Binding var currentCount: Double
+    let state: EggViewModel.EggState
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
-            Image(eggType.eggImage)
+            Image(state.eggType.eggImage)
                 .resizable()
                 .frame(width: 80, height: 80)
                 .padding(.top, 16)
                 .padding(.bottom, 8)
-            Text(eggType.rawValue)
+            Text(state.eggType.rawValue)
                 .font(.C1)
-                .foregroundStyle(eggType.fontColor)
+                .foregroundStyle(state.eggType.fontColor)
                 .frame(width: 37, height: 24)
                 .background(.white)
                 .cornerRadius(99)
                 .padding(.bottom, 8)
             ProgressBarView(
                 isSmall: true,
-                current: currentCount,
-                total: eggType.walkCount)
+                current: state.nowStep,
+                total: state.needStep)
             .padding(.bottom, 8)
             HighlightTextAttribute(
-                text: String(format: "%.0f / %.0f", locale: Locale.current, currentCount, eggType.walkCount),
+                text: String(format: "%d / %d", locale: Locale.current, state.nowStep, state.needStep),
                 textColor: .gray500,
                 font: .B1,
-                highlightText: String(format: "%.0f /", locale: Locale.current, currentCount),
+                highlightText: String(format: "%d /", locale: Locale.current, state.nowStep),
                 highlightColor: .gray700,
                 highlightFont: .H5)
             .padding(.bottom, 16)
@@ -108,7 +116,7 @@ private struct EggItemView: View {
         .background(.gray100)
         .cornerRadius(20)
         .overlay {
-            if isWalking {
+            if state.isWalking {
                 Image(.icFoot)
                     .resizable()
                     .renderingMode(.template)
@@ -121,8 +129,4 @@ private struct EggItemView: View {
             }
         }
     }
-}
-
-#Preview {
-    EggView()
 }

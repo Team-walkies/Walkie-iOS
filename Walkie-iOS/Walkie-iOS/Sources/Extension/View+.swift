@@ -88,6 +88,7 @@ extension View {
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
         .sheet(isPresented: isPresented) {
             content()
+                .ignoresSafeArea(.all)
                 .presentationDetents([.height(height-34)]) // Safe Area 고려
                 .presentationBackgroundInteraction(.disabled)
                 .presentationDragIndicator(.visible)

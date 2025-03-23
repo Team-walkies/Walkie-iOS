@@ -25,8 +25,10 @@ extension DIContainer {
     
     func registerEgg() -> EggViewModel {
         let eggService = DefaultEggService()
+        let memberService = DefaultMemberService()
         let eggRepo = DefaultEggRepository(eggService: eggService)
-        let eggUsecase = DefaultEggUseCase(eggRepository: eggRepo)
+        let memberRepo = DefaultMemberRepository(memberService: memberService)
+        let eggUsecase = DefaultEggUseCase(eggRepository: eggRepo, memberRepository: memberRepo)
         let eggVM = EggViewModel(eggUseCase: eggUsecase)
         return eggVM
     }

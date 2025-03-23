@@ -39,8 +39,8 @@ extension DefaultEggUseCase: EggUseCase {
             }.mapToNetworkError()
     }
     
-    func patchEggPlaying(egg: EggEntity) -> AnyPublisher<Void, NetworkError> {
-        memberRepository.patchEggPlaying(eggId: egg.eggId)
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
+        memberRepository.patchEggPlaying(eggId: eggId)
             .map { _ in return }
             .mapToNetworkError()
     }
@@ -64,25 +64,18 @@ extension DefaultEggUseCase: EggUseCase {
             }.mapToNetworkError()
     }
     
-    func getEggDetail(egg: EggEntity) -> AnyPublisher<EggEntity, NetworkError> {
-        eggRepository.getEggDetail(eggId: egg.eggId)
+    func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
+        eggRepository.getEggDetail(eggId: eggId)
             .map { dto in
-                EggEntity(
-                    eggId: egg.eggId,
-                    eggType: egg.eggType,
-                    nowStep: egg.nowStep,
-                    needStep: egg.needStep,
-                    isWalking: egg.isWalking,
-                    detail: EggDetailEntity(
-                        obtainedPosition: dto.obtainedPosition,
-                        obtainedDate: dto.obtainedDate
-                    )
+                EggDetailEntity(
+                    obtainedPosition: dto.obtainedPosition,
+                    obtainedDate: dto.obtainedDate
                 )
             }.mapToNetworkError()
     }
     
-    func patchEggStep(egg: EggEntity, step: Int) -> AnyPublisher<Void, NetworkError> {
-        eggRepository.getEggDetail(eggId: egg.eggId)
+    func patchEggStep(eggId: Int, step: Int) -> AnyPublisher<Void, NetworkError> {
+        eggRepository.getEggDetail(eggId: eggId)
             .map { _ in return }
             .mapToNetworkError()
     }
