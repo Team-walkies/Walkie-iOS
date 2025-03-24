@@ -46,7 +46,6 @@ final class NoticeViewModel: ViewModelable {
         case .noticeAppear:
             getNoticeList()
         case .tapDetailButton(id: let id):
-            print("tapNoticeId: \(id)")
             self.id = id
         case .noticeDetailAppear:
             getNoticeDetail(id: id)
@@ -59,7 +58,7 @@ final class NoticeViewModel: ViewModelable {
     }
     
     func getNoticeDetail(id: Int) {
-        if let noticeDetail = NoticeEntity.noticeDummy().notice(withId: 1) {
+        if let noticeDetail = NoticeEntity.noticeDummy().notice(withId: id) {
             detailState = .loaded(NoticeDetailState(noticeDetail: noticeDetail))
         }
     }
