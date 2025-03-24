@@ -12,6 +12,7 @@ import WalkieCommon
 struct NoticeView: View {
     
     @ObservedObject var viewModel: NoticeViewModel
+    @State private var isDetailViewActive: Bool = false
     
     var body: some View {
         VStack {
@@ -29,7 +30,9 @@ struct NoticeView: View {
                                 notice: NoticeList(id: item.id, title: item.title, date: item.date),
                                 tapDetail: {
                                     viewModel.action(.tapDetailButton(id: item.id))
-                            })
+                                    isDetailViewActive = true
+                                }
+                            )
                         }
                     case .error(let message):
                         Text(message)
@@ -41,6 +44,10 @@ struct NoticeView: View {
         }
         .onAppear {
             viewModel.action(.noticeAppear)
+        }
+        .navigationDestination(isPresented: $isDetailViewActive) {
+            NoticeDetailView(viewModel: viewModel)
+                .navigationBarBackButtonHidden()
         }
     }
 }
