@@ -16,7 +16,7 @@ struct MypageMainProfileSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 0) {
-                Text(mypageMainState.nickname)
+                Text(UserManager.shared.getUserNickname)
                     .font(.H2)
                     .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                 Text("님")
