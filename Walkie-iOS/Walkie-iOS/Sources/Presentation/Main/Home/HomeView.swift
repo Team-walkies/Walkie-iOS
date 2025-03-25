@@ -26,29 +26,31 @@ struct HomeView: View {
                 )
                 ScrollView(.vertical) {
                     VStack {
-                        switch viewModel.state {
-                        case .loaded(let homeState):
+                        switch (viewModel.state, viewModel.stepState) {
+                        case let (.loaded(homeState), .loaded(stepState)),
+                            let (.error((homeState, _)), .loaded(stepState)),
+                            let (.loaded(homeState), .error(stepState)),
+                            let (.error((homeState, _)), .error(stepState)):
                             ZStack(alignment: .bottomTrailing) {
                                 VStack {
                                     let width = screenWidth - 32
-                                    HomeStatsView(homeState: homeState, width: width)
+                                    HomeStatsView(
+                                        homeState: homeState,
+                                        stepState: stepState,
+                                        width: width)
                                     HomeCharacterView(homeState: homeState, width: width)
                                 }
                                 
                                 Image(homeState.characterImage)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(
-                                        width: 120,
-                                        height: 120)
+                                    .frame(width: 120, height: 120)
                                     .padding(.trailing, 8)
                             }
                             .padding(.top, 8)
                             
                             HomeHistoryView(homeState: homeState)
                                 .padding(.top, 18)
-                        case .error(let message):
-                            Text(message)
                         default:
                             ProgressView()
                         }
