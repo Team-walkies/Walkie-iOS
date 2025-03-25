@@ -27,7 +27,7 @@ struct MypageWithdrawView: View {
         switch viewModel.state {
         case .loaded(let mypageMainState):
             VStack(alignment: .center, spacing: 0) {
-                Text("\(mypageMainState.nickname)님이 떠나시다니,\n너무 아쉬워요")
+                Text("\(UserManager.shared.getUserNickname)님이 떠나시다니,\n너무 아쉬워요")
                     .font(.H3)
                     .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     .multilineTextAlignment(.center)
