@@ -26,13 +26,21 @@ final class DefaultMemberRepository {
 
 extension DefaultMemberRepository: MemberRepository {
     
-    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error> {
+    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberService.getEggPlaying()
-            .eraseToAnyPublisher()
+            .map { dto in EggEntity(
+                eggId: dto.eggId,
+                eggType: EggLiterals.from(number: dto.rank),
+                nowStep: dto.nowStep,
+                needStep: dto.needStep,
+                isWalking: true,
+                detail: nil)
+            }.mapToNetworkError()
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Int?, Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
         memberService.patchEggPlaying(eggId: eggId)
-            .eraseToAnyPublisher()
+            .map { _ in return }
+            .mapToNetworkError()
     }
 }

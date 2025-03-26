@@ -8,6 +8,6 @@
 import Combine
 
 protocol MemberRepository {
-    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error>
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Int?, Error>
+    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError>
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError>
 }

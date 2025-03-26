@@ -46,8 +46,7 @@ final class EggViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .willAppear:
-            // fetchEggListData()
-            generateEggListDummyData()
+            fetchEggListData()
         case .didTapEggDetail(let eggState):
             eggDetailViewModel = EggDetailViewModel(
                 eggUseCase: self.eggUseCase,
@@ -76,23 +75,5 @@ final class EggViewModel: ViewModelable {
                     self.state = .error(errorMessage)
                 })
             .store(in: &cancellables)
-    }
-    
-    // 더미데이터 생성
-    func generateEggListDummyData() {
-        let eggs = (0..<20).map { index in
-            EggState(
-                eggId: index,
-                eggType: EggLiterals.allCases.randomElement() ?? .epic,
-                nowStep: Int.random(in: 0...5000),
-                needStep: Int.random(in: 0...5000),
-                isWalking: Bool.random()
-            )
-        }
-        let eggsState = EggsState(
-            eggs: eggs,
-            eggsCount: 20
-        )
-        self.state = .loaded(eggsState)
     }
 }

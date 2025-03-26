@@ -29,61 +29,31 @@ final class DefaultEggUseCase {
 extension DefaultEggUseCase: EggUseCase {
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberRepository.getEggPlaying()
-            .map { dto in EggEntity(
-                eggId: dto.eggId,
-                eggType: EggLiterals.from(number: dto.rank),
-                nowStep: dto.nowStep,
-                needStep: dto.needStep,
-                isWalking: true,
-                detail: nil)
-            }.mapToNetworkError()
+            .mapToNetworkError()
     }
     
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
         memberRepository.patchEggPlaying(eggId: eggId)
-            .map { _ in return }
             .mapToNetworkError()
     }
     
     func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
-        eggRepository.getEggsList()
-            .map { dto in
-                dto.eggs.map { egg in
-                    EggEntity(
-                        eggId: egg.eggId,
-                        eggType: EggLiterals.from(number: egg.rank),
-                        nowStep: egg.nowStep,
-                        needStep: egg.needStep,
-                        isWalking: egg.play,
-                        detail: EggDetailEntity(
-                            obtainedPosition: egg.obtainedPosition,
-                            obtainedDate: egg.obtainedDate
-                        )
-                    )
-                }
-            }.mapToNetworkError()
+        eggRepository.getEggsList(dummy: true)
+            .mapToNetworkError()
     }
     
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
-        eggRepository.getEggDetail(eggId: eggId)
-            .map { dto in
-                EggDetailEntity(
-                    obtainedPosition: dto.obtainedPosition,
-                    obtainedDate: dto.obtainedDate
-                )
-            }.mapToNetworkError()
+        eggRepository.getEggDetail(dummy: true, eggId: eggId)
+            .mapToNetworkError()
     }
     
-    func patchEggStep(eggId: Int, step: Int) -> AnyPublisher<Void, NetworkError> {
-        eggRepository.getEggDetail(eggId: eggId)
-            .map { _ in return }
+    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError> {
+        eggRepository.patchEggStep(requestBody: requestBody)
             .mapToNetworkError()
     }
     
     func getEggsCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
         eggRepository.getEggsCount()
-            .map { dto in
-                EggsCountEntity(eggsCount: dto.eggCount)
-            }.mapToNetworkError()
+            .mapToNetworkError()
     }
 }

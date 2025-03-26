@@ -74,7 +74,7 @@ final class EggDetailViewModel: ViewModelable {
         eggUseCase.patchEggPlaying(eggId: eggState.eggId)
             .walkieSink(
                 with: self,
-                receiveValue: { _, entity in
+                receiveValue: { _, _ in
                     self.state = .loaded(
                         EggDetailViewModel.EggDetailState(
                             obtainedPosition: self.detailState.obtainedPosition,
