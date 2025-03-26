@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 enum InputState {
     case `default`
     case focus
@@ -15,20 +17,20 @@ enum InputState {
     var barColor: Color {
         switch self {
         case .default:
-            .gray200
+            WalkieCommonAsset.gray200.swiftUIColor
         case .focus:
-            .blue300
+            WalkieCommonAsset.blue300.swiftUIColor
         case .error:
-            .red100
+            WalkieCommonAsset.red100.swiftUIColor
         }
     }
     
     var textColor: Color {
         switch self {
         case .default:
-            .gray400
+            WalkieCommonAsset.gray400.swiftUIColor
         case .focus, .error:
-            .gray700
+            WalkieCommonAsset.gray700.swiftUIColor
         }
     }
 }

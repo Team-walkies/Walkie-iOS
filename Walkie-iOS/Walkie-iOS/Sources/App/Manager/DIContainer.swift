@@ -32,4 +32,10 @@ extension DIContainer {
         let eggVM = EggViewModel(eggUseCase: eggUsecase)
         return eggVM
     }
+    
+    func registerAlarmList() -> AlarmListView {
+        let alarmListVM = AlarmListViewModel()
+        let alarmListView = AlarmListView(viewModel: alarmListVM)
+        return alarmListView
+    }
 }

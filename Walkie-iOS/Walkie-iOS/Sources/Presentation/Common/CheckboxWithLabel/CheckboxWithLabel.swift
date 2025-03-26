@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct CheckboxWithLabel: View {
     @Binding var isChecked: Bool
     let text: String
@@ -19,7 +21,10 @@ struct CheckboxWithLabel: View {
             }).frame(width: 28, height: 28)
             Text(text)
                 .font(.B2)
-                .foregroundStyle(isChecked ? .gray700 : .gray500)
+                .foregroundStyle(
+                    isChecked ?
+                    WalkieCommonAsset.gray700.swiftUIColor
+                    : WalkieCommonAsset.gray500.swiftUIColor)
         }
     }
 }

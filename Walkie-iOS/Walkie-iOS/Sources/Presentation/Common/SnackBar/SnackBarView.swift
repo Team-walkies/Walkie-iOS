@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct SnackBarView: View {
     
     let highlightedMessage: String
@@ -19,7 +21,7 @@ struct SnackBarView: View {
         HStack(alignment: .center) {
             HighlightTextAttribute(
                 text: highlightedMessage + message,
-                textColor: .gray200,
+                textColor: WalkieCommonAsset.gray200.swiftUIColor,
                 font: .B2,
                 highlightText: highlightedMessage,
                 highlightColor: .white,
@@ -43,7 +45,7 @@ struct SnackBarView: View {
         }
         .padding(.horizontal, 16)
         .frame(height: 56)
-        .background(.gray900.opacity(0.7))
+        .background(WalkieCommonAsset.gray900.swiftUIColor.opacity(0.7))
         .cornerRadius(12)
     }
 }

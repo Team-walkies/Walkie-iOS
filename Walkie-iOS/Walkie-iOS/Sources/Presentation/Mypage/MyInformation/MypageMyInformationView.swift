@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct MypageMyInformationView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
@@ -22,7 +24,7 @@ struct MypageMyInformationView: View {
                 spacing: 0) {
                     Text("프로필 공개 설정")
                         .font(.H4)
-                        .foregroundStyle(.gray700)
+                        .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                         .padding(.bottom, 12)
                     SwitchOptionItemView(
                         title: "프로필 공개",

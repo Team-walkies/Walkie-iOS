@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 enum TabBarItem: CaseIterable {
     
     case home, map, mypage
@@ -20,11 +22,11 @@ enum TabBarItem: CaseIterable {
     }
     
     var normalTitleColor: Color {
-        return .gray400
+        return WalkieCommonAsset.gray400.swiftUIColor
     }
     
     var selectedTitleColor: Color {
-        return .gray700
+        return WalkieCommonAsset.gray700.swiftUIColor
     }
     
     var normalItem: Image {

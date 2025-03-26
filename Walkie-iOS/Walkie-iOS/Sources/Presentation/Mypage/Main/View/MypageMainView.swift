@@ -9,6 +9,7 @@ import SwiftUI
 struct MypageMainView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
+    @State var navigateAlarmList: Bool = false
     
     var body: some View {
         ZStack {
@@ -19,7 +20,11 @@ struct MypageMainView: View {
                         VStack(alignment: .center, spacing: 0) {
                             NavigationBar(
                                 showAlarmButton: true,
-                                hasAlarm: mypageMainState.hasAlarm)
+                                hasAlarm: mypageMainState.hasAlarm,
+                                rightButtonAction: {
+                                    navigateAlarmList = true
+                                }
+                            )
                             ScrollView(.vertical, showsIndicators: false) {
                                 VStack(spacing: 0) {
                                     MypageMainProfileSectionView(mypageMainState: mypageMainState)
@@ -42,6 +47,10 @@ struct MypageMainView: View {
                             }
                         }
                         MypageLogoutView(viewModel: viewModel)
+                    }
+                    .navigationDestination(isPresented: $navigateAlarmList) {
+                        DIContainer.shared.registerAlarmList()
+                            .navigationBarBackButtonHidden()
                     }
                 default:
                     EmptyView()

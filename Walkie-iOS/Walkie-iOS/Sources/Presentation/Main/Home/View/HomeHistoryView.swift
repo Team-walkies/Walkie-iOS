@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct HomeHistoryView: View {
     
     let homeState: HomeViewModel.HomeState
@@ -28,7 +30,7 @@ struct HomeHistoryView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text("나의 히스토리")
                     .font(.H4)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
 
                 let width = (geometry.size.width - 48) / 3
                 LazyHGrid(rows: columns) {

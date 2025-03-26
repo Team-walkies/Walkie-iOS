@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 struct NavigationBar: View {
     
     @Environment(\.dismiss) var dismiss
@@ -83,7 +85,7 @@ struct NavigationBar: View {
             if let title = title {
                 Text(title)
                     .font(.H6)
-                    .foregroundColor(.gray700)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             

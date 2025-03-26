@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HighlightTextAttribute: View {
+public struct HighlightTextAttribute: View {
     let text: String
     let textColor: Color
     let font: FontLevel
@@ -15,7 +15,7 @@ struct HighlightTextAttribute: View {
     let highlightColor: Color
     var highlightFont: FontLevel?
     
-    init(
+    public init(
         text: String,
         textColor: Color,
         font: FontLevel,
@@ -31,7 +31,7 @@ struct HighlightTextAttribute: View {
         self.highlightFont = highlightFont == nil ? font : highlightFont
     }
     
-    var body: some View {
+    public var body: some View {
         highlightTextView
     }
     

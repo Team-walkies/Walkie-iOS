@@ -19,7 +19,9 @@ struct WalkieIOSApp: App {
             } else if !hasNickname {
                 NicknameView()
             } else if isTapStart || tapStart {
-                TabBarView()
+                NavigationStack {
+                    TabBarView()
+                }
             } else {
                 OnboardingCompleteView(tapStart: $tapStart)
             }

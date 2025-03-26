@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import WalkieCommon
+
 enum SnackBarState {
     case noButton
     case blackButton
@@ -17,9 +19,9 @@ enum SnackBarState {
         case .noButton:
             return .clear
         case .blackButton:
-            return .gray900
+            return WalkieCommonAsset.gray900.swiftUIColor
         case .blueButton:
-            return .blue300
+            return WalkieCommonAsset.blue300.swiftUIColor
         }
     }
 }

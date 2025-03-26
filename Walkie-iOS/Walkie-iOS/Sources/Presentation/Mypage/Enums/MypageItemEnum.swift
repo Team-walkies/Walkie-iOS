@@ -108,7 +108,7 @@ enum MypageServiceSectionItem: MypageSectionItem {
     func destinationView(viewModel: MypageMainViewModel) -> some View {
         switch self {
         case .notice:
-            EmptyView()
+            NoticeView(viewModel: NoticeViewModel())
         case .privacyPolicy:
             EmptyView()
         case .appVersion:

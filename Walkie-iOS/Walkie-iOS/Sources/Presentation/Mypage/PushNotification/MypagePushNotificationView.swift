@@ -21,23 +21,27 @@ struct MypagePushNotificationView: View {
                 alignment: .leading,
                 spacing: 8) {
                     SwitchOptionItemView(
+                        title: "알 부화 알림",
+                        subtitle: "알이 부화하면 알려드려요",
+                        isOn: viewModel.pushNotificationState.notifyEggHatches,
+                        toggle: { viewModel.action(.toggleNotifyEggHatches) }
+                    )
+                    
+                    SwitchOptionItemView(
                         title: "오늘의 걸음 수",
                         subtitle: "하루 걸음 수를 알려드려요",
                         isOn: viewModel.pushNotificationState.notifyTodayWalkCount,
                         toggle: { viewModel.action(.toggleNotifyTodayWalkCount) }
                     )
+                    .hidden()
+                    
                     SwitchOptionItemView(
                         title: "스팟 도착 알림",
                         subtitle: "스팟에 도착하면 알려드려요",
                         isOn: viewModel.pushNotificationState.notifyArrivedSpot,
                         toggle: { viewModel.action(.toggleNotifyArrivedSpot) }
                     )
-                    SwitchOptionItemView(
-                        title: "알 부화 알림",
-                        subtitle: "알이 부화하면 알려드려요",
-                        isOn: viewModel.pushNotificationState.notifyEggHatches,
-                        toggle: { viewModel.action(.toggleNotifyEggHatches) }
-                    )
+                    .hidden()
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 16)
