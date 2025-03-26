@@ -9,5 +9,5 @@ import Combine
 
 protocol HomeRepository {
     
-    func getEggCount() -> AnyPublisher<EggCountDto, Error>
+    func getEggCount() -> AnyPublisher<EggsCountEntity, Error>
 }
