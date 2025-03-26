@@ -7,25 +7,31 @@
 
 import SwiftUI
 
-struct ProgressBarView: View {
+public struct ProgressBarView: View {
     
     var isSmall: Bool
     var current: Int
     var total: Int
     
-    init(isSmall: Bool, current: Int, total: Int) {
+    public init(isSmall: Bool, current: Int, total: Int) {
         self.isSmall = isSmall
         self.current = current
         self.total = total
     }
     
-    var body: some View {
+    public init(isSmall: Bool, current: Double, total: Double) {
+        self.isSmall = isSmall
+        self.current = Int(current)
+        self.total = Int(total)
+    }
+    
+    public var body: some View {
         ZStack(alignment: .leading) {
             Rectangle()
-                .foregroundStyle(.gray200)
+                .foregroundStyle(WalkieCommonAsset.gray200.swiftUIColor)
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
-                .foregroundStyle(.blue300)
+                .foregroundStyle(WalkieCommonAsset.blue300.swiftUIColor)
                 .frame(width: min(Double(current)/Double(total), 1.0) * (isSmall ? 64 : 180))
                 .cornerRadius(100, corners: .allCorners)
         }.frame(width: isSmall ? 64 : 180, height: isSmall ? 4 : 8)

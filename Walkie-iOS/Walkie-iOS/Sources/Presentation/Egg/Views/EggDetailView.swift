@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WalkieCommon
 
 struct EggDetailView: View {
     
@@ -25,7 +26,7 @@ struct EggDetailView: View {
                     .font(.H6)
                     .foregroundStyle(eggState.eggType.fontColor)
                     .frame(width: 57, height: 36)
-                    .background(.gray100)
+                    .background(WalkieCommonAsset.gray100.swiftUIColor)
                     .cornerRadius(99)
                     .padding(.bottom, 4)
                 HighlightTextAttribute(
@@ -34,13 +35,13 @@ struct EggDetailView: View {
                         locale: Locale.init(identifier: "ko"),
                         eggState.nowStep,
                         eggState.needStep),
-                    textColor: .gray500,
+                    textColor: WalkieCommonAsset.gray500.swiftUIColor,
                     font: .B1,
                     highlightText: String(
                         format: "%d /",
                         locale: Locale.init(identifier: "ko"),
                         eggState.nowStep),
-                    highlightColor: .gray700,
+                    highlightColor: WalkieCommonAsset.gray700.swiftUIColor,
                     highlightFont: .H5)
                 .padding(.bottom, 12)
                 ProgressBarView(
@@ -52,24 +53,24 @@ struct EggDetailView: View {
                     VStack(alignment: .center, spacing: 4) {
                         Text("획득 날짜")
                             .font(.B2)
-                            .foregroundStyle(.gray500)
+                            .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                         Text(detail.obtainedDate ?? "오류")
                             .font(.H6)
-                            .foregroundStyle(.gray700)
+                            .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
-                    .background(.gray50)
+                    .background(WalkieCommonAsset.gray50.swiftUIColor)
                     .cornerRadius(12)
                     VStack(alignment: .center, spacing: 4) {
                         Text("획득 장소")
                             .font(.B2)
-                            .foregroundStyle(.gray500)
+                            .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                         Text(detail.obtainedPosition ?? "오류")
                             .font(.H6)
-                            .foregroundStyle(.gray700)
+                            .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
-                    .background(.gray50)
+                    .background(WalkieCommonAsset.gray50.swiftUIColor)
                     .cornerRadius(12)
                 }.padding(.bottom, 20)
                 CTAButton(

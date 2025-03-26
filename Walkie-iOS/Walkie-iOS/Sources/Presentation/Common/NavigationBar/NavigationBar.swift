@@ -99,7 +99,9 @@ struct NavigationBar: View {
                             Text(title)
                                 .frame(width: 48, height: 44)
                                 .font(.H5)
-                                .foregroundColor(rightButtonShowsEnabledColor ? .blue400 : .gray400)
+                                .foregroundColor(rightButtonShowsEnabledColor ?
+                                                 WalkieCommonAsset.blue400.swiftUIColor :
+                                                    WalkieCommonAsset.gray400.swiftUIColor)
                         }
                     })
                     .padding(.trailing, 10)

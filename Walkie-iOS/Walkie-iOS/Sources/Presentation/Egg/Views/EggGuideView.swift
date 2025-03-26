@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WalkieCommon
 
 struct EggGuideView: View {
     
@@ -17,31 +18,31 @@ struct EggGuideView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Text("알 얻을 확률")
                     .font(.H2)
-                    .foregroundStyle(.gray700)
+                    .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     .padding(.top, 12)
                     .padding(.bottom, 4)
                 Text("스팟 탐험 시 알을 얻을 확률이에요")
                     .font(.B2)
-                    .foregroundStyle(.gray500)
+                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                     .padding(.bottom, 12)
                 ForEach(EggLiterals.allCases, id: \.self) { eggType in
                     EggGuideItemView(eggType: eggType)
                 }
                 Text("캐릭터 얻을 확률")
                     .font(.H2)
-                    .foregroundStyle(.gray700)
+                    .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     .padding(.top, 40)
                     .padding(.bottom, 4)
                 Text("얻기 어려운 알일수록 희귀한 캐릭터가 부화해요")
                     .font(.B2)
-                    .foregroundStyle(.gray500)
+                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                     .padding(.bottom, 20)
                 ForEach(EggLiterals.allCases, id: \.self) { eggType in
                     CharacterGuideItemView(eggType: eggType)
                     if eggType != EggLiterals.allCases.last! {
                         Rectangle()
                             .frame(height: 2)
-                            .foregroundStyle(.gray50)
+                            .foregroundStyle(WalkieCommonAsset.gray50.swiftUIColor)
                     }
                 }
             }
@@ -68,16 +69,16 @@ private struct EggGuideItemView: View {
                     .foregroundStyle(eggType.fontColor)
                 Text(eggType.eggInformationText)
                     .font(.B2)
-                    .foregroundStyle(.gray500)
+                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
             }
             Spacer()
             Text("\(eggType.obtainRate)%")
                 .font(.H3)
-                .foregroundStyle(.gray700)
+                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                 .padding(.trailing, 20)
         }
         .frame(height: 76)
-        .background(.gray50)
+        .background(WalkieCommonAsset.gray50.swiftUIColor)
         .cornerRadius(12)
         .padding(.top, 8)
     }
@@ -122,10 +123,10 @@ private struct CharacterProbabilityView: View {
         HStack(alignment: .center, spacing: 8) {
             Text("\(characterType.rawValue) 캐릭터")
                 .font(.B1)
-                .foregroundStyle(.gray500)
+                .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
             Text("\(eggType.characterObtainRate[characterType] ?? 0)%")
                 .font(.H5)
-                .foregroundStyle(.gray700)
+                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
         }
     }
 }

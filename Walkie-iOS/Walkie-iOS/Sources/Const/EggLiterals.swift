@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WalkieCommon
 
 enum EggLiterals: String, CaseIterable, Hashable {
     case normal = "일반"
@@ -16,13 +17,13 @@ enum EggLiterals: String, CaseIterable, Hashable {
     var fontColor: Color {
         switch self {
         case .normal:
-            .blue500
+            WalkieCommonAsset.blue500.swiftUIColor
         case .rare:
-            .green300
+            WalkieCommonAsset.green300.swiftUIColor
         case .epic:
-            .orange300
+            WalkieCommonAsset.orange300.swiftUIColor
         case .legendary:
-            .purple300
+            WalkieCommonAsset.purple300.swiftUIColor
         }
     }
         
