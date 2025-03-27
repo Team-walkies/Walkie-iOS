@@ -16,9 +16,9 @@ final class DIContainer {
 extension DIContainer {
     
     func registerHome() -> HomeViewModel {
-        let homeService = DefaultHomeService()
-        let homeRepo = DefaultHomeRepository(homeService: homeService)
-        let homeUsecase = DefaultHomeUseCase(homeRepository: homeRepo)
+        let eggService = DefaultEggService()
+        let eggRepo = DefaultEggRepository(eggService: eggService)
+        let homeUsecase = DefaultHomeUseCase(eggRepository: eggRepo)
         let homeVM = HomeViewModel(homeUseCase: homeUsecase)
         return homeVM
     }

@@ -11,7 +11,7 @@ final class DefaultHomeUseCase {
     
     // MARK: - Dependency
     
-    private let homeRepository: HomeRepository
+    private let eggRepository: EggRepository
     
     // MARK: - Properties
     
@@ -19,15 +19,15 @@ final class DefaultHomeUseCase {
     
     // MARK: - Life Cycle
     
-    init(homeRepository: HomeRepository) {
-        self.homeRepository = homeRepository
+    init(eggRepository: EggRepository) {
+        self.eggRepository = eggRepository
     }
 }
 
 extension DefaultHomeUseCase: HomeUseCase {
     
     func getEggCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
-        homeRepository.getEggCount()
+        eggRepository.getEggsCount()
             .mapToNetworkError()
     }
 }

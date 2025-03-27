@@ -7,6 +7,7 @@
 
 import Moya
 import Combine
+import CombineMoya
 
 final class DefaultEggService {
     
