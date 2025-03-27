@@ -20,7 +20,7 @@ struct ReviewItemView: View {
                     let characterImg = CharacterType.getCharacterImage(
                         type: reviewState.type + 1,
                         characterClass: reviewState.characterClass)
-                    Image(characterImg ?? .emptyJellyfish)
+                    Image(characterImg ?? .imgDino0)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 38, height: 38)
@@ -77,7 +77,7 @@ struct ReviewItemView: View {
                         .padding(.horizontal, 16)
                     
                     HStack {
-                        let width = (geometry.size.width - 32) / 3
+                        let width = (geometry.size.width - 64) / 3
                         VStack {
                             Text("이동 거리")
                                 .font(.C1)

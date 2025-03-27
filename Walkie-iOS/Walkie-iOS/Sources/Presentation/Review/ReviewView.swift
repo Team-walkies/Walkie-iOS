@@ -50,5 +50,6 @@ struct ReviewView: View {
         .onAppear {
             viewModel.action(.calendarWillAppear)
         }
+        .navigationBarBackButtonHidden()
     }
 }
