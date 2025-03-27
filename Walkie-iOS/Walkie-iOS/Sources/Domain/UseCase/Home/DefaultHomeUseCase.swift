@@ -12,6 +12,7 @@ final class DefaultHomeUseCase {
     // MARK: - Dependency
     
     private let eggRepository: EggRepository
+    private let memberRepository: MemberRepository
     
     // MARK: - Properties
     
@@ -19,15 +20,33 @@ final class DefaultHomeUseCase {
     
     // MARK: - Life Cycle
     
-    init(eggRepository: EggRepository) {
+    init(
+        eggRepository: EggRepository,
+        memberRepository: MemberRepository
+    ) {
         self.eggRepository = eggRepository
+        self.memberRepository = memberRepository
     }
 }
 
 extension DefaultHomeUseCase: HomeUseCase {
     
+    // egg
+    
     func getEggCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
         eggRepository.getEggsCount()
+            .mapToNetworkError()
+    }
+    
+    // member
+    
+    func getEggPlay() -> AnyPublisher<EggInfoEntity, NetworkError> {
+        memberRepository.getEggPlayId()
+            .mapToNetworkError()
+    }
+    
+    func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError> {
+        memberRepository.getCharacterPlay()
             .mapToNetworkError()
     }
 }

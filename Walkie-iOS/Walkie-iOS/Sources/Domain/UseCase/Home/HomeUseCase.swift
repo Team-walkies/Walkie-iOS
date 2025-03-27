@@ -9,5 +9,12 @@ import Combine
 
 protocol HomeUseCase {
     
+    // egg
+    
     func getEggCount() -> AnyPublisher<EggsCountEntity, NetworkError>
+    
+    // member
+    
+    func getEggPlay() -> AnyPublisher<EggInfoEntity, NetworkError>
+    func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError>
 }
