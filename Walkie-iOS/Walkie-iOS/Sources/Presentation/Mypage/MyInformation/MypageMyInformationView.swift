@@ -11,16 +11,12 @@ import WalkieCommon
 
 struct MypageMyInformationView: View {
     
-    @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: MypageMainViewModel
     
     var body: some View {
         NavigationBar(
             title: "내 정보",
-            showBackButton: true,
-            backButtonAction: {
-                dismiss()
-            }
+            showBackButton: true
         )
         ScrollView {
             VStack(

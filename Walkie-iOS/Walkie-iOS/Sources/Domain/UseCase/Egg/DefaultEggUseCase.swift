@@ -1,0 +1,59 @@
+//
+//  DefaultEggUseCase.swift
+//  Walkie-iOS
+//
+//  Created by 황채웅 on 3/22/25.
+//
+
+import Combine
+
+final class DefaultEggUseCase {
+    
+    // MARK: - Dependency
+    
+    private let eggRepository: EggRepository
+    private let memberRepository: MemberRepository
+    
+    // MARK: - Properties
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Life Cycle
+    
+    init(eggRepository: EggRepository, memberRepository: MemberRepository) {
+        self.eggRepository = eggRepository
+        self.memberRepository = memberRepository
+    }
+}
+
+extension DefaultEggUseCase: EggUseCase {
+    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
+        memberRepository.getEggPlaying()
+            .mapToNetworkError()
+    }
+    
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
+        memberRepository.patchEggPlaying(eggId: eggId)
+            .mapToNetworkError()
+    }
+    
+    func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
+        eggRepository.getEggsList(dummy: true)
+            .mapToNetworkError()
+    }
+    
+    func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
+        eggRepository.getEggDetail(dummy: true, eggId: eggId)
+            .mapToNetworkError()
+    }
+    
+    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError> {
+        eggRepository.patchEggStep(requestBody: requestBody)
+            .mapToNetworkError()
+    }
+    
+    func getEggsCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
+        eggRepository.getEggsCount()
+            .mapToNetworkError()
+    }
+}
