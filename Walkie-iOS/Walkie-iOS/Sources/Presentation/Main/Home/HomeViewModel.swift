@@ -109,6 +109,15 @@ final class HomeViewModel: ViewModelable {
         let now = Date()
         let startOfDay = Calendar.current.startOfDay(for: now)
         
+        self.pedometer.queryPedometerData(from: startOfDay, to: now) { data, error in
+            if let data = data, error == nil {
+                DispatchQueue.main.async {
+                    self.updateStepData(step: data.numberOfSteps.intValue,
+                                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0)
+                }
+            }
+        }
+        
         self.pedometer.startUpdates(from: startOfDay) { data, error in
             if let data = data, error == nil {
                 DispatchQueue.main.async {
