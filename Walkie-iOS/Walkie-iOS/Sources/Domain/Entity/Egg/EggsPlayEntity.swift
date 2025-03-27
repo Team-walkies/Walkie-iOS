@@ -15,9 +15,3 @@ struct EggsPlayEntity: Codable {
         case characterID = "characterId"
     }
 }
-
-extension EggsPlayEntity {
-    static func eggsPlayDummy() -> EggsPlayEntity {
-        return EggsPlayEntity(eggID: 0, needStep: 1345, nowStep: 8423, rank: 2, characterID: 1)
-    }
-}
