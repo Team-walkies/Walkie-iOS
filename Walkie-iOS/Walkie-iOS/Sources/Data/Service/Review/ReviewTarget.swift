@@ -35,7 +35,9 @@ extension ReviewTarget {
         return ReviewTarget(
             path: URLConstant.reviewCalendar,
             method: .get,
-            task: .requestParameters(parameters: ["startDate": date.startDate, "endDate": date.endDate], encoding: URLEncoding.queryString),
+            task: .requestParameters(
+                parameters: ["startDate": date.startDate, "endDate": date.endDate],
+                encoding: URLEncoding.queryString),
             headers: APIConstants.hasTokenHeader
         )
     }
