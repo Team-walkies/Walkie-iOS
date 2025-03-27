@@ -28,4 +28,12 @@ extension DIContainer {
         let alarmListView = AlarmListView(viewModel: alarmListVM)
         return alarmListView
     }
+    
+    func registerReview() -> ReviewView {
+        let reviewService = DefaultReviewService()
+        let reviewRepo = DefaultReviewRepository(reviewService: reviewService)
+        let reviewUseCase = DefaultReviewUseCase(reviewRepository: reviewRepo)
+        let reviewVM = ReviewViewModel(reviewUseCase: reviewUseCase)
+        return ReviewView(viewModel: reviewVM)
+    }
 }

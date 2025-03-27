@@ -27,7 +27,7 @@ struct ReviewView: View {
                             .font(.B1)
                             .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                         
-                        Text("\(reviewState.count)")
+                        Text("\(reviewState.reviewList.count)")
                             .font(.B1)
                             .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                         
@@ -38,7 +38,7 @@ struct ReviewView: View {
                     .frame(maxWidth: .infinity)
                     
                     VStack(spacing: 40) {
-                        ForEach(reviewState, id: \.reviewID) { item in
+                        ForEach(reviewState.reviewList, id: \.reviewID) { item in
                             ReviewItemView(reviewState: item)
                         }
                     }
@@ -51,8 +51,4 @@ struct ReviewView: View {
             viewModel.action(.calendarWillAppear)
         }
     }
-}
-
-#Preview {
-    ReviewView(viewModel: ReviewViewModel())
 }

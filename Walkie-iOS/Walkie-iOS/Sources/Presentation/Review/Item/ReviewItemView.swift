@@ -11,130 +11,136 @@ import WalkieCommon
 
 struct ReviewItemView: View {
     
-    @State var reviewState: Review
+    @State var reviewState: ReviewEntity
     
     var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                let characterImg = CharacterType.getCharacterImage(
-                    type: reviewState.type + 1,
-                    characterClass: reviewState.characterClass)
-                Image(characterImg ?? .emptyJellyfish)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 38, height: 38)
-                
-                VStack(alignment: .leading, spacing: 0) {
-                    HStack(spacing: 0) {
-                        let characterName = CharacterType.getCharacterName(
-                            type: reviewState.type + 1,
-                            characterClass: reviewState.characterClass)
-                        Text("\(characterName ?? "")")
-                            .font(.H6)
-                            .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                        
-                        Text("와 걸었어요")
-                            .font(.B2)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                    }
-                    
-                    if let startTime = formatTimeString(reviewState.startTime),
-                        let endTime = formatTimeString(reviewState.endTime) {
-                        Text("\(startTime) ~ \(endTime)")
-                            .font(.C1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                    }
-                }
-                
-                Spacer()
-                
-                Button(action: {
-                    print(reviewState.reviewID)
-                }, label: {
-                    Image(.icMore)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                })
-            }
-            
-            VStack(spacing: 12) {
-                HStack(alignment: .center) {
-                    Image(.icMapPark)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 16, height: 16)
-                    
-                    Text(reviewState.spotName)
-                        .font(.H6)
-                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
-                }
-                
-                Rectangle()
-                    .fill(WalkieCommonAsset.gray200.swiftUIColor)
-                    .frame(height: 1)
-                    .padding(.horizontal, 16)
-                
+        GeometryReader { geometry in
+            VStack(spacing: 8) {
                 HStack {
-                    VStack {
-                        Text("이동 거리")
-                            .font(.C1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                    let characterImg = CharacterType.getCharacterImage(
+                        type: reviewState.type + 1,
+                        characterClass: reviewState.characterClass)
+                    Image(characterImg ?? .emptyJellyfish)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 38, height: 38)
+                    
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack(spacing: 0) {
+                            let characterName = CharacterType.getCharacterName(
+                                type: reviewState.type + 1,
+                                characterClass: reviewState.characterClass)
+                            Text("\(characterName ?? "")")
+                                .font(.H6)
+                                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                            
+                            Text("와 걸었어요")
+                                .font(.B2)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                        }
                         
-                        let formattedDistance = String(format: "%.1f", reviewState.distance)
-                        Text("\(formattedDistance)km")
-                            .font(.H5)
-                            .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                        if let startTime = formatTimeString(reviewState.startTime),
+                            let endTime = formatTimeString(reviewState.endTime) {
+                            Text("\(startTime) ~ \(endTime)")
+                                .font(.C1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                        }
                     }
                     
-                    VStack {
-                        Text("걸음수")
-                            .font(.C1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                    Spacer()
+                    
+                    Button(action: {
+                        print(reviewState.reviewID)
+                    }, label: {
+                        Image(.icMore)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                    })
+                }
+                
+                VStack(spacing: 12) {
+                    HStack(alignment: .center) {
+                        Image(.icMapPark)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
                         
-                        Text("\(reviewState.step)")
-                            .font(.H5)
-                            .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                        Text(reviewState.spotName)
+                            .font(.H6)
+                            .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
                     }
                     
-                    VStack {
-                        Text("이동 시간")
-                            .font(.C1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                        
-                        if let minutes = timeDifferenceInMinutes(
-                            startTime: reviewState.startTime,
-                            endTime: reviewState.endTime) {
-                            Text("\(minutes)m")
+                    Rectangle()
+                        .fill(WalkieCommonAsset.gray200.swiftUIColor)
+                        .frame(height: 1)
+                        .padding(.horizontal, 16)
+                    
+                    HStack {
+                        let width = (geometry.size.width - 32) / 3
+                        VStack {
+                            Text("이동 거리")
+                                .font(.C1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                            
+                            let formattedDistance = String(format: "%.1f", reviewState.distance)
+                            Text("\(formattedDistance)km")
                                 .font(.H5)
                                 .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                         }
+                        .frame(width: width)
+                        
+                        VStack {
+                            Text("걸음수")
+                                .font(.C1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                            
+                            Text("\(reviewState.step)")
+                                .font(.H5)
+                                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                        }
+                        .frame(width: width)
+                        
+                        VStack {
+                            Text("이동 시간")
+                                .font(.C1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                            
+                            if let minutes = timeDifferenceInMinutes(
+                                startTime: reviewState.startTime,
+                                endTime: reviewState.endTime) {
+                                Text("\(minutes)m")
+                                    .font(.H5)
+                                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                            }
+                        }
+                        .frame(width: width)
                     }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .padding(.vertical, 12)
-            .cornerRadius(12, corners: .allCorners)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(WalkieCommonAsset.gray200.swiftUIColor, lineWidth: 1)
-            )
-            
-            VStack(alignment: .leading, spacing: 8) {
-                RankStarView(rank: reviewState.rank)
                     .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 12)
+                .cornerRadius(12, corners: .allCorners)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(WalkieCommonAsset.gray200.swiftUIColor, lineWidth: 1)
+                )
                 
-                Text(reviewState.review)
-                    .font(.B2)
-                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                    .multilineTextAlignment(.leading)
+                VStack(alignment: .leading, spacing: 8) {
+                    RankStarView(rank: reviewState.rank)
+                        .frame(maxWidth: .infinity)
+                    
+                    Text(reviewState.review)
+                        .font(.B2)
+                        .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                        .multilineTextAlignment(.leading)
+                }
+                .padding(.all, 16)
+                .frame(maxWidth: .infinity)
+                .background(WalkieCommonAsset.gray100.swiftUIColor)
+                .cornerRadius(12, corners: .allCorners)
             }
-            .padding(.all, 16)
-            .frame(maxWidth: .infinity)
-            .background(WalkieCommonAsset.gray100.swiftUIColor)
-            .cornerRadius(12, corners: .allCorners)
+            .padding(.horizontal, 16)
         }
-        .padding(.horizontal, 16)
     }
 }
 

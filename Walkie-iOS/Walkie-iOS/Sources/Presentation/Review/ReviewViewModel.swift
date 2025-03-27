@@ -11,6 +11,9 @@ import Combine
 
 final class ReviewViewModel: ViewModelable {
     
+    private let reviewUseCase: ReviewUseCase
+    private var cancellables = Set<AnyCancellable>()
+    
     @Published var state: ReviewViewState = .loading
     
     enum Action {
@@ -18,12 +21,12 @@ final class ReviewViewModel: ViewModelable {
     }
     
     struct ReviewState {
-        let review: Review
+        let review: ReviewEntity
     }
     
     enum ReviewViewState {
         case loading
-        case loaded([Review])
+        case loaded(ReviewListEntity)
         case error(String)
     }
     
@@ -34,45 +37,21 @@ final class ReviewViewModel: ViewModelable {
         }
     }
     
+    init(reviewUseCase: ReviewUseCase) {
+        self.reviewUseCase = reviewUseCase
+    }
+    
     func getReviewList() {
-        let reviewList: [Review] = [
-            Review(
-                reviewID: 6,
-                spotID: 1,
-                spotName: "여기어때",
-                distance: 3.5,
-                step: 3000,
-                date: "2025-03-03",
-                startTime: "16:02:29",
-                endTime: "16:32:29",
-                characterID: 38,
-                rank: 1,
-                type: 0,
-                characterClass: 1,
-                pic: "files/d73f8760-12d1-454d-bf1a-450c04a6139d20250311_205540.png",
-                reviewCD: true,
-                review: "재밌었다.",
-                rating: 4
-            ),
-            Review(
-                reviewID: 8,
-                spotID: 1,
-                spotName: "여기어때",
-                distance: 3.5,
-                step: 3000,
-                date: "2025-03-03",
-                startTime: "16:02:29",
-                endTime: "16:32:29",
-                characterID: 38,
-                rank: 1,
-                type: 0,
-                characterClass: 1,
-                pic: "files/d73f8760-12d1-454d-bf1a-450c04a6139d20250311_205540.png",
-                reviewCD: true,
-                review: "재밌었다.",
-                rating: 4
-            )
-        ]
-        state = .loaded(reviewList)
+        let date  = ReviewsCalendarDate(startDate: "", endDate: "")
+        self.reviewUseCase.getReviewList(date: date)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, reviewList in
+                    self.state = .loaded(reviewList)
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                })
+            .store(in: &cancellables)
     }
 }
