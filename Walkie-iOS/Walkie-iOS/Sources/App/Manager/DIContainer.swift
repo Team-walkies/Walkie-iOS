@@ -23,14 +23,15 @@ extension DIContainer {
         return homeVM
     }
     
-    func registerEgg() -> EggViewModel {
+    func registerEgg() -> EggView {
         let eggService = DefaultEggService()
         let memberService = DefaultMemberService()
         let eggRepo = DefaultEggRepository(eggService: eggService)
         let memberRepo = DefaultMemberRepository(memberService: memberService)
         let eggUsecase = DefaultEggUseCase(eggRepository: eggRepo, memberRepository: memberRepo)
         let eggVM = EggViewModel(eggUseCase: eggUsecase)
-        return eggVM
+        let eggView = EggView(viewModel: eggVM)
+        return eggView
     }
     
     func registerAlarmList() -> AlarmListView {

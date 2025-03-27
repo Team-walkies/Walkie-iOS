@@ -20,62 +20,61 @@ struct EggView: View {
     @State var isPresentingBottomSheet: Bool = false
     
     var body: some View {
-        NavigationStack {
-            NavigationBar(
-                rightButtonTitle: "안내",
-                showBackButton: true,
-                showRightButton: true,
-                rightButtonEnabled: true,
-                rightButtonShowsEnabledColor: false,
-                rightButtonAction: {
-                    isPresentingGuideView = true
-                })
-            ScrollView {
-                VStack(alignment: .leading, spacing: 0) {
-                    switch self.viewModel.state {
-                    case .loaded(let state):
-                        HStack(alignment: .center, spacing: 8) {
-                            Text("보유한 알")
-                                .font(.H2)
-                                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
-                            Text("\(state.eggsCount)")
-                                .font(.H2)
-                                .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                            Spacer()
-                        }.padding(.bottom, 4)
-                        Text("같이 걷고 싶은 알을 선택해 주세요")
-                            .font(.B2)
+        NavigationBar(
+            rightButtonTitle: "안내",
+            showBackButton: true,
+            showRightButton: true,
+            rightButtonEnabled: true,
+            rightButtonShowsEnabledColor: false,
+            rightButtonAction: {
+                isPresentingGuideView = true
+            })
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                switch self.viewModel.state {
+                case .loaded(let state):
+                    HStack(alignment: .center, spacing: 8) {
+                        Text("보유한 알")
+                            .font(.H2)
+                            .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                        Text("\(state.eggsCount)")
+                            .font(.H2)
                             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                            .padding(.bottom, 20)
-                        LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                            ForEach(state.eggs, id: \.eggId) { egg in
-                                EggItemView(state: egg)
-                                    .onTapGesture {
-                                        viewModel.action(.didTapEggDetail(egg))
-                                        isPresentingBottomSheet = true
-                                    }
-                            }
+                        Spacer()
+                    }.padding(.bottom, 4)
+                    Text("같이 걷고 싶은 알을 선택해 주세요")
+                        .font(.B2)
+                        .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
+                        .padding(.bottom, 20)
+                    LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                        ForEach(state.eggs, id: \.eggId) { egg in
+                            EggItemView(state: egg)
+                                .onTapGesture {
+                                    viewModel.action(.didTapEggDetail(egg))
+                                    isPresentingBottomSheet = true
+                                }
                         }
-                    case .error(let error):
-                        Text(error.description)
-                    default:
-                        ProgressView()
                     }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
-                .onAppear {
-                    viewModel.action(.willAppear)
+                case .error(let error):
+                    Text(error.description)
+                default:
+                    ProgressView()
                 }
             }
-            .navigationDestination(isPresented: $isPresentingGuideView) {
-                EggGuideView()
-                    .navigationBarBackButtonHidden()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 16)
+            .onAppear {
+                viewModel.action(.willAppear)
             }
+        }
+        .navigationDestination(isPresented: $isPresentingGuideView) {
+            EggGuideView()
+                .navigationBarBackButtonHidden()
         }
         .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
             EggDetailView(viewModel: viewModel.eggDetailViewModel!)
         }
+        .navigationBarBackButtonHidden()
     }
 }
 
