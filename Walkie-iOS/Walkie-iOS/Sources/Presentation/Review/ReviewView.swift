@@ -27,7 +27,7 @@ struct ReviewView: View {
                             .font(.B1)
                             .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                         
-                        Text("\(reviewState.reviewList.count)")
+                        Text("\(reviewState.count)")
                             .font(.B1)
                             .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                         
@@ -38,7 +38,7 @@ struct ReviewView: View {
                     .frame(maxWidth: .infinity)
                     
                     VStack(spacing: 40) {
-                        ForEach(reviewState.reviewList, id: \.reviewID) { item in
+                        ForEach(reviewState, id: \.reviewID) { item in
                             ReviewItemView(reviewState: item)
                         }
                     }

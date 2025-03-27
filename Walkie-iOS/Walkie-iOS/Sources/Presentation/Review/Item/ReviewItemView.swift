@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct ReviewItemView: View {
     
-    @State var reviewState: ReviewEntity
+    @State var reviewState: ReviewViewModel.ReviewState
     
     var body: some View {
         GeometryReader { geometry in
@@ -39,12 +39,9 @@ struct ReviewItemView: View {
                                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                         }
                         
-                        if let startTime = formatTimeString(reviewState.startTime),
-                            let endTime = formatTimeString(reviewState.endTime) {
-                            Text("\(startTime) ~ \(endTime)")
-                                .font(.C1)
-                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                        }
+                        Text(reviewState.walkTime)
+                            .font(.C1)
+                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                     }
                     
                     Spacer()
@@ -83,8 +80,7 @@ struct ReviewItemView: View {
                                 .font(.C1)
                                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                             
-                            let formattedDistance = String(format: "%.1f", reviewState.distance)
-                            Text("\(formattedDistance)km")
+                            Text(reviewState.distance)
                                 .font(.H5)
                                 .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                         }
@@ -106,13 +102,9 @@ struct ReviewItemView: View {
                                 .font(.C1)
                                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                             
-                            if let minutes = timeDifferenceInMinutes(
-                                startTime: reviewState.startTime,
-                                endTime: reviewState.endTime) {
-                                Text("\(minutes)m")
-                                    .font(.H5)
-                                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                            }
+                            Text(reviewState.duration)
+                                .font(.H5)
+                                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                         }
                         .frame(width: width)
                     }
@@ -141,35 +133,5 @@ struct ReviewItemView: View {
             }
             .padding(.horizontal, 16)
         }
-    }
-}
-
-extension ReviewItemView {
-    
-    func timeDifferenceInMinutes(startTime: String, endTime: String) -> Int? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss"
-        
-        if let start = dateFormatter.date(from: startTime),
-            let end = dateFormatter.date(from: endTime) {
-            let difference = end.timeIntervalSince(start)
-            return Int(difference / 60)
-        }
-        return nil
-    }
-    
-    func formatTimeString(_ timeString: String) -> String? {
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "HH:mm:ss"
-        
-        guard let date = inputFormatter.date(from: timeString) else {
-            return nil
-        }
-        
-        let outputFormatter = DateFormatter()
-        outputFormatter.locale = Locale(identifier: "ko_KR")
-        outputFormatter.dateFormat = "a h:mm"
-        
-        return outputFormatter.string(from: date)
     }
 }
