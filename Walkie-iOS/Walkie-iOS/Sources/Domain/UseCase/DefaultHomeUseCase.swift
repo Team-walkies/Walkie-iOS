@@ -28,7 +28,6 @@ extension DefaultHomeUseCase: HomeUseCase {
     
     func getEggCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
         homeRepository.getEggCount()
-            .map { dto in EggsCountEntity(eggsCount: dto.eggCount) }
             .mapToNetworkError()
     }
 }

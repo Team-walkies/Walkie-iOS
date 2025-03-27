@@ -26,8 +26,11 @@ final class DefaultHomeRepository {
 
 extension DefaultHomeRepository: HomeRepository {
     
-    func getEggCount() -> AnyPublisher<EggCountDto, Error> {
+    func getEggCount() -> AnyPublisher<EggsCountEntity, Error> {
         homeService.getEggCount()
+            .map { dto in
+                EggsCountEntity(eggsCount: dto.eggCount)
+            }
             .eraseToAnyPublisher()
     }
 }

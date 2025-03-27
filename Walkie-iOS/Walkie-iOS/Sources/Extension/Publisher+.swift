@@ -61,10 +61,15 @@ extension Publisher where Output == Moya.Response {
             .map { $0.data }
             .decode(type: WalkieResponse<Response>.self, decoder: JSONDecoder())
             .tryMap { response in
-                guard let data = response.data else {
-                    throw NetworkError.emptyDataError
+                if let data = response.data {
+                    return data
+                } else {
+                    if let emptyDto = EmptyDto() as? Response {
+                        return emptyDto
+                    } else {
+                        throw NetworkError.emptyDataError
+                    }
                 }
-                return data
             }
             .eraseToAnyPublisher()
     }

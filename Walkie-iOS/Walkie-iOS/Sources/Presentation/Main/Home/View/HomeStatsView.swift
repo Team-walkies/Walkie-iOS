@@ -12,12 +12,13 @@ import WalkieCommon
 struct HomeStatsView: View {
     
     let homeState: HomeViewModel.HomeState
+    let stepState: HomeViewModel.StepState
     let width: CGFloat
     
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .bottom, spacing: 5) {
-                Text("\(homeState.nowStep)")
+                Text("\(stepState.todayStep)")
                     .font(.H1)
                     .foregroundColor(.white)
                 Text("걸음")
@@ -31,7 +32,7 @@ struct HomeStatsView: View {
             
             HStack(alignment: .bottom, spacing: 5) {
                 HStack(spacing: 0) {
-                    let distanceStr = String(format: "%.1f", homeState.distance)
+                    let distanceStr = String(format: "%.1f", stepState.todayDistance)
                     Text(distanceStr)
                         .font(.H2)
                         .foregroundColor(.white)
@@ -62,7 +63,7 @@ struct HomeStatsView: View {
                         .font(.B2)
                         .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                     
-                    Text("\(homeState.needStep)걸음")
+                    Text("\(stepState.leftStep)걸음")
                         .font(.B2)
                         .foregroundColor(.white)
                 }
