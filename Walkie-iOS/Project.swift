@@ -22,7 +22,9 @@ let project = Project(
                         "Pretendard-ExtraBold.ttf",
                         "Pretendard-Bold.ttf",
                         "Pretendard-Medium.ttf",
-                    ]
+                    ],
+                    "UIUserInterfaceStyle": "Light",
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
@@ -63,7 +65,7 @@ let project = Project(
             name: "WalkieWidget",
             destinations: .iOS,
             product: .appExtension,
-            bundleId: "com.walkie.ios.widget",
+            bundleId: "com.walkie.ios.walkiewidget",
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
                 "NSExtension": [

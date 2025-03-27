@@ -56,3 +56,30 @@ struct MultilineModifier: ViewModifier {
             .fixedSize(horizontal: false, vertical: true)
     }
 }
+
+// MARK: - bottomSheet()
+extension View {
+    func bottomSheet<Content: View>(
+        isPresented: Binding<Bool>,
+        height: CGFloat,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                Color(white: 0, opacity: 0.6)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
+        .sheet(isPresented: isPresented) {
+            content()
+                .ignoresSafeArea(.all)
+                .presentationDetents([.height(height-34)]) // Safe Area 고려
+                .presentationBackgroundInteraction(.disabled)
+                .presentationDragIndicator(.visible)
+                .presentationBackground(.clear)
+        }
+    }
+}

@@ -11,6 +11,8 @@ import WalkieCommon
 
 struct NavigationBar: View {
     
+    @Environment(\.dismiss) var dismiss
+    
     // MARK: - Properties
     
     private let title: String?
@@ -21,6 +23,7 @@ struct NavigationBar: View {
     private let showAlarmButton: Bool
     private let hasAlarm: Bool
     private let rightButtonEnabled: Bool
+    private let rightButtonShowsEnabledColor: Bool
     private let backButtonAction: () -> Void
     private let rightButtonAction: () -> Void
     
@@ -35,6 +38,7 @@ struct NavigationBar: View {
         showAlarmButton: Bool = false,
         hasAlarm: Bool = false,
         rightButtonEnabled: Bool = false,
+        rightButtonShowsEnabledColor: Bool = true,
         backButtonAction: @escaping () -> Void = {},
         rightButtonAction: @escaping () -> Void = {}
     ) {
@@ -46,6 +50,7 @@ struct NavigationBar: View {
         self.showAlarmButton = showAlarmButton
         self.hasAlarm = hasAlarm
         self.rightButtonEnabled = rightButtonEnabled
+        self.rightButtonShowsEnabledColor = rightButtonShowsEnabledColor
         self.backButtonAction = backButtonAction
         self.rightButtonAction = rightButtonAction
     }
@@ -57,12 +62,15 @@ struct NavigationBar: View {
             // left button
             HStack {
                 if showBackButton {
-                    Button(action: backButtonAction) {
+                    Button(action: {
+                        backButtonAction()
+                        dismiss()
+                    }, label: {
                         Image(.icChevronLeft)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 28, height: 28)
-                    }
+                    })
                 } else if showLogo {
                     Image(.imgLogoText)
                         .resizable()
@@ -91,10 +99,9 @@ struct NavigationBar: View {
                             Text(title)
                                 .frame(width: 48, height: 44)
                                 .font(.H5)
-                                .foregroundColor(
-                                    rightButtonEnabled ?
-                                    WalkieCommonAsset.blue400.swiftUIColor
-                                    : WalkieCommonAsset.gray400.swiftUIColor)
+                                .foregroundColor(rightButtonShowsEnabledColor ?
+                                                 WalkieCommonAsset.blue400.swiftUIColor :
+                                                    WalkieCommonAsset.gray400.swiftUIColor)
                         }
                     })
                     .padding(.trailing, 10)
