@@ -29,7 +29,7 @@ extension DefaultMemberRepository: MemberRepository {
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberService.getEggPlaying()
             .map { dto in EggEntity(
-                eggId: dto.eggId,
+                eggId: dto.eggID,
                 eggType: EggLiterals.from(number: dto.rank),
                 nowStep: dto.nowStep,
                 needStep: dto.needStep,
@@ -41,6 +41,25 @@ extension DefaultMemberRepository: MemberRepository {
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
         memberService.patchEggPlaying(eggId: eggId)
             .map { _ in return }
+            .mapToNetworkError()
+    }
+    
+    func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError> {
+        memberService.getCharacterPlay()
+            .map { dto in CharactersPlayEntity(
+                characterID: dto.characterID,
+                characterType: dto.type,
+                characterClass: dto.characterClass
+            )}
+            .mapToNetworkError()
+    }
+    
+    func getEggPlayId() -> AnyPublisher<EggInfoEntity, NetworkError> {
+        memberService.getEggPlaying()
+            .map { dto in EggInfoEntity(
+                eggType: EggLiterals.from(number: dto.rank),
+                needStep: dto.needStep
+            )}
             .mapToNetworkError()
     }
 }

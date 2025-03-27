@@ -27,12 +27,14 @@ struct MemberTarget: BaseTargetType {
 }
 
 extension MemberTarget {
+    
     static let getEggPlaying = MemberTarget(
         path: URLConstant.membersEggs,
         method: .get,
         task: .requestPlain,
         headers: APIConstants.hasTokenHeader
     )
+    
     static func patchEggPlaying(eggId: Int) -> MemberTarget {
         return MemberTarget(
             path: URLConstant.membersEggs,
@@ -41,4 +43,11 @@ extension MemberTarget {
             headers: APIConstants.hasTokenHeader
         )
     }
+    
+    static let getCharacterPlay = MemberTarget(
+        path: URLConstant.membersCharacters,
+        method: .get,
+        task: .requestPlain,
+        headers: APIConstants.hasTokenHeader
+    )
 }

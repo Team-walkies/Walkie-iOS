@@ -6,7 +6,9 @@
 //
 
 import Moya
+
 import Combine
+import CombineMoya
 
 final class DefaultMemberService {
     
@@ -18,6 +20,7 @@ final class DefaultMemberService {
 }
 
 extension DefaultMemberService: MemberService {
+    
     func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error> {
         memberProvider.requestPublisher(.getEggPlaying)
             .filterSuccessfulStatusCodes()
@@ -28,5 +31,11 @@ extension DefaultMemberService: MemberService {
         memberProvider.requestPublisher(.patchEggPlaying(eggId: eggId))
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(Int?.self)
+    }
+    
+    func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, any Error> {
+        memberProvider.requestPublisher(.getCharacterPlay)
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(CharacterPlayDto.self)
     }
 }

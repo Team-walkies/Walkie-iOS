@@ -21,8 +21,8 @@ enum URLConstant {
     static let authToken = "/auth/token"
     
     // members
-    static let memebers = "/members"
-    static let memebersCharacters = "/members/characters/play"
+    static let members = "/members"
+    static let membersCharacters = "/members/characters/play"
     static let membersEggs = "/members/eggs/play"
     static let membersProfile = "/members/profile/visibility"
     
