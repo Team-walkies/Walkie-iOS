@@ -8,43 +8,50 @@
 import Foundation
 
 final class DIContainer {
-    
     static let shared = DIContainer()
     private init() {}
+    
+    private lazy var eggService = DefaultEggService()
+    private lazy var memberService = DefaultMemberService()
+    private lazy var reviewService = DefaultReviewService()
+    
+    private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
+    private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)
+    private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
 }
 
 extension DIContainer {
     
     func registerHome() -> HomeViewModel {
-        let eggService = DefaultEggService()
-        let eggRepo = DefaultEggRepository(eggService: eggService)
-        let homeUsecase = DefaultHomeUseCase(eggRepository: eggRepo)
-        let homeVM = HomeViewModel(homeUseCase: homeUsecase)
-        return homeVM
+        return HomeViewModel(
+            homeUseCase: DefaultHomeUseCase(
+                eggRepository: eggRepo,
+                memberRepository: memberRepo
+            )
+        )
     }
     
     func registerEgg() -> EggView {
-        let eggService = DefaultEggService()
-        let memberService = DefaultMemberService()
-        let eggRepo = DefaultEggRepository(eggService: eggService)
-        let memberRepo = DefaultMemberRepository(memberService: memberService)
-        let eggUsecase = DefaultEggUseCase(eggRepository: eggRepo, memberRepository: memberRepo)
-        let eggVM = EggViewModel(eggUseCase: eggUsecase)
-        let eggView = EggView(viewModel: eggVM)
-        return eggView
+        let eggVM = EggViewModel(
+            eggUseCase: DefaultEggUseCase(
+                eggRepository: eggRepo,
+                memberRepository: memberRepo
+            )
+        )
+        return EggView(viewModel: eggVM)
     }
     
     func registerAlarmList() -> AlarmListView {
-        let alarmListVM = AlarmListViewModel()
-        let alarmListView = AlarmListView(viewModel: alarmListVM)
-        return alarmListView
+        return AlarmListView(viewModel: AlarmListViewModel())
     }
     
     func registerReview() -> ReviewView {
-        let reviewService = DefaultReviewService()
-        let reviewRepo = DefaultReviewRepository(reviewService: reviewService)
-        let reviewUseCase = DefaultReviewUseCase(reviewRepository: reviewRepo)
-        let reviewVM = ReviewViewModel(reviewUseCase: reviewUseCase)
-        return ReviewView(viewModel: reviewVM)
+        return ReviewView(
+            viewModel: ReviewViewModel(
+                reviewUseCase: DefaultReviewUseCase(
+                    reviewRepository: reviewRepo
+                )
+            )
+        )
     }
 }
