@@ -9,29 +9,16 @@ import SwiftUI
 
 import ActivityKit
 import WalkieCommon
+import WebKit
 
 struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
     @State private var activity: Activity<WalkieWidgetAttributes>?
+    @ObservedObject private var webViewModel = WalkieWebViewModel()
     
     var body: some View {
-        VStack(spacing: 50) {
-            Text("오늘의 걸음수는?!")
-                .font(.H2)
-            switch viewModel.state {
-            case .loaded(let mapState):
-                VStack {
-                    Text("\(mapState.step) 걸음")
-                        .font(.H2)
-                    let distanceStr = String(format: "%.1f", mapState.distance)
-                    Text("\(distanceStr) km")
-                        .font(.H2)
-                }
-            default:
-                Text("")
-            }
-            
+        VStack(spacing: 20) {
             Button("다이나믹 아일랜드 시작") {
                 startDynamicIsland()
             }
@@ -39,12 +26,31 @@ struct MapView: View {
             Button("다이나믹 아일랜드 종료") {
                 stopDynamicIsland()
             }
+            
+            Button(action: {
+                webViewModel.sendMessageToWeb(completionHandler: {_,_ in 
+                    print("메시지 전송 완료")
+                })
+            }, label: {
+                Text("웹에 메시지 전송")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            })
+            
+            VStack {
+                if webViewModel.shouldLoadWebView, let url = webViewModel.webViewURL {
+                    WebView(url: url, viewModel: webViewModel)
+                        .frame(maxWidth: 300, maxHeight: 400)
+                    Text("받은 메시지: \(webViewModel.receivedMessage)")
+                } else {
+                    Text("HTML 파일 로드 중...")
+                }
+            }
         }
         .onAppear {
-            viewModel.action(.mapViewAppear)
-        }
-        .onDisappear {
-            viewModel.action(.mapViewDisappear)
+            webViewModel.loadLocalHTML()
         }
     }
     
