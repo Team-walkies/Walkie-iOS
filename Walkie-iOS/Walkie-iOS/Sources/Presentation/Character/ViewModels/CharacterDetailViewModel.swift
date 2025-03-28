@@ -11,7 +11,7 @@ final class CharacterDetailViewModel: ViewModelable {
     
     enum CharacterDetailViewState {
         case loading
-        case loaded(CharacterDetailState)
+        case loaded(ObtainedState)
         case error(String)
     }
     
@@ -19,7 +19,6 @@ final class CharacterDetailViewModel: ViewModelable {
         let characterName: String
         let characterRank: EggType
         let characterCount: Int
-        let obtainedList: [ObtainedState]
         let isWalking: Bool
     }
     
@@ -34,14 +33,29 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     @Published var state: CharacterDetailViewState = .loading
-    @Published var detailState: CharacterDetailState?
+    @Published var detailState: CharacterDetailState
+    
+    init(detailState: CharacterDetailState) {
+        self.detailState = detailState
+    }
     
     func action(_ action: Action) {
         switch action {
         case .willAppear:
-            break
+            fetchCharacterDetailData()
         case .didSelectCharacterWalking:
-            break
+            patchCharacterWalking()
         }
+    }
+    
+    private func fetchCharacterDetailData() {
+        state = .loaded(ObtainedState(
+            obtainedDate: "abcabc",
+            obtainedPosition: "1234")
+        )
+    }
+    
+    private func patchCharacterWalking() {
+        // API 호출
     }
 }

@@ -1,5 +1,5 @@
 //
-//  CharacterInfoEnum.swift
+//  CharacterLiterals.swift
 //  Walkie-iOS
 //
 //  Created by ahra on 2/20/25.
@@ -23,6 +23,24 @@ enum JellyfishType: String, CaseIterable {
     case shocked = "벼직 해파리"
     case strawberry = "딸기꼬치 해파리"
     case space = "우주 해파리"
+    
+    func getJellyfishImage() -> ImageResource {
+        let index = JellyfishType.allCases.firstIndex(of: self) ?? 0
+        return ImageResource(name: "img_jellyfish\(index)", bundle: .main)
+    }
+    
+    func getJellyfishRank() -> EggType {
+        switch self {
+        case .defaultJellyfish, .red, .green, .purple, .pink:
+            .normal
+        case .bunny, .starfish:
+            .rare
+        case .shocked, .strawberry:
+            .epic
+        case .space:
+            .legendary
+        }
+    }
 }
 
 enum DinoType: String, CaseIterable {
@@ -36,6 +54,24 @@ enum DinoType: String, CaseIterable {
     case nessie = "네시 다이노"
     case melonSoda = "메론소다 다이노"
     case dragon = "드래곤 다이노"
+    
+    func getDinoImage() -> ImageResource {
+        let index = DinoType.allCases.firstIndex(of: self) ?? 0
+        return ImageResource(name: "img_dino\(index)", bundle: .main)
+    }
+    
+    func getDinoRank() -> EggType {
+        switch self {
+        case .defaultDino, .red, .mint, .purple, .pink:
+            .normal
+        case .gentle, .pancake:
+            .rare
+        case .nessie, .melonSoda:
+            .epic
+        case .dragon:
+            .legendary
+        }
+    }
 }
 
 extension CharacterType {

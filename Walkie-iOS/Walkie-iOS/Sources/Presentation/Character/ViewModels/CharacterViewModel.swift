@@ -16,7 +16,6 @@ final class CharacterViewModel: ViewModelable {
     }
     
     struct CharacterListState {
-        let category: CharacterType
         let jellyfishState: [JellyfishType: CharacterState]
         let dinoState: [DinoType: CharacterState]
     }
@@ -29,12 +28,12 @@ final class CharacterViewModel: ViewModelable {
     enum Action {
         case willAppear
         case willSelectCategory(CharacterType)
-        case willSelectJellyfish(JellyfishType)
-        case willSelectDino(DinoType)
+        case willSelectJellyfish(type: JellyfishType, state: CharacterState)
+        case willSelectDino(type: DinoType, state: CharacterState)
     }
     
     @Published var state: CharacterViewState = .loading
-    @Published var characterListState: CharacterListState?
+    @Published var showingCharacterType: CharacterType = .jellyfish
     @Published var characterDetailViewModel: CharacterDetailViewModel?
     
     func action(_ action: Action) {
@@ -65,18 +64,19 @@ final class CharacterViewModel: ViewModelable {
                 .melonSoda: CharacterState(count: 8, isWalking: true),
                 .dragon: CharacterState(count: 10, isWalking: false)
             ]
-            self.state = .loaded(
-                CharacterListState(
-                    category: .dino,
-                    jellyfishState: jellyfishState,
-                    dinoState: dinoState
+            self.state = .loaded(CharacterListState(jellyfishState: jellyfishState, dinoState: dinoState))
+        case .willSelectCategory(let category):
+            self.showingCharacterType = category
+        case .willSelectJellyfish(let jellyfish, let characterState):
+            characterDetailViewModel = CharacterDetailViewModel(
+                detailState: CharacterDetailViewModel.CharacterDetailState(
+                        characterName: jellyfish.rawValue,
+                        characterRank: jellyfish.getJellyfishRank(),
+                        characterCount: 0,
+                        isWalking: false
                 )
             )
-        case .willSelectCategory(let category):
-            self.state = .loaded(CharacterListState(category: category, jellyfishState: [:], dinoState: [:]))
-        case .willSelectJellyfish(let jellyfish):
-            break
-        case .willSelectDino(let dino):
+        case .willSelectDino(let dino, let characterState):
             break
         }
     }

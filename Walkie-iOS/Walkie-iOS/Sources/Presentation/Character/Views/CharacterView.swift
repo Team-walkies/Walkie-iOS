@@ -31,60 +31,56 @@ struct CharacterView: View {
                     HStack(alignment: .center, spacing: 8) {
                         Text(CharacterType.jellyfish.rawValue)
                             .font(.H3)
-                            .foregroundStyle(state.category == .jellyfish
+                            .foregroundStyle(viewModel.showingCharacterType == .jellyfish
                                 ? WalkieCommonAsset.gray700.swiftUIColor
                                 : WalkieCommonAsset.gray300.swiftUIColor)
                             .padding(4)
                             .onTapGesture {
-                                if state.category != .jellyfish {
+                                if viewModel.showingCharacterType != .jellyfish {
                                     viewModel.action(.willSelectCategory(.jellyfish))
                                 }
                             }
                         Text(CharacterType.dino.rawValue)
                             .font(.H3)
-                            .foregroundStyle(state.category == .dino
+                            .foregroundStyle(viewModel.showingCharacterType == .dino
                                 ? WalkieCommonAsset.gray700.swiftUIColor
                                 : WalkieCommonAsset.gray300.swiftUIColor)
                             .padding(4)
                             .onTapGesture {
-                                if state.category != .dino {
+                                if viewModel.showingCharacterType != .dino {
                                     viewModel.action(.willSelectCategory(.dino))
                                 }
                             }
                     }.padding(.bottom, 4)
-                    Text(state.category == .jellyfish
+                    Text(viewModel.showingCharacterType == .jellyfish
                         ? StringLiterals.CharacterView.jellyfishIntroductionText
                         : StringLiterals.CharacterView.dinoIntroductionText)
                     .font(.B2)
                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                     .padding(.bottom, 20)
                     LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                        if state.category == .jellyfish {
-                            ForEach(Array(JellyfishType.allCases.enumerated()), id: \.element) { index, jellyfish in
+                        if viewModel.showingCharacterType == .jellyfish {
+                            ForEach(Array(JellyfishType.allCases), id: \.self) { jellyfish in
                                 if let characterState = state.jellyfishState[jellyfish] {
                                     CharacterItemView(
-                                        characterImage: CharacterType.getCharacterImage(
-                                            type: 1,
-                                            characterClass: index
-                                        )!, characterName: jellyfish.rawValue,
-                                        count: characterState.count,
+                                        characterImage: jellyfish.getJellyfishImage(),
+                                        characterName: jellyfish.rawValue,
                                         characterType: .jellyfish,
+                                        count: characterState.count,
                                         isWalking: characterState.isWalking
                                     ).onTapGesture {
-                                        viewModel.action(.willSelectJellyfish(jellyfish))
+                                        viewModel.action(.willSelectJellyfish(jellyfish, state.jellyfishState[jellyfish]!))
                                     }
                                 }
                             }
                         } else {
-                            ForEach(Array(DinoType.allCases.enumerated()), id: \.element) { index, dino in
+                            ForEach(Array(DinoType.allCases), id: \.self) { dino in
                                 if let characterState = state.dinoState[dino] {
                                     CharacterItemView(
-                                        characterImage: CharacterType.getCharacterImage(
-                                            type: 1,
-                                            characterClass: index
-                                        )!, characterName: dino.rawValue,
-                                        count: characterState.count,
+                                        characterImage: dino.getDinoImage(),
+                                        characterName: dino.rawValue,
                                         characterType: .dino,
+                                        count: characterState.count,
                                         isWalking: characterState.isWalking
                                     ).onTapGesture {
                                         viewModel.action(.willSelectDino(dino))
@@ -108,7 +104,6 @@ struct CharacterView: View {
         .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
             // 바텀시트 구현
         }
-        .navigationBarBackButtonHidden()
     }
     
 }
@@ -118,9 +113,11 @@ struct CharacterItemView: View {
     
     let characterImage: ImageResource
     let characterName: String
-    let count: Int
     let characterType: CharacterType
+    
+    let count: Int
     let isWalking: Bool
+    
     let emptyJellyfishImage = ImageResource(name: "img_empty_jellyfish", bundle: .main)
     let emptyDinoImage = ImageResource(name: "img_empty_dino", bundle: .main)
     
