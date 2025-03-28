@@ -8,7 +8,7 @@
 import SwiftUI
 import WalkieCommon
 
-enum EggLiterals: String, CaseIterable, Hashable {
+enum EggType: String, CaseIterable, Hashable {
     case normal = "일반"
     case rare = "희귀"
     case epic = "에픽"
@@ -66,7 +66,7 @@ enum EggLiterals: String, CaseIterable, Hashable {
         }
     }
     
-    var characterObtainRate: [EggLiterals: Int] {
+    var characterObtainRate: [EggType: Int] {
         switch self {
         case .normal: [
             .normal: 80,
@@ -108,18 +108,18 @@ enum EggLiterals: String, CaseIterable, Hashable {
         }
     }
     
-    static func from(number: Int) -> EggLiterals {
+    static func from(number: Int) -> EggType {
         switch number {
         case 0:
-            return EggLiterals.normal
+            return EggType.normal
         case 1:
-            return EggLiterals.rare
+            return EggType.rare
         case 2:
-            return EggLiterals.epic
+            return EggType.epic
         case 3:
-            return EggLiterals.legendary
+            return EggType.legendary
         default:
-            return EggLiterals.normal
+            return EggType.normal
         }
     }
 }

@@ -30,7 +30,7 @@ extension DefaultMemberRepository: MemberRepository {
         memberService.getEggPlaying()
             .map { dto in EggEntity(
                 eggId: dto.eggID,
-                eggType: EggLiterals.from(number: dto.rank),
+                eggType: EggType.from(number: dto.rank),
                 nowStep: dto.nowStep,
                 needStep: dto.needStep,
                 isWalking: true,
@@ -57,7 +57,7 @@ extension DefaultMemberRepository: MemberRepository {
     func getEggPlayId() -> AnyPublisher<EggInfoEntity, NetworkError> {
         memberService.getEggPlaying()
             .map { dto in EggInfoEntity(
-                eggType: EggLiterals.from(number: dto.rank),
+                eggType: EggType.from(number: dto.rank),
                 needStep: dto.needStep
             )}
             .mapToNetworkError()

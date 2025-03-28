@@ -31,7 +31,7 @@ extension DefaultEggRepository: EggRepository {
             let dummyData = (0..<20).map { eggId in
                 EggEntity(
                     eggId: eggId,
-                    eggType: EggLiterals.from(number: Int.random(in: 0...3)),
+                    eggType: EggType.from(number: Int.random(in: 0...3)),
                     nowStep: Int.random(in: 0...5000),
                     needStep: Int.random(in: 1...5) * 1000,
                     isWalking: Bool.random(),
@@ -47,7 +47,7 @@ extension DefaultEggRepository: EggRepository {
                     dto.eggs.map { egg in
                         EggEntity(
                             eggId: egg.eggId,
-                            eggType: EggLiterals.from(number: egg.rank),
+                            eggType: EggType.from(number: egg.rank),
                             nowStep: egg.nowStep,
                             needStep: egg.needStep,
                             isWalking: egg.play,

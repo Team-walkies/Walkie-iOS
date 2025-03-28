@@ -6,6 +6,6 @@
 //
 
 struct EggInfoEntity {
-    let eggType: EggLiterals
+    let eggType: EggType
     let needStep: Int
 }

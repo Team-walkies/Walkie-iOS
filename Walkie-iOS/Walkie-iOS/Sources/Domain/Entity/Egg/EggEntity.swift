@@ -9,7 +9,7 @@ import Foundation
 
 struct EggEntity {
     let eggId: Int
-    let eggType: EggLiterals
+    let eggType: EggType
     let nowStep: Int
     let needStep: Int
     let isWalking: Bool
