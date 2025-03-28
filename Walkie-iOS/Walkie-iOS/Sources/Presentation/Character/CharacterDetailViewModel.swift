@@ -39,9 +39,9 @@ final class CharacterDetailViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .willAppear:
-            <#code#>
+            break
         case .didSelectCharacterWalking:
-            <#code#>
+            break
         }
     }
 }

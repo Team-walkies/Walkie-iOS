@@ -17,8 +17,8 @@ final class CharacterViewModel: ViewModelable {
     
     struct CharacterListState {
         let category: CharacterType
-        let jellyFishCount: [JellyfishType.AllCases: CharacterState]
-        let dinoCount: [DinoType.AllCases: CharacterState]
+        let jellyfishState: [JellyfishType: CharacterState]
+        let dinoState: [DinoType: CharacterState]
     }
     
     struct CharacterState {
@@ -29,23 +29,55 @@ final class CharacterViewModel: ViewModelable {
     enum Action {
         case willAppear
         case willSelectCategory(CharacterType)
-        case willSelectJellyFish(JellyfishType)
+        case willSelectJellyfish(JellyfishType)
         case willSelectDino(DinoType)
     }
     
     @Published var state: CharacterViewState = .loading
+    @Published var characterListState: CharacterListState?
     @Published var characterDetailViewModel: CharacterDetailViewModel?
     
     func action(_ action: Action) {
         switch action {
         case .willAppear:
-            <#code#>
+            let jellyfishState: [JellyfishType: CharacterState] = [
+                .defaultJellyfish: CharacterState(count: 5, isWalking: true),
+                .red: CharacterState(count: 3, isWalking: false),
+                .green: CharacterState(count: 8, isWalking: true),
+                .purple: CharacterState(count: 2, isWalking: false),
+                .pink: CharacterState(count: 4, isWalking: true),
+                .bunny: CharacterState(count: 1, isWalking: false),
+                .starfish: CharacterState(count: 6, isWalking: true),
+                .shocked: CharacterState(count: 0, isWalking: false),
+                .strawberry: CharacterState(count: 7, isWalking: true),
+                .space: CharacterState(count: 9, isWalking: false)
+            ]
+            
+            let dinoState: [DinoType: CharacterState] = [
+                .defaultDino: CharacterState(count: 4, isWalking: true),
+                .red: CharacterState(count: 2, isWalking: false),
+                .mint: CharacterState(count: 6, isWalking: true),
+                .purple: CharacterState(count: 3, isWalking: false),
+                .pink: CharacterState(count: 5, isWalking: true),
+                .gentle: CharacterState(count: 1, isWalking: false),
+                .pancake: CharacterState(count: 7, isWalking: true),
+                .nessie: CharacterState(count: 0, isWalking: false),
+                .melonSoda: CharacterState(count: 8, isWalking: true),
+                .dragon: CharacterState(count: 10, isWalking: false)
+            ]
+            self.state = .loaded(
+                CharacterListState(
+                    category: .dino,
+                    jellyfishState: jellyfishState,
+                    dinoState: dinoState
+                )
+            )
         case .willSelectCategory(let category):
-            <#code#>
-        case .willSelectJellyFish(let jellyFish):
-            <#code#>
+            self.state = .loaded(CharacterListState(category: category, jellyfishState: [:], dinoState: [:]))
+        case .willSelectJellyfish(let jellyfish):
+            break
         case .willSelectDino(let dino):
-            <#code#>
+            break
         }
     }
 }
