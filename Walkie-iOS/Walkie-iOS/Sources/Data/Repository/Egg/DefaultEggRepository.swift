@@ -39,7 +39,7 @@ extension DefaultEggRepository: EggRepository {
                 )
             }
             return Just(dummyData)
-                .setFailureType(to: Error.self)
+                .setFailureType(to: NetworkError.self)
                 .mapToNetworkError()
         } else {
             return eggService.getEggsList()
@@ -68,7 +68,7 @@ extension DefaultEggRepository: EggRepository {
                 obtainedDate: "2023-04-15"
             )
             return Just(dummyData)
-                .setFailureType(to: Error.self)
+                .setFailureType(to: NetworkError.self)
                 .mapToNetworkError()
         } else {
             return eggService.getEggDetail(eggId: eggId)

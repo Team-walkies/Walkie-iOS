@@ -62,4 +62,33 @@ extension DefaultMemberRepository: MemberRepository {
             )}
             .mapToNetworkError()
     }
+    
+    func getWalkingCharacter() -> AnyPublisher<CharacterEntity, NetworkError> {
+        memberService.getCharacterPlay()
+            .map { dto in CharacterEntity(
+                characterId: dto.characterID,
+                type: dto.type == 0 ? .jellyfish : .dino,
+                jellyfishType: dto.type == 0 ? CharacterType.mapCharacterType(
+                    requestedType: .jellyfish,
+                    type: dto.type,
+                    rank: dto.rank,
+                    characterClass: dto.characterClass
+                ) as? JellyfishType : nil,
+                dinoType: dto.type == 1 ? CharacterType.mapCharacterType(
+                    requestedType: .dino,
+                    type: dto.type,
+                    rank: dto.rank,
+                    characterClass: dto.characterClass
+                ) as? DinoType : nil,
+                count: dto.count ?? 0,
+                isWalking: dto.picked,
+                obtainedDetails: nil)
+            }
+            .mapToNetworkError()
+    }
+    
+    func patchWalkingCharacter(characterId: Int) -> AnyPublisher<Void, NetworkError> {
+        memberService.
+    }
 }
+

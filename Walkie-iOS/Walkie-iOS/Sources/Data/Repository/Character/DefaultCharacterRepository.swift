@@ -55,6 +55,7 @@ extension DefaultCharacterRepository: CharacterRepository {
         if dummy {
             let dummyData: [CharacterEntity] = (0..<5).map { index in
                 CharacterEntity(
+                    characterId: 48,
                     type: type,
                     jellyfishType: type == .jellyfish ? JellyfishType.allCases.randomElement() : nil,
                     dinoType: type == .dino ? DinoType.allCases.randomElement() : nil,
@@ -71,14 +72,15 @@ extension DefaultCharacterRepository: CharacterRepository {
                 .map { dto in
                     dto.characters.map { character in
                         CharacterEntity(
+                            characterId: character.characterId,
                             type: type,
-                            jellyfishType: self.mapCharacterType(
+                            jellyfishType: CharacterType.mapCharacterType(
                                 requestedType: type,
                                 type: character.type,
                                 rank: character.rank,
                                 characterClass: character.characterClass
                             ) as? JellyfishType,
-                            dinoType: self.mapCharacterType(
+                            dinoType: CharacterType.mapCharacterType(
                                 requestedType: type,
                                 type: character.type,
                                 rank: character.rank,
@@ -106,17 +108,4 @@ extension DefaultCharacterRepository: CharacterRepository {
         }
     }
     
-}
-
-extension DefaultCharacterRepository {
-    
-    func mapCharacterType(
-        requestedType: CharacterType,
-        type: Int,
-        rank: Int,
-        characterClass: Int) -> (any CaseIterable)? {
-        if requestedType == .jellyfish && type == 1 { return nil }
-        let index = rank == 0 ? characterClass : characterClass + 5 + (rank - 1) * 2
-        return type == 0 ? JellyfishType.allCases[index] : DinoType.allCases[index]
-    }
 }

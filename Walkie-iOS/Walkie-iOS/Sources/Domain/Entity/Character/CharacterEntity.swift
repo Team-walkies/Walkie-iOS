@@ -8,6 +8,7 @@
 import Foundation
 
 struct CharacterEntity {
+    let characterId: CLong
     let type: CharacterType
     let jellyfishType: JellyfishType?
     let dinoType: DinoType?

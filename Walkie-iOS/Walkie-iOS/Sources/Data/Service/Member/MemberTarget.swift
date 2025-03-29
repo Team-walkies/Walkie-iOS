@@ -39,7 +39,7 @@ extension MemberTarget {
         return MemberTarget(
             path: URLConstant.membersEggs,
             method: .patch,
-            task: .requestJSONEncodable(eggId),
+            task: .requestJSONEncodable(["eggId": eggId]),
             headers: APIConstants.hasTokenHeader
         )
     }
@@ -50,4 +50,13 @@ extension MemberTarget {
         task: .requestPlain,
         headers: APIConstants.hasTokenHeader
     )
+    
+    static func patchCharacterPlay(characterId: Int) -> MemberTarget {
+        return MemberTarget(
+            path: URLConstant.membersCharacters,
+            method: .patch,
+            task: .requestJSONEncodable(["characterId": characterId]),
+            headers: APIConstants.hasTokenHeader
+        )
+    }
 }

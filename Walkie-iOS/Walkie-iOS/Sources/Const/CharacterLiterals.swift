@@ -108,4 +108,14 @@ extension CharacterType {
             return nil
         }
     }
+    
+    static func mapCharacterType(
+        requestedType: CharacterType,
+        type: Int,
+        rank: Int,
+        characterClass: Int) -> (any CaseIterable)? {
+        if requestedType == .jellyfish && type == 1 { return nil }
+        let index = rank == 0 ? characterClass : characterClass + 5 + (rank - 1) * 2
+        return type == 0 ? JellyfishType.allCases[index] : DinoType.allCases[index]
+    }
 }
