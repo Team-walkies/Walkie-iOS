@@ -8,7 +8,7 @@
 import Combine
 
 protocol CharacterService {
-    func getCharactersDetail(characterId: Int) -> AnyPublisher<GetCharactersDetailDto, Error>
+    func getCharactersDetail(characterId: CLong) -> AnyPublisher<GetCharactersDetailDto, Error>
     func getCharactersList(type: Int) -> AnyPublisher<GetCharactersListDto, Error>
     func getCharactersCount() -> AnyPublisher<GetCharactersCountDto, Error>
 }

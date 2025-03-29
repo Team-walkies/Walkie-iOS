@@ -20,7 +20,7 @@ final class DefaultCharacterService {
 
 extension DefaultCharacterService: CharacterService {
     
-    func getCharactersDetail(characterId: Int) -> AnyPublisher<GetCharactersDetailDto, Error> {
+    func getCharactersDetail(characterId: CLong) -> AnyPublisher<GetCharactersDetailDto, Error> {
         characterProvider.requestPublisher(.getCharactersDetail(characterId: characterId))
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetCharactersDetailDto.self)
