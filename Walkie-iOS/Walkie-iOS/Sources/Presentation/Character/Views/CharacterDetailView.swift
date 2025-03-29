@@ -86,7 +86,7 @@ struct CharacterDetailView: View {
                                         location: 0.00),
                                     Gradient.Stop(
                                         color: .white,
-                                        location: 1.00),
+                                        location: 1.00)
                                 ],
                                 startPoint: UnitPoint(x: 0.5, y: 0),
                                 endPoint: UnitPoint(x: 0.5, y: 0.26)
@@ -104,10 +104,10 @@ struct CharacterDetailView: View {
                         }
                     ).padding(.bottom, 38)
                 }
-            case .error(let string):
-                ZStack{ }
-            case .loading:
-                ZStack{ }
+            case .error(let error):
+                Text(error.description)
+            default:
+                ProgressView()
             }
         }.onAppear {
             viewModel.action(.willAppear)

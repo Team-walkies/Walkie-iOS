@@ -16,7 +16,8 @@ struct CharacterView: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 0) { NavigationBar(showBackButton: true)
+            VStack(alignment: .leading, spacing: 0) {
+                NavigationBar(showBackButton: true)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         switch self.viewModel.state {
@@ -30,7 +31,8 @@ struct CharacterView: View {
                                 HStack(alignment: .center, spacing: 8) {
                                     Text(CharacterType.jellyfish.rawValue)
                                         .font(.H3)
-                                        .foregroundStyle(viewModel.showingCharacterType == .jellyfish
+                                        .foregroundStyle(
+                                            viewModel.showingCharacterType == .jellyfish
                                             ? WalkieCommonAsset.gray700.swiftUIColor
                                             : WalkieCommonAsset.gray300.swiftUIColor)
                                         .padding(4)
@@ -41,7 +43,8 @@ struct CharacterView: View {
                                         }
                                     Text(CharacterType.dino.rawValue)
                                         .font(.H3)
-                                        .foregroundStyle(viewModel.showingCharacterType == .dino
+                                        .foregroundStyle(
+                                            viewModel.showingCharacterType == .dino
                                             ? WalkieCommonAsset.gray700.swiftUIColor
                                             : WalkieCommonAsset.gray300.swiftUIColor)
                                         .padding(4)
@@ -69,7 +72,10 @@ struct CharacterView: View {
                     }
                 }
             }
-            .bottomSheet(isPresented: $isPresentingBottomSheet, height: screenHeight-94) {
+            .bottomSheet(
+                isPresented: $isPresentingBottomSheet,
+                height: screenHeight-94
+            ) {
                 CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
                     .padding(.top, 28)
                     .background(.white)
@@ -78,7 +84,7 @@ struct CharacterView: View {
     }
 }
 
-struct CharacterItemView: View {
+private struct CharacterItemView: View {
     @Environment(\.screenWidth) var screenWidth
     
     let characterImage: ImageResource
@@ -93,25 +99,37 @@ struct CharacterItemView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
-            Image(count != 0
+            Image(
+                count != 0
                 ? characterImage
                 : characterType == .jellyfish
                 ? emptyJellyfishImage
                 : emptyDinoImage)
             .resizable()
             .frame(width: 120, height: 120)
-            Text(characterName)
+            Text(count == 0 ? "미획득" : characterName)
                 .font(.H5)
-                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                .foregroundStyle(
+                    count == 0
+                    ? WalkieCommonAsset.gray500.swiftUIColor
+                    : WalkieCommonAsset.gray700.swiftUIColor
+                )
                 .padding(.bottom, 4)
-            HighlightTextAttribute(
-                text: "\(count)마리",
-                textColor: WalkieCommonAsset.gray500.swiftUIColor,
-                font: .B2,
-                highlightText: "\(count)",
-                highlightColor: WalkieCommonAsset.gray700.swiftUIColor,
-                highlightFont: .H6)
-            .padding(.bottom, 12)
+            if count == 0 {
+                Text("알을 부화시켜 얻어요")
+                    .font(.B2)
+                    .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
+                    .padding(.bottom, 12)
+            } else {
+                HighlightTextAttribute(
+                    text: "\(count)마리",
+                    textColor: WalkieCommonAsset.gray500.swiftUIColor,
+                    font: .B2,
+                    highlightText: "\(count)",
+                    highlightColor: WalkieCommonAsset.gray700.swiftUIColor,
+                    highlightFont: .H6
+                ).padding(.bottom, 12)
+            }
         }
         .frame(width: (screenWidth - 16*2 - 11)/2, height: 192)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
@@ -156,6 +174,7 @@ private struct CharacterListView: View {
         .scrollIndicators(.never)
     }
 }
+
 private struct CharacterTypeView: View {
     let type: CharacterType
     let state: CharacterViewModel.CharacterListState
@@ -221,6 +240,7 @@ private struct JellyfishItemView: View {
                 isWalking: jellyfishState.isWalking
             )
             .onTapGesture {
+                if jellyfishState.count == 0 { return }
                 isPresentingBottomSheet = true
                 viewModel.action(.willSelectJellyfish(
                     type: jellyfish,
@@ -247,6 +267,7 @@ private struct DinoItemView: View {
                 isWalking: dinoState.isWalking
             )
             .onTapGesture {
+                if dinoState.count == 0 { return }
                 isPresentingBottomSheet = true
                 viewModel.action(.willSelectDino(
                     type: dino,
@@ -256,6 +277,7 @@ private struct DinoItemView: View {
         }
     }
 }
+
 #Preview {
     CharacterView(viewModel: CharacterViewModel())
 }
