@@ -7,24 +7,7 @@
 
 import Combine
 
-final class DefaultGetWalkingCharacterUseCase {
-    
-    // MARK: - Dependency
-    
-    private let memberRepository: MemberRepository
-    
-    // MARK: - Properties
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Life Cycle
-    
-    init(memberRepository: MemberRepository) {
-        self.memberRepository = memberRepository
-    }
-}
-
-extension DefaultGetWalkingCharacterUseCase: GetWalkingCharacterUseCase {
+final class DefaultGetWalkingCharacterUseCase: BaseMemberUseCase, GetWalkingCharacterUseCase {
     func getCharacterWalking() -> AnyPublisher<CharacterEntity, NetworkError> {
         memberRepository.getWalkingCharacter()
             .mapToNetworkError()

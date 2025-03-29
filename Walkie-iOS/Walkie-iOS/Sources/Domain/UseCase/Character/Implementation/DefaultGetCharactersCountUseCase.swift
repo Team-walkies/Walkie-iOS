@@ -7,24 +7,7 @@
 
 import Combine
 
-final class DefaultGetCharactersCountUseCase {
-    
-    // MARK: - Dependency
-    
-    private let characterRepository: CharacterRepository
-    
-    // MARK: - Properties
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Life Cycle
-    
-    init(characterRepository: CharacterRepository) {
-        self.characterRepository = characterRepository
-    }
-}
-
-extension DefaultGetCharactersCountUseCase: GetCharactersCountUseCase {
+final class DefaultGetCharactersCountUseCase: BaseCharactersUseCase, GetCharactersCountUseCase {
     func getCharactersCount() -> AnyPublisher<Int, NetworkError> {
         characterRepository.getCharactersCount(dummy: true)
             .mapToNetworkError()

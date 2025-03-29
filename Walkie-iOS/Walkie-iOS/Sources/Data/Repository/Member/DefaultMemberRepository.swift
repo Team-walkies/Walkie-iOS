@@ -88,7 +88,7 @@ extension DefaultMemberRepository: MemberRepository {
     }
     
     func patchWalkingCharacter(characterId: Int) -> AnyPublisher<Void, NetworkError> {
-        memberService.
+        memberService.patchCharacterPlay(characterId: characterId)
+            .mapToNetworkError()
     }
 }
-

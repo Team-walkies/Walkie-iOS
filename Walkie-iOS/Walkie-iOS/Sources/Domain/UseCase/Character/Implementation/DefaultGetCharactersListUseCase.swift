@@ -7,24 +7,7 @@
 
 import Combine
 
-final class DefaultGetCharactersListUseCase {
-    
-    // MARK: - Dependency
-    
-    private let characterRepository: CharacterRepository
-    
-    // MARK: - Properties
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    // MARK: - Life Cycle
-    
-    init(characterRepository: CharacterRepository) {
-        self.characterRepository = characterRepository
-    }
-}
-
-extension DefaultGetCharactersListUseCase: GetCharactersListUseCase {
+final class DefaultGetCharactersListUseCase: BaseCharactersUseCase, GetCharactersListUseCase {
     func getCharactersList() -> AnyPublisher<[CharacterEntity], NetworkError> {
         characterRepository.getCharactersList(dummy: true, type: .dino)
             .mapToNetworkError()
