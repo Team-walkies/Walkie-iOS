@@ -24,12 +24,12 @@ enum JellyfishType: String, CaseIterable {
     case strawberry = "딸기꼬치 해파리"
     case space = "우주 해파리"
     
-    func getJellyfishImage() -> ImageResource {
+    func getCharacterImage() -> ImageResource {
         let index = JellyfishType.allCases.firstIndex(of: self) ?? 0
         return ImageResource(name: "img_jellyfish\(index)", bundle: .main)
     }
     
-    func getJellyfishRank() -> EggType {
+    func getCharacterRank() -> EggType {
         switch self {
         case .defaultJellyfish, .red, .green, .purple, .pink:
             .normal
@@ -55,12 +55,12 @@ enum DinoType: String, CaseIterable {
     case melonSoda = "메론소다 다이노"
     case dragon = "드래곤 다이노"
     
-    func getDinoImage() -> ImageResource {
+    func getCharacterImage() -> ImageResource {
         let index = DinoType.allCases.firstIndex(of: self) ?? 0
         return ImageResource(name: "img_dino\(index)", bundle: .main)
     }
     
-    func getDinoRank() -> EggType {
+    func getCharacterRank() -> EggType {
         switch self {
         case .defaultDino, .red, .mint, .purple, .pink:
             .normal

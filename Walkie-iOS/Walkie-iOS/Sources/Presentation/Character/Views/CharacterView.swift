@@ -9,103 +9,73 @@ import SwiftUI
 import WalkieCommon
 
 struct CharacterView: View {
-    let gridColumns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
+    @Environment(\.screenHeight) var screenHeight
     
     @ObservedObject var viewModel: CharacterViewModel
     @State var isPresentingBottomSheet: Bool = false
     
     var body: some View {
-        NavigationBar(showBackButton: true)
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                switch self.viewModel.state {
-                case .loaded(let state):
-                    Text("부화한 캐릭터")
-                        .font(.H2)
-                        .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
-                        .padding(.top, 12)
-                        .padding(.bottom, 24)
-                    HStack(alignment: .center, spacing: 8) {
-                        Text(CharacterType.jellyfish.rawValue)
-                            .font(.H3)
-                            .foregroundStyle(viewModel.showingCharacterType == .jellyfish
-                                ? WalkieCommonAsset.gray700.swiftUIColor
-                                : WalkieCommonAsset.gray300.swiftUIColor)
-                            .padding(4)
-                            .onTapGesture {
-                                if viewModel.showingCharacterType != .jellyfish {
-                                    viewModel.action(.willSelectCategory(.jellyfish))
-                                }
+        ZStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 0) { NavigationBar(showBackButton: true)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        switch self.viewModel.state {
+                        case .loaded(let state):
+                            VStack(spacing: 0) {
+                                Text("부화한 캐릭터")
+                                    .font(.H2)
+                                    .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                                    .padding(.top, 12)
+                                    .padding(.bottom, 22)
+                                HStack(alignment: .center, spacing: 8) {
+                                    Text(CharacterType.jellyfish.rawValue)
+                                        .font(.H3)
+                                        .foregroundStyle(viewModel.showingCharacterType == .jellyfish
+                                            ? WalkieCommonAsset.gray700.swiftUIColor
+                                            : WalkieCommonAsset.gray300.swiftUIColor)
+                                        .padding(4)
+                                        .onTapGesture {
+                                            withAnimation(.easeInOut(duration: 0.01)) {
+                                                viewModel.action(.willSelectCategory(.jellyfish))
+                                            }
+                                        }
+                                    Text(CharacterType.dino.rawValue)
+                                        .font(.H3)
+                                        .foregroundStyle(viewModel.showingCharacterType == .dino
+                                            ? WalkieCommonAsset.gray700.swiftUIColor
+                                            : WalkieCommonAsset.gray300.swiftUIColor)
+                                        .padding(4)
+                                        .onTapGesture {
+                                            withAnimation(.smooth(duration: 0.01)) {
+                                                viewModel.action(.willSelectCategory(.dino))
+                                            }
+                                        }
+                                }.padding(.bottom, 4)
                             }
-                        Text(CharacterType.dino.rawValue)
-                            .font(.H3)
-                            .foregroundStyle(viewModel.showingCharacterType == .dino
-                                ? WalkieCommonAsset.gray700.swiftUIColor
-                                : WalkieCommonAsset.gray300.swiftUIColor)
-                            .padding(4)
-                            .onTapGesture {
-                                if viewModel.showingCharacterType != .dino {
-                                    viewModel.action(.willSelectCategory(.dino))
-                                }
-                            }
-                    }.padding(.bottom, 4)
-                    Text(viewModel.showingCharacterType == .jellyfish
-                        ? StringLiterals.CharacterView.jellyfishIntroductionText
-                        : StringLiterals.CharacterView.dinoIntroductionText)
-                    .font(.B2)
-                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                    .padding(.bottom, 20)
-                    LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                        if viewModel.showingCharacterType == .jellyfish {
-                            ForEach(Array(JellyfishType.allCases), id: \.self) { jellyfish in
-                                if let characterState = state.jellyfishState[jellyfish] {
-                                    CharacterItemView(
-                                        characterImage: jellyfish.getJellyfishImage(),
-                                        characterName: jellyfish.rawValue,
-                                        characterType: .jellyfish,
-                                        count: characterState.count,
-                                        isWalking: characterState.isWalking
-                                    ).onTapGesture {
-                                        viewModel.action(.willSelectJellyfish(jellyfish, state.jellyfishState[jellyfish]!))
-                                    }
-                                }
-                            }
-                        } else {
-                            ForEach(Array(DinoType.allCases), id: \.self) { dino in
-                                if let characterState = state.dinoState[dino] {
-                                    CharacterItemView(
-                                        characterImage: dino.getDinoImage(),
-                                        characterName: dino.rawValue,
-                                        characterType: .dino,
-                                        count: characterState.count,
-                                        isWalking: characterState.isWalking
-                                    ).onTapGesture {
-                                        viewModel.action(.willSelectDino(dino))
-                                    }
-                                }
-                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16)
+                            CharacterListView(
+                                viewModel: viewModel,
+                                state: state,
+                                isPresentingBottomSheet: $isPresentingBottomSheet)
+                        case .error(let error):
+                            Text(error.description)
+                        default:
+                            ProgressView()
                         }
                     }
-                case .error(let error):
-                    Text(error.description)
-                default:
-                    ProgressView()
+                    .onAppear {
+                        viewModel.action(.willAppear)
+                    }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
-            .onAppear {
-                viewModel.action(.willAppear)
+            .bottomSheet(isPresented: $isPresentingBottomSheet, height: screenHeight-94) {
+                CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
+                    .padding(.top, 28)
+                    .background(.white)
             }
         }
-        .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
-            // 바텀시트 구현
-        }
     }
-    
 }
 
 struct CharacterItemView: View {
@@ -163,6 +133,129 @@ struct CharacterItemView: View {
     
 }
 
+private struct CharacterListView: View {
+    @ObservedObject var viewModel: CharacterViewModel
+    @State var state: CharacterViewModel.CharacterListState
+    @Binding var isPresentingBottomSheet: Bool
+    
+    var body: some View {
+        ScrollView(.horizontal) {
+            HStack(alignment: .top, spacing: 0) {
+                ForEach(CharacterType.allCases, id: \.self) { type in
+                    CharacterTypeView(
+                        type: type,
+                        state: state,
+                        viewModel: viewModel,
+                        isPresentingBottomSheet: $isPresentingBottomSheet
+                    )
+                }
+            }.scrollTargetLayout()
+        }
+        .scrollPosition(id: $viewModel.showingCharacterType)
+        .scrollTargetBehavior(.paging)
+        .scrollIndicators(.never)
+    }
+}
+private struct CharacterTypeView: View {
+    let type: CharacterType
+    let state: CharacterViewModel.CharacterListState
+    let viewModel: CharacterViewModel
+    @Binding var isPresentingBottomSheet: Bool
+    
+    let gridColumns = [
+        GridItem(.flexible()),
+        GridItem(.flexible())
+    ]
+    
+    @Environment(\.screenWidth) var screenWidth
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(type == .jellyfish
+                ? StringLiterals.CharacterView.jellyfishIntroductionText
+                : StringLiterals.CharacterView.dinoIntroductionText)
+            .font(.B2)
+            .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
+            .padding(.bottom, 20)
+            LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                if type == .jellyfish {
+                    ForEach(JellyfishType.allCases, id: \.self) { jellyfish in
+                        JellyfishItemView(
+                            jellyfish: jellyfish,
+                            state: state,
+                            viewModel: viewModel,
+                            isPresentingBottomSheet: $isPresentingBottomSheet
+                        )
+                    }
+                } else {
+                    ForEach(DinoType.allCases, id: \.self) { dino in
+                        DinoItemView(
+                            dino: dino,
+                            state: state,
+                            viewModel: viewModel,
+                            isPresentingBottomSheet: $isPresentingBottomSheet
+                        )
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(width: screenWidth)
+        .ignoresSafeArea()
+    }
+}
+
+private struct JellyfishItemView: View {
+    let jellyfish: JellyfishType
+    let state: CharacterViewModel.CharacterListState
+    let viewModel: CharacterViewModel
+    @Binding var isPresentingBottomSheet: Bool
+    
+    var body: some View {
+        if let jellyfishState = state.jellyfishState[jellyfish] {
+            CharacterItemView(
+                characterImage: jellyfish.getCharacterImage(),
+                characterName: jellyfish.rawValue,
+                characterType: .jellyfish,
+                count: jellyfishState.count,
+                isWalking: jellyfishState.isWalking
+            )
+            .onTapGesture {
+                isPresentingBottomSheet = true
+                viewModel.action(.willSelectJellyfish(
+                    type: jellyfish,
+                    state: jellyfishState)
+                )
+            }
+        }
+    }
+}
+
+private struct DinoItemView: View {
+    let dino: DinoType
+    let state: CharacterViewModel.CharacterListState
+    let viewModel: CharacterViewModel
+    @Binding var isPresentingBottomSheet: Bool
+    
+    var body: some View {
+        if let dinoState = state.dinoState[dino] {
+            CharacterItemView(
+                characterImage: dino.getCharacterImage(),
+                characterName: dino.rawValue,
+                characterType: .dino,
+                count: dinoState.count,
+                isWalking: dinoState.isWalking
+            )
+            .onTapGesture {
+                isPresentingBottomSheet = true
+                viewModel.action(.willSelectDino(
+                    type: dino,
+                    state: dinoState)
+                )
+            }
+        }
+    }
+}
 #Preview {
     CharacterView(viewModel: CharacterViewModel())
 }

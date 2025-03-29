@@ -33,15 +33,15 @@ final class CharacterViewModel: ViewModelable {
     }
     
     @Published var state: CharacterViewState = .loading
-    @Published var showingCharacterType: CharacterType = .jellyfish
+    @Published var showingCharacterType: CharacterType? = .jellyfish
     @Published var characterDetailViewModel: CharacterDetailViewModel?
     
     func action(_ action: Action) {
         switch action {
         case .willAppear:
             let jellyfishState: [JellyfishType: CharacterState] = [
-                .defaultJellyfish: CharacterState(count: 5, isWalking: true),
-                .red: CharacterState(count: 3, isWalking: false),
+                .defaultJellyfish: CharacterState(count: 5, isWalking: false),
+                .red: CharacterState(count: 3, isWalking: true),
                 .green: CharacterState(count: 8, isWalking: true),
                 .purple: CharacterState(count: 2, isWalking: false),
                 .pink: CharacterState(count: 4, isWalking: true),
@@ -53,8 +53,8 @@ final class CharacterViewModel: ViewModelable {
             ]
             
             let dinoState: [DinoType: CharacterState] = [
-                .defaultDino: CharacterState(count: 4, isWalking: true),
-                .red: CharacterState(count: 2, isWalking: false),
+                .defaultDino: CharacterState(count: 5, isWalking: false),
+                .red: CharacterState(count: 2, isWalking: true),
                 .mint: CharacterState(count: 6, isWalking: true),
                 .purple: CharacterState(count: 3, isWalking: false),
                 .pink: CharacterState(count: 5, isWalking: true),
@@ -70,14 +70,25 @@ final class CharacterViewModel: ViewModelable {
         case .willSelectJellyfish(let jellyfish, let characterState):
             characterDetailViewModel = CharacterDetailViewModel(
                 detailState: CharacterDetailViewModel.CharacterDetailState(
-                        characterName: jellyfish.rawValue,
-                        characterRank: jellyfish.getJellyfishRank(),
-                        characterCount: 0,
-                        isWalking: false
+                    characterName: jellyfish.rawValue,
+                    characterImage: jellyfish.getCharacterImage(),
+                    characterDescription: "예시",
+                    characterRank: jellyfish.getCharacterRank(),
+                    characterCount: 0,
+                    isWalking: false
                 )
             )
         case .willSelectDino(let dino, let characterState):
-            break
+            characterDetailViewModel = CharacterDetailViewModel(
+                detailState: CharacterDetailViewModel.CharacterDetailState(
+                    characterName: dino.rawValue,
+                    characterImage: dino.getCharacterImage(),
+                    characterDescription: "예시",
+                    characterRank: dino.getCharacterRank(),
+                    characterCount: 0,
+                    isWalking: false
+                )
+            )
         }
     }
 }

@@ -5,24 +5,26 @@
 //  Created by 황채웅 on 3/28/25.
 //
 
-import Foundation
+import SwiftUI
 
 final class CharacterDetailViewModel: ViewModelable {
     
     enum CharacterDetailViewState {
         case loading
-        case loaded(ObtainedState)
+        case loaded(obtainedState: [ObtainedState], detailState: CharacterDetailState)
         case error(String)
     }
     
     struct CharacterDetailState {
         let characterName: String
+        let characterImage: ImageResource
+        let characterDescription: String
         let characterRank: EggType
         let characterCount: Int
         let isWalking: Bool
     }
     
-    struct ObtainedState {
+    struct ObtainedState: Hashable {
         let obtainedDate: String
         let obtainedPosition: String
     }
@@ -49,9 +51,11 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     private func fetchCharacterDetailData() {
-        state = .loaded(ObtainedState(
-            obtainedDate: "abcabc",
-            obtainedPosition: "1234")
+        state = .loaded(
+            obtainedState: Array(repeating: ObtainedState(
+                obtainedDate: "abcabc",
+                obtainedPosition: "1234"), count: 20),
+            detailState: detailState
         )
     }
     
