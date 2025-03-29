@@ -15,7 +15,8 @@ struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
     @State private var activity: Activity<WalkieWidgetAttributes>?
-    @ObservedObject private var webViewModel = WalkieWebViewModel()
+    
+    let webView = WebView(request: URLRequest(url: URL(string: "http://127.0.0.1:8000/test.html")!))
     
     var body: some View {
         VStack(spacing: 20) {
@@ -27,30 +28,14 @@ struct MapView: View {
                 stopDynamicIsland()
             }
             
-            Button(action: {
-                webViewModel.sendMessageToWeb(completionHandler: {_,_ in 
-                    print("메시지 전송 완료")
-                })
-            }, label: {
-                Text("웹에 메시지 전송")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            })
+            webView
+                .padding(5)
+                .background(.yellow)
+                .frame(height: 400)
             
-            VStack {
-                if webViewModel.shouldLoadWebView, let url = webViewModel.webViewURL {
-                    WebView(url: url, viewModel: webViewModel)
-                        .frame(maxWidth: 300, maxHeight: 400)
-                    Text("받은 메시지: \(webViewModel.receivedMessage)")
-                } else {
-                    Text("HTML 파일 로드 중...")
-                }
+            Button("웹한테 보내기!") {
+                webView.sendToWeb()
             }
-        }
-        .onAppear {
-            webViewModel.loadLocalHTML()
         }
     }
     
