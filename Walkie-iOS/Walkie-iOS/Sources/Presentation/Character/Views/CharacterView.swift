@@ -61,6 +61,8 @@ struct CharacterView: View {
                                 viewModel: viewModel,
                                 state: state,
                                 isPresentingBottomSheet: $isPresentingBottomSheet)
+                            .ignoresSafeArea()
+                            .padding(.bottom, 48)
                         case .error(let error):
                             Text(error.description)
                         default:
@@ -70,7 +72,7 @@ struct CharacterView: View {
                     .onAppear {
                         viewModel.action(.willAppear)
                     }
-                }
+                }.scrollIndicators(.never)
             }
             .bottomSheet(
                 isPresented: $isPresentingBottomSheet,
@@ -276,8 +278,4 @@ private struct DinoItemView: View {
             }
         }
     }
-}
-
-#Preview {
-    CharacterView(viewModel: CharacterViewModel())
 }

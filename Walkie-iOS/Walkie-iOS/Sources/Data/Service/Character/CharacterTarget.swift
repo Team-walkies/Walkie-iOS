@@ -42,7 +42,7 @@ extension CharacterTarget {
             method: .get,
             task: .requestParameters(
                 parameters: ["type": type],
-                encoding: JSONEncoding.default),
+                encoding: URLEncoding.queryString),
             headers: APIConstants.hasTokenHeader
         )
     }

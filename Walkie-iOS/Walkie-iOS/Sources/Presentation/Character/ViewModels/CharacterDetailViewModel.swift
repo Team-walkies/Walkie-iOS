@@ -5,9 +5,14 @@
 //  Created by 황채웅 on 3/28/25.
 //
 
+import Combine
 import SwiftUI
 
 final class CharacterDetailViewModel: ViewModelable {
+    
+    private let getCharactersDetailUseCase: GetCharactersDetailUseCase
+    private let patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase
+    private var cancellables = Set<AnyCancellable>()
     
     enum CharacterDetailViewState {
         case loading
@@ -16,6 +21,7 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     struct CharacterDetailState {
+        let characterId: Int
         let characterName: String
         let characterImage: ImageResource
         let characterDescription: String
@@ -37,8 +43,13 @@ final class CharacterDetailViewModel: ViewModelable {
     @Published var state: CharacterDetailViewState = .loading
     @Published var detailState: CharacterDetailState
     
-    init(detailState: CharacterDetailState) {
+    init(
+        detailState: CharacterDetailState,
+        getCharactersDetailUseCase: GetCharactersDetailUseCase,
+        patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase) {
         self.detailState = detailState
+        self.getCharactersDetailUseCase = getCharactersDetailUseCase
+        self.patchWalkingCharacterUseCase = patchWalkingCharacterUseCase
     }
     
     func action(_ action: Action) {
@@ -51,15 +62,57 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     private func fetchCharacterDetailData() {
-        state = .loaded(
-            obtainedState: Array(repeating: ObtainedState(
-                obtainedDate: "abcabc",
-                obtainedPosition: "1234"), count: 20),
-            detailState: detailState
-        )
+        getCharactersDetailUseCase.getCharactersObtainedDetail(characterId: detailState.characterId)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, details in
+                    self.state = .loaded(obtainedState: details.map { detail in
+                        ObtainedState(
+                            obtainedDate: self.convertDateFormat(from: detail.obtainedDate) ?? "날짜 변환 실패",
+                            obtainedPosition: detail.obtainedPosition)
+                    }, detailState: self.detailState)
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                }
+            ).store(in: &cancellables)
     }
     
     private func patchCharacterWalking() {
-        // API 호출
+        patchWalkingCharacterUseCase.patchCharacterWalking(characterId: detailState.characterId)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    self.detailState = CharacterDetailState(
+                        characterId: self.detailState.characterId,
+                        characterName: self.detailState.characterName,
+                        characterImage: self.detailState.characterImage,
+                        characterDescription: self.detailState.characterDescription,
+                        characterRank: self.detailState.characterRank,
+                        characterCount: self.detailState.characterCount,
+                        isWalking: true)
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                }
+            ).store(in: &cancellables)
+    }
+}
+
+extension CharacterDetailViewModel {
+    private func convertDateFormat(from input: String) -> String? {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "yyyy.MM.dd."
+        outputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        if let date = inputFormatter.date(from: input) {
+            return outputFormatter.string(from: date)
+        } else {
+            return nil
+        }
     }
 }

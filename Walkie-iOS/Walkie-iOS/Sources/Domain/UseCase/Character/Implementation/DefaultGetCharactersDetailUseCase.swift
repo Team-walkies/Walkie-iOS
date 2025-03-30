@@ -9,7 +9,7 @@ import Combine
 
 final class DefaultGetCharactersDetailUseCase: BaseCharactersUseCase, GetCharactersDetailUseCase {
     func getCharactersObtainedDetail(characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError> {
-        characterRepository.getCharactersDetail(dummy: true, characterId: characterId)
+        characterRepository.getCharactersDetail(dummy: false, characterId: characterId)
             .mapToNetworkError()
     }
 }

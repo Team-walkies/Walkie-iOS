@@ -13,7 +13,9 @@ final class DefaultCharacterService {
     
     private let characterProvider: MoyaProvider<CharacterTarget>
     
-    init(characterProvider: MoyaProvider<CharacterTarget>) {
+    init(characterProvider: MoyaProvider<CharacterTarget> = MoyaProvider<CharacterTarget>(
+        plugins: [NetworkLoggerPlugin()])
+    ) {
         self.characterProvider = characterProvider
     }
 }

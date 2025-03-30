@@ -57,6 +57,8 @@ struct EggView: View {
                                         }
                                 }
                             }
+                            .ignoresSafeArea()
+                            .padding(.bottom, 48)
                         case .error(let error):
                             Text(error.description)
                         default:
@@ -68,7 +70,7 @@ struct EggView: View {
                     .onAppear {
                         viewModel.action(.willAppear)
                     }
-                }
+                }.scrollIndicators(.never)
             }
         }
         .navigationDestination(isPresented: $isPresentingGuideView) {

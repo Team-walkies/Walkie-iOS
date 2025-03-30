@@ -23,4 +23,3 @@ class BaseMemberUseCase {
         self.memberRepository = memberRepository
     }
 }
-

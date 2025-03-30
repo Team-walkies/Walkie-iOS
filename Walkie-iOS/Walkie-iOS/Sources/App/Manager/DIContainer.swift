@@ -14,10 +14,12 @@ final class DIContainer {
     private lazy var eggService = DefaultEggService()
     private lazy var memberService = DefaultMemberService()
     private lazy var reviewService = DefaultReviewService()
+    private lazy var characterService = DefaultCharacterService()
     
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
     private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
+    private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
 }
 
 extension DIContainer {
@@ -50,6 +52,22 @@ extension DIContainer {
             viewModel: ReviewViewModel(
                 reviewUseCase: DefaultReviewUseCase(
                     reviewRepository: reviewRepo
+                )
+            )
+        )
+    }
+    
+    func registerCharacterView() -> CharacterView {
+        return CharacterView(
+            viewModel: CharacterViewModel(
+                getCharactersListUseCase: DefaultGetCharactersListUseCase(
+                    characterRepository: characterRepo
+                ),
+                getCharactersDetailUseCase: DefaultGetCharactersDetailUseCase(
+                    characterRepository: characterRepo
+                ),
+                patchWalkingCharacterUseCase: DefaultPatchWalkingCharacterUseCase(
+                    memberRepository: memberRepo
                 )
             )
         )

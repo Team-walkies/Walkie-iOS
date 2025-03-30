@@ -74,7 +74,7 @@ struct CharacterDetailView: View {
                                 .padding(.horizontal, 16)
                             }
                         }.padding(.bottom, 114)
-                    }
+                    }.scrollIndicators(.never)
                     Rectangle()
                         .foregroundColor(.clear)
                         .frame(height: 118)
@@ -100,7 +100,7 @@ struct CharacterDetailView: View {
                         size: .large,
                         isEnabled: !detailState.isWalking,
                         buttonAction: {
-                            // TODO: api 호출
+                            viewModel.action(.didSelectCharacterWalking)
                         }
                     ).padding(.bottom, 38)
                 }
@@ -115,15 +115,4 @@ struct CharacterDetailView: View {
         .background(.white)
         .ignoresSafeArea()
     }
-}
-
-#Preview {
-    CharacterDetailView(viewModel: CharacterDetailViewModel(detailState: CharacterDetailViewModel.CharacterDetailState(
-        characterName: JellyfishType.defaultJellyfish.rawValue,
-        characterImage: JellyfishType.defaultJellyfish.getCharacterImage(),
-        characterDescription:
-            "무엇이든 시작에는 큰 용기가 필요해.\n나와 함께 첫걸음을 내딛어보자.",
-        characterRank: .normal,
-        characterCount: 4,
-        isWalking: false)))
 }

@@ -26,14 +26,16 @@ final class DefaultCharacterRepository {
 }
 
 extension DefaultCharacterRepository: CharacterRepository {
-    func getCharactersDetail(dummy: Bool = false, characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError> {
+    func getCharactersDetail(
+        dummy: Bool = false,
+        characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError> {
         if dummy {
             let dummyData = Array(
                 repeating:
                     CharacterDetailEntity(
                         obtainedPosition: "충청남도 논산시",
                         obtainedDate: "2025-03-01"),
-                count: 20
+                count: Int.random(in: 1...20)
             )
             return Just(dummyData)
                 .setFailureType(to: NetworkError.self)
@@ -53,14 +55,15 @@ extension DefaultCharacterRepository: CharacterRepository {
     
     func getCharactersList(dummy: Bool = false, type: CharacterType) -> AnyPublisher<[CharacterEntity], NetworkError> {
         if dummy {
-            let dummyData: [CharacterEntity] = (0..<5).map { index in
-                CharacterEntity(
-                    characterId: 48,
+            let dummyData: [CharacterEntity] = (0..<10).map { _ in
+                let having = Bool.random()
+                return CharacterEntity(
+                    characterId: Int.random(in: 0...100),
                     type: type,
                     jellyfishType: type == .jellyfish ? JellyfishType.allCases.randomElement() : nil,
                     dinoType: type == .dino ? DinoType.allCases.randomElement() : nil,
-                    count: Int.random(in: 0...3),
-                    isWalking: Bool.random(),
+                    count: having ? Int.random(in: 1...10) : 0,
+                    isWalking: having ? Bool.random() : false,
                     obtainedDetails: nil
                 )
             }
