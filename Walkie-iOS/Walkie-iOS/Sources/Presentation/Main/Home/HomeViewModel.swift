@@ -21,7 +21,7 @@ final class HomeViewModel: ViewModelable {
     }
     
     struct HomeState {
-        let eggImage: ImageResource
+        let eggImage, eggBackImage: ImageResource
         let characterImage: ImageResource
         let characterName: String
         let eggsCount, characterCount, spotCount: Int
@@ -88,6 +88,7 @@ final class HomeViewModel: ViewModelable {
                     
                     let homeState = HomeState(
                         eggImage: eggInfoEntity.eggType.eggImage,
+                        eggBackImage: eggInfoEntity.eggType.eggBackground,
                         characterImage: characterImage,
                         characterName: characterName,
                         eggsCount: eggEntity.eggsCount,
@@ -101,6 +102,7 @@ final class HomeViewModel: ViewModelable {
                     self.state = .error((
                         HomeState(
                             eggImage: ImageResource(name: "img_egg0", bundle: .main),
+                            eggBackImage: ImageResource(name: "img_eggBack0", bundle: .main),
                             characterImage: ImageResource(name: "img_jellyfish0", bundle: .main),
                             characterName: "",
                             eggsCount: 0,
