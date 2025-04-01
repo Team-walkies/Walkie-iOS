@@ -27,10 +27,6 @@ final class DefaultEggUseCase {
 }
 
 extension DefaultEggUseCase: EggUseCase {
-    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
-        memberRepository.getEggPlaying()
-            .mapToNetworkError()
-    }
     
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
         memberRepository.patchEggPlaying(eggId: eggId)
@@ -49,11 +45,6 @@ extension DefaultEggUseCase: EggUseCase {
     
     func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError> {
         eggRepository.patchEggStep(requestBody: requestBody)
-            .mapToNetworkError()
-    }
-    
-    func getEggsCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
-        eggRepository.getEggsCount()
             .mapToNetworkError()
     }
 }

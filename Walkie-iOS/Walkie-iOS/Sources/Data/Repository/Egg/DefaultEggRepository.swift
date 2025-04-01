@@ -88,9 +88,11 @@ extension DefaultEggRepository: EggRepository {
             .mapToNetworkError()
     }
     
-    func getEggsCount() -> AnyPublisher<EggsCountEntity, NetworkError> {
+    func getEggsCount() -> AnyPublisher<Int, NetworkError> {
         return eggService.getEggsCount()
-            .map { dto in EggsCountEntity(eggsCount: dto.eggCount)}
+            .map { dto in
+                return dto.eggCount
+            }
             .mapToNetworkError()
     }
 }

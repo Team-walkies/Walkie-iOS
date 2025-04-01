@@ -8,9 +8,3 @@
 struct EggsCountEntity: Codable {
     let eggsCount: Int
 }
-
-extension EggsCountEntity {
-    static func eggsCountDummy() -> EggsCountEntity {
-        return EggsCountEntity(eggsCount: 2)
-    }
-}
