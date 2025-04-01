@@ -26,9 +26,16 @@ extension DIContainer {
     
     func registerHome() -> HomeViewModel {
         return HomeViewModel(
-            homeUseCase: DefaultHomeUseCase(
-                eggRepository: eggRepo,
+            getEggPlayUseCase: DefaultGetEggPlayUseCase(
                 memberRepository: memberRepo
+            ),
+            getCharacterPlayUseCase: DefaultGetWalkingCharacterUseCase(
+                memberRepository: memberRepo
+            ),
+            getEggCountUseCase: DefaultGetEggCountUseCase(
+                eggRepository: eggRepo
+            ), getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
+                characterRepository: characterRepo
             )
         )
     }

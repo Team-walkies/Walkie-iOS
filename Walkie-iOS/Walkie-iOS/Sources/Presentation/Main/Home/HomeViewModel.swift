@@ -12,7 +12,13 @@ import CoreMotion
 
 final class HomeViewModel: ViewModelable {
     
-    private let homeUseCase: HomeUseCase
+    // usecases
+    
+    private let getEggPlayUseCase: GetEggPlayUseCase
+    private let getCharacterPlayUseCase: GetWalkingCharacterUseCase
+    private let getEggCountUseCase: GetEggCountUseCase
+    private let getCharactersCountUseCase: GetCharactersCountUseCase
+    
     private var cancellables = Set<AnyCancellable>()
     
     enum Action {
@@ -20,11 +26,19 @@ final class HomeViewModel: ViewModelable {
         case homeWillDisappear
     }
     
-    struct HomeState {
+    // states
+    
+    struct HomeStatsState {
         let hasEgg: Bool
         let eggImage, eggBackImage: ImageResource
+    }
+    
+    struct HomeCharacterState {
         let characterImage: ImageResource
         let characterName: String
+    }
+    
+    struct HomeHistoryState {
         let eggsCount, characterCount, spotCount: Int
     }
     
@@ -33,10 +47,30 @@ final class HomeViewModel: ViewModelable {
         let todayDistance: Double
     }
     
+    // view states
+    
     enum HomeViewState {
         case loading
-        case loaded(HomeState)
-        case error((HomeState, String))
+        case loaded
+        case error
+    }
+    
+    enum HomeStatsViewState {
+        case loading
+        case loaded(HomeStatsState)
+        case error(String)
+    }
+    
+    enum HomeCharacterViewState {
+        case loading
+        case loaded(HomeCharacterState)
+        case error(String)
+    }
+    
+    enum HomeHistoryViewState {
+        case loading
+        case loaded(HomeHistoryState)
+        case error(String)
     }
     
     enum StepViewState {
@@ -46,82 +80,112 @@ final class HomeViewModel: ViewModelable {
     }
     
     @Published var state: HomeViewState = .loading
+    @Published var homeStatsState: HomeStatsViewState = .loading
+    @Published var homeCharacterState: HomeCharacterViewState = .loading
+    @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
     
     private let pedometer = CMPedometer()
     private var needStep: Int = 0
     
-    init(homeUseCase: HomeUseCase) {
-        self.homeUseCase = homeUseCase
+    init(
+        getEggPlayUseCase: GetEggPlayUseCase,
+        getCharacterPlayUseCase: GetWalkingCharacterUseCase,
+        getEggCountUseCase: GetEggCountUseCase,
+        getCharactersCountUseCase: GetCharactersCountUseCase
+    ) {
+        self.getEggPlayUseCase = getEggPlayUseCase
+        self.getCharacterPlayUseCase = getCharacterPlayUseCase
+        self.getEggCountUseCase = getEggCountUseCase
+        self.getCharactersCountUseCase = getCharactersCountUseCase
     }
     
     func action(_ action: Action) {
         switch action {
         case .homeWillAppear:
-            fetchHomeData()
+            fetchHomeStats()
+            fetchHomeCharacter()
+            fetchHomeHistory()
         case .homeWillDisappear:
             stopStepUpdates()
         }
     }
     
-    func fetchHomeData() {
+    func fetchHomeStats() {
         
-        self.homeUseCase.getEggCount()
+        getEggPlayUseCase.getEggPlaying()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, eggEntity in
+                    let hasEgg: Bool = eggEntity.eggId >= 0
+                    let homeStatsState = HomeStatsState(
+                        hasEgg: hasEgg,
+                        eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
+                        eggBackImage: hasEgg ? eggEntity.eggType.eggBackground : .imgEggBack0
+                    )
+                    self.homeStatsState = .loaded(homeStatsState)
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.homeStatsState = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func fetchHomeCharacter() {
+        
+        getCharacterPlayUseCase.getCharacterWalking()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, characterEntity in
+                    let img = characterEntity.type == .jellyfish
+                    ? characterEntity.jellyfishType?.getCharacterImage()
+                    : characterEntity.dinoType?.getCharacterImage()
+                    let name = characterEntity.type == .jellyfish
+                    ? characterEntity.jellyfishType?.rawValue
+                    : characterEntity.dinoType?.rawValue
+                    
+                    let homeCharacterState = HomeCharacterState(
+                        characterImage: img ?? .imgJellyfish0,
+                        characterName: name ?? JellyfishType.defaultJellyfish.rawValue
+                    )
+                    self.homeCharacterState = .loaded(homeCharacterState)
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.homeCharacterState = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func fetchHomeHistory() {
+        
+        getEggCountUseCase.getEggsCount()
             .combineLatest(
-                self.homeUseCase.getCharacterPlay()
-//                self.homeUseCase.getEggPlay()
+                self.getCharactersCountUseCase.getCharactersCount()
             )
             .walkieSink(
                 with: self,
                 receiveValue: { _, combinedData in
-                    
-                    let (eggCountEntity, characterEntity) = combinedData
-                    let eggEntity: EggEntity = EggEntity(
-                        eggId: -1, eggType: .normal, nowStep: 0,
-                        needStep: 0, isWalking: false, detail:
-                            EggDetailEntity(obtainedPosition: "", obtainedDate: ""))
-                    
-                    guard let characterImage = CharacterType.getCharacterImage(
-                        type: characterEntity.characterType,
-                        characterClass: characterEntity.characterClass
-                    ), let characterName = CharacterType.getCharacterName(
-                        type: characterEntity.characterType,
-                        characterClass: characterEntity.characterClass)
-                    else { return }
-                    
-                    self.needStep = eggEntity.needStep
-                    
-                    let hasEgg: Bool = eggEntity.eggId >= 0
-                    
-                    let homeState = HomeState(
-                        hasEgg: hasEgg,
-                        eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
-                        eggBackImage: hasEgg ? eggEntity.eggType.eggBackground : .imgEggBack0,
-                        characterImage: characterImage,
-                        characterName: characterName,
-                        eggsCount: eggCountEntity.eggsCount,
-                        characterCount: 0, // todo - binding
+                    let (eggCount, characterCount) = combinedData
+                    let homeHistoryState = HomeHistoryState(
+                        eggsCount: eggCount,
+                        characterCount: characterCount,
                         spotCount: 0 // todo - binding
                     )
-                    self.startStepUpdates()
-                    self.state = .loaded(homeState)
+                    self.homeHistoryViewState = .loaded(homeHistoryState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    self.state = .error((
-                        HomeState(
-                            hasEgg: false,
-                            eggImage: ImageResource(name: "img_egg_empty", bundle: .main),
-                            eggBackImage: ImageResource(name: "img_eggBack0", bundle: .main),
-                            characterImage: ImageResource(name: "img_jellyfish0", bundle: .main),
-                            characterName: "",
-                            eggsCount: 0,
-                            characterCount: 0,
-                            spotCount: 0
-                        ), errorMessage
-                    ))
-                })
+                    self.homeHistoryViewState = .error(errorMessage)
+                }
+            )
             .store(in: &cancellables)
+        
+        self.startStepUpdates()
     }
+}
+
+private extension HomeViewModel {
     
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else { return }

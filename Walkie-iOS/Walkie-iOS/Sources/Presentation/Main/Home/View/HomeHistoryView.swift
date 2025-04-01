@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct HomeHistoryView: View {
     
-    let homeState: HomeViewModel.HomeState
+    let homeState: HomeViewModel.HomeHistoryState
     let items: [HomeHistoryItem]
     let columns = [GridItem(.flexible())]
     let destination: [AnyView] = [
@@ -20,7 +20,7 @@ struct HomeHistoryView: View {
         AnyView(DIContainer.shared.registerReview())
     ]
     
-    init(homeState: HomeViewModel.HomeState) {
+    init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState
         self.items = [
             HomeHistoryItem(

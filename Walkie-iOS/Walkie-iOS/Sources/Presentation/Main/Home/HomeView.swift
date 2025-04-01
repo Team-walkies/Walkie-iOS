@@ -25,30 +25,45 @@ struct HomeView: View {
             )
             ScrollView(.vertical) {
                 VStack {
-                    switch (viewModel.state, viewModel.stepState) {
-                    case let (.loaded(homeState), .loaded(stepState)),
-                        let (.error((homeState, _)), .loaded(stepState)),
-                        let (.loaded(homeState), .error(stepState)),
-                        let (.error((homeState, _)), .error(stepState)):
-                        ZStack(alignment: .bottomTrailing) {
-                            VStack {
-                                let width = screenWidth - 32
+                    ZStack(alignment: .bottomTrailing) {
+                        VStack {
+                            let width = screenWidth - 32
+                            switch (
+                                viewModel.homeStatsState,
+                                viewModel.stepState,
+                                viewModel.homeCharacterState) {
+                            case let (
+                                .loaded(homeStatsState),
+                                .loaded(stepState),
+                                .loaded(characterState)):
                                 HomeStatsView(
-                                    homeState: homeState,
+                                    homeStatsState: homeStatsState,
                                     stepState: stepState,
                                     width: width)
-                                HomeCharacterView(homeState: homeState, width: width)
+                                HomeCharacterView(
+                                    homeState: characterState,
+                                    width: width
+                                )
+                                .overlay(
+                                    alignment: .bottomTrailing,
+                                    content: {
+                                        Image(characterState.characterImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 120, height: 120)
+                                            .padding(.trailing, 8)
+                                    }
+                                )
+                            default:
+                                ProgressView()
                             }
-                            
-                            Image(homeState.characterImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 120, height: 120)
-                                .padding(.trailing, 8)
                         }
                         .padding(.top, 8)
-                        
-                        HomeHistoryView(homeState: homeState)
+                    }
+                    
+                    switch viewModel.homeHistoryViewState {
+                    case .loaded(let homeHistoryState):
+                        HomeHistoryView(homeState: homeHistoryState)
                             .padding(.top, 18)
                     default:
                         ProgressView()

@@ -11,13 +11,13 @@ import WalkieCommon
 
 struct HomeStatsView: View {
     
-    let homeState: HomeViewModel.HomeState
+    let homeStatsState: HomeViewModel.HomeStatsState
     let stepState: HomeViewModel.StepState
     let width: CGFloat
     
     var body: some View {
         ZStack {
-            Image(homeState.eggBackImage)
+            Image(homeStatsState.eggBackImage)
                 .resizable()
                 .scaledToFill()
                 .frame(width: width, height: 371)
@@ -57,7 +57,7 @@ struct HomeStatsView: View {
                 
                 Spacer()
                 
-                if homeState.hasEgg {
+                if homeStatsState.hasEgg {
                     ZStack {
                         Image(.imgSpeechbubble)
                             .resizable()
@@ -77,14 +77,14 @@ struct HomeStatsView: View {
                     }
                     .padding(.bottom, -17)
                     
-                    Image(homeState.eggImage)
+                    Image(homeStatsState.eggImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 296, height: 296)
                         .padding(.bottom, -85)
                 } else {
                     
-                    Image(homeState.eggImage)
+                    Image(homeStatsState.eggImage)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 296, height: 296)
