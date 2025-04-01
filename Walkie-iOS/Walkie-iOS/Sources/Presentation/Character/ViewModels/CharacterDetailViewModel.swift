@@ -31,7 +31,8 @@ final class CharacterDetailViewModel: ViewModelable {
         let isWalking: Bool
     }
     
-    struct ObtainedState: Hashable {
+    struct ObtainedState: Identifiable {
+        let id = UUID()
         let obtainedDate: String
         let obtainedPosition: String
     }

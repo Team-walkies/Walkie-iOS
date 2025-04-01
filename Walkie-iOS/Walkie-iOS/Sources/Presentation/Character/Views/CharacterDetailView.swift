@@ -52,7 +52,7 @@ struct CharacterDetailView: View {
                                 .background(WalkieCommonAsset.gray100.swiftUIColor)
                                 .cornerRadius(99)
                             }.padding(.bottom, 20)
-                            ForEach(obtainedState, id: \.self) { obtainedState in
+                            ForEach(obtainedState, id: \.id) { obtainedState in
                                 HStack(spacing: 0) {
                                     Circle()
                                         .frame(width: 12, height: 12)
