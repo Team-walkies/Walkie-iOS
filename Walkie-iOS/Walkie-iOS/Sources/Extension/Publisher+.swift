@@ -77,4 +77,11 @@ extension Publisher where Output == Moya.Response {
             }
             .eraseToAnyPublisher()
     }
+    
+    func mapVoidResponse() -> AnyPublisher<Void, Error> {
+        self
+            .map { _ in }
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
 }

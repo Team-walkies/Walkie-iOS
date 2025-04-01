@@ -11,4 +11,7 @@ protocol MemberRepository {
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError>
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError>
     func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError>
+    func getWalkingCharacter() -> AnyPublisher<CharacterEntity, NetworkError>
+    func patchWalkingCharacter(characterId: Int) -> AnyPublisher<Void, NetworkError>
+    func getEggPlayId() -> AnyPublisher<EggInfoEntity, NetworkError>
 }

@@ -27,15 +27,22 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Int?, Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, Error> {
         memberProvider.requestPublisher(.patchEggPlaying(eggId: eggId))
             .filterSuccessfulStatusCodes()
-            .mapWalkieResponse(Int?.self)
+            .mapVoidResponse()
     }
     
     func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, any Error> {
         memberProvider.requestPublisher(.getCharacterPlay)
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(CharacterPlayDto.self)
+    }
+    
+    func patchCharacterPlay(characterId: Int) -> AnyPublisher<Void, any Error> {
+        memberProvider.requestPublisher(.patchCharacterPlay(characterId: characterId))
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+
     }
 }

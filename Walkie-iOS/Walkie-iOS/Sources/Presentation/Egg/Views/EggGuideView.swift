@@ -25,7 +25,7 @@ struct EggGuideView: View {
                     .font(.B2)
                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                     .padding(.bottom, 12)
-                ForEach(EggLiterals.allCases, id: \.self) { eggType in
+                ForEach(EggType.allCases, id: \.self) { eggType in
                     EggGuideItemView(eggType: eggType)
                 }
                 Text("캐릭터 얻을 확률")
@@ -37,9 +37,9 @@ struct EggGuideView: View {
                     .font(.B2)
                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                     .padding(.bottom, 20)
-                ForEach(EggLiterals.allCases, id: \.self) { eggType in
+                ForEach(EggType.allCases, id: \.self) { eggType in
                     CharacterGuideItemView(eggType: eggType)
-                    if eggType != EggLiterals.allCases.last! {
+                    if eggType != EggType.allCases.last! {
                         Rectangle()
                             .frame(height: 2)
                             .foregroundStyle(WalkieCommonAsset.gray50.swiftUIColor)
@@ -54,7 +54,7 @@ struct EggGuideView: View {
 
 // 알 얻을 확률
 private struct EggGuideItemView: View {
-    let eggType: EggLiterals
+    let eggType: EggType
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -86,7 +86,7 @@ private struct EggGuideItemView: View {
 
 // 캐릭터 얻을 확률
 private struct CharacterGuideItemView: View {
-    let eggType: EggLiterals
+    let eggType: EggType
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
@@ -102,7 +102,7 @@ private struct CharacterGuideItemView: View {
             }
             Spacer()
             VStack(alignment: .leading, spacing: 16) {
-                ForEach(EggLiterals.allCases, id: \.rawValue) { (characterType: EggLiterals) in
+                ForEach(EggType.allCases, id: \.rawValue) { (characterType: EggType) in
                     CharacterProbabilityView(eggType: eggType, characterType: characterType)
                 }
             }
@@ -116,8 +116,8 @@ private struct CharacterGuideItemView: View {
 
 // 캐릭터 등급 별 확률
 private struct CharacterProbabilityView: View {
-    let eggType: EggLiterals
-    let characterType: EggLiterals
+    let eggType: EggType
+    let characterType: EggType
     
     var body: some View {
         HStack(alignment: .center, spacing: 8) {
