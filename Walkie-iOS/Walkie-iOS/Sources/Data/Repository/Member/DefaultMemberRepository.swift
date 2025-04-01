@@ -29,8 +29,8 @@ extension DefaultMemberRepository: MemberRepository {
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberService.getEggPlaying()
             .map { dto in EggEntity(
-                eggId: dto.eggId,
-                eggType: EggLiterals.from(number: dto.rank),
+                eggId: dto.eggID,
+                eggType: EggType.from(number: dto.rank),
                 nowStep: dto.nowStep,
                 needStep: dto.needStep,
                 isWalking: true,
@@ -41,6 +41,54 @@ extension DefaultMemberRepository: MemberRepository {
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
         memberService.patchEggPlaying(eggId: eggId)
             .map { _ in return }
+            .mapToNetworkError()
+    }
+    
+    func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError> {
+        memberService.getCharacterPlay()
+            .map { dto in CharactersPlayEntity(
+                characterID: dto.characterID,
+                characterType: dto.type,
+                characterClass: dto.characterClass
+            )}
+            .mapToNetworkError()
+    }
+    
+    func getEggPlayId() -> AnyPublisher<EggInfoEntity, NetworkError> {
+        memberService.getEggPlaying()
+            .map { dto in EggInfoEntity(
+                eggType: EggType.from(number: dto.rank),
+                needStep: dto.needStep
+            )}
+            .mapToNetworkError()
+    }
+    
+    func getWalkingCharacter() -> AnyPublisher<CharacterEntity, NetworkError> {
+        memberService.getCharacterPlay()
+            .map { dto in CharacterEntity(
+                characterId: dto.characterID,
+                type: dto.type == 0 ? .jellyfish : .dino,
+                jellyfishType: dto.type == 0 ? CharacterType.mapCharacterType(
+                    requestedType: .jellyfish,
+                    type: dto.type,
+                    rank: dto.rank,
+                    characterClass: dto.characterClass
+                ) as? JellyfishType : nil,
+                dinoType: dto.type == 1 ? CharacterType.mapCharacterType(
+                    requestedType: .dino,
+                    type: dto.type,
+                    rank: dto.rank,
+                    characterClass: dto.characterClass
+                ) as? DinoType : nil,
+                count: dto.count ?? 0,
+                isWalking: dto.picked,
+                obtainedDetails: nil)
+            }
+            .mapToNetworkError()
+    }
+    
+    func patchWalkingCharacter(characterId: Int) -> AnyPublisher<Void, NetworkError> {
+        memberService.patchCharacterPlay(characterId: characterId)
             .mapToNetworkError()
     }
 }

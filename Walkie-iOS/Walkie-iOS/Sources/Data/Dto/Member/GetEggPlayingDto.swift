@@ -8,9 +8,16 @@
 import Foundation
 
 struct GetEggPlayingDto: Codable {
-    let eggId: Int
-    let needStep: Int
-    let nowStep: Int
-    let rank: Int
-    let characterId: Int
+    let eggID, rank, needStep, nowStep: Int
+    let obtainedPosition, obtainedDate: String
+    let picked: Bool
+    let userCharacterID: Int
+    let memberID: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case eggID = "eggId"
+        case rank, needStep, nowStep, obtainedPosition, obtainedDate, picked
+        case userCharacterID = "userCharacterId"
+        case memberID = "memberId"
+    }
 }

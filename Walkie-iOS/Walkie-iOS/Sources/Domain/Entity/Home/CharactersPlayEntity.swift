@@ -14,9 +14,3 @@ struct CharactersPlayEntity: Codable {
         case characterClass = "class"
     }
 }
-
-extension CharactersPlayEntity {
-    static func charactersPlayDummy() -> CharactersPlayEntity {
-        return CharactersPlayEntity(characterID: 1, characterType: 1, characterClass: 2)
-    }
-}

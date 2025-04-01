@@ -1,5 +1,5 @@
 //
-//  CharacterInfoEnum.swift
+//  CharacterLiterals.swift
 //  Walkie-iOS
 //
 //  Created by ahra on 2/20/25.
@@ -23,6 +23,24 @@ enum JellyfishType: String, CaseIterable {
     case shocked = "벼직 해파리"
     case strawberry = "딸기꼬치 해파리"
     case space = "우주 해파리"
+    
+    func getCharacterImage() -> ImageResource {
+        let index = JellyfishType.allCases.firstIndex(of: self) ?? 0
+        return ImageResource(name: "img_jellyfish\(index)", bundle: .main)
+    }
+    
+    func getCharacterRank() -> EggType {
+        switch self {
+        case .defaultJellyfish, .red, .green, .purple, .pink:
+            .normal
+        case .bunny, .starfish:
+            .rare
+        case .shocked, .strawberry:
+            .epic
+        case .space:
+            .legendary
+        }
+    }
 }
 
 enum DinoType: String, CaseIterable {
@@ -31,11 +49,29 @@ enum DinoType: String, CaseIterable {
     case mint = "민트 다이노"
     case purple = "보라 다이노"
     case pink = "분홍 다이노"
-    case gentle = "순록 다이노"
-    case pancake = "팬케이크 다이노"
+    case reindeer = "순록 다이노"
     case nessie = "네시 다이노"
+    case pancake = "팬케이크 다이노"
     case melonSoda = "메론소다 다이노"
     case dragon = "드래곤 다이노"
+    
+    func getCharacterImage() -> ImageResource {
+        let index = DinoType.allCases.firstIndex(of: self) ?? 0
+        return ImageResource(name: "img_dino\(index)", bundle: .main)
+    }
+    
+    func getCharacterRank() -> EggType {
+        switch self {
+        case .defaultDino, .red, .mint, .purple, .pink:
+            .normal
+        case .reindeer, .nessie:
+            .rare
+        case .pancake, .melonSoda:
+            .epic
+        case .dragon:
+            .legendary
+        }
+    }
 }
 
 extension CharacterType {
@@ -51,8 +87,8 @@ extension CharacterType {
             
         case 2:
             let dinoTypes: [DinoType] = [
-                .defaultDino, .red, .mint, .purple, .pink, .gentle,
-                .pancake, .nessie, .melonSoda, .dragon
+                .defaultDino, .red, .mint, .purple, .pink, .reindeer,
+                .nessie, .pancake, .melonSoda, .dragon
             ]
             return dinoTypes[safe: characterClass]?.rawValue
             
@@ -71,5 +107,15 @@ extension CharacterType {
         default:
             return nil
         }
+    }
+    
+    static func mapCharacterType(
+        requestedType: CharacterType,
+        type: Int,
+        rank: Int,
+        characterClass: Int) -> (any CaseIterable)? {
+        if requestedType == .jellyfish && type == 1 { return nil }
+        let index = rank == 0 ? characterClass : characterClass + 5 + (rank - 1) * 2
+        return type == 0 ? JellyfishType.allCases[index] : DinoType.allCases[index]
     }
 }

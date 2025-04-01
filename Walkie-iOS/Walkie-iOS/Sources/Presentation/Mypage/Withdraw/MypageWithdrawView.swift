@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 import WalkieCommon
 
 struct MypageWithdrawView: View {
@@ -21,7 +20,7 @@ struct MypageWithdrawView: View {
             showBackButton: true
         ).padding(.bottom, 40)
         switch viewModel.state {
-        case .loaded(let mypageMainState):
+        case .loaded:
             VStack(alignment: .center, spacing: 0) {
                 Text("\(UserManager.shared.getUserNickname)님이 떠나시다니,\n너무 아쉬워요")
                     .font(.H3)

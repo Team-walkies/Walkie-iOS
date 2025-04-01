@@ -21,8 +21,8 @@ enum URLConstant {
     static let authToken = "/auth/token"
     
     // members
-    static let memebers = "/members"
-    static let memebersCharacters = "/members/characters/play"
+    static let members = "/members"
+    static let membersCharacters = "/members/characters/play"
     static let membersEggs = "/members/eggs/play"
     static let membersProfile = "/members/profile/visibility"
     
@@ -35,7 +35,7 @@ enum URLConstant {
     // characters
     static let characters = "/characters"
     static let charactersCount = "/characters/count"
-    static let charactersDetail = "/characters/details/{characterId}"
+    static func charactersDetail(characterId: CLong) -> String { return "/characters/details/\(characterId)" }
     
     // eggs
     static let eggs = "/eggs"

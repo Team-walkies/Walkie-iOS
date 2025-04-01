@@ -22,7 +22,6 @@ struct HomeHistoryView: View {
     
     init(homeState: HomeViewModel.HomeState) {
         self.homeState = homeState
-        let characterNum = homeState.characterCount
         self.items = [
             HomeHistoryItem(
                 imageName: "img_history_egg",
@@ -31,11 +30,11 @@ struct HomeHistoryView: View {
             HomeHistoryItem(
                 imageName: "img_history_character",
                 title: "부화한 캐릭터",
-                count: "\(characterNum)마리"),
+                count: "\(homeState.characterCount)마리"),
             HomeHistoryItem(
                 imageName: "img_history_spot",
                 title: "스팟 기록",
-                count: "7개")
+                count: "\(homeState.spotCount)개")
         ]
     }
     

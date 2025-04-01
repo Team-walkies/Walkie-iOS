@@ -68,13 +68,14 @@ extension View {
             self
             if isPresented.wrappedValue {
                 Color(white: 0, opacity: 0.6)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
+                    .ignoresSafeArea(.all)
+                    .transition(.opacity.animation(.easeInOut(duration: 0.25)))
             }
         }
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
         .sheet(isPresented: isPresented) {
             content()
+                .cornerRadius(24, corners: [.topLeft, .topRight])
                 .ignoresSafeArea(.all)
                 .presentationDetents([.height(height-34)]) // Safe Area 고려
                 .presentationBackgroundInteraction(.disabled)

@@ -24,7 +24,7 @@ final class HomeViewModel: ViewModelable {
         let eggImage: ImageResource
         let characterImage: ImageResource
         let characterName: String
-        let eggsCount, characterCount: Int
+        let eggsCount, characterCount, spotCount: Int
     }
     
     struct StepState {
@@ -58,7 +58,6 @@ final class HomeViewModel: ViewModelable {
         switch action {
         case .homeWillAppear:
             fetchHomeData()
-            startStepUpdates()
         case .homeWillDisappear:
             stopStepUpdates()
         }
@@ -66,37 +65,47 @@ final class HomeViewModel: ViewModelable {
     
     func fetchHomeData() {
         
-        let eggsPlay = EggsPlayEntity.eggsPlayDummy()
-        let charactersPlay = CharactersPlayEntity.charactersPlayDummy()
-        let charactersCount = CharactersCountEntity.charactersCountDummy()
-        
-        let type = charactersPlay.characterType
-        let characterClass = charactersPlay.characterClass
-        guard let characterImage = CharacterType.getCharacterImage(type: type, characterClass: characterClass),
-            let characterName = CharacterType.getCharacterName(
-                type: type,
-                characterClass: characterClass) else { return }
         self.homeUseCase.getEggCount()
+            .combineLatest(
+                self.homeUseCase.getCharacterPlay(),
+                self.homeUseCase.getEggPlay()
+            )
             .walkieSink(
                 with: self,
-                receiveValue: { _, entity in
+                receiveValue: { _, combinedData in
+                    
+                    let (eggEntity, characterEntity, eggInfoEntity) = combinedData
+                    
+                    guard let characterImage = CharacterType.getCharacterImage(
+                        type: characterEntity.characterType,
+                        characterClass: characterEntity.characterClass
+                    ), let characterName = CharacterType.getCharacterName(
+                        type: characterEntity.characterType,
+                        characterClass: characterEntity.characterClass)
+                    else { return }
+                    
+                    self.needStep = eggInfoEntity.needStep
+                    
                     let homeState = HomeState(
-                        eggImage: ImageResource(name: "img_egg\(eggsPlay.eggID)", bundle: .main),
+                        eggImage: eggInfoEntity.eggType.eggImage,
                         characterImage: characterImage,
                         characterName: characterName,
-                        eggsCount: entity.eggsCount,
-                        characterCount: charactersCount.charactersCount
+                        eggsCount: eggEntity.eggsCount,
+                        characterCount: 0, // todo - binding
+                        spotCount: 0 // todo - binding
                     )
+                    self.startStepUpdates()
                     self.state = .loaded(homeState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error((
                         HomeState(
                             eggImage: ImageResource(name: "img_egg0", bundle: .main),
-                            characterImage: characterImage,
+                            characterImage: ImageResource(name: "img_jellyfish0", bundle: .main),
                             characterName: "",
                             eggsCount: 0,
-                            characterCount: 0
+                            characterCount: 0,
+                            spotCount: 0
                         ), errorMessage
                     ))
                 })
@@ -108,6 +117,16 @@ final class HomeViewModel: ViewModelable {
         
         let now = Date()
         let startOfDay = Calendar.current.startOfDay(for: now)
+        
+        self.pedometer.queryPedometerData(from: startOfDay, to: now) { data, error in
+            if let data = data, error == nil {
+                DispatchQueue.main.async {
+                    self.updateStepData(
+                        step: data.numberOfSteps.intValue,
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0)
+                }
+            }
+        }
         
         self.pedometer.startUpdates(from: startOfDay) { data, error in
             if let data = data, error == nil {
@@ -121,10 +140,9 @@ final class HomeViewModel: ViewModelable {
     }
     
     func updateStepData(step: Int, distance: Double) {
-        let eggsPlay = EggsPlayEntity.eggsPlayDummy()
         let stepState = StepState(
             todayStep: step,
-            leftStep: eggsPlay.needStep - step,
+            leftStep: self.needStep - step,
             todayDistance: distance)
         self.stepState = .loaded(stepState)
     }

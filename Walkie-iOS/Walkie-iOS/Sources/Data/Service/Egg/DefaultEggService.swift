@@ -7,6 +7,7 @@
 
 import Moya
 import Combine
+import CombineMoya
 
 final class DefaultEggService {
     
@@ -31,10 +32,10 @@ extension DefaultEggService: EggService {
             .mapWalkieResponse(GetEggDetailDto.self)
     }
     
-    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Int?, Error> {
+    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, Error> {
         eggProvider.requestPublisher(.patchEggStep(requestBody: requestBody))
             .filterSuccessfulStatusCodes()
-            .mapWalkieResponse(Int?.self)
+            .mapVoidResponse()
     }
     
     func getEggsCount() -> AnyPublisher<EggCountDto, Error> {

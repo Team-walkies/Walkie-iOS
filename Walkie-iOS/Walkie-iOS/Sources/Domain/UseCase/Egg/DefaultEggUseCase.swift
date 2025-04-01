@@ -38,12 +38,12 @@ extension DefaultEggUseCase: EggUseCase {
     }
     
     func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
-        eggRepository.getEggsList(dummy: true)
+        eggRepository.getEggsList(dummy: false)
             .mapToNetworkError()
     }
     
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
-        eggRepository.getEggDetail(dummy: true, eggId: eggId)
+        eggRepository.getEggDetail(dummy: false, eggId: eggId)
             .mapToNetworkError()
     }
     

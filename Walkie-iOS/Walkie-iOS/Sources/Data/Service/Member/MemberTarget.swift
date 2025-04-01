@@ -27,17 +27,35 @@ struct MemberTarget: BaseTargetType {
 }
 
 extension MemberTarget {
+    
     static let getEggPlaying = MemberTarget(
         path: URLConstant.membersEggs,
         method: .get,
         task: .requestPlain,
         headers: APIConstants.hasTokenHeader
     )
+    
     static func patchEggPlaying(eggId: Int) -> MemberTarget {
         return MemberTarget(
             path: URLConstant.membersEggs,
             method: .patch,
-            task: .requestJSONEncodable(eggId),
+            task: .requestJSONEncodable(["eggId": eggId]),
+            headers: APIConstants.hasTokenHeader
+        )
+    }
+    
+    static let getCharacterPlay = MemberTarget(
+        path: URLConstant.membersCharacters,
+        method: .get,
+        task: .requestPlain,
+        headers: APIConstants.hasTokenHeader
+    )
+    
+    static func patchCharacterPlay(characterId: Int) -> MemberTarget {
+        return MemberTarget(
+            path: URLConstant.membersCharacters,
+            method: .patch,
+            task: .requestJSONEncodable(["characterId": characterId]),
             headers: APIConstants.hasTokenHeader
         )
     }
