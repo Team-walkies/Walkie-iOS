@@ -57,30 +57,48 @@ struct HomeStatsView: View {
                 
                 Spacer()
                 
-                ZStack {
-                    Image(.imgSpeechbubble)
+                if homeState.hasEgg {
+                    ZStack {
+                        Image(.imgSpeechbubble)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 136, height: 45)
+                        
+                        HStack(spacing: 0) {
+                            Text("부화까지 ")
+                                .font(.B2)
+                                .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            
+                            Text("\(stepState.leftStep)걸음")
+                                .font(.B2)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.top, -8)
+                    }
+                    .padding(.bottom, -17)
+                    
+                    Image(homeState.eggImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 136, height: 45)
+                        .frame(width: 296, height: 296)
+                        .padding(.bottom, -85)
+                } else {
                     
-                    HStack(spacing: 0) {
-                        Text("부화까지 ")
-                            .font(.B2)
-                            .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
-                        
-                        Text("\(stepState.leftStep)걸음")
-                            .font(.B2)
-                            .foregroundColor(.white)
-                    }
-                    .padding(.top, -8)
+                    Image(homeState.eggImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 296, height: 296)
+                        .overlay {
+                            NavigationLink(destination: DIContainer.shared.registerEgg()) {
+                                Text("알을 선택해 주세요")
+                                    .font(.H5)
+                                    .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)
+                                    .underline()
+                            }
+                            .frame(height: 24)
+                        }
+                        .padding(.bottom, -85)
                 }
-                .padding(.bottom, -17)
-                
-                Image(homeState.eggImage)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 296, height: 296)
-                    .padding(.bottom, -85)
             }
         }
         .frame(width: width, height: 371)

@@ -40,8 +40,8 @@ extension DefaultHomeUseCase: HomeUseCase {
     
     // member
     
-    func getEggPlay() -> AnyPublisher<EggInfoEntity, NetworkError> {
-        memberRepository.getEggPlayId()
+    func getEggPlay() -> AnyPublisher<EggEntity, NetworkError> {
+        memberRepository.getEggPlaying()
             .mapToNetworkError()
     }
     

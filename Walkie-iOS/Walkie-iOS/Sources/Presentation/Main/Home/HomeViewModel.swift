@@ -21,6 +21,7 @@ final class HomeViewModel: ViewModelable {
     }
     
     struct HomeState {
+        let hasEgg: Bool
         let eggImage, eggBackImage: ImageResource
         let characterImage: ImageResource
         let characterName: String
@@ -67,14 +68,18 @@ final class HomeViewModel: ViewModelable {
         
         self.homeUseCase.getEggCount()
             .combineLatest(
-                self.homeUseCase.getCharacterPlay(),
-                self.homeUseCase.getEggPlay()
+                self.homeUseCase.getCharacterPlay()
+//                self.homeUseCase.getEggPlay()
             )
             .walkieSink(
                 with: self,
                 receiveValue: { _, combinedData in
                     
-                    let (eggEntity, characterEntity, eggInfoEntity) = combinedData
+                    let (eggCountEntity, characterEntity) = combinedData
+                    let eggEntity: EggEntity = EggEntity(
+                        eggId: -1, eggType: .normal, nowStep: 0,
+                        needStep: 0, isWalking: false, detail:
+                            EggDetailEntity(obtainedPosition: "", obtainedDate: ""))
                     
                     guard let characterImage = CharacterType.getCharacterImage(
                         type: characterEntity.characterType,
@@ -84,14 +89,17 @@ final class HomeViewModel: ViewModelable {
                         characterClass: characterEntity.characterClass)
                     else { return }
                     
-                    self.needStep = eggInfoEntity.needStep
+                    self.needStep = eggEntity.needStep
+                    
+                    let hasEgg: Bool = eggEntity.eggId >= 0
                     
                     let homeState = HomeState(
-                        eggImage: eggInfoEntity.eggType.eggImage,
-                        eggBackImage: eggInfoEntity.eggType.eggBackground,
+                        hasEgg: hasEgg,
+                        eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
+                        eggBackImage: hasEgg ? eggEntity.eggType.eggBackground : .imgEggBack0,
                         characterImage: characterImage,
                         characterName: characterName,
-                        eggsCount: eggEntity.eggsCount,
+                        eggsCount: eggCountEntity.eggsCount,
                         characterCount: 0, // todo - binding
                         spotCount: 0 // todo - binding
                     )
@@ -101,7 +109,8 @@ final class HomeViewModel: ViewModelable {
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error((
                         HomeState(
-                            eggImage: ImageResource(name: "img_egg0", bundle: .main),
+                            hasEgg: false,
+                            eggImage: ImageResource(name: "img_egg_empty", bundle: .main),
                             eggBackImage: ImageResource(name: "img_eggBack0", bundle: .main),
                             characterImage: ImageResource(name: "img_jellyfish0", bundle: .main),
                             characterName: "",

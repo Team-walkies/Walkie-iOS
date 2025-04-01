@@ -15,6 +15,6 @@ protocol HomeUseCase {
     
     // member
     
-    func getEggPlay() -> AnyPublisher<EggInfoEntity, NetworkError>
+    func getEggPlay() -> AnyPublisher<EggEntity, NetworkError>
     func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError>
 }
