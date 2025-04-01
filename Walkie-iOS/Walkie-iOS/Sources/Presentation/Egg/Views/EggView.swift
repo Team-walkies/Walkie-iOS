@@ -131,6 +131,7 @@ private struct EggItemView: View {
                     .alignTo(.topTrailing)
                     .padding(12)
                 RoundedRectangle(cornerRadius: 20)
+                    .inset(by: 1)
                     .stroke(WalkieCommonAsset.blue300.swiftUIColor, lineWidth: 2)
             }
         }
