@@ -63,7 +63,7 @@ struct MypageWithdrawView: View {
                 Spacer()
                 CTAButton(
                     title: "탈퇴하기",
-                    style: isChecked ? .danger : .primary,
+                    style: .danger,
                     size: .large,
                     isEnabled: isChecked) {
                         viewModel.action(.withdraw)
