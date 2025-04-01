@@ -49,9 +49,9 @@ enum DinoType: String, CaseIterable {
     case mint = "민트 다이노"
     case purple = "보라 다이노"
     case pink = "분홍 다이노"
-    case gentle = "순록 다이노"
-    case pancake = "팬케이크 다이노"
+    case reindeer = "순록 다이노"
     case nessie = "네시 다이노"
+    case pancake = "팬케이크 다이노"
     case melonSoda = "메론소다 다이노"
     case dragon = "드래곤 다이노"
     
@@ -64,9 +64,9 @@ enum DinoType: String, CaseIterable {
         switch self {
         case .defaultDino, .red, .mint, .purple, .pink:
             .normal
-        case .gentle, .pancake:
+        case .reindeer, .nessie:
             .rare
-        case .nessie, .melonSoda:
+        case .pancake, .melonSoda:
             .epic
         case .dragon:
             .legendary
@@ -87,8 +87,8 @@ extension CharacterType {
             
         case 2:
             let dinoTypes: [DinoType] = [
-                .defaultDino, .red, .mint, .purple, .pink, .gentle,
-                .pancake, .nessie, .melonSoda, .dragon
+                .defaultDino, .red, .mint, .purple, .pink, .reindeer,
+                .nessie, .pancake, .melonSoda, .dragon
             ]
             return dinoTypes[safe: characterClass]?.rawValue
             
