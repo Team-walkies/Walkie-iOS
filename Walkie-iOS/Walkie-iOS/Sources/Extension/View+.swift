@@ -69,7 +69,7 @@ extension View {
             if isPresented.wrappedValue {
                 Color(white: 0, opacity: 0.6)
                     .ignoresSafeArea(.all)
-                    .transition(.opacity)
+                    .transition(.opacity.animation(.easeInOut(duration: 0.25)))
             }
         }
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)

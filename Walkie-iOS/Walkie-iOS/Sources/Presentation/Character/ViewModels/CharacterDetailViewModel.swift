@@ -10,6 +10,7 @@ import SwiftUI
 
 final class CharacterDetailViewModel: ViewModelable {
     
+    @ObservedObject var characterViewModel: CharacterViewModel
     private let getCharactersDetailUseCase: GetCharactersDetailUseCase
     private let patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase
     private var cancellables = Set<AnyCancellable>()
@@ -42,11 +43,14 @@ final class CharacterDetailViewModel: ViewModelable {
     
     @Published var state: CharacterDetailViewState = .loading
     @Published var detailState: CharacterDetailState
+    @Published var obtainedState: [ObtainedState]?
     
     init(
+        characterViewModel: CharacterViewModel,
         detailState: CharacterDetailState,
         getCharactersDetailUseCase: GetCharactersDetailUseCase,
-        patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase) {
+        patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase) {    
+        self.characterViewModel = characterViewModel
         self.detailState = detailState
         self.getCharactersDetailUseCase = getCharactersDetailUseCase
         self.patchWalkingCharacterUseCase = patchWalkingCharacterUseCase
@@ -66,11 +70,15 @@ final class CharacterDetailViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, details in
-                    self.state = .loaded(obtainedState: details.map { detail in
+                    self.obtainedState = details.map { detail in
                         ObtainedState(
                             obtainedDate: self.convertDateFormat(from: detail.obtainedDate) ?? "날짜 변환 실패",
                             obtainedPosition: detail.obtainedPosition)
-                    }, detailState: self.detailState)
+                    }
+                    self.state = .loaded(
+                        obtainedState: self.obtainedState ?? [],
+                        detailState: self.detailState
+                    )
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
@@ -79,6 +87,7 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     private func patchCharacterWalking() {
+        self.state = .loading
         patchWalkingCharacterUseCase.patchCharacterWalking(characterId: detailState.characterId)
             .walkieSink(
                 with: self,
@@ -91,6 +100,11 @@ final class CharacterDetailViewModel: ViewModelable {
                         characterRank: self.detailState.characterRank,
                         characterCount: self.detailState.characterCount,
                         isWalking: true)
+                    self.state = .loaded(
+                        obtainedState: self.obtainedState ?? [],
+                        detailState: self.detailState
+                    )
+                    self.characterViewModel.action(.fetchData)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

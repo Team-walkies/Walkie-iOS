@@ -14,7 +14,6 @@ final class CharacterViewModel: ViewModelable {
     private let patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase
     private var cancellables = Set<AnyCancellable>()
 
-    
     enum CharacterViewState {
         case loading
         case loaded(CharacterListState)
@@ -26,7 +25,6 @@ final class CharacterViewModel: ViewModelable {
         let dinoState: [DinoType: CharacterState]
     }
 
-    
     struct CharacterState {
         let characterId: Int
         let count: Int
@@ -38,9 +36,10 @@ final class CharacterViewModel: ViewModelable {
         case willSelectCategory(CharacterType)
         case willSelectJellyfish(type: JellyfishType, state: CharacterState)
         case willSelectDino(type: DinoType, state: CharacterState)
+        case fetchData
     }
     
-    @Published var state: CharacterViewState = .loading
+    @Published var state: CharacterViewState
     @Published var showingCharacterType: CharacterType? = .jellyfish
     @Published var listState = CharacterListState(
         jellyfishState: Dictionary(
@@ -62,16 +61,18 @@ final class CharacterViewModel: ViewModelable {
         self.getCharactersListUseCase = getCharactersListUseCase
         self.getCharactersDetailUseCase = getCharactersDetailUseCase
         self.patchWalkingCharacterUseCase = patchWalkingCharacterUseCase
+        self.state = .loading
     }
     
     func action(_ action: Action) {
         switch action {
-        case .willAppear:
+        case .willAppear, .fetchData:
             fetchCharactersListData()
         case .willSelectCategory(let category):
             self.showingCharacterType = category
         case .willSelectJellyfish(let jellyfish, let characterState):
             self.characterDetailViewModel = .init(
+                characterViewModel: self,
                 detailState: CharacterDetailViewModel.CharacterDetailState(
                     characterId: characterState.characterId,
                     characterName: jellyfish.rawValue,
@@ -85,6 +86,7 @@ final class CharacterViewModel: ViewModelable {
             )
         case .willSelectDino(let dino, let characterState):
             self.characterDetailViewModel = .init(
+                characterViewModel: self,
                 detailState: CharacterDetailViewModel.CharacterDetailState(
                     characterId: characterState.characterId,
                     characterName: dino.rawValue,

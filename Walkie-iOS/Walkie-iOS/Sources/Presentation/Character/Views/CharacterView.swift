@@ -20,54 +20,47 @@ struct CharacterView: View {
                 NavigationBar(showBackButton: true)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
-                        switch self.viewModel.state {
-                        case .loaded(let state):
-                            VStack(spacing: 0) {
-                                Text("부화한 캐릭터")
-                                    .font(.H2)
-                                    .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
-                                    .padding(.top, 12)
-                                    .padding(.bottom, 22)
-                                HStack(alignment: .center, spacing: 8) {
-                                    Text(CharacterType.jellyfish.rawValue)
-                                        .font(.H3)
-                                        .foregroundStyle(
-                                            viewModel.showingCharacterType == .jellyfish
-                                            ? WalkieCommonAsset.gray700.swiftUIColor
-                                            : WalkieCommonAsset.gray300.swiftUIColor)
-                                        .padding(4)
-                                        .onTapGesture {
-                                            withAnimation(.easeInOut(duration: 0.01)) {
-                                                viewModel.action(.willSelectCategory(.jellyfish))
-                                            }
+                        VStack(spacing: 0) {
+                            Text("부화한 캐릭터")
+                                .font(.H2)
+                                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                                .padding(.top, 12)
+                                .padding(.bottom, 22)
+                            HStack(alignment: .center, spacing: 8) {
+                                Text(CharacterType.jellyfish.rawValue)
+                                    .font(.H3)
+                                    .foregroundStyle(
+                                        viewModel.showingCharacterType == .jellyfish
+                                        ? WalkieCommonAsset.gray700.swiftUIColor
+                                        : WalkieCommonAsset.gray300.swiftUIColor)
+                                    .padding(4)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.01)) {
+                                            viewModel.action(.willSelectCategory(.jellyfish))
                                         }
-                                    Text(CharacterType.dino.rawValue)
-                                        .font(.H3)
-                                        .foregroundStyle(
-                                            viewModel.showingCharacterType == .dino
-                                            ? WalkieCommonAsset.gray700.swiftUIColor
-                                            : WalkieCommonAsset.gray300.swiftUIColor)
-                                        .padding(4)
-                                        .onTapGesture {
-                                            withAnimation(.smooth(duration: 0.01)) {
-                                                viewModel.action(.willSelectCategory(.dino))
-                                            }
+                                    }
+                                Text(CharacterType.dino.rawValue)
+                                    .font(.H3)
+                                    .foregroundStyle(
+                                        viewModel.showingCharacterType == .dino
+                                        ? WalkieCommonAsset.gray700.swiftUIColor
+                                        : WalkieCommonAsset.gray300.swiftUIColor)
+                                    .padding(4)
+                                    .onTapGesture {
+                                        withAnimation(.smooth(duration: 0.01)) {
+                                            viewModel.action(.willSelectCategory(.dino))
                                         }
-                                }.padding(.bottom, 4)
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 16)
-                            CharacterListView(
-                                viewModel: viewModel,
-                                state: state,
-                                isPresentingBottomSheet: $isPresentingBottomSheet)
-                            .ignoresSafeArea()
-                            .padding(.bottom, 48)
-                        case .error(let error):
-                            Text(error.description)
-                        default:
-                            ProgressView()
+                                    }
+                            }.padding(.bottom, 4)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        CharacterListView(
+                            viewModel: viewModel,
+                            isPresentingBottomSheet: $isPresentingBottomSheet
+                        )
+                        .ignoresSafeArea()
+                        .padding(.bottom, 48)
                     }
                     .onAppear {
                         viewModel.action(.willAppear)
@@ -155,19 +148,25 @@ private struct CharacterItemView: View {
 
 private struct CharacterListView: View {
     @ObservedObject var viewModel: CharacterViewModel
-    @State var state: CharacterViewModel.CharacterListState
     @Binding var isPresentingBottomSheet: Bool
     
     var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: 0) {
-                ForEach(CharacterType.allCases, id: \.self) { type in
-                    CharacterTypeView(
-                        type: type,
-                        state: state,
-                        viewModel: viewModel,
-                        isPresentingBottomSheet: $isPresentingBottomSheet
-                    )
+                switch viewModel.state {
+                case .loaded(let state):
+                    ForEach(CharacterType.allCases, id: \.self) { type in
+                        CharacterTypeView(
+                            type: type,
+                            state: state,
+                            viewModel: viewModel,
+                            isPresentingBottomSheet: $isPresentingBottomSheet
+                        )
+                    }
+                case .loading:
+                    ProgressView()
+                case .error(let error):
+                    Text(error.description)
                 }
             }.scrollTargetLayout()
         }
@@ -176,7 +175,6 @@ private struct CharacterListView: View {
         .scrollIndicators(.never)
     }
 }
-
 private struct CharacterTypeView: View {
     let type: CharacterType
     let state: CharacterViewModel.CharacterListState
@@ -192,7 +190,8 @@ private struct CharacterTypeView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(type == .jellyfish
+            Text(
+                type == .jellyfish
                 ? StringLiterals.CharacterView.jellyfishIntroductionText
                 : StringLiterals.CharacterView.dinoIntroductionText)
             .font(.B2)
