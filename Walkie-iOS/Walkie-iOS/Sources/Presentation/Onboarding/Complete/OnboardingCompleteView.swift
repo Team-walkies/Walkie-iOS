@@ -11,44 +11,46 @@ import WalkieCommon
 
 struct OnboardingCompleteView: View {
     
-    @Binding var tapStart: Bool
+    @State var tapStart: Bool = false
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                VStack(alignment: .center, spacing: 12) {
-                    Text("\(UserManager.shared.getUserNickname)님,\n환영해요")
-                        .font(.H2)
-                        .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                        .multilineTextAlignment(.center)
-                    
-                    Text("해파리를 선물로 드릴게요")
-                        .font(.B1)
-                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
-                }
-                .padding(.top, 136)
+        VStack {
+            VStack(alignment: .center, spacing: 12) {
+                Text("\(UserManager.shared.getUserNickname)님,\n환영해요")
+                    .font(.H2)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                    .multilineTextAlignment(.center)
                 
-                Image(.imgJellyfish0)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 200, height: 200)
-                    .padding(.top, 32)
-                
-                Spacer()
-                
-                CTAButton(
-                    title: "함께 시작하자!",
-                    style: .primary,
-                    size: .large,
-                    isEnabled: true,
-                    buttonAction: {
-                        tapStart = true
-                        UserManager.shared.setTapStart()
-                    }
-                )
-                .padding(.bottom, 4)
+                Text("해파리를 선물로 드릴게요")
+                    .font(.B1)
+                    .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
             }
-            .toolbar(.hidden, for: .navigationBar)
+            .padding(.top, 136)
+            
+            Image(.imgJellyfish0)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 200)
+                .padding(.top, 32)
+            
+            Spacer()
+            
+            CTAButton(
+                title: "함께 시작하자!",
+                style: .primary,
+                size: .large,
+                isEnabled: true,
+                buttonAction: {
+                    tapStart = true
+                    UserManager.shared.setTapStart()
+                }
+            )
+            .padding(.bottom, 4)
+        }
+        .toolbar(.hidden, for: .navigationBar)
+        .navigationDestination(isPresented: $tapStart) {
+            TabBarView()
+                .navigationBarBackButtonHidden()
         }
     }
 }

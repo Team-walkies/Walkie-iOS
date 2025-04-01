@@ -15,54 +15,52 @@ struct NicknameView: View {
     @State private var isButtonEnabled: Bool = false
     @State private var inputState: InputState = .default
     @State private var isNavigating: Bool = false
-    @State private var tapStart: Bool = false
     
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading) {
-                NavigationBar(
-                    rightButtonTitle: "완료",
-                    showRightButton: true,
-                    rightButtonEnabled: isButtonEnabled,
-                    rightButtonAction: {
-                        isNavigating = true
-                        UserManager.shared.setUserNickname(userInput)
-                    }
-                )
-                
-                Text("워키에서 사용할\n닉네임을 지어주세요")
-                    .font(.H2)
-                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                    .padding(.top, 24)
-                    .padding(.leading, 16)
-                
-                InputView(
-                    limitation: 20,
-                    placeholderText: "닉네임",
-                    onlyText: true,
-                    input: $userInput,
-                    inputState: $inputState
-                )
-                .padding(.top, 38)
-                .padding(.horizontal, 16)
-                .onChange(of: inputState) { _, newState in
-                    isButtonEnabled = newState == .focus
+        VStack(alignment: .leading) {
+            NavigationBar(
+                rightButtonTitle: "완료",
+                showRightButton: true,
+                rightButtonEnabled: isButtonEnabled,
+                rightButtonShowsEnabledColor: true,
+                rightButtonAction: {
+                    isNavigating = true
+                    UserManager.shared.setUserNickname(userInput)
                 }
-                
-                Spacer()
+            )
+            
+            Text("워키에서 사용할\n닉네임을 지어주세요")
+                .font(.H2)
+                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                .padding(.top, 24)
+                .padding(.leading, 16)
+            
+            InputView(
+                limitation: 20,
+                placeholderText: "닉네임",
+                onlyText: true,
+                input: $userInput,
+                inputState: $inputState
+            )
+            .padding(.top, 38)
+            .padding(.horizontal, 16)
+            .onChange(of: inputState) { _, newState in
+                isButtonEnabled = newState == .focus
             }
-            .alignTo(.leading)
-            .toolbar(.hidden, for: .navigationBar)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                hideKeyboard()
-            }
-            .gesture(DragGesture().onChanged { _ in
-                hideKeyboard()
-            })
-            .navigationDestination(isPresented: $isNavigating) {
-                OnboardingCompleteView(tapStart: $tapStart)
-            }
+            
+            Spacer()
+        }
+        .alignTo(.leading)
+        .toolbar(.hidden, for: .navigationBar)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            hideKeyboard()
+        }
+        .gesture(DragGesture().onChanged { _ in
+            hideKeyboard()
+        })
+        .navigationDestination(isPresented: $isNavigating) {
+            OnboardingCompleteView()
         }
     }
 }
