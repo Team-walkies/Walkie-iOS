@@ -9,19 +9,15 @@ import SwiftUI
 
 struct TabTargetViewFactory {
     
-    let homeViewModel: HomeViewModel
-    let mapViewModel: MapViewModel
-    let mypageViewModel: MypageMainViewModel
-    
     @ViewBuilder
     func makeTargetView(for tab: TabBarItem) -> some View {
         switch tab {
         case .home:
-            HomeView(viewModel: homeViewModel)
+            DIContainer.shared.buildHomeView()
         case .map:
-            MapView(viewModel: mapViewModel)
+            DIContainer.shared.buildMapView()
         case .mypage:
-            MypageMainView(viewModel: mypageViewModel)
+            DIContainer.shared.buildMypageView()
         }
     }
 }

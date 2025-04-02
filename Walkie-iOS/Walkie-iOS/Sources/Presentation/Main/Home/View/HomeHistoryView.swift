@@ -15,9 +15,9 @@ struct HomeHistoryView: View {
     let items: [HomeHistoryItem]
     let columns = [GridItem(.flexible())]
     let destination: [AnyView] = [
-        AnyView(DIContainer.shared.registerEgg()),
-        AnyView(DIContainer.shared.registerCharacterView()),
-        AnyView(DIContainer.shared.registerReview())
+        AnyView(DIContainer.shared.buildEggView()),
+        AnyView(DIContainer.shared.buildCharacterView()),
+        AnyView(DIContainer.shared.buildReviewView())
     ]
     
     init(homeState: HomeViewModel.HomeHistoryState) {

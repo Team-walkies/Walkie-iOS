@@ -49,7 +49,7 @@ struct MypageMainView: View {
                         MypageLogoutView(viewModel: viewModel)
                     }
                     .navigationDestination(isPresented: $navigateAlarmList) {
-                        DIContainer.shared.registerAlarmList()
+                        DIContainer.shared.buildAlarmListView()
                             .navigationBarBackButtonHidden()
                     }
                 default:

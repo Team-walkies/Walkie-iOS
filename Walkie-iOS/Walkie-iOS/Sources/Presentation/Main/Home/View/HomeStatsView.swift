@@ -89,7 +89,7 @@ struct HomeStatsView: View {
                         .scaledToFit()
                         .frame(width: 296, height: 296)
                         .overlay {
-                            NavigationLink(destination: DIContainer.shared.registerEgg()) {
+                            NavigationLink(destination: DIContainer.shared.buildEggView()) {
                                 Text("알을 선택해 주세요")
                                     .font(.H5)
                                     .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)

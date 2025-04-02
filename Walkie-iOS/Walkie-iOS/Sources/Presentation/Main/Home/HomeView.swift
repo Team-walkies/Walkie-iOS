@@ -75,7 +75,7 @@ struct HomeView: View {
             viewModel.action(.homeWillAppear)
         }
         .navigationDestination(isPresented: $navigateAlarmList) {
-            DIContainer.shared.registerAlarmList()
+            DIContainer.shared.buildAlarmListView()
                 .navigationBarBackButtonHidden()
         }
     }
