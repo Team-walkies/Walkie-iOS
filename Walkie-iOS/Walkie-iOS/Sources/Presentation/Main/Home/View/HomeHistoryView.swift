@@ -11,16 +11,16 @@ import WalkieCommon
 
 struct HomeHistoryView: View {
     
-    let homeState: HomeViewModel.HomeState
+    let homeState: HomeViewModel.HomeHistoryState
     let items: [HomeHistoryItem]
     let columns = [GridItem(.flexible())]
-    let destination: [AnyView] = [
-        AnyView(DIContainer.shared.registerEgg()),
-        AnyView(DIContainer.shared.registerReview()),
-        AnyView(DIContainer.shared.registerReview())
-    ]
+//    let destination: [AnyView] = [
+//        AnyView(DIContainer.shared.buildEggView()),
+//        AnyView(DIContainer.shared.buildCharacterView()),
+//        AnyView(DIContainer.shared.buildReviewView())
+//    ]
     
-    init(homeState: HomeViewModel.HomeState) {
+    init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState
         self.items = [
             HomeHistoryItem(
@@ -47,8 +47,8 @@ struct HomeHistoryView: View {
 
                 let width = (geometry.size.width - 48) / 3
                 LazyHGrid(rows: columns) {
-                    ForEach(items.indices, id: \.self) { index in
-                        NavigationLink(destination: destination[index]) {
+                    ForEach(Array(HomeHistoryViewFactory.allCases.enumerated()), id: \.offset) { index, factory in
+                        NavigationLink(destination: factory.buildHistoryView()) {
                             HomeHistoryItemView(item: items[index], width: width)
                         }
                     }

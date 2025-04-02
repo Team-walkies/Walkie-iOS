@@ -54,15 +54,6 @@ extension DefaultMemberRepository: MemberRepository {
             .mapToNetworkError()
     }
     
-    func getEggPlayId() -> AnyPublisher<EggInfoEntity, NetworkError> {
-        memberService.getEggPlaying()
-            .map { dto in EggInfoEntity(
-                eggType: EggType.from(number: dto.rank),
-                needStep: dto.needStep
-            )}
-            .mapToNetworkError()
-    }
-    
     func getWalkingCharacter() -> AnyPublisher<CharacterEntity, NetworkError> {
         memberService.getCharacterPlay()
             .map { dto in CharacterEntity(

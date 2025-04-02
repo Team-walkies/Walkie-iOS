@@ -4,7 +4,6 @@ import SwiftUI
 struct WalkieIOSApp: App {
     
     @State var showSplash: Bool = false
-    @State var tapStart: Bool = false
     
     @State private var hasLogin: Bool = UserManager.shared.isUserLogin
     @State private var hasNickname: Bool = UserManager.shared.hasUserNickname
@@ -12,18 +11,18 @@ struct WalkieIOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            if !showSplash {
-                SplashView(showSplash: $showSplash)
-            } else if !hasLogin {
-                LoginView()
-            } else if !hasNickname {
-                NicknameView()
-            } else if isTapStart || tapStart {
-                NavigationStack {
+            NavigationStack {
+                if !showSplash {
+                    SplashView(showSplash: $showSplash)
+                } else if !hasLogin {
+                    LoginView()
+                } else if !hasNickname {
+                    NicknameView()
+                } else if isTapStart {
                     TabBarView()
+                } else {
+                    OnboardingCompleteView()
                 }
-            } else {
-                OnboardingCompleteView(tapStart: $tapStart)
             }
         }
     }

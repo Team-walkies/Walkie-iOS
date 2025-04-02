@@ -108,6 +108,19 @@ enum EggType: String, CaseIterable, Hashable {
         }
     }
     
+    var eggBackground: ImageResource {
+        switch self {
+        case .normal:
+            .imgEggBack0
+        case .rare:
+            .imgEggBack1
+        case .epic:
+            .imgEggBack2
+        case .legendary:
+            .imgEggBack3
+        }
+    }
+    
     static func from(number: Int) -> EggType {
         switch number {
         case 0:

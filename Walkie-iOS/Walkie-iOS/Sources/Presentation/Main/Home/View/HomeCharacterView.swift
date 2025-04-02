@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct HomeCharacterView: View {
     
-    let homeState: HomeViewModel.HomeState
+    let homeState: HomeViewModel.HomeCharacterState
     let width: CGFloat
     
     var body: some View {

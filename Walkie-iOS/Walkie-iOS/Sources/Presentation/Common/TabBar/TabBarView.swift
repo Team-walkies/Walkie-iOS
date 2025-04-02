@@ -10,18 +10,9 @@ import WalkieCommon
 
 struct TabBarView: View {
     
-    @StateObject private var homeViewModel = DIContainer.shared.registerHome()
-    @StateObject private var mapViewModel = MapViewModel()
-    @StateObject private var mypageViewModel = MypageMainViewModel()
     @State private var selectedTab: TabBarItem = .home
     
-    private var viewFactory: TabTargetViewFactory {
-        TabTargetViewFactory(
-            homeViewModel: homeViewModel,
-            mapViewModel: mapViewModel,
-            mypageViewModel: mypageViewModel
-        )
-    }
+    private var viewFactory: TabTargetViewFactory = TabTargetViewFactory()
     
     var body: some View {
         GeometryReader { geometry in

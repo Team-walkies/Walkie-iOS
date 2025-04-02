@@ -5,5 +5,6 @@
 //  Created by ahra on 3/26/25.
 //
 
-struct EmptyDto: Codable {
+protocol EmptyResponse {
+    static var empty: Self { get }
 }

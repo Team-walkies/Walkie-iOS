@@ -24,16 +24,31 @@ final class DIContainer {
 
 extension DIContainer {
     
-    func registerHome() -> HomeViewModel {
-        return HomeViewModel(
-            homeUseCase: DefaultHomeUseCase(
-                eggRepository: eggRepo,
+    func buildHomeView() -> HomeView {
+        return HomeView(viewModel: HomeViewModel(
+            getEggPlayUseCase: DefaultGetEggPlayUseCase(
                 memberRepository: memberRepo
+            ),
+            getCharacterPlayUseCase: DefaultGetWalkingCharacterUseCase(
+                memberRepository: memberRepo
+            ),
+            getEggCountUseCase: DefaultGetEggCountUseCase(
+                eggRepository: eggRepo
+            ), getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
+                characterRepository: characterRepo
             )
-        )
+        ))
     }
     
-    func registerEgg() -> EggView {
+    func buildMapView() -> MapView {
+        return MapView(viewModel: MapViewModel())
+    }
+    
+    func buildMypageView() -> MypageMainView {
+        return MypageMainView(viewModel: MypageMainViewModel())
+    }
+    
+    func buildEggView() -> EggView {
         let eggVM = EggViewModel(
             eggUseCase: DefaultEggUseCase(
                 eggRepository: eggRepo,
@@ -43,11 +58,11 @@ extension DIContainer {
         return EggView(viewModel: eggVM)
     }
     
-    func registerAlarmList() -> AlarmListView {
+    func buildAlarmListView() -> AlarmListView {
         return AlarmListView(viewModel: AlarmListViewModel())
     }
     
-    func registerReview() -> ReviewView {
+    func buildReviewView() -> ReviewView {
         return ReviewView(
             viewModel: ReviewViewModel(
                 reviewUseCase: DefaultReviewUseCase(
@@ -57,7 +72,7 @@ extension DIContainer {
         )
     }
     
-    func registerCharacterView() -> CharacterView {
+    func buildCharacterView() -> CharacterView {
         return CharacterView(
             viewModel: CharacterViewModel(
                 getCharactersListUseCase: DefaultGetCharactersListUseCase(

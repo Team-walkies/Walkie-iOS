@@ -64,8 +64,12 @@ extension Publisher where Output == Moya.Response {
                 if let data = response.data {
                     return data
                 } else {
-                    if let emptyDto = EmptyDto() as? Response {
-                        return emptyDto
+                    if let emptyResponseType = Response.self as? EmptyResponse.Type {
+                        if let empty = emptyResponseType.empty as? Response {
+                            return empty
+                        } else {
+                            throw NetworkError.emptyDataError
+                        }
                     } else {
                         throw NetworkError.emptyDataError
                     }

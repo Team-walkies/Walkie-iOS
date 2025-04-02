@@ -8,10 +8,8 @@
 import Combine
 
 protocol EggUseCase {
-    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError>
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError>
     func getEggsList() -> AnyPublisher<[EggEntity], NetworkError>
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError>
     func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError>
-    func getEggsCount() -> AnyPublisher<EggsCountEntity, NetworkError>
 }

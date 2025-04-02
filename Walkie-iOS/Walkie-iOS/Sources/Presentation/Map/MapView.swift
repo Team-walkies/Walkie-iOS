@@ -9,29 +9,17 @@ import SwiftUI
 
 import ActivityKit
 import WalkieCommon
+import WebKit
 
 struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
     @State private var activity: Activity<WalkieWidgetAttributes>?
     
+    let webView = WebView(request: URLRequest(url: URL(string: "http://127.0.0.1:8000/test.html")!))
+    
     var body: some View {
-        VStack(spacing: 50) {
-            Text("오늘의 걸음수는?!")
-                .font(.H2)
-            switch viewModel.state {
-            case .loaded(let mapState):
-                VStack {
-                    Text("\(mapState.step) 걸음")
-                        .font(.H2)
-                    let distanceStr = String(format: "%.1f", mapState.distance)
-                    Text("\(distanceStr) km")
-                        .font(.H2)
-                }
-            default:
-                Text("")
-            }
-            
+        VStack(spacing: 20) {
             Button("다이나믹 아일랜드 시작") {
                 startDynamicIsland()
             }
@@ -39,12 +27,15 @@ struct MapView: View {
             Button("다이나믹 아일랜드 종료") {
                 stopDynamicIsland()
             }
-        }
-        .onAppear {
-            viewModel.action(.mapViewAppear)
-        }
-        .onDisappear {
-            viewModel.action(.mapViewDisappear)
+            
+            webView
+                .padding(5)
+                .background(.yellow)
+                .frame(height: 400)
+            
+            Button("웹한테 보내기!") {
+                webView.sendToWeb()
+            }
         }
     }
     

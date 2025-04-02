@@ -21,3 +21,18 @@ struct GetEggPlayingDto: Codable {
         case memberID = "memberId"
     }
 }
+
+extension GetEggPlayingDto: EmptyResponse {
+    
+    static let empty = GetEggPlayingDto(
+        eggID: -1,
+        rank: 0,
+        needStep: 0,
+        nowStep: 0,
+        obtainedPosition: "",
+        obtainedDate: "",
+        picked: false,
+        userCharacterID: -1,
+        memberID: nil
+    )
+}

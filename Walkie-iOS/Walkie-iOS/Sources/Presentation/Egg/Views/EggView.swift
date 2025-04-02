@@ -139,5 +139,5 @@ private struct EggItemView: View {
 }
 
 #Preview{
-    DIContainer.shared.registerEgg()
+    DIContainer.shared.buildEggView()
 }

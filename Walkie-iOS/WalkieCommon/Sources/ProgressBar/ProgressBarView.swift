@@ -12,28 +12,44 @@ public struct ProgressBarView: View {
     var isSmall: Bool
     var current: Int
     var total: Int
+    var isDynamicIsland: Bool
     
-    public init(isSmall: Bool, current: Int, total: Int) {
+    public init(
+        isSmall: Bool,
+        current: Int,
+        total: Int,
+        isDynamicIsland: Bool = false
+    ) {
         self.isSmall = isSmall
         self.current = current
         self.total = total
+        self.isDynamicIsland = isDynamicIsland
     }
     
-    public init(isSmall: Bool, current: Double, total: Double) {
+    public init(
+        isSmall: Bool,
+        current: Double,
+        total: Double,
+        isDynamicIsland: Bool = false
+    ) {
         self.isSmall = isSmall
         self.current = Int(current)
         self.total = Int(total)
+        self.isDynamicIsland = isDynamicIsland
     }
     
     public var body: some View {
+        let width: CGFloat = isDynamicIsland ? 294 : (isSmall ? 64 : 180)
+        
         ZStack(alignment: .leading) {
             Rectangle()
                 .foregroundStyle(WalkieCommonAsset.gray200.swiftUIColor)
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
                 .foregroundStyle(WalkieCommonAsset.blue300.swiftUIColor)
-                .frame(width: min(Double(current)/Double(total), 1.0) * (isSmall ? 64 : 180))
+                .frame(width: min(Double(current)/Double(total), 1.0) * (isSmall ? 64 : width))
                 .cornerRadius(100, corners: .allCorners)
-        }.frame(width: isSmall ? 64 : 180, height: isSmall ? 4 : 8)
+        }
+        .frame(width: isSmall ? 64 : width, height: isSmall ? 4 : 8)
     }
 }

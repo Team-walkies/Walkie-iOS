@@ -24,7 +24,10 @@ let project = Project(
                         "Pretendard-Medium.ttf",
                     ],
                     "UIUserInterfaceStyle": "Light",
-                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"]
+                    "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
+                    "NSAppTransportSecurity": [
+                        "NSAllowsArbitraryLoads": true
+                    ]
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],

@@ -76,6 +76,7 @@ struct CharacterView: View {
                     .background(.white)
             }
         }
+        .navigationBarBackButtonHidden()
     }
 }
 
