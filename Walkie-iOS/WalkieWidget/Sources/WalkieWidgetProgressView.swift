@@ -64,7 +64,9 @@ struct WalkieWidgetProgressView: View {
                 ProgressBarView(
                     isSmall: false,
                     current: info.currentDistance,
-                    total: info.totalDistance)
+                    total: info.totalDistance,
+                    isDynamicIsland: true
+                )
                 
                 Image("ic_widget_spot")
                     .resizable()
