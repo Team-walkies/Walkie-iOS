@@ -68,8 +68,9 @@ extension View {
             self
             if isPresented.wrappedValue {
                 Color(white: 0, opacity: 0.6)
+                    .zIndex(1)
                     .ignoresSafeArea(.all)
-                    .transition(.opacity.animation(.easeInOut(duration: 0.25)))
+                    .opacity(isPresented.wrappedValue ? 1 : 0)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
