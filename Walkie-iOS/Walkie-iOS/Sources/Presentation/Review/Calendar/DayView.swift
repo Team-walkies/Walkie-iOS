@@ -9,27 +9,25 @@ import SwiftUI
 import WalkieCommon
 
 struct DayView: View {
-    let timePeriod: TimePeriod
-    let isSelected: Bool
-    let hasEvent: Bool
+    var state: DayViewState
     let date: Date
     
     private var textColor: Color {
-        switch timePeriod {
+        switch state.time {
         case .past:
-            return isSelected ? .white : WalkieCommonAsset.gray700.swiftUIColor
-        case .present:
-            return isSelected ? .white : WalkieCommonAsset.blue300.swiftUIColor
+            return state.isSelected ? .white : WalkieCommonAsset.gray700.swiftUIColor
+        case .today:
+            return state.isSelected ? .white : WalkieCommonAsset.blue300.swiftUIColor
         case .future:
             return WalkieCommonAsset.gray300.swiftUIColor
         }
     }
     
     private var backgroundColor: Color {
-        if isSelected {
-            switch timePeriod {
+        if state.isSelected {
+            switch state.time {
             case .past: return WalkieCommonAsset.gray600.swiftUIColor
-            case .present: return WalkieCommonAsset.blue300.swiftUIColor
+            case .today: return WalkieCommonAsset.blue300.swiftUIColor
             case .future: return .white
             }
         }
@@ -53,7 +51,7 @@ struct DayView: View {
             .background(backgroundColor)
             .cornerRadius(12)
             ZStack {
-                if hasEvent {
+                if state.hasSpot {
                     Circle()
                         .strokeBorder(.white, lineWidth: 1)
                         .background(Circle().fill(WalkieCommonAsset.blue300.swiftUIColor))

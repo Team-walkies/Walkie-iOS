@@ -48,4 +48,55 @@ extension Date {
     var dayOfMonth: Int {
         return Calendar.current.component(.day, from: self)
     }
+    
+    // 같은 날인지 반환
+    func isSameDay(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let components1 = calendar.dateComponents([.year, .month, .day], from: self)
+        let components2 = calendar.dateComponents([.year, .month, .day], from: date)
+        
+        return components1.year == components2.year &&
+        components1.month == components2.month &&
+        components1.day == components2.day
+    }
+    
+    // 오늘인지 반환
+    func isToday() -> Bool {
+        let calendar = Calendar.current
+        let today = Date()
+        let components1 = calendar.dateComponents([.year, .month, .day], from: today)
+        let components2 = calendar.dateComponents([.year, .month, .day], from: self)
+        
+        return components1.year == components2.year &&
+        components1.month == components2.month &&
+        components1.day == components2.day
+    }
+    
+    // 연도와 달 반환
+    func getYearAndMonth() -> (year: Int, month: Int) {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month], from: self)
+        
+        return (year: components.year ?? 0, month: components.month ?? 0)
+    }
+    
+    // 과거 현재 미래 반환
+    func getDayViewTime() -> DayViewTime {
+        let calendar = Calendar.current
+        let today = Date()
+        
+        if self.isToday() {
+            return .today
+        }
+        
+        let todayComponents = calendar.dateComponents([.year, .month, .day], from: today)
+        let inputComponents = calendar.dateComponents([.year, .month, .day], from: self)
+        
+        guard let todayDate = calendar.date(from: todayComponents),
+              let inputDate = calendar.date(from: inputComponents) else {
+            return .today
+        }
+        
+        return inputDate > todayDate ? .future : .past
+    }
 }
