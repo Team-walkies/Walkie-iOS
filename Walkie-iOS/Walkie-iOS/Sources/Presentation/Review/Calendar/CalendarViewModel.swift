@@ -150,10 +150,7 @@ final class CalendarViewModel: ViewModelable {
         )
     }
     
-    private func generateAdjacentWeeks(
-        from date: Date,
-        offset: Int
-    ) -> (
+    private func generateAdjacentWeeks(from date: Date, offset: Int) -> (
         start: Date,
         previous: Date,
         next: Date

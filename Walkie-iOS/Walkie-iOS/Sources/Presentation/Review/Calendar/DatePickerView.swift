@@ -74,7 +74,16 @@ struct DatePickerView: View {
                                     .font(.B2)
                                     .foregroundStyle(
                                         newDate.getDayViewTime() != DayViewTime.future
-                                        ? WalkieCommonAsset.gray700.swiftUIColor
+                                        ? Calendar.current.isDate(
+                                            state.selectedDate,
+                                            equalTo: state.selectedMonth, toGranularity: .month
+                                        ) &&
+                                        day == Calendar.current.component(
+                                            .day,
+                                            from: state.selectedDate
+                                        )
+                                        ? .white
+                                        : WalkieCommonAsset.gray700.swiftUIColor
                                         : WalkieCommonAsset.gray300.swiftUIColor
                                     )
                                     .frame(width: 32, height: 32)

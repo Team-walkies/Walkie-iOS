@@ -9,23 +9,23 @@ import SwiftUI
 import WalkieCommon
 
 struct CalendarView: View {
-    @StateObject private var viewModel = CalendarViewModel()
+    @ObservedObject var viewModel: CalendarViewModel
     @State private var currentWeekOffset: CGFloat = 0
     
     var body: some View {
-        VStack(alignment: .center, spacing: 12) {
+        VStack(alignment: .center, spacing: 0) {
             headerView
+                .padding(.bottom, 12)
+                .padding(.horizontal, 15)
             weekScrollView
+                .padding(.horizontal, 15)
+            Spacer(minLength: 0)
+            Rectangle()
+                .frame(height: 4)
+                .frame(maxWidth: .infinity)
+                .foregroundStyle(WalkieCommonAsset.gray50.swiftUIColor)
         }
         .frame(height: 128)
-        .padding(.horizontal, 15)
-        .bottomSheet(isPresented: $viewModel.showPicker, height: 436) {
-            DatePickerView(
-                viewModel: DatePickerViewModel(
-                    calendarViewModel: viewModel,
-                    selectedDate: viewModel.state.selectedDate)
-            ).ignoresSafeArea()
-        }
     }
     
     private var headerView: some View {
@@ -132,8 +132,4 @@ struct CalendarView: View {
                 }
             }
     }
-}
-
-#Preview {
-    CalendarView()
 }

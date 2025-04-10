@@ -12,14 +12,16 @@ import WalkieCommon
 struct ReviewView: View {
     
     @ObservedObject var viewModel: ReviewViewModel
+    @ObservedObject var calendarViewModel: CalendarViewModel = CalendarViewModel()
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
                 showBackButton: true
             )
+            CalendarView(viewModel: calendarViewModel)
+                .padding(.bottom, 12)
             switch viewModel.state {
-                
             case .loaded(let reviewState):
                 ScrollView {
                     HStack(spacing: 4) {
@@ -51,5 +53,16 @@ struct ReviewView: View {
             viewModel.action(.calendarWillAppear)
         }
         .navigationBarBackButtonHidden()
+        .bottomSheet(isPresented: $calendarViewModel.showPicker, height: 436) {
+            DatePickerView(
+                viewModel: DatePickerViewModel(
+                    calendarViewModel: calendarViewModel,
+                    selectedDate: calendarViewModel.state.selectedDate)
+            )
+        }
     }
+}
+
+#Preview {
+    DIContainer.shared.buildReviewView()
 }
