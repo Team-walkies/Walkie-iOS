@@ -59,45 +59,58 @@ struct DatePickerView: View {
                     Text("")
                 }
                 ForEach(1..<(state.daysInMonth ?? 0) + 1, id: \.self) { day in
-                    Button(
-                        action: {
-                            let components = DateComponents(
-                                year: state.selectedMonth.getYearAndMonth().year,
-                                month: state.selectedMonth.getYearAndMonth().month,
-                                day: day
-                            )
-                            if let newDate = Calendar.current.date(from: components) {
+                    let components = DateComponents(
+                        year: state.selectedMonth.getYearAndMonth().year,
+                        month: state.selectedMonth.getYearAndMonth().month,
+                        day: day
+                    )
+                    if let newDate = Calendar.current.date(from: components) {
+                        Button(
+                            action: {
                                 viewModel.action(.selectedDate(date: newDate))
                             }
-                        }, label: {
-                            Text("\(day)")
-                                .font(.B2)
-                                .foregroundStyle(
-                                    state.selectedDate.getDayViewTime() != DayViewTime.future
-                                    ? WalkieCommonAsset.gray700.swiftUIColor
-                                    : WalkieCommonAsset.gray300.swiftUIColor
-                                )
-                                .frame(width: 32, height: 32)
-                                .background(
-                                    Calendar.current.isDate(
-                                        state.selectedDate,
-                                        equalTo: state.selectedMonth, toGranularity: .month
-                                    ) &&
-                                    day == Calendar.current.component(
-                                        .day,
-                                        from: state.selectedDate
+                            , label: {
+                                Text("\(day)")
+                                    .font(.B2)
+                                    .foregroundStyle(
+                                        newDate.getDayViewTime() != DayViewTime.future
+                                        ? WalkieCommonAsset.gray700.swiftUIColor
+                                        : WalkieCommonAsset.gray300.swiftUIColor
                                     )
-                                    ? WalkieCommonAsset.blue300.swiftUIColor : .white
-                                )
-                                .clipShape(Circle())
-                        }
-                    )
+                                    .frame(width: 32, height: 32)
+                                    .background(
+                                        Calendar.current.isDate(
+                                            state.selectedDate,
+                                            equalTo: state.selectedMonth, toGranularity: .month
+                                        ) &&
+                                        day == Calendar.current.component(
+                                            .day,
+                                            from: state.selectedDate
+                                        )
+                                        ? WalkieCommonAsset.blue300.swiftUIColor : .white
+                                    )
+                                    .clipShape(Circle())
+                            }
+                        )
+                    }
                 }
+                
             }
             .padding(.horizontal, 12)
+            Spacer()
+            CTAButton(
+                title: "이동하기",
+                style: .primary,
+                size: .large,
+                isEnabled: true,
+                buttonAction: {
+                    viewModel.calendarViewModel.action(.willSelectDate(state.selectedDate))
+                }
+            ).padding(.bottom, 38)
         }
         .onAppear {
             viewModel.action(.willAppear)
         }
+        .background(.white)
     }
 }

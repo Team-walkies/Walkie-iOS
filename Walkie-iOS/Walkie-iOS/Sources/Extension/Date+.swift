@@ -93,10 +93,26 @@ extension Date {
         let inputComponents = calendar.dateComponents([.year, .month, .day], from: self)
         
         guard let todayDate = calendar.date(from: todayComponents),
-              let inputDate = calendar.date(from: inputComponents) else {
+          let inputDate = calendar.date(from: inputComponents)
+        else {
             return .today
         }
         
         return inputDate > todayDate ? .future : .past
+    }
+    
+    // 달 별 일수 반환
+    static func generateDaysCount(in month: Date) -> (days: Int, offset: Int) {
+        let calendar = Calendar.current
+        let daysInMonth = calendar.range(of: .day, in: .month, for: month)?.count ?? 0
+        
+        let components = calendar.dateComponents([.year, .month], from: month)
+        guard let firstDayOfMonth = calendar.date(from: components) else { return (days: daysInMonth, offset: 0) }
+        
+        let weekday = calendar.component(.weekday, from: firstDayOfMonth)
+        
+        let offset = (weekday - 1) % 7
+        
+        return (days: daysInMonth, offset: offset)
     }
 }
