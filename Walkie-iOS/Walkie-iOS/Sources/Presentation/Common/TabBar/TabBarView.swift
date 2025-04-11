@@ -11,6 +11,7 @@ import WalkieCommon
 struct TabBarView: View {
     
     @State private var selectedTab: TabBarItem = .home
+    @State private var tabMapView: Bool = false
     
     private var viewFactory: TabTargetViewFactory = TabTargetViewFactory()
     
@@ -56,7 +57,7 @@ struct TabBarView: View {
                         
                         Button(
                             action: {
-                                selectedTab = .map
+                                tabMapView = true
                             },
                             label: {
                                 ZStack {
@@ -80,6 +81,10 @@ struct TabBarView: View {
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
+            .navigationDestination(isPresented: $tabMapView) {
+                DIContainer.shared.buildMapView()
+                    .navigationBarBackButtonHidden()
+            }
         }
     }
 }
