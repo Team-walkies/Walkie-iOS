@@ -9,6 +9,7 @@ import SwiftUI
 
 import Combine
 import CoreMotion
+import CoreLocation
 
 final class HomeViewModel: ViewModelable {
     
@@ -87,6 +88,7 @@ final class HomeViewModel: ViewModelable {
     
     private let pedometer = CMPedometer()
     private var needStep: Int = 0
+    private let locationManager = LocationManager()
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -106,6 +108,7 @@ final class HomeViewModel: ViewModelable {
             fetchHomeStats()
             fetchHomeCharacter()
             fetchHomeHistory()
+            locationManager.requestLocation()
         case .homeWillDisappear:
             stopStepUpdates()
         }
