@@ -16,7 +16,9 @@ let project = Project(
                         "UIImageName": "",
                     ],
                     "NSMotionUsageDescription": "걸음수 데이터 측정을 위해 데이터 접근 권한이 필요합니다.",
+                    "NSLocationWhenInUseUsageDescription": "지도 사용을 위해 위치 접근 권한이 필요합니다",
                     "BASE_URL": "$(BASE_URL)",
+                    "WEB_URL": "$(WEB_URL)",
                     "NSSupportsLiveActivities": true,
                     "UIAppFonts": [
                         "Pretendard-ExtraBold.ttf",

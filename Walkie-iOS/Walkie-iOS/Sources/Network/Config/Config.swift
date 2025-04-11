@@ -11,6 +11,7 @@ enum Config {
     
     enum Keys {
         static let baseURL = "BASE_URL"
+        static let webURL = "WEB_URL"
     }
     
     private static let infoDictionary: [String: Any] = {
@@ -28,6 +29,15 @@ extension Config {
     static let baseURL: String = {
         guard let url = Config.infoDictionary[Keys.baseURL] as? String else {
             fatalError("Base URL is not set in plist for this configuration.")
+        }
+        return url
+    }()
+    
+    // MARK: Web URL
+    
+    static let webURL: String = {
+        guard let url = Config.infoDictionary[Keys.webURL] as? String else {
+            fatalError("Web URL is not set in plist for this configuration.")
         }
         return url
     }()
