@@ -25,6 +25,8 @@ final class HomeViewModel: ViewModelable {
     enum Action {
         case homeWillAppear
         case homeWillDisappear
+        case homeAuthAllowTapped
+        case homeAlarmAllowTapped
     }
     
     // states
@@ -111,6 +113,8 @@ final class HomeViewModel: ViewModelable {
             locationManager.requestLocation()
         case .homeWillDisappear:
             stopStepUpdates()
+        default:
+            break
         }
     }
     

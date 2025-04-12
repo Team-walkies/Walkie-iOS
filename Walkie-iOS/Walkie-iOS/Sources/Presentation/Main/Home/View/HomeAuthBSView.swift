@@ -1,0 +1,45 @@
+//
+//  HomeAuthBSView.swift
+//  Walkie-iOS
+//
+//  Created by ahra on 4/12/25.
+//
+
+import SwiftUI
+
+import WalkieCommon
+
+struct HomeAuthBSView: View {
+    
+    @ObservedObject var viewModel: HomeViewModel
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            VStack(alignment: .center, spacing: 4) {
+                Text("워키 이용에 꼭 필요한 권한이에요!")
+                    .font(.H4)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                
+                Text("원활한 이용을 위해 권한을 허용해주세요")
+                    .font(.B2)
+                    .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+            }
+            
+            VStack(spacing: 8) {
+                HomeAuthItemView(item: .locationAuth())
+                HomeAuthItemView(item: .motionnAuth())
+            }
+            .padding(.horizontal, 16)
+            
+            CTAButton(
+                title: "허용하기",
+                style: .primary,
+                size: .large,
+                isEnabled: true,
+                buttonAction: {
+                    viewModel.action(.homeAuthAllowTapped)
+                }
+            )
+        }
+    }
+}
