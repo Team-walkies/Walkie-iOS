@@ -12,6 +12,7 @@ import WalkieCommon
 struct HomeAlarmBSView: View {
     
     @Environment(\.screenWidth) var screenWidth
+    @Binding var isPresented: Bool
     
     var body: some View {
         VStack(spacing: 20) {
@@ -35,7 +36,7 @@ struct HomeAlarmBSView: View {
             
             HStack(spacing: 8) {
                 Button(action: {
-                    print("later tapped")
+                    isPresented = false
                 }, label: {
                     Text("나중에")
                         .font(.B1)
@@ -58,5 +59,7 @@ struct HomeAlarmBSView: View {
             }
             .padding(.horizontal, 16)
         }
+        .padding(.top, 24)
+        .background(.white)
     }
 }

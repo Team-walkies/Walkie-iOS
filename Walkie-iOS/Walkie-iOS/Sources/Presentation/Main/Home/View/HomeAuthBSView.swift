@@ -12,6 +12,7 @@ import WalkieCommon
 struct HomeAuthBSView: View {
     
     @ObservedObject var viewModel: HomeViewModel
+    @Binding var isPresented: Bool
     
     var body: some View {
         VStack(spacing: 20) {
@@ -32,14 +33,17 @@ struct HomeAuthBSView: View {
             .padding(.horizontal, 16)
             
             CTAButton(
-                title: "허용하기",
+                title: "확인했어요",
                 style: .primary,
                 size: .large,
                 isEnabled: true,
                 buttonAction: {
                     viewModel.action(.homeAuthAllowTapped)
+                    isPresented = false
                 }
             )
         }
+        .padding(.top, 24)
+        .background(.white)
     }
 }
