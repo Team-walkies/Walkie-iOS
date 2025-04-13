@@ -115,4 +115,9 @@ extension Date {
         
         return (days: daysInMonth, offset: offset)
     }
+    
+    // 날짜 이동
+    func adding(days: Int) -> Date {
+        return Calendar.current.date(byAdding: .day, value: days, to: self) ?? self
+    }
 }

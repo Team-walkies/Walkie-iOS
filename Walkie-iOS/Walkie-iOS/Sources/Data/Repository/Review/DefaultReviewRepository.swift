@@ -44,7 +44,7 @@ extension DefaultReviewRepository: ReviewRepository {
                             rank: review.rank,
                             type: review.type,
                             characterClass: review.characterClass,
-                            pic: review.pic,
+                            pic: review.pic ?? "",
                             reviewCD: review.reviewCD,
                             review: review.review,
                             rating: review.rating

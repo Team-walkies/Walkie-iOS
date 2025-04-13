@@ -15,7 +15,6 @@ struct DayViewState: Identifiable, Equatable {
     var time: DayViewTime
     var hasSpot: Bool
     
-    // Explicit Equatable conformance
     static func == (lhs: DayViewState, rhs: DayViewState) -> Bool {
         return lhs.date.isSameDay(date: rhs.date) &&
                lhs.isSelected == rhs.isSelected &&
@@ -24,7 +23,7 @@ struct DayViewState: Identifiable, Equatable {
     }
 }
 
-enum DayViewTime: Equatable { // Explicitly conform to Equatable
+enum DayViewTime: Equatable {
     case today
     case future
     case past
