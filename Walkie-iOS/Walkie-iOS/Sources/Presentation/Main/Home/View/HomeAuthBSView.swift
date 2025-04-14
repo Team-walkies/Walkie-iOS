@@ -13,6 +13,8 @@ struct HomeAuthBSView: View {
     
     @ObservedObject var viewModel: HomeViewModel
     @Binding var isPresented: Bool
+    let showLocation: Bool
+    let showMotion: Bool
     
     var body: some View {
         VStack(spacing: 20) {
@@ -27,8 +29,12 @@ struct HomeAuthBSView: View {
             }
             
             VStack(spacing: 8) {
-                HomeAuthItemView(item: .locationAuth())
-                HomeAuthItemView(item: .motionnAuth())
+                if showLocation {
+                    HomeAuthItemView(item: .locationAuth())
+                }
+                if showMotion {
+                    HomeAuthItemView(item: .motionnAuth())
+                }
             }
             .padding(.horizontal, 16)
             

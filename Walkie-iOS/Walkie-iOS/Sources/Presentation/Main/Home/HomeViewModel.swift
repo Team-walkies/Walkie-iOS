@@ -11,6 +11,18 @@ import Combine
 import CoreMotion
 import CoreLocation
 
+enum PermissionState {
+    case notDetermined
+    case denied
+    case authorized
+}
+
+extension PermissionState {
+    var isAuthorized: Bool {
+        self == .authorized
+    }
+}
+
 final class HomeViewModel: ViewModelable {
     
     // usecases
@@ -50,11 +62,23 @@ final class HomeViewModel: ViewModelable {
         let todayDistance: Double
     }
     
+    struct HomePermissionState: Equatable {
+        let isLocationChecked: PermissionState
+        let isMotionChecked: PermissionState
+        let isAlarmChecked: PermissionState
+        
+        static func == (lhs: HomePermissionState, rhs: HomePermissionState) -> Bool {
+            return lhs.isLocationChecked == rhs.isLocationChecked &&
+            lhs.isMotionChecked == rhs.isMotionChecked &&
+            lhs.isAlarmChecked == rhs.isAlarmChecked
+        }
+    }
+    
     // view states
     
-    enum HomeViewState {
+    enum HomeViewState: Equatable {
         case loading
-        case loaded
+        case loaded(HomePermissionState)
         case error
     }
     
@@ -87,6 +111,7 @@ final class HomeViewModel: ViewModelable {
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
+    @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
     private var needStep: Int = 0
@@ -107,15 +132,58 @@ final class HomeViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .homeWillAppear:
-            fetchHomeStats()
-            fetchHomeCharacter()
-            fetchHomeHistory()
-            locationManager.requestLocation()
+            checkPermission()
         case .homeWillDisappear:
             stopStepUpdates()
+        case .homeAuthAllowTapped:
+            showPermission()
         default:
             break
         }
+    }
+    
+    func checkPermission() {
+        let locationState: PermissionState = {
+            if isLocationNotDetermined() { return .notDetermined }
+            if isLocationDenied() { return .denied }
+            return .authorized
+        }()
+        let motionState: PermissionState = {
+            if isMotionNotDetermined() { return .notDetermined }
+            if isMotionDenied() { return .denied }
+            return .authorized
+        }()
+        
+        let permissionState = HomePermissionState(
+            isLocationChecked: locationState,
+            isMotionChecked: motionState,
+            isAlarmChecked: .authorized // todo - binding
+        )
+        state = .loaded(permissionState)
+
+        if isLocationAuthorized() && isMotionAuthorized() {
+            getHomeAPI()
+        }
+    }
+    
+    func showPermission() {
+        let locationDenied = isLocationDenied()
+        let motionDenied = isMotionDenied()
+        
+        if locationDenied || motionDenied {
+            shouldShowDeniedAlert = true
+            return
+        }
+        
+        locationManager.requestLocation()
+        requestMotion()
+    }
+    
+    func getHomeAPI() {
+        fetchHomeStats()
+        fetchHomeCharacter()
+        fetchHomeHistory()
+        startStepUpdates()
     }
     
     func fetchHomeStats() {
@@ -187,8 +255,56 @@ final class HomeViewModel: ViewModelable {
                 }
             )
             .store(in: &cancellables)
+    }
+}
+
+private extension HomeViewModel {
+    
+    func isLocationNotDetermined() -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        return status == .notDetermined
+    }
+    
+    func isMotionNotDetermined() -> Bool {
+        guard CMMotionActivityManager.isActivityAvailable() else {
+            return false
+        }
         
-        self.startStepUpdates()
+        let status = CMMotionActivityManager.authorizationStatus()
+        return status == .notDetermined
+    }
+    
+    func isLocationAuthorized() -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        return status == .authorizedAlways || status == .authorizedWhenInUse
+    }
+    
+    func isMotionAuthorized() -> Bool {
+        guard CMMotionActivityManager.isActivityAvailable() else {
+            return false
+        }
+        
+        let status = CMMotionActivityManager.authorizationStatus()
+        return status == .authorized
+    }
+    
+    func isLocationDenied() -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        return status == .denied || status == .restricted
+    }
+    
+    func isMotionDenied() -> Bool {
+        guard CMMotionActivityManager.isActivityAvailable() else {
+            return false
+        }
+        
+        let status = CMMotionActivityManager.authorizationStatus()
+        return status == .denied || status == .restricted
+    }
+    
+    func requestMotion() {
+        CMMotionActivityManager().startActivityUpdates(to: .main) { _ in }
+        getHomeAPI()
     }
 }
 
@@ -201,11 +317,14 @@ private extension HomeViewModel {
         let startOfDay = Calendar.current.startOfDay(for: now)
         
         self.pedometer.queryPedometerData(from: startOfDay, to: now) { data, error in
-            if let data = data, error == nil {
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                if let data = data, error == nil {
                     self.updateStepData(
                         step: data.numberOfSteps.intValue,
-                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0)
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
+                    )
+                } else { // 권한 거부인경우
+                    self.updateStepData(step: -1, distance: 0)
                 }
             }
         }
