@@ -11,18 +11,6 @@ import Combine
 import CoreMotion
 import CoreLocation
 
-enum PermissionState {
-    case notDetermined
-    case denied
-    case authorized
-}
-
-extension PermissionState {
-    var isAuthorized: Bool {
-        self == .authorized
-    }
-}
-
 final class HomeViewModel: ViewModelable {
     
     // usecases
