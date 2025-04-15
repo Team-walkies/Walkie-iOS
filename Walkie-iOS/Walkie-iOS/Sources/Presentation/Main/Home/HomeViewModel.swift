@@ -160,23 +160,28 @@ final class HomeViewModel: ViewModelable {
             isAlarmChecked: .authorized // todo - binding
         )
         state = .loaded(permissionState)
-
-        if isLocationAuthorized() && isMotionAuthorized() {
+        
+        if !isLocationNotDetermined() && !isMotionNotDetermined() {
             getHomeAPI()
         }
     }
     
     func showPermission() {
+        let locationNotDetermined = isLocationNotDetermined()
+        let motionNotDetermined = isMotionNotDetermined()
         let locationDenied = isLocationDenied()
         let motionDenied = isMotionDenied()
+        
+        if locationNotDetermined || motionNotDetermined {
+            locationManager.requestLocation()
+            requestMotion()
+            return
+        }
         
         if locationDenied || motionDenied {
             shouldShowDeniedAlert = true
             return
         }
-        
-        locationManager.requestLocation()
-        requestMotion()
     }
     
     func getHomeAPI() {

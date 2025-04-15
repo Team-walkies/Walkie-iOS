@@ -78,7 +78,6 @@ struct Modal: View {
             }
         }
         .padding(.vertical, 16)
-        .frame(width: 280, height: 154)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
     }

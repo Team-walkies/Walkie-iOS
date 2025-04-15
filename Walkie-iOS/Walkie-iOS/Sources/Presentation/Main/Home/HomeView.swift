@@ -111,18 +111,38 @@ struct HomeView: View {
                 }
             }
         .overlay {
+            var title: String {
+                if showLocationBS && showMotionBS {
+                    return "접근권한 허용"
+                } else if showLocationBS {
+                    return "위치 권한 허용"
+                } else if showMotionBS {
+                    return "신체활동 권한 허용"
+                }
+                return ""
+            }
+            
+            var content: String {
+                if showLocationBS && showMotionBS {
+                    return "원활한 서비스 이용을 위해\n위치, 신체활동 권한을 모두 허용해주세요"
+                } else {
+                    return "원활한 서비스 이용을 위해 권한이 필요해요"
+                }
+            }
+            
             if viewModel.shouldShowDeniedAlert {
                 ZStack {
                     Color(white: 0, opacity: 0.6)
                         .ignoresSafeArea()
                         .transition(.opacity)
                     Modal(
-                        title: "위치, 동작 및 피트니스 권한",
-                        content: "원활한 서비스 이용을 위해 권한이 필요해요",
+                        title: title,
+                        content: content,
                         style: .primary,
                         button: .twobutton,
                         cancelButtonAction: {
                             viewModel.shouldShowDeniedAlert = false
+                            viewModel.getHomeAPI()
                         },
                         checkButtonAction: {
                             if let url = URL(string: UIApplication.openSettingsURLString)
@@ -133,6 +153,7 @@ struct HomeView: View {
                         },
                         checkButtonTitle: "허용하기"
                     )
+                    .padding(.horizontal, 40)
                 }
             }
         }
