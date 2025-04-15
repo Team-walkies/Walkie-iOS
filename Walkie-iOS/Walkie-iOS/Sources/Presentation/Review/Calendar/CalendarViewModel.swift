@@ -87,8 +87,8 @@ final class CalendarViewModel: ViewModelable {
             handleWeekScroll(baseDate: startOfWeek, offset: 0, selectedDate: date)
         }
         lastQuery = .init(
-            startDate: convertToDateString(self.firstDay),
-            endDate: convertToDateString(self.lastDay)
+            startDate: self.firstDay.convertToDateString(),
+            endDate: self.lastDay.convertToDateString()
         )
         updateSpotReviewState()
         showReviewList()
@@ -106,8 +106,6 @@ final class CalendarViewModel: ViewModelable {
                 )
                 (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: date)
                 handleWeekScroll(baseDate: date, offset: 0, selectedDate: date)
-                updateSpotReviewState()
-                showReviewList()
             }
             showPicker = false
         case .didTapTodayButton:
@@ -119,58 +117,46 @@ final class CalendarViewModel: ViewModelable {
             )
             (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: today)
             handleWeekScroll(baseDate: today, offset: 0, selectedDate: today)
-            updateSpotReviewState()
-            showReviewList()
         case .willScrollToPreviousWeek(let date):
-            handleWeekScroll(baseDate: date, offset: -7, selectedDate: state.selectedDate)
-            if let newStartOfWeek = calendar.date(
-                from: calendar.dateComponents(
-                    [.yearForWeekOfYear, .weekOfYear],
-                    from: date.adding(days: -7)
-                )
-            ) {
-                (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: newStartOfWeek)
-                let newSelectedWeek = calendarUseCase.setCalendarDayViewState(
-                    baseDate: newStartOfWeek,
-                    selectedDate: state.selectedDate
-                )
-                if let newSelectedDate = newSelectedWeek.first(
-                    where: { $0.date.dayOfTheWeek == state.selectedDayOfTheWeek })?.date,
-                    newSelectedDate.getDayViewTime() != .future {
-                    self.state = CalendarState(
-                        selectedDate: newSelectedDate,
-                        selectedDayOfTheWeek: newSelectedDate.dayOfTheWeek,
-                        selectedYearAndMonth: newStartOfWeek.getYearAndMonth()
-                    )
-                }
-            }
-            updateSpotReviewState()
-            showReviewList()
+            scrollToWeek(date: date, direction: .previous)
         case .willScrollToNextWeek(let date):
-            handleWeekScroll(baseDate: date, offset: 7, selectedDate: state.selectedDate)
-            if let newStartOfWeek = calendar.date(
-                from: calendar.dateComponents(
-                    [.yearForWeekOfYear, .weekOfYear],
-                    from: date.adding(days: 7)
+            scrollToWeek(date: date, direction: .next)
+        }
+        updateSpotReviewState()
+        showReviewList()
+    }
+    
+    // MARK: - Helper Methods
+    private enum ScrollDirection {
+        case previous
+        case next
+    }
+    
+    private func scrollToWeek(date: Date, direction: ScrollDirection) {
+        let offset = direction == .previous ? -7 : 7
+        handleWeekScroll(baseDate: date, offset: offset, selectedDate: state.selectedDate)
+        
+        let daysToAdd = direction == .previous ? -7 : 7
+        if let newStartOfWeek = calendar.date(
+            from: calendar.dateComponents(
+                [.yearForWeekOfYear, .weekOfYear],
+                from: date.adding(days: daysToAdd)
+            )
+        ) {
+            (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: newStartOfWeek)
+            let newSelectedWeek = calendarUseCase.setCalendarDayViewState(
+                baseDate: newStartOfWeek,
+                selectedDate: state.selectedDate
+            )
+            if let newSelectedDate = newSelectedWeek.first(
+                where: { $0.date.dayOfTheWeek == state.selectedDayOfTheWeek })?.date,
+                newSelectedDate.getDayViewTime() != .future {
+                self.state = CalendarState(
+                    selectedDate: newSelectedDate,
+                    selectedDayOfTheWeek: newSelectedDate.dayOfTheWeek,
+                    selectedYearAndMonth: newStartOfWeek.getYearAndMonth()
                 )
-            ) {
-                (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: newStartOfWeek)
-                let newSelectedWeek = calendarUseCase.setCalendarDayViewState(
-                    baseDate: newStartOfWeek,
-                    selectedDate: state.selectedDate
-                )
-                if let newSelectedDate = newSelectedWeek.first(
-                    where: { $0.date.dayOfTheWeek == state.selectedDayOfTheWeek })?.date,
-                    newSelectedDate.getDayViewTime() != .future {
-                    self.state = CalendarState(
-                        selectedDate: newSelectedDate,
-                        selectedDayOfTheWeek: newSelectedDate.dayOfTheWeek,
-                        selectedYearAndMonth: newStartOfWeek.getYearAndMonth()
-                    )
-                }
             }
-            updateSpotReviewState()
-            showReviewList()
         }
     }
     
@@ -229,7 +215,7 @@ final class CalendarViewModel: ViewModelable {
     // 3주의 날짜 생성
     private func generateAdjacentWeeks(from date: Date, offset: Int) -> (
         start: Date,
-        previous: Date,
+        foliationprevious: Date,
         next: Date
     )? {
         let calendar = Calendar.current
@@ -247,8 +233,8 @@ final class CalendarViewModel: ViewModelable {
     // 3주의 리뷰 API 요청
     private func updateSpotReviewState() {
         let query = ReviewsCalendarDate(
-            startDate: convertToDateString(firstDay),
-            endDate: convertToDateString(lastDay)
+            startDate: firstDay.convertToDateString(),
+            endDate: lastDay.convertToDateString()
         )
         if let last = self.lastQuery, last.startDate != query.startDate {
             lastQuery = query
@@ -258,13 +244,7 @@ final class CalendarViewModel: ViewModelable {
     
     // 선택한 날짜로 리뷰 필터링
     private func showReviewList() {
-        let dateString = convertToDateString(state.selectedDate)
+        let dateString = state.selectedDate.convertToDateString()
         reviewViewModel.action(.showReviewList(dateString: dateString))
-    }
-    
-    func convertToDateString(_ date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: date)
     }
 }

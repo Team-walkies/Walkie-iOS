@@ -61,8 +61,8 @@ struct ReviewView: View {
         }
         .onAppear {
             viewModel.action(.loadReviewList(
-                startDate: calendarViewModel.convertToDateString(calendarViewModel.firstDay),
-                endDate: calendarViewModel.convertToDateString(calendarViewModel.lastDay)
+                startDate: calendarViewModel.firstDay.convertToDateString(),
+                endDate: calendarViewModel.lastDay.convertToDateString()
             ))
         }
         .navigationBarBackButtonHidden()

@@ -120,4 +120,11 @@ extension Date {
     func adding(days: Int) -> Date {
         return Calendar.current.date(byAdding: .day, value: days, to: self) ?? self
     }
+    
+    // 날짜 형식 포맷팅
+    func convertToDateString() -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: self)
+    }
 }
