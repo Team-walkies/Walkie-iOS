@@ -38,12 +38,6 @@ final class DatePickerViewModel: ViewModelable {
             offset: generatedDays.offset,
             nextMonthAvailable: false
         )
-        updateState(
-            selectedDate: selectedDate,
-            selectedMonth: selectedDate,
-            daysInMonth: generatedDays.days,
-            offset: generatedDays.offset
-        )
     }
     
     func action(_ action: Action) {
