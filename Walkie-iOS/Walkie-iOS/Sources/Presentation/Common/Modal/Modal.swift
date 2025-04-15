@@ -48,6 +48,7 @@ struct Modal: View {
                 .font(.B2)
                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                 .padding(.bottom, 20)
+                .multilineTextAlignment(.center)
             
             switch button {
             case .onebutton:
