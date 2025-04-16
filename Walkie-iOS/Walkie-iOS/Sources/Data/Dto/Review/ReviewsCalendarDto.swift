@@ -17,7 +17,7 @@ struct Review: Codable {
     let step: Int
     let date, startTime, endTime: String
     let characterID, rank, type, characterClass: Int
-    let pic: String
+    let pic: String?
     let reviewCD: Bool
     let review: String
     let rating: Int

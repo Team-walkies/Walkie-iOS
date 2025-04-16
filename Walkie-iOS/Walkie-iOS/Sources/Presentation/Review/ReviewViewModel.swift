@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 import Combine
 
 final class ReviewViewModel: ViewModelable {
@@ -15,9 +14,12 @@ final class ReviewViewModel: ViewModelable {
     private var cancellables = Set<AnyCancellable>()
     
     @Published var state: ReviewViewState = .loading
+    @Published var loadedReviewList: [ReviewState] = []
+    @Published var reviewDateList: [String] = []
     
     enum Action {
-        case calendarWillAppear
+        case loadReviewList(startDate: String, endDate: String)
+        case showReviewList(dateString: String)
     }
     
     struct ReviewState {
@@ -32,18 +34,21 @@ final class ReviewViewModel: ViewModelable {
         let reviewCD: Bool
         let review: String
         let rating: Int
+        let date: String
     }
     
     enum ReviewViewState {
         case loading
-        case loaded([ReviewState])
+        case loaded([ReviewState]?)
         case error(String)
     }
     
     func action(_ action: Action) {
         switch action {
-        case .calendarWillAppear:
-            getReviewList()
+        case .loadReviewList(let startDate, let endDate):
+            getReviewList(startDate: startDate, endDate: endDate)
+        case .showReviewList(dateString: let dateString):
+            showReviewList(dateString: dateString)
         }
     }
     
@@ -51,29 +56,35 @@ final class ReviewViewModel: ViewModelable {
         self.reviewUseCase = reviewUseCase
     }
     
-    func getReviewList() {
-        let date  = ReviewsCalendarDate(startDate: "", endDate: "")
+    func getReviewList(startDate: String, endDate: String) {
+        let date = ReviewsCalendarDate(startDate: startDate, endDate: endDate)
         self.reviewUseCase.getReviewList(date: date)
             .walkieSink(
                 with: self,
-                receiveValue: { _, reviewList in
-                    let processedReviews = reviewList.reviewList.map { self.processReviewEntity($0) }
-                    self.state = .loaded(processedReviews)
+                receiveValue: { viewModel, reviewList in
+                    let processedReviews = reviewList.reviewList.map { viewModel.processReviewEntity($0) }
+                    viewModel.loadedReviewList = processedReviews
+                    viewModel.reviewDateList = Array(Set(reviewList.reviewList.map { $0.date })).sorted()
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
                 })
             .store(in: &cancellables)
     }
+    
+    func showReviewList(dateString: String) {
+        self.state = .loaded(self.loadedReviewList.filter { review in
+            review.date == dateString
+        })
+    }
 }
 
 private extension ReviewViewModel {
     
     func processReviewEntity(_ entity: ReviewEntity) -> ReviewState {
-        
         let walkTime: String = {
             guard let start = formatTimeString(entity.startTime),
-                let end = formatTimeString(entity.endTime) else { return "" }
+                  let end = formatTimeString(entity.endTime) else { return "" }
             return "\(start) ~ \(end)"
         }()
         
@@ -95,7 +106,8 @@ private extension ReviewViewModel {
             pic: entity.pic,
             reviewCD: entity.reviewCD,
             review: entity.review,
-            rating: entity.rating
+            rating: entity.rating,
+            date: entity.date
         )
     }
     
@@ -104,7 +116,8 @@ private extension ReviewViewModel {
         dateFormatter.dateFormat = "HH:mm:ss"
         
         if let start = dateFormatter.date(from: startTime),
-            let end = dateFormatter.date(from: endTime) {
+           let end = dateFormatter.date(from: endTime)
+        {
             let difference = end.timeIntervalSince(start)
             return Int(difference / 60)
         }
