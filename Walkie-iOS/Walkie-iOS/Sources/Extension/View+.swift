@@ -84,4 +84,31 @@ extension View {
                 .presentationBackground(.clear)
         }
     }
+    
+    func permissionBottomSheet<Content: View>(
+        isPresented: Binding<Bool>,
+        height: CGFloat,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        ZStack {
+            self
+            if isPresented.wrappedValue {
+                Color(white: 0, opacity: 0.6)
+                    .zIndex(1)
+                    .ignoresSafeArea(.all)
+                    .opacity(isPresented.wrappedValue ? 1 : 0)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
+        .sheet(isPresented: isPresented) {
+            content()
+                .presentationCornerRadius(24)
+                .ignoresSafeArea(.all, edges: .bottom)
+                .presentationDetents([.height(height)])
+                .presentationBackgroundInteraction(.disabled)
+                .presentationDragIndicator(.hidden)
+                .presentationBackground(.white)
+                .interactiveDismissDisabled(true)
+        }
+    }
 }

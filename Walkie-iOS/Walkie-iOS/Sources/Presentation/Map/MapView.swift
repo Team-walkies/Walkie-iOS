@@ -9,36 +9,32 @@ import SwiftUI
 
 import ActivityKit
 import WalkieCommon
-import WebKit
 
 struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
     @State private var activity: Activity<WalkieWidgetAttributes>?
-    
-    let webView = WebView(request: URLRequest(url: URL(string: "http://127.0.0.1:8000/test.html")!))
+    @State private var request: URLRequest?
     
     var body: some View {
         VStack(spacing: 20) {
-            Button("다이나믹 아일랜드 시작") {
-                startDynamicIsland()
+            if let request {
+                WebView(request: request)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                Text("웹 페이지를 불러올 수 없습니다.")
+                    .foregroundColor(.red)
             }
-            
-            Button("다이나믹 아일랜드 종료") {
-                stopDynamicIsland()
-            }
-            
-            webView
-                .padding(5)
-                .background(.yellow)
-                .frame(height: 400)
-            
-            Button("웹한테 보내기!") {
-                webView.sendToWeb()
+        }
+        .onAppear {
+            do {
+                self.request = try viewModel.setWebURL()
+            } catch {
+                print("🚨 웹 URL 설정 실패: \(error)")
             }
         }
     }
-    
+
     func startDynamicIsland() {
         if !ActivityAuthorizationInfo().areActivitiesEnabled {
             print("사용안댐")

@@ -10,6 +10,11 @@ import SwiftUI
 import Combine
 import CoreMotion
 
+enum WebURLError: Error {
+    case tokenMissing
+    case invalidURL
+}
+
 final class MapViewModel: ViewModelable {
     
     enum Action {
@@ -48,6 +53,28 @@ final class MapViewModel: ViewModelable {
             stopStepUpdates()
         }
     }
+}
+
+extension MapViewModel {
+    
+    func setWebURL() throws -> URLRequest {
+        let token = (try? TokenKeychainManager.shared.getAccessToken())
+        var components = URLComponents(string: Config.webURL)
+        components?.queryItems = [
+            URLQueryItem(name: "accessToken", value: token),
+            URLQueryItem(name: "memberId", value: "6"),
+            URLQueryItem(name: "characterRank", value: "1"),
+            URLQueryItem(name: "characterType", value: "0"),
+            URLQueryItem(name: "characterClass", value: "1")
+        ]
+        guard let url = components?.url else {
+            throw WebURLError.invalidURL
+        }
+        return URLRequest(url: url)
+    }
+}
+
+private extension MapViewModel {
     
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else { return }
