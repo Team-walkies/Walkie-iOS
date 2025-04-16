@@ -82,7 +82,7 @@ final class CalendarViewModel: ViewModelable {
             self.state = CalendarState(
                 selectedDate: date,
                 selectedDayOfTheWeek: date.dayOfTheWeek,
-                selectedYearAndMonth: startOfWeek.getYearAndMonth()
+                selectedYearAndMonth: date.getYearAndMonth()
             )
             handleWeekScroll(baseDate: startOfWeek, offset: 0, selectedDate: date)
         }
@@ -102,7 +102,7 @@ final class CalendarViewModel: ViewModelable {
                 self.state = CalendarState(
                     selectedDate: date,
                     selectedDayOfTheWeek: date.dayOfTheWeek,
-                    selectedYearAndMonth: self.state.selectedYearAndMonth
+                    selectedYearAndMonth: date.getYearAndMonth()
                 )
                 (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: date)
                 handleWeekScroll(baseDate: date, offset: 0, selectedDate: date)
@@ -113,7 +113,7 @@ final class CalendarViewModel: ViewModelable {
             self.state = CalendarState(
                 selectedDate: today,
                 selectedDayOfTheWeek: today.dayOfTheWeek,
-                selectedYearAndMonth: self.state.selectedYearAndMonth
+                selectedYearAndMonth: today.getYearAndMonth()
             )
             (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: today)
             handleWeekScroll(baseDate: today, offset: 0, selectedDate: today)
@@ -126,21 +126,31 @@ final class CalendarViewModel: ViewModelable {
         showReviewList()
     }
     
-    // MARK: - Helper Methods
+    // 스크롤 방향
     private enum ScrollDirection {
         case previous
         case next
     }
     
+    // 스크롤 공통 메소드
     private func scrollToWeek(date: Date, direction: ScrollDirection) {
         let offset = direction == .previous ? -7 : 7
+        let daysToAdd = direction == .previous ? -7 : 7
+        
+        guard let newStartOfWeek = calendar.date(byAdding: .day, value: daysToAdd, to: date) else {
+            return
+        }
+        
+        if direction == .next && newStartOfWeek > Date() {
+            return
+        }
+        
         handleWeekScroll(baseDate: date, offset: offset, selectedDate: state.selectedDate)
         
-        let daysToAdd = direction == .previous ? -7 : 7
         if let newStartOfWeek = calendar.date(
             from: calendar.dateComponents(
                 [.yearForWeekOfYear, .weekOfYear],
-                from: date.adding(days: daysToAdd)
+                from: newStartOfWeek
             )
         ) {
             (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: newStartOfWeek)
@@ -154,7 +164,7 @@ final class CalendarViewModel: ViewModelable {
                 self.state = CalendarState(
                     selectedDate: newSelectedDate,
                     selectedDayOfTheWeek: newSelectedDate.dayOfTheWeek,
-                    selectedYearAndMonth: newStartOfWeek.getYearAndMonth()
+                    selectedYearAndMonth: newSelectedDate.getYearAndMonth()
                 )
             }
         }
@@ -208,14 +218,14 @@ final class CalendarViewModel: ViewModelable {
         self.state = CalendarState(
             selectedDate: selectedDate,
             selectedDayOfTheWeek: selectedDate.dayOfTheWeek,
-            selectedYearAndMonth: newStart.getYearAndMonth()
+            selectedYearAndMonth: selectedDate.getYearAndMonth()
         )
     }
     
     // 3주의 날짜 생성
     private func generateAdjacentWeeks(from date: Date, offset: Int) -> (
         start: Date,
-        foliationprevious: Date,
+        previous: Date,
         next: Date
     )? {
         let calendar = Calendar.current
