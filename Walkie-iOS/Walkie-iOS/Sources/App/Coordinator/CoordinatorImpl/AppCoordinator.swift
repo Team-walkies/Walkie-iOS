@@ -12,6 +12,7 @@ final class AppCoordinator: Coordinator {
     var diContainer: DIContainer
 
     var path = NavigationPath()
+    var currentScene: AppScene = .splash
 
     var sheet: (any AppRoute)?
     var appSheet: AppSheet? {
@@ -27,11 +28,12 @@ final class AppCoordinator: Coordinator {
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
     
-    @State var tabBarCoordinator: TabBarCoordinator
-
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
-        self.tabBarCoordinator = TabBarCoordinator(diContainer: diContainer)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.updateCurrentScene()
+        }
     }
 
     @ViewBuilder
@@ -40,14 +42,16 @@ final class AppCoordinator: Coordinator {
         case .splash:
             SplashView()
         case .hatchEgg:
-            //알 부화 뷰
             EmptyView()
         case .nickname:
             NicknameView()
         case .login:
             LoginView()
         case .tabBar:
-            TabBarView(coordinator: tabBarCoordinator)
+            TabBarView(
+                homeCoordinator: HomeCoordinator(diContainer: diContainer),
+                mypageCoordinator: MypageCoordinator(diContainer: diContainer)
+            )
         case .complete:
             OnboardingCompleteView()
         }
@@ -59,6 +63,29 @@ final class AppCoordinator: Coordinator {
 
     @ViewBuilder
     func buildFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
+    }
+    
+    private func updateCurrentScene() {
+        if !UserManager.shared.isUserLogin {
+            currentScene = .login
+        } else if !UserManager.shared.hasUserNickname {
+            currentScene = .nickname
+        } else if UserManager.shared.isTapStart {
+            currentScene = .tabBar
+        } else {
+            currentScene = .complete
+        }
+        
+        print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
+        do {
+            let token = try TokenKeychainManager.shared.getAccessToken()
+            print(token ?? "no token")
+        } catch {
+            print("issue;;")
+        }
+        print("isUserLogin: \(UserManager.shared.isUserLogin)")
+        print("nickname: \(UserManager.shared.userNickname ?? "no nickname")")
+        print("tapstart: \(UserManager.shared.tapStart ?? false)")
     }
     
 }

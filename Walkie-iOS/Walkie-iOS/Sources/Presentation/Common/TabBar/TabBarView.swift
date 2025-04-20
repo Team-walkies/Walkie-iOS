@@ -13,13 +13,37 @@ struct TabBarView: View {
     @State private var selectedTab: TabBarItem = .home
     @State private var tabMapView: Bool = false
     
-    @State var coordinator: TabBarCoordinator
-    
+    @State var homeCoordinator: HomeCoordinator
+    @State var mypageCoordinator: MypageCoordinator
+        
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 
-                coordinator.buildScene(selectedTab.coordinatorScene)
+                switch selectedTab {
+                case .home:
+                    NavigationStack(path: $homeCoordinator.path) {
+                        homeCoordinator.buildScene(.home)
+                            .sheet(item: $homeCoordinator.appSheet) {
+                                self.homeCoordinator.buildSheet($0)
+                            }
+                            .fullScreenCover(item: $homeCoordinator.appFullScreenCover) {
+                                self.homeCoordinator.buildFullScreenCover($0)
+                            }
+                    }
+                case .mypage:
+                    NavigationStack(path: $mypageCoordinator.path) {
+                        mypageCoordinator.buildScene(.mypage)
+                            .sheet(item: $mypageCoordinator.appSheet) {
+                                self.mypageCoordinator.buildSheet($0)
+                            }
+                            .fullScreenCover(item: $mypageCoordinator.appFullScreenCover) {
+                                self.mypageCoordinator.buildFullScreenCover($0)
+                            }
+                    }
+                case .map:
+                    EmptyView()
+                }
                 
                 VStack(spacing: 0) {
                     ZStack(alignment: .bottom) {
