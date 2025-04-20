@@ -9,8 +9,6 @@ import SwiftUI
 
 struct SplashView: View {
     
-    @Binding var showSplash: Bool
-    
     var body: some View {
         ZStack {
             Image(.imgLogoVertical)

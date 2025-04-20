@@ -5,23 +5,26 @@ struct WalkieIOSApp: App {
     
     @State var showSplash: Bool = false
     
+    @State private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
+    
     @State private var hasLogin: Bool = UserManager.shared.isUserLogin
     @State private var hasNickname: Bool = UserManager.shared.hasUserNickname
     @State private var isTapStart: Bool = UserManager.shared.isTapStart
+    @State private var isHatching: Bool = false
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
+            Group {
                 if !showSplash {
-                    SplashView(showSplash: $showSplash)
+                    appCoordinator.buildScene(.splash)
                 } else if !hasLogin {
-                    LoginView()
+                    appCoordinator.buildScene(.login)
                 } else if !hasNickname {
-                    NicknameView()
+                    appCoordinator.buildScene(.nickname)
                 } else if isTapStart {
-                    TabBarView()
+                    appCoordinator.buildScene(.tabBar)
                 } else {
-                    OnboardingCompleteView()
+                    appCoordinator.buildScene(.complete)
                 }
             }
         }

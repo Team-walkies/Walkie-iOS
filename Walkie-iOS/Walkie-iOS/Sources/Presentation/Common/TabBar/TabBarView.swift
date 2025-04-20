@@ -13,14 +13,13 @@ struct TabBarView: View {
     @State private var selectedTab: TabBarItem = .home
     @State private var tabMapView: Bool = false
     
-    private var viewFactory: TabTargetViewFactory = TabTargetViewFactory()
+    @State var coordinator: TabBarCoordinator
     
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottom) {
                 
-                viewFactory.makeTargetView(for: selectedTab)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                coordinator.buildScene(selectedTab.coordinatorScene)
                 
                 VStack(spacing: 0) {
                     ZStack(alignment: .bottom) {
