@@ -50,4 +50,15 @@ enum TabBarItem: CaseIterable {
             return Image(.icMySelected)
         }
     }
+    
+    var coordinatorScene: TabBarScene {
+        switch self {
+        case .home:
+            TabBarScene.home
+        case .map:
+            TabBarScene.map
+        case .mypage:
+            TabBarScene.mypage
+        }
+    }
 }

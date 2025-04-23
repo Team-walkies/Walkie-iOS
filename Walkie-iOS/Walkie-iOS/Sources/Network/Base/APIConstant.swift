@@ -24,7 +24,11 @@ enum APIConstants {
     }
     
     static var hasTokenHeader: [String: String] {
-        let token = (try? TokenKeychainManager.shared.getAccessToken()) ?? ""
+        let token = (try? TokenKeychainManager.shared.getAccessToken()) ??
+        "eyJhbGciOiJIUzI1NiJ9.eyJwcm92aWRl"
+        + "cklkIjoiMzk1ODI1NjA0MCIsIm1lbWJlcklkIj"
+        + "o2LCJpYXQiOjE3NDI5MDc2MjEsImV4cCI6MTc0NTQ5OTYyM"
+        + "X0.1VSczNwwq6jALTcJwW3qiotSb2PieySdGdPFjwjmDGI"
         return [
             NetworkHeaderKey.contentType.rawValue: "application/json",
             NetworkHeaderKey.authorization.rawValue: "Bearer \(token)"

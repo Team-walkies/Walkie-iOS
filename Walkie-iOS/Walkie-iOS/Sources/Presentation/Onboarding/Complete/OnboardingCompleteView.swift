@@ -48,9 +48,5 @@ struct OnboardingCompleteView: View {
             .padding(.bottom, 4)
         }
         .toolbar(.hidden, for: .navigationBar)
-        .navigationDestination(isPresented: $tapStart) {
-            TabBarView()
-                .navigationBarBackButtonHidden()
-        }
     }
 }

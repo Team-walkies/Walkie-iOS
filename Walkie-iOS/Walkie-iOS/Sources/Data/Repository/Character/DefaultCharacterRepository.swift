@@ -6,7 +6,6 @@
 //
 
 import Combine
-import SwiftUICore
 
 final class DefaultCharacterRepository {
     
