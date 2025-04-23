@@ -124,7 +124,9 @@ struct HomeView: View {
             
             var content: String {
                 if showLocationBS && showMotionBS {
-                    return "원활한 서비스 이용을 위해\n위치, 신체활동 권한을 모두 허용해주세요"
+                    return "원활한 서비스 이용을 위해\n‘위치’, ‘신체활동’ 권한을 모두 허용해 주세요"
+                } else if showLocationBS {
+                    return "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.\n\n 1.위치를 선택\n2.위치 접근 허용을 ‘항상'으로 설정"
                 } else {
                     return "원활한 서비스 이용을 위해 권한이 필요해요"
                 }
@@ -132,7 +134,7 @@ struct HomeView: View {
             
             if viewModel.shouldShowDeniedAlert {
                 ZStack {
-                    Color(white: 0, opacity: 0.6)
+                    Color.black.opacity(0.6)
                         .ignoresSafeArea()
                         .transition(.opacity)
                     Modal(
