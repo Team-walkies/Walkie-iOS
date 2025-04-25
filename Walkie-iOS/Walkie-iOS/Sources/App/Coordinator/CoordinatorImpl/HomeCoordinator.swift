@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class HomeCoordinator: Coordinator {
+final class HomeCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer
 
     var path = NavigationPath()

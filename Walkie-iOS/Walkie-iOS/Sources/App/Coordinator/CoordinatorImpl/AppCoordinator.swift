@@ -25,8 +25,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
         set { fullScreenCover = newValue }
     }
     
-    var showAlertWithDim: HomeAlertStruct? = nil
-
+    var showAlertWithDim: HomeAlertStruct?
+    
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
     
@@ -34,6 +34,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
+        
         self.tabBarView = AnyView(
             TabBarView(
                 homeCoordinator: HomeCoordinator(diContainer: diContainer),

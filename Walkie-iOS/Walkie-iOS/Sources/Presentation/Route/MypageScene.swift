@@ -12,7 +12,7 @@ enum MypageScene: AppRoute {
     
     var id: String {
         switch self {
-            case .mypage:
+        case .mypage:
             return "mypage"
         }
     }

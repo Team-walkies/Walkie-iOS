@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class MypageCoordinator: Coordinator {
+final class MypageCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer
 
     var path = NavigationPath()
@@ -33,7 +33,10 @@ final class MypageCoordinator: Coordinator {
 
     @ViewBuilder
     func buildScene(_ scene: MypageScene) -> some View {
-        
+        switch scene {
+        case .mypage:
+            diContainer.buildMypageView()
+        }
     }
 
     @ViewBuilder
