@@ -106,16 +106,16 @@ struct HomeView: View {
                     } else if showLocationBS {
                         return "위치 권한 허용"
                     } else if showMotionBS {
-                        return "신체활동 권한 허용"
+                        return "동작 및 피트니스 권한 허용"
                     }
                     return ""
                 }
                 
                 var content: String {
                     if showLocationBS && showMotionBS {
-                        return "원활한 서비스 이용을 위해\n‘위치’, ‘신체활동’ 권한을 모두 허용해 주세요"
+                        return "원활한 서비스 이용을 위해\n‘위치’, ‘동작 및 피트니스’ 권한을 모두 허용해 주세요"
                     } else if showLocationBS {
-                        return "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.\n\n 1.위치를 선택\n2.위치 접근 허용을 ‘항상'으로 설정"
+                        return "스팟을 탐색하기 위해 백그라운드 동작 시의\n위치 정보 접근을 허가해 주세요.\n\n 1. 위치를 선택\n2. 위치 접근 허용을 ‘항상'으로 설정"
                     } else {
                         return "원활한 서비스 이용을 위해 권한이 필요해요"
                     }

@@ -48,6 +48,7 @@ final class HomeViewModel: ViewModelable {
     struct StepState {
         let todayStep, leftStep: Int
         let todayDistance: Double
+        let locationAlwaysAuthorized: Bool
     }
     
     struct HomePermissionState: Equatable {
@@ -275,6 +276,11 @@ private extension HomeViewModel {
         return status == .authorizedAlways || status == .authorizedWhenInUse
     }
     
+    func isLocationAlwaysAuthorized() -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        return status == .authorizedAlways
+    }
+    
     func isMotionAuthorized() -> Bool {
         guard CMMotionActivityManager.isActivityAvailable() else {
             return false
@@ -340,7 +346,9 @@ private extension HomeViewModel {
         let stepState = StepState(
             todayStep: step,
             leftStep: self.needStep - step,
-            todayDistance: distance)
+            todayDistance: distance,
+            locationAlwaysAuthorized: isLocationAlwaysAuthorized()
+        )
         self.stepState = .loaded(stepState)
     }
     
