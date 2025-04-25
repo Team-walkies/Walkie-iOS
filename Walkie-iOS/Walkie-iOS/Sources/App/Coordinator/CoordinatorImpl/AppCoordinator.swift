@@ -8,7 +8,7 @@
 import SwiftUI
 
 @Observable
-final class AppCoordinator: Coordinator {
+final class AppCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer
 
     var path = NavigationPath()
@@ -24,12 +24,22 @@ final class AppCoordinator: Coordinator {
         get { fullScreenCover as? AppFullScreenCover }
         set { fullScreenCover = newValue }
     }
+    
+    var showAlertWithDim: HomeAlertStruct? = nil
 
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
     
+    let tabBarView: AnyView
+    
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
+        self.tabBarView = AnyView(
+            TabBarView(
+                homeCoordinator: HomeCoordinator(diContainer: diContainer),
+                mypageCoordinator: MypageCoordinator(diContainer: diContainer)
+            )
+        )
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.updateCurrentScene()
@@ -48,10 +58,35 @@ final class AppCoordinator: Coordinator {
         case .login:
             LoginView()
         case .tabBar:
-            TabBarView(
-                homeCoordinator: HomeCoordinator(diContainer: diContainer),
-                mypageCoordinator: MypageCoordinator(diContainer: diContainer)
-            )
+            ZStack {
+                tabBarView
+                
+                if let data = showAlertWithDim {
+                    ZStack {
+                        Color.black.opacity(0.6)
+                            .ignoresSafeArea()
+                        
+                        Modal(
+                            title: data.title,
+                            content: data.content,
+                            style: .primary,
+                            button: .twobutton,
+                            cancelButtonAction: {
+                                self.showAlertWithDim = nil
+                            },
+                            checkButtonAction: {
+                                if let url = URL(string: UIApplication.openSettingsURLString)
+                                    , UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url)
+                                }
+                                self.showAlertWithDim = nil
+                            },
+                            checkButtonTitle: "허용하기"
+                        )
+                        .padding(.horizontal, 40)
+                    }
+                }
+            }
         case .complete:
             OnboardingCompleteView()
         }

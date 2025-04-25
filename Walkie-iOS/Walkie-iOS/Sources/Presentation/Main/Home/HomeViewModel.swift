@@ -194,7 +194,8 @@ final class HomeViewModel: ViewModelable {
                     self.homeStatsState = .loaded(homeStatsState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    self.homeStatsState = .error(errorMessage)
+//                    self.homeStatsState = .error(errorMessage)
+                    self.homeStatsState = .loaded(HomeStatsState(hasEgg: false, eggImage: .imgEgg0, eggBackImage: .imgEggBack0))
                 }
             )
             .store(in: &cancellables)
@@ -220,7 +221,8 @@ final class HomeViewModel: ViewModelable {
                     self.homeCharacterState = .loaded(homeCharacterState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    self.homeCharacterState = .error(errorMessage)
+//                    self.homeCharacterState = .error(errorMessage)
+                    self.homeCharacterState = .loaded(HomeCharacterState(characterImage: .imgJellyfish0, characterName: "아아"))
                 }
             )
             .store(in: &cancellables)
@@ -244,7 +246,8 @@ final class HomeViewModel: ViewModelable {
                     self.homeHistoryViewState = .loaded(homeHistoryState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    self.homeHistoryViewState = .error(errorMessage)
+//                    self.homeHistoryViewState = .error(errorMessage)
+                    self.homeHistoryViewState = .loaded(HomeHistoryState(eggsCount: 0, characterCount: 1, spotCount: 0))
                 }
             )
             .store(in: &cancellables)
