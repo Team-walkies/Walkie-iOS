@@ -24,11 +24,7 @@ struct HomeView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
-                showLogo: true,
-                showAlarmButton: true,
-                rightButtonAction: {
-                    navigateAlarmList = true
-                }
+                showLogo: true
             )
             ScrollView(.vertical) {
                 VStack {
