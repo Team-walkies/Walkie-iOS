@@ -36,4 +36,14 @@ extension UserManager {
     func setUserNickname(_ nickname: String) {
         self.userNickname = nickname
     }
+    
+    func withdraw() {
+        do {
+            try TokenKeychainManager.shared.removeTokens()
+        } catch {
+            
+        }
+        userNickname = ""
+        tapStart = false
+    }
 }
