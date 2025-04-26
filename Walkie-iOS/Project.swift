@@ -21,7 +21,15 @@ let project = Project(
                     "NSLocationAlwaysUsageDescription": "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.",
                     "BASE_URL": "$(BASE_URL)",
                     "WEB_URL": "$(WEB_URL)",
+                    "KAKAO_NATIVE_APP_KEY": "$(KAKAO_NATIVE_APP_KEY)",
                     "NSSupportsLiveActivities": true,
+                    "CFBundleURLTypes": [
+                        [
+                            "CFBundleURLSchemes": [
+                                "kakao$(KAKAO_NATIVE_APP_KEY)"
+                            ]
+                        ]
+                    ],
                     "UIAppFonts": [
                         "Pretendard-ExtraBold.ttf",
                         "Pretendard-Bold.ttf",
@@ -54,6 +62,8 @@ let project = Project(
                 .external(name: "FirebaseMessaging"),
                 .external(name: "Moya"),
                 .external(name: "CombineMoya"),
+                .external(name: "KakaoSDKAuth"),
+                .external(name: "KakaoSDKUser"),
                 .target(name: "WalkieWidget"),
                 .target(name: "WalkieCommon")
             ],
