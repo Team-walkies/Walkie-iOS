@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
 
 @Observable
 final class AppCoordinator: Coordinator, ObservableObject {
@@ -57,7 +58,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .nickname:
             NicknameView()
         case .login:
-            LoginView()
+            diContainer.buildLoginView()
+                .onOpenURL { url in
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        DispatchQueue.main.async {
+                            _ = AuthController.handleOpenUrl(url: url)
+                        }
+                    }
+                }
         case .tabBar:
             ZStack {
                 tabBarView

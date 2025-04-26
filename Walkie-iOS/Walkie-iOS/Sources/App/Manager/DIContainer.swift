@@ -87,4 +87,10 @@ extension DIContainer {
             )
         )
     }
+    
+    // Onboarding
+    
+    func buildLoginView() -> LoginView {
+        return LoginView(loginViewModel: LoginViewModel())
+    }
 }

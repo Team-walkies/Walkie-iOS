@@ -16,6 +16,7 @@ struct LoginView: View {
     
     private let onboardingPage = OnboardingPageStruct.makeOnboardingPage()
     @EnvironmentObject private var appCoordinator: AppCoordinator
+    @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
         VStack(alignment: .center) {
@@ -45,13 +46,9 @@ struct LoginView: View {
             .tabViewStyle(.page(indexDisplayMode: .always))
             
             Spacer()
-                
-                Button(action: {
-                    do {
-                        try TokenKeychainManager.shared.saveAccessToken("test token")
-                    } catch {
-                        print("토큰 저장 실패..")
-                    }
+            
+            Button(action: {
+                loginViewModel.action(.tapKakaoLogin)
                 isNavigating = true
             }, label: {
                 HStack(spacing: 8) {
@@ -72,7 +69,7 @@ struct LoginView: View {
             .padding(.top, 41)
             
             Button(action: {
-                print("applebutton tapped")
+                loginViewModel.action(.tapAppleLogin)
                 isNavigating = true
             }, label: {
                 HStack(spacing: 8) {
@@ -101,10 +98,4 @@ struct LoginView: View {
 private func setIndicator() {
     UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(WalkieCommonAsset.blue300.swiftUIColor)
     UIPageControl.appearance().pageIndicatorTintColor = UIColor(WalkieCommonAsset.gray200.swiftUIColor)
-}
-
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
-    }
 }

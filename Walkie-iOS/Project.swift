@@ -25,10 +25,14 @@ let project = Project(
                     "NSSupportsLiveActivities": true,
                     "CFBundleURLTypes": [
                         [
+                            "CFBundleTypeRole": "Editor",
                             "CFBundleURLSchemes": [
                                 "kakao$(KAKAO_NATIVE_APP_KEY)"
                             ]
                         ]
+                    ],
+                    "LSApplicationQueriesSchemes": [
+                        "kakaokompassauth"
                     ],
                     "UIAppFonts": [
                         "Pretendard-ExtraBold.ttf",
