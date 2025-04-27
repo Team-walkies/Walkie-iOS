@@ -7,30 +7,44 @@
 
 import SwiftUI
 
+import Combine
 import KakaoSDKUser
 
 final class LoginViewModel: ViewModelable {
+    
+    // usecases
+    
+    private let loginUseCase: DefaultLoginUseCase
     
     enum Action {
         case tapKakaoLogin
         case tapAppleLogin
     }
     
-    struct LoginState {
-        let todayStep, leftStep: Int
-        let todayDistance: Double
-        let locationAlwaysAuthorized: Bool
+    struct LoginState: Equatable {
+        let loginSuccess: Bool
+        
+        static func == (lhs: LoginState, rhs: LoginState) -> Bool {
+            return lhs.loginSuccess == rhs.loginSuccess
+        }
     }
     
     // view states
     
-    enum LoginViewState {
+    enum LoginViewState: Equatable {
         case loading
         case loaded(LoginState)
         case error
     }
     
     @Published var state: LoginViewState = .loading
+    private var cancellables = Set<AnyCancellable>()
+    
+    init (
+        loginUseCase: DefaultLoginUseCase
+    ) {
+        self.loginUseCase = loginUseCase
+    }
     
     func action(_ action: Action) {
         switch action {
@@ -51,9 +65,13 @@ extension LoginViewModel {
                     print(error)
                 } else {
                     if let accessToken = oauthToken?.accessToken {
-                        print("👌👌👌👌")
+                        print("👌👌accessToken👌👌")
                         print(accessToken)
-                        print("👌👌👌👌")
+                        let loginRequestDto = LoginRequestDto(
+                            provider: .kakao,
+                            token: accessToken
+                        )
+                        self.sendLoginRequest(request: loginRequestDto)
                     }
                 }
             }
@@ -63,13 +81,41 @@ extension LoginViewModel {
                     print(error)
                 } else {
                     if let accessToken = oauthToken?.accessToken {
-                        print("👌👌👌👌")
-                        print(accessToken)
-                        print("👌👌👌👌")
+                        let loginRequestDto = LoginRequestDto(
+                            provider: .kakao,
+                            token: accessToken
+                        )
+                        self.sendLoginRequest(request: loginRequestDto)
                     }
                 }
             }
         }
+    }
+    
+    func sendLoginRequest(request: LoginRequestDto) {
+        print("👌👌sendLoginRequest👌👌")
+        print(request)
+        UserManager.shared.setSocialLogin(request: request)
+        self.loginUseCase.postLogin(request: request)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, tokenVO in
+                    do {
+                        if let accessToken = tokenVO.accessToken,
+                           let refreshToken = tokenVO.refreshToken { // 기존회원
+                            try TokenKeychainManager.shared.saveAccessToken(accessToken)
+                            try TokenKeychainManager.shared.saveRefreshToken(refreshToken)
+                        } else { // 처음 가입
+                        }
+                    } catch {
+                        
+                    }
+                    self.state = .loaded(LoginState(loginSuccess: true))
+                }, receiveFailure: { _, _ in
+                    self.state = .error
+                }
+            )
+            .store(in: &self.cancellables)
     }
     
     func appleLogin() {

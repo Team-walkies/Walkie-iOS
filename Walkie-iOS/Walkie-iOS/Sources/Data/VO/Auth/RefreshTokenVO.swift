@@ -7,4 +7,4 @@
 
 import Foundation
 
-typealias RefreshTokenVO = String
+typealias RefreshTokenVO = String?

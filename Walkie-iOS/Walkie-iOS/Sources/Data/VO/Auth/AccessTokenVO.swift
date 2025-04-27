@@ -7,4 +7,4 @@
 
 import Foundation
 
-typealias AccessTokenVO = String
+typealias AccessTokenVO = String?

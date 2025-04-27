@@ -19,78 +19,86 @@ struct LoginView: View {
     @ObservedObject var loginViewModel: LoginViewModel
     
     var body: some View {
-        VStack(alignment: .center) {
-            TabView {
-                ForEach(onboardingPage, id: \.title) { item in
-                    VStack(alignment: .center, spacing: 32) {
-                        Image(item.image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 343, height: 343)
-                        
-                        VStack(spacing: 12) {
-                            Text(item.title)
-                                .font(.H3)
-                                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+        NavigationStack(path: $appCoordinator.path) {
+            VStack(alignment: .center) {
+                TabView {
+                    ForEach(onboardingPage, id: \.title) { item in
+                        VStack(alignment: .center, spacing: 32) {
+                            Image(item.image)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 343, height: 343)
                             
-                            Text(item.subTitle)
-                                .font(.B1)
-                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                                .multilineTextAlignment(.center)
+                            VStack(spacing: 12) {
+                                Text(item.title)
+                                    .font(.H3)
+                                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                                
+                                Text(item.subTitle)
+                                    .font(.B1)
+                                    .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                                    .multilineTextAlignment(.center)
+                            }
+                            Spacer()
                         }
-                        Spacer()
                     }
                 }
+                .onAppear { setIndicator() }
+                .tabViewStyle(.page(indexDisplayMode: .always))
+                
+                Spacer()
+                
+                Button(action: {
+                    loginViewModel.action(.tapKakaoLogin)
+                    isNavigating = true
+                }, label: {
+                    HStack(spacing: 8) {
+                        Image(.icKakao)
+                            .renderingMode(.original)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                        
+                        Text("카카오 계정으로 계속하기")
+                            .font(.B1)
+                            .foregroundColor(.black)
+                    }
+                })
+                .frame(width: screenWidth - 32, height: 54)
+                .background(WalkieCommonAsset.yellow100.swiftUIColor)
+                .cornerRadius(12, corners: .allCorners)
+                .padding(.top, 41)
+                
+                Button(action: {
+                    loginViewModel.action(.tapAppleLogin)
+                    isNavigating = true
+                }, label: {
+                    HStack(spacing: 8) {
+                        Image(.icApple)
+                            .renderingMode(.original)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                        
+                        Text("Apple로 시작하기")
+                            .font(.B1)
+                            .foregroundColor(.white)
+                    }
+                })
+                .frame(width: screenWidth - 32, height: 54)
+                .background(.black)
+                .cornerRadius(12, corners: .allCorners)
+                .padding(.bottom, 4)
             }
-            .onAppear { setIndicator() }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            
-            Spacer()
-            
-            Button(action: {
-                loginViewModel.action(.tapKakaoLogin)
-                isNavigating = true
-            }, label: {
-                HStack(spacing: 8) {
-                    Image(.icKakao)
-                        .renderingMode(.original)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                    
-                    Text("카카오 계정으로 계속하기")
-                        .font(.B1)
-                        .foregroundColor(.black)
-                }
-            })
-            .frame(width: screenWidth - 32, height: 54)
-            .background(WalkieCommonAsset.yellow100.swiftUIColor)
-            .cornerRadius(12, corners: .allCorners)
-            .padding(.top, 41)
-            
-            Button(action: {
-                loginViewModel.action(.tapAppleLogin)
-                isNavigating = true
-            }, label: {
-                HStack(spacing: 8) {
-                    Image(.icApple)
-                        .renderingMode(.original)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                    
-                    Text("Apple로 시작하기")
-                        .font(.B1)
-                        .foregroundColor(.white)
-                }
-            })
-            .frame(width: screenWidth - 32, height: 54)
-            .background(.black)
-            .cornerRadius(12, corners: .allCorners)
-            .padding(.bottom, 4)
         }
-        .navigationDestination(isPresented: $isNavigating) {
-            NicknameView()
+        .onChange(of: loginViewModel.state) { _, newState in
+            switch newState {
+            case .loaded(let loginState):
+                print(loginState)
+                
+            default:
+                break
+            }
         }
     }
 }

@@ -8,8 +8,7 @@
 import Combine
 
 protocol AuthRepository {
-    func kakaoLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError>
-    func appleLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError>
+    func login(request: LoginRequestDto) -> AnyPublisher<TokenVO, NetworkError>
     func logout() -> AnyPublisher<Void, NetworkError>
     func refreshAccessToken(refreshToken: String) -> AnyPublisher<TokenVO, NetworkError>
 }

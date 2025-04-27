@@ -15,11 +15,13 @@ final class DIContainer {
     private lazy var memberService = DefaultMemberService()
     private lazy var reviewService = DefaultReviewService()
     private lazy var characterService = DefaultCharacterService()
+    private lazy var authService = DefaultAuthService()
     
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
     private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
+    private lazy var authRepo = DefaultAuthRepository(authService: authService)
 }
 
 extension DIContainer {
@@ -91,6 +93,13 @@ extension DIContainer {
     // Onboarding
     
     func buildLoginView() -> LoginView {
-        return LoginView(loginViewModel: LoginViewModel())
+        return LoginView(
+            loginViewModel: LoginViewModel(
+                loginUseCase: DefaultLoginUseCase(
+                    authRepository: authRepo,
+                    memberRepository: memberRepo
+                )
+            )
+        )
     }
 }

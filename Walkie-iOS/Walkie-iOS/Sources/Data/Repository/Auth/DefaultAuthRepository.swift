@@ -25,18 +25,16 @@ final class DefaultAuthRepository {
 }
 
 extension DefaultAuthRepository: AuthRepository {
-    func kakaoLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError> {
-        authService.kakaoLogin(loginAccessToken: loginAccessToken)
-            .map { dto in
-                TokenVO(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
-            }
-            .mapToNetworkError()
-    }
     
-    func appleLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError> {
-        authService.appleLogin(loginAccessToken: loginAccessToken)
+    func login(
+        request: LoginRequestDto
+    ) -> AnyPublisher<TokenVO, NetworkError> {
+        authService.login(request: request)
             .map { dto in
-                TokenVO(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+                TokenVO(
+                    accessToken: dto.accessToken,
+                    refreshToken: dto.refreshToken
+                )
             }
             .mapToNetworkError()
     }

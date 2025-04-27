@@ -27,25 +27,18 @@ struct AuthTarget: BaseTargetType {
 }
 
 extension AuthTarget {
-    static func appleLogin(loginAccessToken: String) -> AuthTarget {
-        AuthTarget(
-            path: URLConstant.authLogin,
-            method: .get,
-            task: .requestParameters(
-                parameters: ["provider": "apple", "loginAccessToken": loginAccessToken],
-                encoding: URLEncoding.httpBody
-            ),
-            headers: APIConstants.noTokenHeader
-        )
-    }
     
-    static func kakaoLogin(loginAccessToken: String) -> AuthTarget {
+    static func login(
+        request: LoginRequestDto
+    ) -> AuthTarget {
         AuthTarget(
             path: URLConstant.authLogin,
             method: .post,
-            task: .requestParameters(
-                parameters: ["provider": "kakao", "loginAccessToken": loginAccessToken],
-                encoding: URLEncoding.httpBody
+            task: .requestJSONEncodable(
+                [
+                    "provider": request.provider.rawValue,
+                    "loginAccessToken": request.token
+                ]
             ),
             headers: APIConstants.noTokenHeader
         )
