@@ -110,7 +110,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     private func updateCurrentScene() {
-        if !UserManager.shared.isUserLogin {
+        if !UserManager.shared.hasTapLogin {
             currentScene = .login
         } else if !UserManager.shared.hasUserNickname {
             currentScene = .nickname
@@ -127,7 +127,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         } catch {
             print("issue;;")
         }
-        print("isUserLogin: \(UserManager.shared.isUserLogin)")
+        
         print("nickname: \(UserManager.shared.userNickname ?? "no nickname")")
         print("tapstart: \(UserManager.shared.tapStart ?? false)")
     }

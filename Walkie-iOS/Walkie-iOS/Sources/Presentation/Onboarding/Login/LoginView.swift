@@ -94,8 +94,7 @@ struct LoginView: View {
         .onChange(of: loginViewModel.state) { _, newState in
             switch newState {
             case .loaded(let loginState):
-                print(loginState)
-                
+                appCoordinator.currentScene = loginState.isExistMember ? .tabBar : .nickname
             default:
                 break
             }

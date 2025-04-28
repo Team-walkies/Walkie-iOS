@@ -18,7 +18,8 @@ enum URLConstant {
     // auth
     static let authLogin = "/auth/login"
     static let authLogout = "/auth/logout"
-    static let authToken = "/auth/token"
+    static let authRefresh = "/auth/refresh"
+    static let authSignup = "/auth/signup"
     
     // members
     static let members = "/members"

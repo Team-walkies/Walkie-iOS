@@ -22,10 +22,10 @@ final class LoginViewModel: ViewModelable {
     }
     
     struct LoginState: Equatable {
-        let loginSuccess: Bool
+        let isExistMember: Bool
         
         static func == (lhs: LoginState, rhs: LoginState) -> Bool {
-            return lhs.loginSuccess == rhs.loginSuccess
+            return lhs.isExistMember == rhs.isExistMember
         }
     }
     
@@ -101,16 +101,16 @@ extension LoginViewModel {
                 with: self,
                 receiveValue: { _, tokenVO in
                     do {
-                        if let accessToken = tokenVO.accessToken,
-                           let refreshToken = tokenVO.refreshToken { // 기존회원
+                        if let accessToken = tokenVO.accessToken, let refreshToken = tokenVO.refreshToken { // 기존회원
                             try TokenKeychainManager.shared.saveAccessToken(accessToken)
                             try TokenKeychainManager.shared.saveRefreshToken(refreshToken)
+                            self.state = .loaded(LoginState(isExistMember: true))
                         } else { // 처음 가입
+                            self.state = .loaded(LoginState(isExistMember: false))
                         }
                     } catch {
                         
                     }
-                    self.state = .loaded(LoginState(loginSuccess: true))
                 }, receiveFailure: { _, _ in
                     self.state = .error
                 }
@@ -119,6 +119,5 @@ extension LoginViewModel {
     }
     
     func appleLogin() {
-        
     }
 }
