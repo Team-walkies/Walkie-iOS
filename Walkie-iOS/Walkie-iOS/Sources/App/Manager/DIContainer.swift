@@ -102,4 +102,15 @@ extension DIContainer {
             )
         )
     }
+    
+    func buildSignupView() -> OnboardingCompleteView {
+        return OnboardingCompleteView(
+            signupViewModel: SignupViewModel(
+                signupUseCase: DefaultSignupUseCase(
+                    authRepository: authRepo,
+                    memberRepository: memberRepo
+                )
+            )
+        )
+    }
 }

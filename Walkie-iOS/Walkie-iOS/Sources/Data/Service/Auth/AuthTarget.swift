@@ -44,6 +44,23 @@ extension AuthTarget {
         )
     }
     
+    static func signup(
+        nickname: String
+    ) -> AuthTarget {
+        AuthTarget(
+            path: URLConstant.authSignup,
+            method: .post,
+            task: .requestJSONEncodable(
+                [
+                    "provider": UserManager.shared.getSocialProvider,
+                    "loginAccessToken": UserManager.shared.getSocialToken,
+                    "nickname": nickname
+                ]
+            ),
+            headers: APIConstants.noTokenHeader
+        )
+    }
+    
     static func refreshAccessToken(refreshToken: String) -> AuthTarget {
         AuthTarget(
             path: URLConstant.authRefresh,

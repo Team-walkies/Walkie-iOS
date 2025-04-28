@@ -97,7 +97,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 }
             }
         case .complete:
-            OnboardingCompleteView()
+            diContainer.buildSignupView()
         }
     }
 

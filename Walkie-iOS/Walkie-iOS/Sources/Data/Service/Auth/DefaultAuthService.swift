@@ -38,4 +38,10 @@ extension DefaultAuthService: AuthService {
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(RefreshAccessTokenDto.self)
     }
+    
+    func signup(nickname: String) -> AnyPublisher<LoginDto, any Error> {
+        authProvider.requestPublisher(.signup(nickname: nickname))
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(LoginDto.self)
+    }
 }

@@ -11,4 +11,5 @@ protocol AuthService {
     func login(request: LoginRequestDto) -> AnyPublisher<LoginDto, Error>
     func logout() -> AnyPublisher<LogoutDto, Error>
     func refreshAccessToken(refreshToken: String) -> AnyPublisher<RefreshAccessTokenDto, Error>
+    func signup(nickname: String) -> AnyPublisher<LoginDto, Error>
 }

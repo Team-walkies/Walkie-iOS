@@ -53,4 +53,15 @@ extension DefaultAuthRepository: AuthRepository {
             }
             .mapToNetworkError()
     }
+    
+    func signup(nickname: String) -> AnyPublisher<TokenVO, NetworkError> {
+        authService.signup(nickname: nickname)
+            .map { dto in
+                TokenVO(
+                    accessToken: dto.accessToken,
+                    refreshToken: dto.refreshToken
+                )
+            }
+            .mapToNetworkError()
+    }
 }
