@@ -12,11 +12,15 @@ import CombineMoya
 final class DefaultCharacterService {
     
     private let characterProvider: MoyaProvider<CharacterTarget>
+    private let reissueService: DefaultReissueService
     
-    init(characterProvider: MoyaProvider<CharacterTarget> = MoyaProvider<CharacterTarget>(
-        plugins: [NetworkLoggerPlugin()])
+    init(
+        characterProvider: MoyaProvider<CharacterTarget> = MoyaProvider<CharacterTarget>(
+        plugins: [NetworkLoggerPlugin()]),
+        reissueService: DefaultReissueService
     ) {
         self.characterProvider = characterProvider
+        self.reissueService = reissueService
     }
 }
 
@@ -35,7 +39,11 @@ extension DefaultCharacterService: CharacterService {
     }
     
     func getCharactersCount() -> AnyPublisher<GetCharactersCountDto, Error> {
-        characterProvider.requestPublisher(.getCharactersCount)
+        characterProvider
+            .requestPublisher(
+                .getCharactersCount,
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetCharactersCountDto.self)
     }

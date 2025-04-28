@@ -11,10 +11,11 @@ final class DIContainer {
     static let shared = DIContainer()
     private init() {}
     
-    private lazy var eggService = DefaultEggService()
+    private lazy var reissueService = DefaultReissueService()
+    private lazy var eggService = DefaultEggService(reissueService: reissueService)
     private lazy var memberService = DefaultMemberService()
     private lazy var reviewService = DefaultReviewService()
-    private lazy var characterService = DefaultCharacterService()
+    private lazy var characterService = DefaultCharacterService(reissueService: reissueService)
     private lazy var authService = DefaultAuthService()
     
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)

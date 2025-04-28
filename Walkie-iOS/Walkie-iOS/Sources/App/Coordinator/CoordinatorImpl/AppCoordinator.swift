@@ -8,6 +8,12 @@
 import SwiftUI
 import KakaoSDKAuth
 
+import Foundation
+
+extension Notification.Name {
+    static let reissueFailed = Notification.Name("reissueFailed")
+}
+
 @Observable
 final class AppCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer
@@ -45,6 +51,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.updateCurrentScene()
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: .reissueFailed,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.changeRoot()
         }
     }
 
@@ -119,17 +133,29 @@ final class AppCoordinator: Coordinator, ObservableObject {
         } else {
             currentScene = .complete
         }
-        
+        print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
         do {
             let token = try TokenKeychainManager.shared.getAccessToken()
+            let refresh = try TokenKeychainManager.shared.getRefreshToken()
+            print("💁💁access💁💁")
             print(token ?? "no token")
+            print("💁💁access💁💁")
+            print("💁💁refresh💁💁")
+            print(refresh ?? "no token")
+            print("💁💁refresh💁💁")
         } catch {
             print("issue;;")
         }
         
-        print("nickname: \(UserManager.shared.userNickname ?? "no nickname")")
+        print("nickname: \(UserManager.shared.hasUserNickname)")
+        print("nickname: \(UserManager.shared.getUserNickname)")
         print("tapstart: \(UserManager.shared.tapStart ?? false)")
     }
     
+    func changeRoot() {
+        UserManager.shared.withdraw()
+        currentScene = .splash
+        updateCurrentScene()
+    }
 }

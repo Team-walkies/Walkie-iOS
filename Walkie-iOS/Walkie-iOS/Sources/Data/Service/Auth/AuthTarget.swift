@@ -61,15 +61,6 @@ extension AuthTarget {
         )
     }
     
-    static func refreshAccessToken(refreshToken: String) -> AuthTarget {
-        AuthTarget(
-            path: URLConstant.authRefresh,
-            method: .post,
-            task: .requestJSONEncodable(refreshToken),
-            headers: APIConstants.noTokenHeader
-        )
-    }
-    
     static let logout: AuthTarget = AuthTarget(
         path: URLConstant.authLogout,
         method: .post,

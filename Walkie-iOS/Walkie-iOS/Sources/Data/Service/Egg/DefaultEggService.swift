@@ -12,9 +12,14 @@ import CombineMoya
 final class DefaultEggService {
     
     private let eggProvider: MoyaProvider<EggTarget>
+    private let reissueService: DefaultReissueService
     
-    init(eggProvider: MoyaProvider<EggTarget> = MoyaProvider<EggTarget>(plugins: [NetworkLoggerPlugin()])) {
+    init(
+        eggProvider: MoyaProvider<EggTarget> = MoyaProvider<EggTarget>(plugins: [NetworkLoggerPlugin()]),
+        reissueService: DefaultReissueService
+    ) {
         self.eggProvider = eggProvider
+        self.reissueService = reissueService
     }
 }
 
@@ -39,8 +44,11 @@ extension DefaultEggService: EggService {
     }
     
     func getEggsCount() -> AnyPublisher<EggCountDto, Error> {
-        eggProvider.requestPublisher(.getEggsCount)
-            .filterSuccessfulStatusCodes()
+        eggProvider
+            .requestPublisher(
+                .getEggsCount,
+                reissueService: reissueService
+            )
             .mapWalkieResponse(EggCountDto.self)
     }
 }

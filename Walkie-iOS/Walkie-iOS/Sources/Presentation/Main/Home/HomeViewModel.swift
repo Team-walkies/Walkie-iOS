@@ -222,6 +222,8 @@ final class HomeViewModel: ViewModelable {
                     self.homeCharacterState = .loaded(homeCharacterState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
+                    print("🤬🤬🤬🤬")
+                    print(errorMessage)
 //                    self.homeCharacterState = .error(errorMessage)
                     self.homeCharacterState = .loaded(HomeCharacterState(characterImage: .imgJellyfish0, characterName: "아아"))
                 }

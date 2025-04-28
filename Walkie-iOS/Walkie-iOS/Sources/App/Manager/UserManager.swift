@@ -27,7 +27,7 @@ extension UserManager {
     var getSocialProvider: String { return provider ?? "" }
     var getSocialToken: String { return socialToken ?? ""}
     var hasTapLogin: Bool { return self.socialToken != nil }
-    var hasUserNickname: Bool { return self.userNickname != "" }
+    var hasUserNickname: Bool { return self.userNickname != nil}
     var getUserNickname: String { return self.userNickname ?? ""}
     var isTapStart: Bool { return self.tapStart ?? false }
 }
@@ -55,9 +55,9 @@ extension UserManager {
         } catch {
             
         }
-        provider = .none
-        socialToken = ""
-        userNickname = ""
+        provider = nil
+        socialToken = nil
+        userNickname = nil
         tapStart = false
     }
 }
