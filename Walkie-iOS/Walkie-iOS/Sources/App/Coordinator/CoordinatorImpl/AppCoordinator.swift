@@ -124,7 +124,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     private func updateCurrentScene() {
-        if !UserManager.shared.hasTapLogin {
+        if !UserManager.shared.isUserLogin {
             currentScene = .login
         } else if !UserManager.shared.hasUserNickname {
             currentScene = .nickname
@@ -135,6 +135,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
         print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
+        
         do {
             let token = try TokenKeychainManager.shared.getAccessToken()
             let refresh = try TokenKeychainManager.shared.getRefreshToken()

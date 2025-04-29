@@ -15,6 +15,7 @@ final class UserManager {
     
     @UserDefaultsWrapper<String>(key: "provider") private(set) var provider
     @UserDefaultsWrapper<String>(key: "socialToken") private(set) var socialToken
+    @UserDefaultsWrapper<String>(key: "placeholder") private(set) var placeholder
     @UserDefaultsWrapper<String>(key: "userNickname") private(set) var userNickname
     @UserDefaultsWrapper<Bool>(key: "tapStart") private(set) var tapStart
     
@@ -28,6 +29,7 @@ extension UserManager {
     var getSocialToken: String { return socialToken ?? ""}
     var hasTapLogin: Bool { return self.socialToken != nil }
     var hasUserNickname: Bool { return self.userNickname != nil}
+    var getPlaceholder: String { return self.placeholder ?? ""}
     var getUserNickname: String { return self.userNickname ?? ""}
     var isTapStart: Bool { return self.tapStart ?? false }
 }
@@ -43,6 +45,10 @@ extension UserManager {
     
     func setTapStart() {
         self.tapStart = true
+    }
+    
+    func setPlaceholder(_ nickname: String) {
+        self.placeholder = (nickname == "" ? "닉네임" : nickname)
     }
     
     func setUserNickname(_ nickname: String) {

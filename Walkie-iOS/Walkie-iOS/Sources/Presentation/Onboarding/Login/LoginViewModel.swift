@@ -9,8 +9,9 @@ import SwiftUI
 
 import Combine
 import KakaoSDKUser
+import AuthenticationServices
 
-final class LoginViewModel: ViewModelable {
+final class LoginViewModel: NSObject, ViewModelable {
     
     // usecases
     
@@ -75,6 +76,16 @@ extension LoginViewModel {
                     }
                 }
             }
+            
+            UserApi.shared.me { user, error in
+                if error != nil {
+                    return
+                }
+                if let nickname = user?.kakaoAccount?.profile?.nickname {
+                    print("👌👌카카오 닉네임👌👌", nickname)
+                    UserManager.shared.setPlaceholder(nickname)
+                }
+            }
         } else {
             UserApi.shared.loginWithKakaoAccount { oauthToken, error in
                 if let error = error {
@@ -87,6 +98,16 @@ extension LoginViewModel {
                         )
                         self.sendLoginRequest(request: loginRequestDto)
                     }
+                }
+            }
+            
+            UserApi.shared.me { user, error in
+                if error != nil {
+                    return
+                }
+                if let nickname = user?.kakaoAccount?.profile?.nickname {
+                    print("👌👌카카오 닉네임👌👌", nickname)
+                    UserManager.shared.setPlaceholder(nickname)
                 }
             }
         }
@@ -117,7 +138,47 @@ extension LoginViewModel {
             )
             .store(in: &self.cancellables)
     }
+}
+
+extension LoginViewModel: ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
     
     func appleLogin() {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.fullName]
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
+    }
+    
+    func authorizationController(
+        controller _: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        switch authorization.credential {
+        case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let fullName = appleIDCredential.fullName
+            let idToken = appleIDCredential.identityToken!
+            
+            UserManager.shared.setPlaceholder(fullName?.description ?? "")
+            if let tokenString = String(data: idToken, encoding: .utf8) {
+                print(tokenString)
+                let request = LoginRequestDto(provider: LoginType.apple, token: tokenString)
+                self.sendLoginRequest(request: request)
+            }
+        default:
+            break
+        }
+    }
+    
+    func presentationAnchor(
+        for controller: ASAuthorizationController
+    ) -> ASPresentationAnchor {
+        return UIApplication.shared
+            .connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.keyWindow }
+            .first { $0.isKeyWindow }
+        ?? UIWindow()
     }
 }

@@ -41,7 +41,7 @@ struct NicknameView: View {
                 
                 InputView(
                     limitation: 20,
-                    placeholderText: "닉네임",
+                    placeholderText: UserManager.shared.getPlaceholder,
                     onlyText: true,
                     input: $userInput,
                     inputState: $inputState

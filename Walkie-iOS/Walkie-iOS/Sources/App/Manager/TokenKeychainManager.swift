@@ -118,10 +118,12 @@ final class TokenKeychainManager {
     func hasToken() -> Bool {
         do {
             if let accessToken = try getAccessToken(), !accessToken.isEmpty {
+                print("🤌🤌\(accessToken)🤌🤌")
                 return true
             }
             return false
         } catch {
+            print("🤌🤌🤌🤌")
             return false
         }
     }
