@@ -10,9 +10,9 @@ import Combine
 final class DefaultSignupUseCase: BaseUserUseCase, SignupUseCase {
     
     func postSignup(
-        nickname: String
+        info: LoginUserInfo
     ) -> AnyPublisher<TokenVO, NetworkError> {
-        authRepository.signup(nickname: nickname)
+        authRepository.signup(info: info)
             .mapToNetworkError()
     }
 }

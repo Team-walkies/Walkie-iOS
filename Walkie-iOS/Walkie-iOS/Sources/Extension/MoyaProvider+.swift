@@ -17,7 +17,6 @@ extension MoyaProvider {
     ) -> AnyPublisher<Response, MoyaError> {
         self.requestPublisher(target)
             .flatMap { response -> AnyPublisher<Response, MoyaError> in
-                print("👌👌\(response.statusCode)👌👌")
                 switch response.statusCode {
                 case 200..<300:
                     return Just(response)
@@ -25,7 +24,7 @@ extension MoyaProvider {
                         .eraseToAnyPublisher()
                 case 401:
                     let token = (try? TokenKeychainManager.shared.getRefreshToken()) ?? ""
-                    print("👌👌\(token)👌👌")
+                    print("refresh token: 👌👌\(token)👌👌")
                     return reissueService
                         .reissue(refreshToken: token)
                         .mapError { moyaError in
@@ -39,8 +38,16 @@ extension MoyaProvider {
                                 )
                             }
                         })
-                        .flatMap { _ -> AnyPublisher<Response, MoyaError> in
-                            print("👌👌재발급 완료, 원본 파이프라인으로 재요청👌👌")
+                        .flatMap { response -> AnyPublisher<Response, MoyaError> in
+                            print("재발급된 토큰들일것임:::: 👌👌\(response)👌👌")
+                            do {
+                                try TokenKeychainManager.shared.removeTokens()
+                                try TokenKeychainManager.shared.saveAccessToken(response.accessToken)
+                                try TokenKeychainManager.shared.saveRefreshToken(response.refreshToken)
+                                print("👌👌재발급 완료, 원본 파이프라인으로 재요청👌👌")
+                            } catch {
+                                print("👌👌재발급 실패했으세요")
+                            }
                             return self.requestPublisher(target)
                         }
                         .eraseToAnyPublisher()
@@ -51,16 +58,4 @@ extension MoyaProvider {
             }
             .eraseToAnyPublisher()
     }
-//    
-//    func notifyReissueFailure() -> AnyPublisher<Output, Failure> {
-//        self.handleEvents(receiveCompletion: { completion in
-//            if case .failure = completion {
-//                NotificationCenter.default.post(
-//                    name: .reissueFailed,
-//                    object: nil
-//                )
-//            }
-//        })
-//        .eraseToAnyPublisher()
-//    }
 }

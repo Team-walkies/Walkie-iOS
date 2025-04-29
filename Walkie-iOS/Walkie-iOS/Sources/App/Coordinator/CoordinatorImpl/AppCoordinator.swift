@@ -39,6 +39,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     let tabBarView: AnyView
     
+    var loginInfo: LoginUserInfo = LoginUserInfo()
+    
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
         
@@ -70,7 +72,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .hatchEgg:
             EmptyView()
         case .nickname:
-            NicknameView()
+            diContainer.buildNicknameView()
         case .login:
             diContainer.buildLoginView()
                 .onOpenURL { url in
@@ -124,15 +126,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     private func updateCurrentScene() {
-        if !UserManager.shared.isUserLogin {
-            currentScene = .login
-        } else if !UserManager.shared.hasUserNickname {
-            currentScene = .nickname
-        } else if UserManager.shared.isTapStart {
+        if UserManager.shared.hasUserToken { // 기존 사용자
             currentScene = .tabBar
         } else {
-            currentScene = .complete
+            currentScene = .login
         }
+        
+        
         print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
         
@@ -146,12 +146,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
             print(refresh ?? "no token")
             print("💁💁refresh💁💁")
         } catch {
-            print("issue;;")
+            print("no token")
         }
-        
-        print("nickname: \(UserManager.shared.hasUserNickname)")
-        print("nickname: \(UserManager.shared.getUserNickname)")
-        print("tapstart: \(UserManager.shared.tapStart ?? false)")
     }
     
     func changeRoot() {

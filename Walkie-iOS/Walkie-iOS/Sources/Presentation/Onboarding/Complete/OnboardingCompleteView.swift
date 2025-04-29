@@ -12,7 +12,6 @@ import WalkieCommon
 struct OnboardingCompleteView: View {
     
     @State var tapStart: Bool = false
-    @ObservedObject var signupViewModel: SignupViewModel
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -44,20 +43,12 @@ struct OnboardingCompleteView: View {
                     size: .large,
                     isEnabled: true,
                     buttonAction: {
-                        signupViewModel.action(.tapSignup)
+                        appCoordinator.currentScene = .tabBar
                     }
                 )
                 .padding(.bottom, 4)
             }
             .toolbar(.hidden, for: .navigationBar)
-        }
-        .onChange(of: signupViewModel.state) { _, newState in
-            switch newState {
-            case .loaded:
-                appCoordinator.currentScene = .tabBar
-            default:
-                break
-            }
         }
     }
 }

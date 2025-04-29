@@ -40,6 +40,7 @@ final class LoginViewModel: NSObject, ViewModelable {
     
     @Published var state: LoginViewState = .loading
     private var cancellables = Set<AnyCancellable>()
+    var loginInfo: LoginUserInfo = LoginUserInfo(provider: .kakao, socialToken: "", username: "")
     
     init (
         loginUseCase: DefaultLoginUseCase
@@ -83,7 +84,7 @@ extension LoginViewModel {
                 }
                 if let nickname = user?.kakaoAccount?.profile?.nickname {
                     print("👌👌카카오 닉네임👌👌", nickname)
-                    UserManager.shared.setPlaceholder(nickname)
+                    self.loginInfo.username = nickname
                 }
             }
         } else {
@@ -107,7 +108,7 @@ extension LoginViewModel {
                 }
                 if let nickname = user?.kakaoAccount?.profile?.nickname {
                     print("👌👌카카오 닉네임👌👌", nickname)
-                    UserManager.shared.setPlaceholder(nickname)
+                    self.loginInfo.username = nickname
                 }
             }
         }
@@ -116,7 +117,8 @@ extension LoginViewModel {
     func sendLoginRequest(request: LoginRequestDto) {
         print("👌👌sendLoginRequest👌👌")
         print(request)
-        UserManager.shared.setSocialLogin(request: request)
+        loginInfo.provider = request.provider
+        loginInfo.socialToken = request.token
         self.loginUseCase.postLogin(request: request)
             .walkieSink(
                 with: self,
@@ -161,7 +163,11 @@ extension LoginViewModel: ASAuthorizationControllerPresentationContextProviding,
             let fullName = appleIDCredential.fullName
             let idToken = appleIDCredential.identityToken!
             
-            UserManager.shared.setPlaceholder(fullName?.description ?? "")
+            if let nameComponents = appleIDCredential.fullName {
+                let fullNameString = nameComponents.formatted(.name(style: .long))
+                self.loginInfo.username = fullNameString
+            }
+            
             if let tokenString = String(data: idToken, encoding: .utf8) {
                 print(tokenString)
                 let request = LoginRequestDto(provider: LoginType.apple, token: tokenString)

@@ -10,5 +10,5 @@ import Combine
 protocol AuthService {
     func login(request: LoginRequestDto) -> AnyPublisher<LoginDto, Error>
     func logout() -> AnyPublisher<LogoutDto, Error>
-    func signup(nickname: String) -> AnyPublisher<LoginDto, Error>
+    func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, Error>
 }

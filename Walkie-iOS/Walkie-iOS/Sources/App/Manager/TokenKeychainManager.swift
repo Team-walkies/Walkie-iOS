@@ -43,7 +43,10 @@ final class TokenKeychainManager {
         
         let status = SecItemAdd(query as CFDictionary, nil)
         if status != errSecSuccess {
+            print("❌ [Keychain] 저장 실패 - key: \(key), status: \(status)")
             throw KeychainError.unknownError(status)
+        } else {
+            print("✅ [Keychain] 저장 성공 - key: \(key)")
         }
     }
     
@@ -89,6 +92,7 @@ final class TokenKeychainManager {
     // MARK: - accessToken
     
     func saveAccessToken(_ token: String) throws {
+        print("save access token: \(token)")
         try save(key: KeychainKeys.accessToken, value: token)
     }
     
@@ -99,6 +103,7 @@ final class TokenKeychainManager {
     // MARK: - refreshToken
     
     func saveRefreshToken(_ token: String) throws {
+        print("save refresh token: \(token)")
         try save(key: KeychainKeys.refreshToken, value: token)
     }
     

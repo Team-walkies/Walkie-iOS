@@ -45,16 +45,17 @@ extension AuthTarget {
     }
     
     static func signup(
-        nickname: String
+        info: LoginUserInfo
     ) -> AuthTarget {
         AuthTarget(
             path: URLConstant.authSignup,
             method: .post,
             task: .requestJSONEncodable(
                 [
-                    "provider": UserManager.shared.getSocialProvider,
-                    "loginAccessToken": UserManager.shared.getSocialToken,
-                    "nickname": nickname
+                    "provider": info.provider.rawValue,
+                    "loginAccessToken": info.socialToken,
+                    "nickname": UserManager.shared.getUserNickname
+                    
                 ]
             ),
             headers: APIConstants.noTokenHeader

@@ -10,6 +10,6 @@ import Combine
 protocol SignupUseCase {
     
     func postSignup(
-        nickname: String
+        info: LoginUserInfo
     ) -> AnyPublisher<TokenVO, NetworkError>
 }

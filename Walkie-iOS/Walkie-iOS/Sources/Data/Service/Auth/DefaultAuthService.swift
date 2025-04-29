@@ -33,8 +33,8 @@ extension DefaultAuthService: AuthService {
             .mapWalkieResponse(LogoutDto.self)
     }
     
-    func signup(nickname: String) -> AnyPublisher<LoginDto, any Error> {
-        authProvider.requestPublisher(.signup(nickname: nickname))
+    func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, any Error> {
+        authProvider.requestPublisher(.signup(info: info))
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(LoginDto.self)
     }

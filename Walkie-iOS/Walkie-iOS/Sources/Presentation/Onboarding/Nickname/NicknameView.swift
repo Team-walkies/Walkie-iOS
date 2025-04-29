@@ -15,7 +15,7 @@ struct NicknameView: View {
     @State private var isButtonEnabled: Bool = false
     @State private var inputState: InputState = .default
     @FocusState private var focused: Bool
-//    @State private var isNavigating: Bool = false
+    @ObservedObject var signupViewModel: SignupViewModel
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
@@ -28,8 +28,13 @@ struct NicknameView: View {
                     rightButtonEnabled: isButtonEnabled,
                     rightButtonShowsEnabledColor: true,
                     rightButtonAction: {
+                        let info = LoginUserInfo(
+                            provider: appCoordinator.loginInfo.provider,
+                            socialToken: appCoordinator.loginInfo.socialToken,
+                            username: userInput
+                        )
+                        signupViewModel.action(.tapSignup(info: info))
                         UserManager.shared.setUserNickname(userInput)
-                        appCoordinator.currentScene = .complete
                     }
                 )
                 
@@ -41,7 +46,7 @@ struct NicknameView: View {
                 
                 InputView(
                     limitation: 20,
-                    placeholderText: UserManager.shared.getPlaceholder,
+                    placeholderText: appCoordinator.loginInfo.username,
                     onlyText: true,
                     input: $userInput,
                     inputState: $inputState
@@ -69,12 +74,14 @@ struct NicknameView: View {
             .gesture(DragGesture().onChanged { _ in
                 hideKeyboard()
             })
+            .onChange(of: signupViewModel.state) { _, newState in
+                switch newState {
+                case .loaded:
+                    appCoordinator.currentScene = .complete
+                default:
+                    break
+                }
+            }
         }
-    }
-}
-
-struct NicknameView_Previews: PreviewProvider {
-    static var previews: some View {
-        NicknameView()
     }
 }

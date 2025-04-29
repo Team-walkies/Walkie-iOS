@@ -17,7 +17,7 @@ final class SignupViewModel: ViewModelable {
     private let signupUseCase: DefaultSignupUseCase
     
     enum Action {
-        case tapSignup
+        case tapSignup(info: LoginUserInfo)
     }
     
     struct SignupState: Equatable {
@@ -46,15 +46,18 @@ final class SignupViewModel: ViewModelable {
     }
     
     func action(_ action: Action) {
-        signup()
+        switch action {
+        case .tapSignup(let info):
+            signup(info: info)
+        }
     }
 }
 
 extension SignupViewModel {
     
-    func signup() {
+    func signup(info: LoginUserInfo) {
         self.signupUseCase.postSignup(
-            nickname: UserManager.shared.getUserNickname
+            info: info
         )
         .walkieSink(
             with: self,
@@ -63,7 +66,6 @@ extension SignupViewModel {
                     if let accessToken = tokenVO.accessToken, let refreshToken = tokenVO.refreshToken {
                         try TokenKeychainManager.shared.saveAccessToken(accessToken)
                         try TokenKeychainManager.shared.saveRefreshToken(refreshToken)
-                        UserManager.shared.setTapStart()
                         self.state = .loaded(SignupState(successSignup: true))
                     }
                 } catch {
