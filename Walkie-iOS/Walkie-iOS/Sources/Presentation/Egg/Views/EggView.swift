@@ -44,21 +44,41 @@ struct EggView: View {
                                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                                 Spacer()
                             }.padding(.bottom, 4)
-                            Text("같이 걷고 싶은 알을 선택해 주세요")
-                                .font(.B2)
-                                .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                                .padding(.bottom, 20)
-                            LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                                ForEach(state.eggs, id: \.eggId) { egg in
-                                    EggItemView(state: egg)
-                                        .onTapGesture {
-                                            viewModel.action(.didTapEggDetail(egg))
-                                            isPresentingBottomSheet = true
-                                        }
+                            
+                            if state.eggsCount > 0 {
+                                Text("같이 걷고 싶은 알을 선택해 주세요")
+                                    .font(.B2)
+                                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
+                                    .padding(.bottom, 20)
+                                LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                                    ForEach(state.eggs, id: \.eggId) { egg in
+                                        EggItemView(state: egg)
+                                            .onTapGesture {
+                                                viewModel.action(.didTapEggDetail(egg))
+                                                isPresentingBottomSheet = true
+                                            }
+                                    }
                                 }
+                                .ignoresSafeArea()
+                                .padding(.bottom, 48)
+                            } else {
+                                VStack {
+                                    Spacer()
+                                    VStack(spacing: 8) {
+                                        Text("아직 얻은 알이 없어요.\n스팟 탐험을 통해 수집해보세요!")
+                                            .font(.B1)
+                                            .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                                            .multilineTextAlignment(.center)
+                                        
+                                        Image(.imgEgg)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 200, height: 200)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.top, 138)
                             }
-                            .ignoresSafeArea()
-                            .padding(.bottom, 48)
                         case .error(let error):
                             Text(error.description)
                         default:
@@ -70,7 +90,8 @@ struct EggView: View {
                     .onAppear {
                         viewModel.action(.willAppear)
                     }
-                }.scrollIndicators(.never)
+                }
+                .scrollIndicators(.never)
             }
         }
         .navigationDestination(isPresented: $isPresentingGuideView) {

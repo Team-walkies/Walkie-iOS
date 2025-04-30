@@ -19,14 +19,12 @@ struct HomeView: View {
     @State private var showAlarmBS: Bool = false
     @State private var showBS: Bool = false
     
+    @EnvironmentObject private var appCoordinator: AppCoordinator
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
-                showLogo: true,
-                showAlarmButton: true,
-                rightButtonAction: {
-                    navigateAlarmList = true
-                }
+                showLogo: true
             )
             ScrollView(.vertical) {
                 VStack {
@@ -96,6 +94,32 @@ struct HomeView: View {
                 }
             }
         }
+        .onChange(of: viewModel.shouldShowDeniedAlert) {
+            if viewModel.shouldShowDeniedAlert {
+                var title: String {
+                    if showLocationBS && showMotionBS {
+                        return "접근권한 허용"
+                    } else if showLocationBS {
+                        return "위치 권한 허용"
+                    } else if showMotionBS {
+                        return "동작 및 피트니스 권한 허용"
+                    }
+                    return ""
+                }
+                
+                var content: String {
+                    if showLocationBS && showMotionBS {
+                        return "원활한 서비스 이용을 위해 ‘위치’,\n‘동작 및 피트니스’ 권한을 모두 허용해 주세요"
+                    } else if showLocationBS {
+                        return "스팟을 탐색하기 위해 백그라운드 동작 시의\n위치 정보 접근을 허가해 주세요.\n\n 1. 위치를 선택\n2. 위치 접근 허용을 ‘항상'으로 설정"
+                    } else {
+                        return "걸음수 측정을 위해 권한이 필요해요"
+                    }
+                }
+                
+                appCoordinator.showAlertWithDim = HomeAlertStruct(title: title, content: content)
+            }
+        }
         .permissionBottomSheet(
             isPresented: $showBS,
             height: (showLocationBS && showMotionBS) ? 342 : (showAlarmBS ? 369 : 266)) {
@@ -110,53 +134,6 @@ struct HomeView: View {
                     HomeAlarmBSView(isPresented: $showBS)
                 }
             }
-        .overlay {
-            var title: String {
-                if showLocationBS && showMotionBS {
-                    return "접근권한 허용"
-                } else if showLocationBS {
-                    return "위치 권한 허용"
-                } else if showMotionBS {
-                    return "신체활동 권한 허용"
-                }
-                return ""
-            }
-            
-            var content: String {
-                if showLocationBS && showMotionBS {
-                    return "원활한 서비스 이용을 위해\n위치, 신체활동 권한을 모두 허용해주세요"
-                } else {
-                    return "원활한 서비스 이용을 위해 권한이 필요해요"
-                }
-            }
-            
-            if viewModel.shouldShowDeniedAlert {
-                ZStack {
-                    Color(white: 0, opacity: 0.6)
-                        .ignoresSafeArea()
-                        .transition(.opacity)
-                    Modal(
-                        title: title,
-                        content: content,
-                        style: .primary,
-                        button: .twobutton,
-                        cancelButtonAction: {
-                            viewModel.shouldShowDeniedAlert = false
-                            viewModel.getHomeAPI()
-                        },
-                        checkButtonAction: {
-                            if let url = URL(string: UIApplication.openSettingsURLString)
-                                , UIApplication.shared.canOpenURL(url) {
-                                UIApplication.shared.open(url)
-                            }
-                            viewModel.shouldShowDeniedAlert = false
-                        },
-                        checkButtonTitle: "허용하기"
-                    )
-                    .padding(.horizontal, 40)
-                }
-            }
-        }
         .navigationDestination(isPresented: $navigateAlarmList) {
             DIContainer.shared.buildAlarmListView()
                 .navigationBarBackButtonHidden()

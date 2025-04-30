@@ -33,11 +33,9 @@ struct MypageLogoutView: View {
                     checkButtonTitle: "로그아웃",
                     cancelButtonTitle: "뒤로가기")
                 .transition(.opacity)
+                .padding(.horizontal, 40)
             }
         }
         .animation(.easeInOut(duration: 0.25), value: viewModel.logoutViewState.isPresented)
     }
-}
-#Preview {
-    MypageLogoutView(viewModel: MypageMainViewModel())
 }

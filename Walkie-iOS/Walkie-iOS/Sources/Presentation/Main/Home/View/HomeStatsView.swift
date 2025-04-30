@@ -15,13 +15,16 @@ struct HomeStatsView: View {
     let stepState: HomeViewModel.StepState
     let width: CGFloat
     
+    @State var showWarning: Bool = false
+    @State var warningTypes: [WarningType] = []
+    
     var body: some View {
         ZStack {
             Image(homeStatsState.eggBackImage)
                 .resizable()
                 .scaledToFill()
                 .frame(width: width, height: 371)
-            ZStack(alignment: .top) {
+            ZStack(alignment: .bottom) {
                 VStack(spacing: 0) {
                     HStack(alignment: .bottom, spacing: 5) {
                         if stepState.todayStep < 0 {
@@ -96,47 +99,97 @@ struct HomeStatsView: View {
                             .scaledToFit()
                             .frame(width: 296, height: 296)
                             .overlay {
-                                NavigationLink(destination: DIContainer.shared.buildEggView()) {
-                                    Text("알을 선택해 주세요")
-                                        .font(.H5)
-                                        .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)
-                                        .underline()
+                                if !showWarning {
+                                    NavigationLink(destination: DIContainer.shared.buildEggView()) {
+                                        Text("알을 선택해 주세요")
+                                            .font(.H5)
+                                            .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)
+                                            .underline()
+                                    }
+                                    .frame(height: 24)
                                 }
-                                .frame(height: 24)
                             }
                             .padding(.bottom, -85)
                     }
                 }
                 
-                if stepState.todayStep < 0 {
-                    Button(action: {
-                        if let url = URL(string: UIApplication.openSettingsURLString),
-                           UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url)
-                        }
-                    }, label: {
-                        HStack {
-                            Text("동작 및 피트니스 권한을 허용해 주세요")
-                                .font(.B2)
-                                .foregroundColor(.white)
+                if !warningTypes.isEmpty {
+                    VStack(alignment: .trailing, spacing: 0) {
+                        ForEach(Array(warningTypes.enumerated()), id: \.element) { index, type in
+                            HomeWariningView(type: type)
                             
-                            Image(.icChevronRight)
-                                .resizable()
-                                .scaledToFit()
-                                .foregroundColor(.white)
-                                .frame(width: 18, height: 18)
+                            if index < warningTypes.count - 1 {
+                                Spacer().frame(height: 4)
+                            }
                         }
-                    })
-                    .frame(height: 60)
-                    .frame(maxWidth: .infinity)
-                    .background(WalkieCommonAsset.gray900.swiftUIColor.opacity(0.7))
-                    .cornerRadius(12, corners: .allCorners)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 16)
+                        
+                        Image(.icBubble)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 35, height: 21)
+                            .padding(.trailing, 100)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.bottom, 41)
                 }
             }
         }
         .frame(width: width, height: 371)
         .mask(RoundedRectangle(cornerRadius: 16))
+        .onAppear {
+            let locationWarning = !stepState.locationAlwaysAuthorized
+            let motionWarning = stepState.todayStep < 0
+            
+            showWarning = locationWarning || motionWarning
+            warningTypes = {
+                if locationWarning && motionWarning {
+                    return [.motion, .location]
+                } else if locationWarning {
+                    return [.location]
+                } else if motionWarning {
+                    return [.motion]
+                } else {
+                    return []
+                }
+            }()
+        }
+    }
+}
+
+enum WarningType {
+    case location
+    case motion
+}
+
+struct HomeWariningView: View {
+    
+    let type: WarningType
+    
+    var body: some View {
+        Button(action: {
+            if let url = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            }
+        }, label: {
+            HStack(alignment: .center, spacing: 4) {
+                Image(.icDanger)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundColor(.white)
+                    .frame(width: 16, height: 16)
+                
+                Text(type == .location
+                     ? "위치 접근 권한을 '항상'으로 허용해 주세요"
+                     : "동작 및 피트니스 권한을 허용해 주세요"
+                )
+                .font(.B2)
+                .foregroundColor(.white)
+            }
+        })
+        .frame(height: 60)
+        .frame(maxWidth: .infinity)
+        .background(WalkieCommonAsset.gray900.swiftUIColor.opacity(0.7))
+        .cornerRadius(12, corners: .allCorners)
+        .padding(.horizontal, 16)
     }
 }

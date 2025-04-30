@@ -19,11 +19,6 @@ struct MypageMainView: View {
                     ZStack {
                         VStack(alignment: .center, spacing: 0) {
                             NavigationBar(
-                                showAlarmButton: true,
-                                hasAlarm: mypageMainState.hasAlarm,
-                                rightButtonAction: {
-                                    navigateAlarmList = true
-                                }
                             )
                             ScrollView(.vertical, showsIndicators: false) {
                                 VStack(spacing: 0) {

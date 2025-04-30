@@ -48,7 +48,9 @@ struct Modal: View {
                 .font(.B2)
                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                 .padding(.bottom, 20)
-                .multilineTextAlignment(.center)
+                .multilineTextAlignment(
+                    content.contains("백그라운드 동작") ? .leading : .center
+                )
             
             switch button {
             case .onebutton:

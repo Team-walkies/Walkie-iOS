@@ -15,6 +15,7 @@ struct LoginView: View {
     @State private var isNavigating: Bool = false
     
     private let onboardingPage = OnboardingPageStruct.makeOnboardingPage()
+    @EnvironmentObject private var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack(alignment: .center) {
