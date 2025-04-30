@@ -27,5 +27,5 @@ protocol MemberRepository {
 //    // 회원탈퇴 하기 API
 //    func logout() -> AnyPublisher<Void, NetworkError>
 //    // 기록한 스팟 개수 조회하기 API
-//    func getRecordedSpotCount() -> AnyPublisher<Int, NetworkError>
+    func getRecordedSpotCount() -> AnyPublisher<Int, NetworkError>
 }

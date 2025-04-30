@@ -10,6 +10,9 @@ import Combine
 
 final class MypageMainViewModel: ViewModelable {
     
+    private let logoutUseCase: DefaultLogoutUserUseCase
+    private var cancellables = Set<AnyCancellable>()
+    
     enum MypageMainViewState {
         case loading
         case loaded(MypageMainState)
@@ -56,8 +59,11 @@ final class MypageMainViewModel: ViewModelable {
     )
     @Published var logoutViewState = LogoutViewState(isPresented: false)
     
-    init() {
+    init(
+        logoutUseCase: DefaultLogoutUserUseCase
+    ) {
         state = .loading
+        self.logoutUseCase = logoutUseCase
     }
     
     func action(_ action: Action) {
@@ -97,27 +103,36 @@ final class MypageMainViewModel: ViewModelable {
     }
     
     private func updateMyInformationPublicSetting() {
-        // TODO: 내 프로필 공개/비공개 토글 API 연결
         myInformationState.isPublic.toggle()
     }
 
     private func updateNotifyTodayWalkCount() {
-        // TODO: 푸시 알림 토글 API 연결
         pushNotificationState.notifyTodayWalkCount.toggle()
     }
     
     private func updateNotifyArrivedSpot() {
-        // TODO: 푸시 알림 토글 API 연결
         pushNotificationState.notifyArrivedSpot.toggle()
     }
     
     private func updateNotifyEggHatches() {
-        // TODO: 푸시 알림 토글 API 연결
         pushNotificationState.notifyEggHatches.toggle()
     }
     
     private func logout() {
-        // TODO: 로그아웃 API 연결
+        logoutUseCase.postLogout()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    NotificationCenter.default.post(
+                        name: .reissueFailed,
+                        object: nil
+                    )
+                }, receiveFailure: { _, error  in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                }
+            )
+            .store(in: &self.cancellables)
     }
     
     private func withdraw() {

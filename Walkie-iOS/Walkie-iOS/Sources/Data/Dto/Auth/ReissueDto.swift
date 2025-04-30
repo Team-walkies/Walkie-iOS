@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RefreshAccessTokenDto: Codable {
+struct ReissueDto: Codable {
     let provider: String
     let refreshToken: String
     let accessToken: String

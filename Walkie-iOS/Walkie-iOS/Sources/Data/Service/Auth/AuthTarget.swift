@@ -17,7 +17,7 @@ struct AuthTarget: BaseTargetType {
         path: String,
         method: Moya.Method,
         task: Moya.Task,
-        headers: [String: String]?
+        headers: [String: String]? = APIConstants.hasTokenHeader
     ) {
         self.path = path
         self.method = method
@@ -27,35 +27,37 @@ struct AuthTarget: BaseTargetType {
 }
 
 extension AuthTarget {
-    static func appleLogin(loginAccessToken: String) -> AuthTarget {
+    
+    static func login(
+        request: LoginRequestDto
+    ) -> AuthTarget {
         AuthTarget(
             path: URLConstant.authLogin,
-            method: .get,
-            task: .requestParameters(
-                parameters: ["provider": "apple", "loginAccessToken": loginAccessToken],
-                encoding: URLEncoding.httpBody
+            method: .post,
+            task: .requestJSONEncodable(
+                [
+                    "provider": request.provider.rawValue,
+                    "loginAccessToken": request.token
+                ]
             ),
             headers: APIConstants.noTokenHeader
         )
     }
     
-    static func kakaoLogin(loginAccessToken: String) -> AuthTarget {
+    static func signup(
+        info: LoginUserInfo
+    ) -> AuthTarget {
         AuthTarget(
-            path: URLConstant.authLogin,
+            path: URLConstant.authSignup,
             method: .post,
-            task: .requestParameters(
-                parameters: ["provider": "kakao", "loginAccessToken": loginAccessToken],
-                encoding: URLEncoding.httpBody
+            task: .requestJSONEncodable(
+                [
+                    "provider": info.provider.rawValue,
+                    "loginAccessToken": info.socialToken,
+                    "nickname": UserManager.shared.getUserNickname
+                    
+                ]
             ),
-            headers: APIConstants.noTokenHeader
-        )
-    }
-    
-    static func refreshAccessToken(refreshToken: String) -> AuthTarget {
-        AuthTarget(
-            path: URLConstant.authToken,
-            method: .post,
-            task: .requestJSONEncodable(refreshToken),
             headers: APIConstants.noTokenHeader
         )
     }
@@ -63,7 +65,6 @@ extension AuthTarget {
     static let logout: AuthTarget = AuthTarget(
         path: URLConstant.authLogout,
         method: .post,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
 }

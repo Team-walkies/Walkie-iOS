@@ -11,18 +11,18 @@ struct EggTarget: BaseTargetType {
     let path: String
     let method: Moya.Method
     let task: Moya.Task
-    let headers: [String: String]?
+    var headers: [String: String]? {
+        APIConstants.hasTokenHeader
+    }
     
     private init(
         path: String,
         method: Moya.Method,
-        task: Moya.Task,
-        headers: [String: String]?
+        task: Moya.Task
     ) {
         self.path = path
         self.method = method
         self.task = task
-        self.headers = headers
     }
 }
 
@@ -30,29 +30,25 @@ extension EggTarget {
     static let getEggsList = EggTarget(
         path: URLConstant.eggs,
         method: .get,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
     static func patchEggStep(requestBody: PatchEggStepRequestDto) -> EggTarget {
         EggTarget(
             path: URLConstant.eggsStep,
             method: .patch,
-            task: .requestJSONEncodable(requestBody),
-            headers: APIConstants.hasTokenHeader
+            task: .requestJSONEncodable(requestBody)
         )
     }
     static func getEggDetail(eggId: Int) -> EggTarget {
         EggTarget(
             path: URLConstant.eggsDetail(eggId: eggId),
             method: .patch,
-            task: .requestPlain,
-            headers: APIConstants.hasTokenHeader
+            task: .requestPlain
         )
     }
     static let getEggsCount = EggTarget(
         path: URLConstant.eggsCount,
         method: .get,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
 }

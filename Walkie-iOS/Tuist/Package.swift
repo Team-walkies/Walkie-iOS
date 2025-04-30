@@ -17,7 +17,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.5.1"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "11.8.1"),
-        .package(url: "https://github.com/Moya/Moya.git", from: "15.0.0")
+        .package(url: "https://github.com/Moya/Moya.git", from: "15.0.0"),
+        .package(url: "https://github.com/kakao/kakao-ios-sdk", from: "2.24.1")
     ],
     targets: []
 )

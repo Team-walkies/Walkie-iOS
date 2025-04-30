@@ -18,13 +18,15 @@ enum URLConstant {
     // auth
     static let authLogin = "/auth/login"
     static let authLogout = "/auth/logout"
-    static let authToken = "/auth/token"
+    static let authRefresh = "/auth/refresh"
+    static let authSignup = "/auth/signup"
     
     // members
     static let members = "/members"
     static let membersCharacters = "/members/characters/play"
     static let membersEggs = "/members/eggs/play"
     static let membersProfile = "/members/profile/visibility"
+    static let membersRecordedSpot = "/members/recorded-spot"
     
     // spots
     static let spots = "/spots"

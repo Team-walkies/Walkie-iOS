@@ -82,4 +82,12 @@ extension DefaultMemberRepository: MemberRepository {
         memberService.patchCharacterPlay(characterId: characterId)
             .mapToNetworkError()
     }
+    
+    func getRecordedSpotCount() -> AnyPublisher<Int, NetworkError> {
+        memberService.getRecordedSpot()
+            .map { dto in
+                dto.data
+            }
+            .mapToNetworkError()
+    }
 }

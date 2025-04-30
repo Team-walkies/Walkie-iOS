@@ -37,7 +37,3 @@ struct MypageMyInformationView: View {
         }
     }
 }
-
-#Preview {
-    MypageMyInformationView(viewModel: MypageMainViewModel())
-}

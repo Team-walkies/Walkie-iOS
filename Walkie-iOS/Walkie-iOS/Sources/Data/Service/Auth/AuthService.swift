@@ -8,8 +8,7 @@
 import Combine
 
 protocol AuthService {
-    func kakaoLogin(loginAccessToken: String) -> AnyPublisher<LoginDto, NetworkError>
-    func appleLogin(loginAccessToken: String) -> AnyPublisher<LoginDto, NetworkError>
-    func logout() -> AnyPublisher<Void, NetworkError>
-    func refreshAccessToken(refreshToken: String) -> AnyPublisher<RefreshAccessTokenDto, NetworkError>
+    func login(request: LoginRequestDto) -> AnyPublisher<LoginDto, Error>
+    func logout() -> AnyPublisher<Void, Error>
+    func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, Error>
 }

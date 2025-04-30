@@ -8,5 +8,5 @@
 import Combine
 
 protocol LogoutUserUseCase {
-    func execute() -> AnyPublisher<Void, NetworkError>
+    func postLogout() -> AnyPublisher<Void, NetworkError>
 }

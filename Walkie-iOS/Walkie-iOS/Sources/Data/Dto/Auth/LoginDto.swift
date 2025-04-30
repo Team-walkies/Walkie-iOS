@@ -9,6 +9,6 @@ import Foundation
 
 struct LoginDto: Codable {
     let provider: String
-    let accessToken: String
-    let refreshToken: String
+    let accessToken: String?
+    let refreshToken: String?
 }

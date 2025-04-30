@@ -48,7 +48,3 @@ struct MypagePushNotificationView: View {
         }
     }
 }
-
-#Preview {
-    MypagePushNotificationView(viewModel: MypageMainViewModel())
-}

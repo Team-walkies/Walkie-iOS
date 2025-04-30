@@ -25,18 +25,16 @@ final class DefaultAuthRepository {
 }
 
 extension DefaultAuthRepository: AuthRepository {
-    func kakaoLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError> {
-        authService.kakaoLogin(loginAccessToken: loginAccessToken)
-            .map { dto in
-                TokenVO(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
-            }
-            .mapToNetworkError()
-    }
     
-    func appleLogin(loginAccessToken: String) -> AnyPublisher<TokenVO, NetworkError> {
-        authService.appleLogin(loginAccessToken: loginAccessToken)
+    func login(
+        request: LoginRequestDto
+    ) -> AnyPublisher<TokenVO, NetworkError> {
+        authService.login(request: request)
             .map { dto in
-                TokenVO(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+                TokenVO(
+                    accessToken: dto.accessToken,
+                    refreshToken: dto.refreshToken
+                )
             }
             .mapToNetworkError()
     }
@@ -45,13 +43,17 @@ extension DefaultAuthRepository: AuthRepository {
         authService.logout()
             .map { _ in
                 return
-            }.mapToNetworkError()
+            }
+            .mapToNetworkError()
     }
     
-    func refreshAccessToken(refreshToken: String) -> AnyPublisher<TokenVO, NetworkError> {
-        authService.refreshAccessToken(refreshToken: refreshToken)
+    func signup(info: LoginUserInfo) -> AnyPublisher<TokenVO, NetworkError> {
+        authService.signup(info: info)
             .map { dto in
-                TokenVO(accessToken: dto.accessToken, refreshToken: dto.refreshToken)
+                TokenVO(
+                    accessToken: dto.accessToken,
+                    refreshToken: dto.refreshToken
+                )
             }
             .mapToNetworkError()
     }

@@ -18,13 +18,22 @@ protocol ReviewService {
 final class DefaultReviewService: ReviewService {
     
     private let reviewProvider: MoyaProvider<ReviewTarget>
+    private let reissueService: DefaultReissueService
     
-    init(reviewProvider: MoyaProvider<ReviewTarget> = MoyaProvider<ReviewTarget>(plugins: [NetworkLoggerPlugin()])) {
+    init(
+        reviewProvider: MoyaProvider<ReviewTarget> = MoyaProvider<ReviewTarget>(plugins: [NetworkLoggerPlugin()]),
+        reissueService: DefaultReissueService
+    ) {
         self.reviewProvider = reviewProvider
+        self.reissueService = reissueService
     }
     
     func getReviewCalendar(date: ReviewsCalendarDate) -> AnyPublisher<ReviewsCalendarDto, Error> {
-        reviewProvider.requestPublisher(.getReviewCalendar(date: date))
+        reviewProvider
+            .requestPublisher(
+                .getReviewCalendar(date: date),
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(ReviewsCalendarDto.self)
     }

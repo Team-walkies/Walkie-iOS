@@ -11,15 +11,18 @@ final class DIContainer {
     static let shared = DIContainer()
     private init() {}
     
-    private lazy var eggService = DefaultEggService()
-    private lazy var memberService = DefaultMemberService()
-    private lazy var reviewService = DefaultReviewService()
-    private lazy var characterService = DefaultCharacterService()
+    private lazy var reissueService = DefaultReissueService()
+    private lazy var eggService = DefaultEggService(reissueService: reissueService)
+    private lazy var memberService = DefaultMemberService(reissueService: reissueService)
+    private lazy var reviewService = DefaultReviewService(reissueService: reissueService)
+    private lazy var characterService = DefaultCharacterService(reissueService: reissueService)
+    private lazy var authService = DefaultAuthService(reissueService: reissueService)
     
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
     private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
+    private lazy var authRepo = DefaultAuthRepository(authService: authService)
 }
 
 extension DIContainer {
@@ -36,6 +39,8 @@ extension DIContainer {
                 eggRepository: eggRepo
             ), getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
                 characterRepository: characterRepo
+            ), getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
+                memberRepository: memberRepo
             )
         ))
     }
@@ -45,7 +50,10 @@ extension DIContainer {
     }
     
     func buildMypageView() -> MypageMainView {
-        return MypageMainView(viewModel: MypageMainViewModel())
+        return MypageMainView(viewModel: MypageMainViewModel(
+            logoutUseCase: DefaultLogoutUserUseCase(
+                authRepository: authRepo,
+                memberRepository: memberRepo)))
     }
     
     func buildEggView() -> EggView {
@@ -82,6 +90,34 @@ extension DIContainer {
                     characterRepository: characterRepo
                 ),
                 patchWalkingCharacterUseCase: DefaultPatchWalkingCharacterUseCase(
+                    memberRepository: memberRepo
+                )
+            )
+        )
+    }
+    
+    // Onboarding
+    
+    func buildLoginView() -> LoginView {
+        return LoginView(
+            loginViewModel: LoginViewModel(
+                loginUseCase: DefaultLoginUseCase(
+                    authRepository: authRepo,
+                    memberRepository: memberRepo
+                )
+            )
+        )
+    }
+    
+    func buildSignupView() -> OnboardingCompleteView {
+        return OnboardingCompleteView()
+    }
+    
+    func buildNicknameView() -> NicknameView {
+        return NicknameView(
+            signupViewModel: SignupViewModel(
+                signupUseCase: DefaultSignupUseCase(
+                    authRepository: authRepo,
                     memberRepository: memberRepo
                 )
             )

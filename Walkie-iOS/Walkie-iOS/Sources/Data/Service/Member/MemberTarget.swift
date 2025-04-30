@@ -11,18 +11,18 @@ struct MemberTarget: BaseTargetType {
     let path: String
     let method: Moya.Method
     let task: Moya.Task
-    let headers: [String: String]?
+    var headers: [String: String]? {
+        APIConstants.hasTokenHeader
+    }
     
     private init(
         path: String,
         method: Moya.Method,
-        task: Moya.Task,
-        headers: [String: String]?
+        task: Moya.Task
     ) {
         self.path = path
         self.method = method
         self.task = task
-        self.headers = headers
     }
 }
 
@@ -31,32 +31,34 @@ extension MemberTarget {
     static let getEggPlaying = MemberTarget(
         path: URLConstant.membersEggs,
         method: .get,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
     
     static func patchEggPlaying(eggId: Int) -> MemberTarget {
         return MemberTarget(
             path: URLConstant.membersEggs,
             method: .patch,
-            task: .requestJSONEncodable(["eggId": eggId]),
-            headers: APIConstants.hasTokenHeader
+            task: .requestJSONEncodable(["eggId": eggId])
         )
     }
     
     static let getCharacterPlay = MemberTarget(
         path: URLConstant.membersCharacters,
         method: .get,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
     
     static func patchCharacterPlay(characterId: Int) -> MemberTarget {
         return MemberTarget(
             path: URLConstant.membersCharacters,
             method: .patch,
-            task: .requestJSONEncodable(["characterId": characterId]),
-            headers: APIConstants.hasTokenHeader
+            task: .requestJSONEncodable(["characterId": characterId])
         )
     }
+    
+    static let getRecordedSpot = MemberTarget(
+        path: URLConstant.membersRecordedSpot,
+        method: .get,
+        task: .requestPlain
+    )
 }

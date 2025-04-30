@@ -6,6 +6,13 @@
 //
 
 import SwiftUI
+import KakaoSDKAuth
+
+import Foundation
+
+extension Notification.Name {
+    static let reissueFailed = Notification.Name("reissueFailed")
+}
 
 @Observable
 final class AppCoordinator: Coordinator, ObservableObject {
@@ -32,6 +39,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     let tabBarView: AnyView
     
+    var loginInfo: LoginUserInfo = LoginUserInfo()
+    
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
         
@@ -45,6 +54,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.updateCurrentScene()
         }
+        
+        NotificationCenter.default.addObserver(
+            forName: .reissueFailed,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.changeRoot()
+        }
     }
 
     @ViewBuilder
@@ -55,9 +72,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .hatchEgg:
             EmptyView()
         case .nickname:
-            NicknameView()
+            diContainer.buildNicknameView()
         case .login:
-            LoginView()
+            diContainer.buildLoginView()
+                .onOpenURL { url in
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        DispatchQueue.main.async {
+                            _ = AuthController.handleOpenUrl(url: url)
+                        }
+                    }
+                }
         case .tabBar:
             ZStack {
                 tabBarView
@@ -89,7 +113,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 }
             }
         case .complete:
-            OnboardingCompleteView()
+            diContainer.buildSignupView()
         }
     }
 
@@ -102,26 +126,33 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     private func updateCurrentScene() {
-        if !UserManager.shared.isUserLogin {
-            currentScene = .login
-        } else if !UserManager.shared.hasUserNickname {
-            currentScene = .nickname
-        } else if UserManager.shared.isTapStart {
+        if UserManager.shared.hasUserToken { // 기존 사용자
             currentScene = .tabBar
         } else {
-            currentScene = .complete
+            currentScene = .login
         }
         
+        
+        print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
+        
         do {
             let token = try TokenKeychainManager.shared.getAccessToken()
+            let refresh = try TokenKeychainManager.shared.getRefreshToken()
+            print("💁💁access💁💁")
             print(token ?? "no token")
+            print("💁💁access💁💁")
+            print("💁💁refresh💁💁")
+            print(refresh ?? "no token")
+            print("💁💁refresh💁💁")
         } catch {
-            print("issue;;")
+            print("no token")
         }
-        print("isUserLogin: \(UserManager.shared.isUserLogin)")
-        print("nickname: \(UserManager.shared.userNickname ?? "no nickname")")
-        print("tapstart: \(UserManager.shared.tapStart ?? false)")
     }
     
+    func changeRoot() {
+        UserManager.shared.withdraw()
+        currentScene = .splash
+        updateCurrentScene()
+    }
 }

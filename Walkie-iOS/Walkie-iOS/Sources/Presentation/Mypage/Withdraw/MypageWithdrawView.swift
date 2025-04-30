@@ -65,17 +65,15 @@ struct MypageWithdrawView: View {
                     title: "탈퇴하기",
                     style: .danger,
                     size: .large,
-                    isEnabled: isChecked) {
+                    isEnabled: isChecked,
+                    buttonAction: {
                         viewModel.action(.withdraw)
-                    }
-                    .padding(.bottom, 38)
+                        UserManager.shared.withdraw()
+                    })
+                .padding(.bottom, 38)
             }.ignoresSafeArea(.all)
         default:
             EmptyView()
         }
     }
-}
-
-#Preview {
-    MypageWithdrawView(viewModel: MypageMainViewModel())
 }
