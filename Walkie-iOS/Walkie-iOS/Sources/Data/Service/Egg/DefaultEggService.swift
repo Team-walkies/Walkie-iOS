@@ -26,19 +26,31 @@ final class DefaultEggService {
 extension DefaultEggService: EggService {
     
     func getEggsList() -> AnyPublisher<GetEggListDto, Error> {
-        eggProvider.requestPublisher(.getEggsList)
+        eggProvider
+            .requestPublisher(
+                .getEggsList,
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetEggListDto.self)
     }
     
     func getEggDetail(eggId: Int) -> AnyPublisher<GetEggDetailDto, Error> {
-        eggProvider.requestPublisher(.getEggDetail(eggId: eggId))
+        eggProvider
+            .requestPublisher(
+                .getEggDetail(eggId: eggId),
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetEggDetailDto.self)
     }
     
     func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, Error> {
-        eggProvider.requestPublisher(.patchEggStep(requestBody: requestBody))
+        eggProvider
+            .requestPublisher(
+                .patchEggStep(requestBody: requestBody),
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapVoidResponse()
     }

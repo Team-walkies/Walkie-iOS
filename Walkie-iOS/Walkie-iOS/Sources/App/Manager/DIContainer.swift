@@ -13,10 +13,10 @@ final class DIContainer {
     
     private lazy var reissueService = DefaultReissueService()
     private lazy var eggService = DefaultEggService(reissueService: reissueService)
-    private lazy var memberService = DefaultMemberService()
-    private lazy var reviewService = DefaultReviewService()
+    private lazy var memberService = DefaultMemberService(reissueService: reissueService)
+    private lazy var reviewService = DefaultReviewService(reissueService: reissueService)
     private lazy var characterService = DefaultCharacterService(reissueService: reissueService)
-    private lazy var authService = DefaultAuthService()
+    private lazy var authService = DefaultAuthService(reissueService: reissueService)
     
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
     private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)

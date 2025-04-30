@@ -14,8 +14,14 @@ final class DefaultAuthService {
     
     private let authProvider: MoyaProvider<AuthTarget>
     
-    init(authProvider: MoyaProvider<AuthTarget> = MoyaProvider<AuthTarget>(plugins: [NetworkLoggerPlugin()])) {
+    private let reissueService: DefaultReissueService
+    
+    init(
+        authProvider: MoyaProvider<AuthTarget> = MoyaProvider<AuthTarget>(plugins: [NetworkLoggerPlugin()]),
+        reissueService: DefaultReissueService
+    ) {
         self.authProvider = authProvider
+        self.reissueService = reissueService
     }
 }
 
@@ -28,7 +34,11 @@ extension DefaultAuthService: AuthService {
     }
     
     func logout() -> AnyPublisher<LogoutDto, Error> {
-        authProvider.requestPublisher(.logout)
+        authProvider
+            .requestPublisher(
+                .logout,
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(LogoutDto.self)
     }

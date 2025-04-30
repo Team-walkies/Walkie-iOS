@@ -27,13 +27,21 @@ final class DefaultCharacterService {
 extension DefaultCharacterService: CharacterService {
     
     func getCharactersDetail(characterId: CLong) -> AnyPublisher<GetCharactersDetailDto, Error> {
-        characterProvider.requestPublisher(.getCharactersDetail(characterId: characterId))
+        characterProvider
+            .requestPublisher(
+                .getCharactersDetail(characterId: characterId),
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetCharactersDetailDto.self)
     }
     
     func getCharactersList(type: Int) -> AnyPublisher<GetCharactersListDto, Error> {
-        characterProvider.requestPublisher(.getCharactersList(type: type))
+        characterProvider
+            .requestPublisher(
+                .getCharactersList(type: type),
+                reissueService: reissueService
+            )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetCharactersListDto.self)
     }
