@@ -19,6 +19,7 @@ final class HomeViewModel: ViewModelable {
     private let getCharacterPlayUseCase: GetWalkingCharacterUseCase
     private let getEggCountUseCase: GetEggCountUseCase
     private let getCharactersCountUseCase: GetCharactersCountUseCase
+    private let getRecordedSpotUseCase: RecordedSpotUseCase
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -110,12 +111,14 @@ final class HomeViewModel: ViewModelable {
         getEggPlayUseCase: GetEggPlayUseCase,
         getCharacterPlayUseCase: GetWalkingCharacterUseCase,
         getEggCountUseCase: GetEggCountUseCase,
-        getCharactersCountUseCase: GetCharactersCountUseCase
+        getCharactersCountUseCase: GetCharactersCountUseCase,
+        getRecordedSpotUseCase: RecordedSpotUseCase
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
         self.getEggCountUseCase = getEggCountUseCase
         self.getCharactersCountUseCase = getCharactersCountUseCase
+        self.getRecordedSpotUseCase = getRecordedSpotUseCase
     }
     
     func action(_ action: Action) {
@@ -195,8 +198,7 @@ final class HomeViewModel: ViewModelable {
                     self.homeStatsState = .loaded(homeStatsState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-//                    self.homeStatsState = .error(errorMessage)
-                    self.homeStatsState = .loaded(HomeStatsState(hasEgg: false, eggImage: .imgEgg0, eggBackImage: .imgEggBack0))
+                    self.homeStatsState = .error(errorMessage)
                 }
             )
             .store(in: &cancellables)
@@ -222,10 +224,7 @@ final class HomeViewModel: ViewModelable {
                     self.homeCharacterState = .loaded(homeCharacterState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    print("🤬🤬🤬🤬")
-                    print(errorMessage)
-//                    self.homeCharacterState = .error(errorMessage)
-                    self.homeCharacterState = .loaded(HomeCharacterState(characterImage: .imgJellyfish0, characterName: "아아"))
+                    self.homeCharacterState = .error(errorMessage)
                 }
             )
             .store(in: &cancellables)
@@ -235,22 +234,22 @@ final class HomeViewModel: ViewModelable {
         
         getEggCountUseCase.getEggsCount()
             .combineLatest(
-                self.getCharactersCountUseCase.getCharactersCount()
+                self.getCharactersCountUseCase.getCharactersCount(),
+                self.getRecordedSpotUseCase.getRecordedSpot()
             )
             .walkieSink(
                 with: self,
                 receiveValue: { _, combinedData in
-                    let (eggCount, characterCount) = combinedData
+                    let (eggCount, characterCount, spotCount) = combinedData
                     let homeHistoryState = HomeHistoryState(
                         eggsCount: eggCount,
                         characterCount: characterCount,
-                        spotCount: 0 // todo - binding
+                        spotCount: spotCount
                     )
                     self.homeHistoryViewState = .loaded(homeHistoryState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-//                    self.homeHistoryViewState = .error(errorMessage)
-                    self.homeHistoryViewState = .loaded(HomeHistoryState(eggsCount: 0, characterCount: 1, spotCount: 0))
+                    self.homeHistoryViewState = .error(errorMessage)
                 }
             )
             .store(in: &cancellables)

@@ -26,6 +26,7 @@ enum URLConstant {
     static let membersCharacters = "/members/characters/play"
     static let membersEggs = "/members/eggs/play"
     static let membersProfile = "/members/profile/visibility"
+    static let membersRecordedSpot = "/members/recorded-spot"
     
     // spots
     static let spots = "/spots"

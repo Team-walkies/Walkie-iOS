@@ -13,4 +13,5 @@ protocol MemberService {
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, Error>
     func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, Error>
     func patchCharacterPlay(characterId: Int) -> AnyPublisher<Void, Error>
+    func getRecordedSpot() -> AnyPublisher<RecordedSpotDto, Error>
 }

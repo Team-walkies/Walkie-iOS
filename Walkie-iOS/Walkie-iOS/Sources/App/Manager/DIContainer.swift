@@ -39,6 +39,8 @@ extension DIContainer {
                 eggRepository: eggRepo
             ), getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
                 characterRepository: characterRepo
+            ), getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
+                memberRepository: memberRepo
             )
         ))
     }

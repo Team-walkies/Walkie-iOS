@@ -60,10 +60,20 @@ extension DefaultMemberService: MemberService {
         memberProvider
             .requestPublisher(
                 .patchCharacterPlay(characterId: characterId),
-                reissueService:  reissueService
+                reissueService: reissueService
             )
             .filterSuccessfulStatusCodes()
             .mapVoidResponse()
 
+    }
+    
+    func getRecordedSpot() -> AnyPublisher<RecordedSpotDto, any Error> {
+        memberProvider
+            .requestPublisher(
+                .getRecordedSpot,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapWithoutDto(RecordedSpotDto.self)
     }
 }

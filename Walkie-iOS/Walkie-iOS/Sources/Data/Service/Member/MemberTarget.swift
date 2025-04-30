@@ -55,4 +55,10 @@ extension MemberTarget {
             task: .requestJSONEncodable(["characterId": characterId])
         )
     }
+    
+    static let getRecordedSpot = MemberTarget(
+        path: URLConstant.membersRecordedSpot,
+        method: .get,
+        task: .requestPlain
+    )
 }

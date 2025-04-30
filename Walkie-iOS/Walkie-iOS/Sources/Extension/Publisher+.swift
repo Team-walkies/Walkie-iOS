@@ -84,4 +84,11 @@ extension Publisher where Output == Moya.Response {
             .mapError { $0 as Error }
             .eraseToAnyPublisher()
     }
+    
+    func mapWithoutDto<Response: Decodable>(_ type: Response.Type) -> AnyPublisher<Response, Error> {
+        self
+            .map { $0.data }
+            .decode(type: Response.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
 }
