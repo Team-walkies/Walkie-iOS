@@ -123,16 +123,10 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    do {
-                        try TokenKeychainManager.shared.removeTokens()
-                        UserManager.shared.withdraw()
-                        NotificationCenter.default.post(
-                            name: .reissueFailed,
-                            object: nil
-                        )
-                    } catch {
-                        
-                    }
+                    NotificationCenter.default.post(
+                        name: .reissueFailed,
+                        object: nil
+                    )
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

@@ -36,5 +36,6 @@ extension UserManager {
         } catch {
 
         }
+        nickname = nil
     }
 }
