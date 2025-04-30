@@ -17,7 +17,7 @@ struct AuthTarget: BaseTargetType {
         path: String,
         method: Moya.Method,
         task: Moya.Task,
-        headers: [String: String]?
+        headers: [String: String]? = APIConstants.hasTokenHeader
     ) {
         self.path = path
         self.method = method
@@ -65,7 +65,6 @@ extension AuthTarget {
     static let logout: AuthTarget = AuthTarget(
         path: URLConstant.authLogout,
         method: .post,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
 }

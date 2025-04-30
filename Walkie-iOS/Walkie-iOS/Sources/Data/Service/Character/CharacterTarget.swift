@@ -11,18 +11,18 @@ struct CharacterTarget: BaseTargetType {
     let path: String
     let method: Moya.Method
     let task: Moya.Task
-    let headers: [String: String]?
+    var headers: [String: String]? {
+        APIConstants.hasTokenHeader
+    }
     
     private init(
         path: String,
         method: Moya.Method,
-        task: Moya.Task,
-        headers: [String: String]?
+        task: Moya.Task
     ) {
         self.path = path
         self.method = method
         self.task = task
-        self.headers = headers
     }
 }
 
@@ -31,8 +31,7 @@ extension CharacterTarget {
         CharacterTarget(
             path: URLConstant.charactersDetail(characterId: characterId),
             method: .get,
-            task: .requestPlain,
-            headers: APIConstants.hasTokenHeader
+            task: .requestPlain
         )
     }
     
@@ -42,15 +41,13 @@ extension CharacterTarget {
             method: .get,
             task: .requestParameters(
                 parameters: ["type": type],
-                encoding: URLEncoding.queryString),
-            headers: APIConstants.hasTokenHeader
+                encoding: URLEncoding.queryString)
         )
     }
     
     static let getCharactersCount = CharacterTarget(
         path: URLConstant.charactersCount,
         method: .get,
-        task: .requestPlain,
-        headers: APIConstants.hasTokenHeader
+        task: .requestPlain
     )
 }

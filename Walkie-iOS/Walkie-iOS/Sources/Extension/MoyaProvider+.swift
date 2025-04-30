@@ -27,6 +27,17 @@ extension MoyaProvider {
                     print("refresh token: 👌👌\(token)👌👌")
                     return reissueService
                         .reissue(refreshToken: token)
+                        .handleEvents(receiveOutput: { dto in
+                            do {
+                                print("✅ 토큰 재저장 시작함")
+                                print(dto)
+                                try TokenKeychainManager.shared.saveAccessToken(dto.accessToken)
+                                try TokenKeychainManager.shared.saveRefreshToken(dto.refreshToken)
+                                print("✅ 토큰 재저장 완료")
+                            } catch {
+                                print("⚠️ 토큰 저장 실패:", error)
+                            }
+                        })
                         .mapError { moyaError in
                             moyaError as? MoyaError ?? MoyaError.underlying(moyaError, nil)
                         }
@@ -38,16 +49,8 @@ extension MoyaProvider {
                                 )
                             }
                         })
-                        .flatMap { response -> AnyPublisher<Response, MoyaError> in
-                            print("재발급된 토큰들일것임:::: 👌👌\(response)👌👌")
-                            do {
-                                try TokenKeychainManager.shared.removeTokens()
-                                try TokenKeychainManager.shared.saveAccessToken(response.accessToken)
-                                try TokenKeychainManager.shared.saveRefreshToken(response.refreshToken)
-                                print("👌👌재발급 완료, 원본 파이프라인으로 재요청👌👌")
-                            } catch {
-                                print("👌👌재발급 실패했으세요")
-                            }
+                        .flatMap { _ -> AnyPublisher<Response, MoyaError> in
+                            print("👌👌재발급 완료, 원본 파이프라인으로 재요청👌👌")
                             return self.requestPublisher(target)
                         }
                         .eraseToAnyPublisher()
