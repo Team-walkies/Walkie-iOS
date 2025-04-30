@@ -7,3 +7,10 @@
 
 import Combine
 
+final class DefaultLogoutUserUseCase: BaseUserUseCase, LogoutUserUseCase {
+    
+    func postLogout() -> AnyPublisher<Void, NetworkError> {
+        authRepository.logout()
+            .mapToNetworkError()
+    }
+}

@@ -58,7 +58,3 @@ struct MypageMainView: View {
         }
     }
 }
-
-#Preview {
-    MypageMainView(viewModel: MypageMainViewModel())
-}

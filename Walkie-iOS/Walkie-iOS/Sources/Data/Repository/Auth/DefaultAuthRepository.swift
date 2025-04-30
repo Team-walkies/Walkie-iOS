@@ -43,7 +43,8 @@ extension DefaultAuthRepository: AuthRepository {
         authService.logout()
             .map { _ in
                 return
-            }.mapToNetworkError()
+            }
+            .mapToNetworkError()
     }
     
     func signup(info: LoginUserInfo) -> AnyPublisher<TokenVO, NetworkError> {

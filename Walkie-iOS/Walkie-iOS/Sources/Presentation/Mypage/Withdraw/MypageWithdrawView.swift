@@ -77,7 +77,3 @@ struct MypageWithdrawView: View {
         }
     }
 }
-
-#Preview {
-    MypageWithdrawView(viewModel: MypageMainViewModel())
-}

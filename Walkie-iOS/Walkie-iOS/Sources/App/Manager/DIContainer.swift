@@ -50,7 +50,10 @@ extension DIContainer {
     }
     
     func buildMypageView() -> MypageMainView {
-        return MypageMainView(viewModel: MypageMainViewModel())
+        return MypageMainView(viewModel: MypageMainViewModel(
+            logoutUseCase: DefaultLogoutUserUseCase(
+                authRepository: authRepo,
+                memberRepository: memberRepo)))
     }
     
     func buildEggView() -> EggView {
