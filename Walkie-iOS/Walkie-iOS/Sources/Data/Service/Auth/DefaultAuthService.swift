@@ -33,14 +33,14 @@ extension DefaultAuthService: AuthService {
             .mapWalkieResponse(LoginDto.self)
     }
     
-    func logout() -> AnyPublisher<LogoutDto, Error> {
+    func logout() -> AnyPublisher<Void, Error> {
         authProvider
             .requestPublisher(
                 .logout,
                 reissueService: reissueService
             )
             .filterSuccessfulStatusCodes()
-            .mapWalkieResponse(LogoutDto.self)
+            .mapVoidResponse()
     }
     
     func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, any Error> {
