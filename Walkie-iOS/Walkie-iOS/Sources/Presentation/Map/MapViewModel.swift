@@ -54,14 +54,17 @@ final class MapViewModel: ViewModelable {
         }
     }
     
-    func handleWebMessage(_ type: WebMessageType) {
-        switch type {
+    func handleWebMessage(_ message: WebMessage) {
+        switch message.type {
         case .haptic:
             triggerHaptic()
         case .startCountingSteps:
-            startCountingSteps()
+            startStepUpdates()
         case .finishWebView:
             finishWebView()
+        case .startExplore:
+            guard let payload = message.payload else { return }
+            startExplore(payload: payload)
         }
     }
 }
@@ -99,6 +102,10 @@ private extension MapViewModel {
     
     func finishWebView() {
         print("✅ back button logic")
+    }
+    
+    func startExplore(payload: [String: Any]) {
+        print(payload)
     }
 }
 

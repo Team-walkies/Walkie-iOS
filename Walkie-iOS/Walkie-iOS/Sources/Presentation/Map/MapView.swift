@@ -20,6 +20,7 @@ struct MapView: View {
         VStack(spacing: 20) {
             if let request {
                 WebView(request: request, viewModel: viewModel)
+                    .ignoresSafeArea(.all)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 Text("웹 페이지를 불러올 수 없습니다.")

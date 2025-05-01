@@ -25,14 +25,21 @@ class ContentController: NSObject, WKScriptMessageHandler {
         guard message.name == "iOSBridge" else { return }
         print("post Message : \(message.body)")
         
-        guard let body = message.body as? [String: Any],
-            let typeString = body["type"] as? String,
-            let type = WebMessageType(rawValue: typeString) else {
-            print("❌ Invalid message type")
+        guard let body = message.body as? [String: Any] else {
+            print("❌ message body is not a dictionary")
             return
         }
-        
-        viewModel?.handleWebMessage(type)
+
+        let typeString = body["type"] as? String
+        let payload = body["payload"] as? [String: Any]
+
+        if let typeString, let type = WebMessageType(rawValue: typeString) {
+            let message = WebMessage(type: type, payload: payload)
+            print(message)
+            viewModel?.handleWebMessage(message)
+        } else {
+            print("❌ Unknown or missing type: \(String(describing: typeString))")
+        }
     }
 }
 
