@@ -10,33 +10,53 @@ import SwiftUI
 @preconcurrency import WebKit
 
 class ContentController: NSObject, WKScriptMessageHandler {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    
+    private weak var viewModel: MapViewModel?
+    
+    init(viewModel: MapViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
         print("😬😬receive from web😬😬")
-        print(message)
-        if message.name == "iOSBridge" {
-            print("message name : \(message.name)")
-            print("post Message : \(message.body)")
+        guard message.name == "iOSBridge" else { return }
+        print("post Message : \(message.body)")
+        
+        guard let body = message.body as? [String: Any],
+                let typeString = body["type"] as? String,
+                let type = WebMessageType(rawValue: typeString) else {
+            print("❌ Invalid message type")
+            return
         }
+        
+        viewModel?.handleWebMessage(type)
     }
 }
 
 struct WebView: UIViewRepresentable {
-    let request: URLRequest
-    private var webView: WKWebView?
     
-    init(request: URLRequest) {
-        self.webView = WKWebView()
-        self.request = request
-        self.webView?.configuration.userContentController.add(ContentController(), name: "iOSBridge")
-        self.webView?.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-        self.webView?.configuration.websiteDataStore = WKWebsiteDataStore.default()
-        self.webView?.isInspectable = true
-    }
+    let request: URLRequest
+    let viewModel: MapViewModel
+    var webView: WKWebView?
     
     func makeUIView(context: Context) -> WKWebView {
-        webView?.navigationDelegate = context.coordinator
-        webView?.uiDelegate = context.coordinator
-        return webView!
+        let config = WKWebViewConfiguration()
+        let contentController = WKUserContentController()
+        contentController.add(ContentController(viewModel: viewModel), name: "iOSBridge")
+        config.userContentController = contentController
+        config.defaultWebpagePreferences.allowsContentJavaScript = true
+        config.websiteDataStore = .default()
+        
+        let webView = WKWebView(frame: .zero, configuration: config)
+        webView.navigationDelegate = context.coordinator
+        webView.uiDelegate = context.coordinator
+        webView.isInspectable = true
+        webView.load(request)
+        
+        return webView
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
