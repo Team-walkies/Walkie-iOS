@@ -53,6 +53,17 @@ final class MapViewModel: ViewModelable {
             stopStepUpdates()
         }
     }
+    
+    func handleWebMessage(_ type: WebMessageType) {
+        switch type {
+        case .haptic:
+            triggerHaptic()
+        case .startCountingSteps:
+            startCountingSteps()
+        case .finishWebView:
+            finishWebView()
+        }
+    }
 }
 
 extension MapViewModel {
@@ -71,6 +82,23 @@ extension MapViewModel {
             throw WebURLError.invalidURL
         }
         return URLRequest(url: url)
+    }
+}
+
+private extension MapViewModel {
+    
+    func triggerHaptic() {
+        print("✅ Triggering haptic feedback")
+        let generator = UIImpactFeedbackGenerator(style: .heavy)
+        generator.impactOccurred()
+    }
+    
+    func startCountingSteps() {
+        print("✅ Starting step counting")
+    }
+    
+    func finishWebView() {
+        print("✅ back button logic")
     }
 }
 

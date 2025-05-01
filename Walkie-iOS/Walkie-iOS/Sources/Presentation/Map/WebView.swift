@@ -26,8 +26,8 @@ class ContentController: NSObject, WKScriptMessageHandler {
         print("post Message : \(message.body)")
         
         guard let body = message.body as? [String: Any],
-                let typeString = body["type"] as? String,
-                let type = WebMessageType(rawValue: typeString) else {
+            let typeString = body["type"] as? String,
+            let type = WebMessageType(rawValue: typeString) else {
             print("❌ Invalid message type")
             return
         }
