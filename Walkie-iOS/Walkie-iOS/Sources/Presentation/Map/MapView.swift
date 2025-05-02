@@ -13,6 +13,7 @@ struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
     @State private var request: URLRequest?
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(spacing: 20) {
@@ -30,6 +31,9 @@ struct MapView: View {
                 self.request = try viewModel.setWebURL()
             } catch {
                 print("🚨 웹 URL 설정 실패: \(error)")
+            }
+            viewModel.onPop = {
+                dismiss()
             }
         }
         .popGestureEnabled(false)

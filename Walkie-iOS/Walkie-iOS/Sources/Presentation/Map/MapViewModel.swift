@@ -43,6 +43,8 @@ final class MapViewModel: ViewModelable {
     private var placeName: String = ""
     private var cancellables = Set<AnyCancellable>()
     
+    var onPop: (() -> Void)?
+    
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
     
@@ -108,7 +110,7 @@ private extension MapViewModel {
     }
     
     func finishWebView() {
-        print("✅ back button logic")
+        onPop?()
     }
     
     func startExplore(payload: [String: Any]) {
