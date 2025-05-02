@@ -11,4 +11,3 @@ enum WebURLError: Error {
     case tokenMissing
     case invalidURL
 }
-

@@ -38,8 +38,10 @@ final class MapViewModel: ViewModelable {
     private var activity: Activity<WalkieWidgetAttributes>?
     
     private let locationManager = LocationManager()
-    private var destination: CLLocation?
     private var totalDistance: CLLocationDistance?
+    private var destinationCoord: CLLocationCoordinate2D?
+    private var placeName: String = ""
+    private var cancellables = Set<AnyCancellable>()
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
@@ -62,7 +64,7 @@ final class MapViewModel: ViewModelable {
         case .haptic:
             triggerHaptic()
         case .startCountingSteps:
-            startStepUpdates()
+            break
         case .finishWebView:
             finishWebView()
         case .startExplore:
@@ -211,28 +213,62 @@ private extension MapViewModel {
             let userLoc = locationManager.currentLocation
         else { return }
         
-        let startCoordinate = userLoc.coordinate
-        let endCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+        placeName = name
         
-        let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: startCoordinate))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: endCoordinate))
-        request.transportType = .automobile
+        let startCoord = userLoc.coordinate
+        let endCoord = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+        destinationCoord = endCoord
         
-        let directions = MKDirections(request: request)
-        directions.calculate { response, error in
-            if let route = response?.routes.first {
-                print("🚘🚘🚘🚘🚘")
-                print(route.distance)
-                let contentState = WalkieWidgetAttributes.ContentState(
+        DistanceService.calculateRouteDistance(
+            from: startCoord,
+            to: endCoord
+        ) { [weak self] distance in
+            DispatchQueue.main.async {
+                guard let self = self, let total = distance else { return }
+                self.totalDistance = total
+                let state = WalkieWidgetAttributes.ContentState(
                     place: name,
                     currentDistance: 0,
-                    totalDistance: route.distance
+                    totalDistance: total
                 )
-                self.startDynamicIsland(info: contentState)
-            } else {
-                print("경로 계산 실패:", error ?? "알 수 없는 오류")
+                self.startDynamicIsland(info: state)
             }
+        }
+        
+        self.locationManager.$currentLocation
+            .compactMap { $0 }
+            .dropFirst()
+            .sink { [weak self] newLoc in
+                print("🫨🫨🫨🫨")
+                print(newLoc)
+                self?.updateActivity(with: newLoc)
+            }
+            .store(in: &self.cancellables)
+    }
+    
+    func updateActivity(with userLoc: CLLocation) {
+        print("🫨🫨updateActivity🫨🫨")
+        guard
+            let dest = destinationCoord,
+            let total = totalDistance,
+            let activity = activity
+        else { return }
+        
+        let distance = userLoc.distance(
+            from: CLLocation(
+                latitude: dest.latitude,
+                longitude: dest.longitude
+            )
+        )
+        print(distance)
+        let updated = WalkieWidgetAttributes.ContentState(
+            place: placeName,
+            currentDistance: distance,
+            totalDistance: total
+        )
+        print(updated)
+        Task {
+            await activity.update(ActivityContent(state: updated, staleDate: nil))
         }
     }
 }

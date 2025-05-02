@@ -12,13 +12,16 @@ import CoreLocation
 final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     
     private let locationManager = CLLocationManager()
-    @Published var currentLocation: CLLocation? = nil
+    @Published var currentLocation: CLLocation?
     
     override init() {
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
+        locationManager.allowsBackgroundLocationUpdates = true
+        locationManager.pausesLocationUpdatesAutomatically = false
+        locationManager.distanceFilter = 10
     }
     
     func requestLocation() {
