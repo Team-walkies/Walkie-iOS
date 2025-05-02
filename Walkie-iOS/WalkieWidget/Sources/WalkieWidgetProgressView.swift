@@ -48,11 +48,12 @@ struct WalkieWidgetProgressView: View {
                         .font(.H3)
                         .foregroundColor(.white)
                 } else {
+                    let formatLeft = formatDistance(Double(leftDistance))
                     HighlightTextAttribute(
-                        text: "도착까지 \(leftDistance)m 남음",
+                        text: "도착까지 \(formatLeft) 남음",
                         textColor: .white,
                         font: .H3,
-                        highlightText: "\(leftDistance)m",
+                        highlightText: "\(formatLeft)",
                         highlightColor: WalkieCommonAsset.blue200.swiftUIColor,
                         highlightFont: .H3
                     )

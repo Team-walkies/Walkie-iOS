@@ -46,7 +46,7 @@ struct WalkieWidgetLiveActivity: Widget {
                     .frame(width: 22, height: 22)
             } compactTrailing: {
                 let leftDistance = context.state.totalDistance - context.state.currentDistance
-                Text("\(Int(leftDistance))m")
+                Text(formatDistance(leftDistance))
                     .font(.C1)
                     .foregroundColor(WalkieCommonAsset.blue200.swiftUIColor)
             } minimal: {

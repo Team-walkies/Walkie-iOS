@@ -11,11 +11,7 @@ import Combine
 import CoreMotion
 import ActivityKit
 import WalkieCommon
-
-enum WebURLError: Error {
-    case tokenMissing
-    case invalidURL
-}
+import MapKit
 
 final class MapViewModel: ViewModelable {
     
@@ -40,6 +36,10 @@ final class MapViewModel: ViewModelable {
     private let pedometer = CMPedometer()
     private var timer: Timer?
     private var activity: Activity<WalkieWidgetAttributes>?
+    
+    private let locationManager = LocationManager()
+    private var destination: CLLocation?
+    private var totalDistance: CLLocationDistance?
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
@@ -67,7 +67,7 @@ final class MapViewModel: ViewModelable {
             finishWebView()
         case .startExplore:
             guard let payload = message.payload else { return }
-            startExplore(payload: payload)
+            calculateTotal(payload: payload)
         case .getStepsFromMobile:
             sendStep()
         }
@@ -112,16 +112,6 @@ private extension MapViewModel {
     func startExplore(payload: [String: Any]) {
         print(payload)
         
-        if let name = payload["name"] as? String,
-            let lat = payload["lat"] as? Double,
-            let lng = payload["lng"] as? Double {
-            let state = WalkieWidgetAttributes.ContentState(
-                place: name,
-                currentDistance: 100,
-                totalDistance: 300
-            )
-            startDynamicIsland(info: state)
-        }
     }
     
     func sendStep() {
@@ -211,5 +201,38 @@ private extension MapViewModel {
             }
         }
         activity = nil
+    }
+    
+    func calculateTotal(payload: [String: Any]) {
+        guard
+            let name = payload["name"] as? String,
+            let lat  = payload["lat"]  as? Double,
+            let lng  = payload["lng"]  as? Double,
+            let userLoc = locationManager.currentLocation
+        else { return }
+        
+        let startCoordinate = userLoc.coordinate
+        let endCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+        
+        let request = MKDirections.Request()
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: startCoordinate))
+        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: endCoordinate))
+        request.transportType = .automobile
+        
+        let directions = MKDirections(request: request)
+        directions.calculate { response, error in
+            if let route = response?.routes.first {
+                print("🚘🚘🚘🚘🚘")
+                print(route.distance)
+                let contentState = WalkieWidgetAttributes.ContentState(
+                    place: name,
+                    currentDistance: 0,
+                    totalDistance: route.distance
+                )
+                self.startDynamicIsland(info: contentState)
+            } else {
+                print("경로 계산 실패:", error ?? "알 수 없는 오류")
+            }
+        }
     }
 }

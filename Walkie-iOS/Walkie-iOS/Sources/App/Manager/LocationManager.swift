@@ -9,13 +9,13 @@ import Foundation
 
 import CoreLocation
 
-final class LocationManager: NSObject, CLLocationManagerDelegate {
+final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     
-    private var locationManager: CLLocationManager!
+    private let locationManager = CLLocationManager()
+    @Published var currentLocation: CLLocation? = nil
     
     override init() {
         super.init()
-        locationManager = CLLocationManager()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
@@ -33,5 +33,20 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         @unknown default:
             break
         }
+    }
+    
+    func locationManager(
+        _ manager: CLLocationManager,
+        didUpdateLocations locations: [CLLocation]
+    ) {
+        guard let loc = locations.last else { return }
+        currentLocation = loc
+    }
+    
+    func locationManager(
+        _ manager: CLLocationManager,
+        didFailWithError error: Error
+    ) {
+        print("위치 업데이트 실패:", error)
     }
 }
