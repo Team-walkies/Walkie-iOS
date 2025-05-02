@@ -9,6 +9,8 @@ import SwiftUI
 
 import Combine
 import CoreMotion
+import ActivityKit
+import WalkieCommon
 
 enum WebURLError: Error {
     case tokenMissing
@@ -37,6 +39,7 @@ final class MapViewModel: ViewModelable {
     
     private let pedometer = CMPedometer()
     private var timer: Timer?
+    private var activity: Activity<WalkieWidgetAttributes>?
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
@@ -65,6 +68,8 @@ final class MapViewModel: ViewModelable {
         case .startExplore:
             guard let payload = message.payload else { return }
             startExplore(payload: payload)
+        case .getStepsFromMobile:
+            sendStep()
         }
     }
 }
@@ -106,9 +111,26 @@ private extension MapViewModel {
     
     func startExplore(payload: [String: Any]) {
         print(payload)
+        
+        if let name = payload["name"] as? String,
+            let lat = payload["lat"] as? Double,
+            let lng = payload["lng"] as? Double {
+            let state = WalkieWidgetAttributes.ContentState(
+                place: name,
+                currentDistance: 100,
+                totalDistance: 300
+            )
+            startDynamicIsland(info: state)
+        }
+    }
+    
+    func sendStep() {
+        print("sendstep")
+        stopDynamicIsland()
     }
 }
-
+ 
+// step
 private extension MapViewModel {
     
     func startStepUpdates() {
@@ -141,5 +163,53 @@ private extension MapViewModel {
     func updateStepData(step: Int, distance: Double) {
         let mapState = MapState(step: step, distance: distance)
         state = .loaded(mapState)
+    }
+}
+
+// dynamic island
+private extension MapViewModel {
+    
+    func startDynamicIsland(info: WalkieWidgetAttributes.ContentState) {
+        
+        if !ActivityAuthorizationInfo().areActivitiesEnabled {
+            print("사용안댐")
+            return
+        }
+        
+        if Activity<WalkieWidgetAttributes>.activities.isEmpty {
+            let attributes = WalkieWidgetAttributes(name: "ExploreStart")
+            let contentState = info
+            let content = ActivityContent(state: contentState, staleDate: nil)
+            
+            do {
+                activity = try Activity<WalkieWidgetAttributes>.request(
+                    attributes: attributes,
+                    content: content,
+                    pushType: nil
+                )
+                print("다이나믹 아일랜드 시작됨: \(activity?.id ?? "없음")")
+            } catch {
+                print("다이나믹 아일랜드 시작 실패: \(error)")
+            }
+        } else {
+            print("이미 다이나믹 아일랜드가 실행 중입니다.")
+        }
+    }
+    
+    func stopDynamicIsland() {
+        let activities = Activity<WalkieWidgetAttributes>.activities
+        if activities.isEmpty {
+            print("종료할 다이나믹 아일랜드가 없습니다.")
+            return
+        }
+        
+        for activeActivity in activities {
+            Task {
+                let finalContent = ActivityContent(state: activeActivity.content.state, staleDate: nil)
+                await activeActivity.end(finalContent, dismissalPolicy: .immediate)
+                print("다이나믹 아일랜드 종료됨: \(activeActivity.id)")
+            }
+        }
+        activity = nil
     }
 }
