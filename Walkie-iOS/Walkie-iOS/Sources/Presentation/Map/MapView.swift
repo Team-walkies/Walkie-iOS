@@ -32,5 +32,6 @@ struct MapView: View {
                 print("🚨 웹 URL 설정 실패: \(error)")
             }
         }
+        .popGestureEnabled(false)
     }
 }
