@@ -178,9 +178,10 @@ struct HomeWariningView: View {
                     .foregroundColor(.white)
                     .frame(width: 16, height: 16)
                 
-                Text(type == .location
-                     ? "위치 접근 권한을 '항상'으로 허용해 주세요"
-                     : "동작 및 피트니스 권한을 허용해 주세요"
+                Text(
+                    type == .location
+                    ? "위치 접근 권한을 '항상'으로 허용해 주세요"
+                    : "동작 및 피트니스 권한을 허용해 주세요"
                 )
                 .font(.B2)
                 .foregroundColor(.white)

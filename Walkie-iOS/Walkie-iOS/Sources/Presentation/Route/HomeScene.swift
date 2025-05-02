@@ -17,7 +17,6 @@ enum HomeScene: AppRoute {
     case character
     case review
     
-    
     var id: String {
         switch self {
         case .home:

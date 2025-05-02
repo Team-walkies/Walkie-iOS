@@ -65,5 +65,3 @@ extension Coordinator {
         self.fullScreenCoverOnDismiss = nil
     }
 }
-
-

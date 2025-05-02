@@ -20,7 +20,11 @@ final class DefaultCalendarUseCase: CalendarUseCase {
             let fallbackStartOfWeek = calendar.date(
                 from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)
             ) ?? today
-            let previousWeekStart = calendar.date(byAdding: .day, value: -7, to: fallbackStartOfWeek) ?? fallbackStartOfWeek
+            let previousWeekStart = calendar.date(
+                byAdding: .day,
+                value: -7,
+                to: fallbackStartOfWeek
+            ) ?? fallbackStartOfWeek
             let nextWeekEnd = calendar.date(byAdding: .day, value: 13, to: fallbackStartOfWeek) ?? fallbackStartOfWeek
             return (startDate: previousWeekStart, endDate: nextWeekEnd)
         }

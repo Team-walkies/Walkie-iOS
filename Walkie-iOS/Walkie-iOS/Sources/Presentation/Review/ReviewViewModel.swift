@@ -83,8 +83,9 @@ private extension ReviewViewModel {
     
     func processReviewEntity(_ entity: ReviewEntity) -> ReviewState {
         let walkTime: String = {
-            guard let start = formatTimeString(entity.startTime),
-                  let end = formatTimeString(entity.endTime) else { return "" }
+            guard
+                let start = formatTimeString(entity.startTime),
+                let end = formatTimeString(entity.endTime) else { return "" }
             return "\(start) ~ \(end)"
         }()
         
@@ -115,9 +116,9 @@ private extension ReviewViewModel {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss"
         
-        if let start = dateFormatter.date(from: startTime),
-           let end = dateFormatter.date(from: endTime)
-        {
+        if
+            let start = dateFormatter.date(from: startTime),
+            let end = dateFormatter.date(from: endTime) {
             let difference = end.timeIntervalSince(start)
             return Int(difference / 60)
         }

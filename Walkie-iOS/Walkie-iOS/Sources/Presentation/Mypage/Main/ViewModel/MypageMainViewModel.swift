@@ -93,7 +93,7 @@ final class MypageMainViewModel: ViewModelable {
                 nickname: userData.nickname,
                 userTier: userData.memberTier,
                 spotCount: userData.exploredSpotCount,
-                hasAlarm: true // TODO: 알림 조회 API 연결
+                hasAlarm: true
             )
             self.myInformationState = MyInformationState(isPublic: userData.isPublic)
             self.state = .loaded(mypageState)

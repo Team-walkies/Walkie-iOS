@@ -21,7 +21,7 @@ final class DistanceService {
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: end))
         request.transportType = transportType
         
-        MKDirections(request: request).calculate { response, error in
+        MKDirections(request: request).calculate { response, _ in
             if let route = response?.routes.first {
                 completion(route.distance)
             } else {
