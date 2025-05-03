@@ -43,6 +43,18 @@ let project = Project(
                     "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
                     "NSAppTransportSecurity": [
                         "NSAllowsArbitraryLoads": true
+                    ],
+                    "UIApplicationSceneManifest": [
+                        "UIApplicationSupportsMultipleScenes": false,
+                        "UISceneConfigurations": [:]
+                    ],
+                    "BGTaskSchedulerPermittedIdentifiers": [
+                        "com.walkie.ios.check.step",
+                        "com.walkie.ios.update.step"
+                    ],
+                    "UIBackgroundModes": [
+                        "fetch",
+                        "processing"
                     ]
                 ]
             ),
