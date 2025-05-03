@@ -230,7 +230,7 @@ private extension MapViewModel {
                 self.totalDistance = total
                 let state = WalkieWidgetAttributes.ContentState(
                     place: name,
-                    currentDistance: 0,
+                    leftDistance: total,
                     totalDistance: total
                 )
                 self.startDynamicIsland(info: state)
@@ -265,7 +265,7 @@ private extension MapViewModel {
         print(distance)
         let updated = WalkieWidgetAttributes.ContentState(
             place: placeName,
-            currentDistance: distance,
+            leftDistance: distance,
             totalDistance: total
         )
         print(updated)

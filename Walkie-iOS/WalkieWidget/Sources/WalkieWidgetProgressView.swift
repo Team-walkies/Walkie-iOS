@@ -12,7 +12,7 @@ import WalkieCommon
 struct ProgressInfoStruct {
     let isLiveActivity: Bool
     let place: String
-    let currentDistance: Double
+    let leftDistance: Double
     let totalDistance: Double
 }
 
@@ -21,7 +21,6 @@ struct WalkieWidgetProgressView: View {
     var info: ProgressInfoStruct
     
     var body: some View {
-        let leftDistance = Int(info.totalDistance - info.currentDistance)
         if info.isLiveActivity {
             HStack {
                 Spacer()
@@ -43,12 +42,12 @@ struct WalkieWidgetProgressView: View {
                     .font(.B2)
                     .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                 
-                if leftDistance == 0 {
+                if info.leftDistance == 0 {
                     Text("도착 완료! 알을 확인해보세요")
                         .font(.H3)
                         .foregroundColor(.white)
                 } else {
-                    let formatLeft = formatDistance(Double(leftDistance))
+                    let formatLeft = formatDistance(Double(info.leftDistance))
                     HighlightTextAttribute(
                         text: "도착까지 \(formatLeft) 남음",
                         textColor: .white,
@@ -64,7 +63,7 @@ struct WalkieWidgetProgressView: View {
             HStack(alignment: .bottom, spacing: 2) {
                 ProgressBarView(
                     isSmall: false,
-                    current: info.currentDistance,
+                    current: info.totalDistance - info.leftDistance,
                     total: info.totalDistance,
                     isDynamicIsland: true
                 )

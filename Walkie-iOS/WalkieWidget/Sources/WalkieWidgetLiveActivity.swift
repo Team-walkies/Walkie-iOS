@@ -17,7 +17,7 @@ struct WalkieWidgetLiveActivity: Widget {
             WalkieWidgetProgressView(info: ProgressInfoStruct(
                 isLiveActivity: true,
                 place: context.state.place,
-                currentDistance: context.state.currentDistance,
+                leftDistance: context.state.leftDistance,
                 totalDistance: context.state.totalDistance)
             )
             .activityBackgroundTint(Color.black)
@@ -35,7 +35,7 @@ struct WalkieWidgetLiveActivity: Widget {
                     WalkieWidgetProgressView(info: ProgressInfoStruct(
                         isLiveActivity: false,
                         place: context.state.place,
-                        currentDistance: context.state.currentDistance,
+                        leftDistance: context.state.leftDistance,
                         totalDistance: context.state.totalDistance)
                     )
                 }
@@ -45,8 +45,7 @@ struct WalkieWidgetLiveActivity: Widget {
                     .scaledToFit()
                     .frame(width: 22, height: 22)
             } compactTrailing: {
-                let leftDistance = context.state.totalDistance - context.state.currentDistance
-                Text(formatDistance(leftDistance))
+                Text(formatDistance(context.state.leftDistance))
                     .font(.C1)
                     .foregroundColor(WalkieCommonAsset.blue200.swiftUIColor)
             } minimal: {
