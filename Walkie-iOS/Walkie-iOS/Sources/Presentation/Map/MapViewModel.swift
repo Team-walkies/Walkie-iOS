@@ -41,6 +41,8 @@ final class MapViewModel: ViewModelable {
     private var totalDistance: CLLocationDistance?
     private var destinationCoord: CLLocationCoordinate2D?
     private var placeName: String = ""
+    private var lastLocation: CLLocation?
+    private var lastLeftDistance: CLLocationDistance?
     private var cancellables = Set<AnyCancellable>()
     
     var onPop: (() -> Void)?
@@ -111,6 +113,7 @@ private extension MapViewModel {
     
     func finishWebView() {
         onPop?()
+        stopDynamicIsland()
     }
     
     func startExplore(payload: [String: Any]) {
@@ -123,7 +126,7 @@ private extension MapViewModel {
         stopDynamicIsland()
     }
 }
- 
+
 // step
 private extension MapViewModel {
     
@@ -214,7 +217,6 @@ private extension MapViewModel {
             let lng  = payload["lng"]  as? Double,
             let userLoc = locationManager.currentLocation
         else { return }
-        
         placeName = name
         
         let startCoord = userLoc.coordinate
@@ -249,28 +251,58 @@ private extension MapViewModel {
     }
     
     func updateActivity(with userLoc: CLLocation) {
+        print("😑😑userLoc😑😑", userLoc)
         print("🫨🫨updateActivity🫨🫨")
+        guard userLoc.horizontalAccuracy <= 20 else {
+            print("❌ 무시: 정확도 너무 낮음 (\(userLoc.horizontalAccuracy)m)")
+            return
+        }
+        
         guard
             let dest = destinationCoord,
             let total = totalDistance,
             let activity = activity
         else { return }
         
-        let distance = userLoc.distance(
-            from: CLLocation(
-                latitude: dest.latitude,
-                longitude: dest.longitude
+        DistanceService.calculateRouteDistance(
+            from: userLoc.coordinate,
+            to: dest
+        ) { [weak self] distance in
+            guard let self = self, let distance = distance else {
+                print("❌ 거리 계산 실패")
+                return
+            }
+            
+            if let last = self.lastLocation {
+                let moved = userLoc.distance(from: last)
+                if moved < 10 {
+                    print("🚫 무시: 이동 거리 작음 (\(moved)m)")
+                    return
+                }
+            }
+            
+            if self.lastLeftDistance != nil {
+                let diff = abs(self.lastLeftDistance! - distance)
+                if diff < 5 {
+                    print("⏸️ 무시: 남은 거리 변화 작음 (\(diff)m)")
+                    return
+                }
+            }
+            
+            print("📍 유효 위치 갱신 거리: \(distance)m")
+            
+            let updated = WalkieWidgetAttributes.ContentState(
+                place: self.placeName,
+                leftDistance: distance,
+                totalDistance: total
             )
-        )
-        print(distance)
-        let updated = WalkieWidgetAttributes.ContentState(
-            place: placeName,
-            leftDistance: distance,
-            totalDistance: total
-        )
-        print(updated)
-        Task {
-            await activity.update(ActivityContent(state: updated, staleDate: nil))
+            print(updated)
+            Task {
+                await activity.update(ActivityContent(state: updated, staleDate: nil))
+            }
+            
+            self.lastLocation = userLoc
+            self.lastLeftDistance = distance
         }
     }
 }

@@ -17,11 +17,12 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         locationManager.startUpdatingLocation()
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.distanceFilter = 10
+        locationManager.activityType = .fitness
     }
     
     func requestLocation() {
@@ -43,7 +44,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
         didUpdateLocations locations: [CLLocation]
     ) {
         guard let loc = locations.last else { return }
-        currentLocation = loc
+        if loc.horizontalAccuracy <= 20 {
+            currentLocation = loc
+        }
     }
     
     func locationManager(
