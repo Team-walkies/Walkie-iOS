@@ -12,7 +12,14 @@ final class HatchEggViewModel: ViewModelable {
     private let hatchEggUseCase: HatchEggUseCase
     
     enum Action {
-        case willAppear
+        case willAppear // 0초
+        case willShowWaitText // 0.4초
+        case willShowEggHatchText // 0.7초
+        case willShowEggLottie // 1.3초
+        case willPlayEggLottie // 1.8초
+        case willShowConfettiEffectWithVibration // 3.7초
+        case willShowcharacter // 3.9초
+        case willShowGlowEffect // 4초
     }
     
     enum State {
@@ -29,7 +36,27 @@ final class HatchEggViewModel: ViewModelable {
         let dinoType: DinoType
     }
     
-    @Published var state: State = .loading
+    struct AnimationState {
+        let isShowingWaitText: Bool
+        let isShowingEggHatchText: Bool
+        let isShowingEggLottie: Bool
+        let isPlayingEggLottie: Bool
+        let isPlayingConfetti: Bool
+        let isShowingCharacter: Bool
+        let isShowingGlowEffect: Bool
+    }
+    
+    @Published var state: State = .loaded(
+        HatchEggState(eggId: 1, eggType: .normal, characterType: .dino, jellyfishType: .bunny, dinoType: .melonSoda))
+    @Published var animationState: AnimationState = .init(
+        isShowingWaitText: false,
+        isShowingEggHatchText: false,
+        isShowingEggLottie: false,
+        isPlayingEggLottie: false,
+        isPlayingConfetti: false,
+        isShowingCharacter: false,
+        isShowingGlowEffect: false
+    )
     
     init(hatchEggUseCase: HatchEggUseCase) {
         self.hatchEggUseCase = hatchEggUseCase
@@ -39,6 +66,76 @@ final class HatchEggViewModel: ViewModelable {
         switch action {
         case .willAppear:
             fetchHatchEgg()
+        case .willShowWaitText:
+            self.animationState = .init(
+                isShowingWaitText: true,
+                isShowingEggHatchText: false,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: false,
+                isShowingCharacter: false,
+                isShowingGlowEffect: false
+            )
+        case .willShowEggHatchText:
+            self.animationState = .init(
+                isShowingWaitText: true,
+                isShowingEggHatchText: true,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: false,
+                isShowingCharacter: false,
+                isShowingGlowEffect: false
+            )
+        case .willShowEggLottie:
+            self.animationState = .init(
+                isShowingWaitText: true,
+                isShowingEggHatchText: true,
+                isShowingEggLottie: true,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: false,
+                isShowingCharacter: false,
+                isShowingGlowEffect: false
+            )
+        case .willPlayEggLottie:
+            self.animationState = .init(
+                isShowingWaitText: true,
+                isShowingEggHatchText: true,
+                isShowingEggLottie: true,
+                isPlayingEggLottie: true,
+                isPlayingConfetti: false,
+                isShowingCharacter: false,
+                isShowingGlowEffect: false
+            )
+        case .willShowConfettiEffectWithVibration:
+            self.animationState = .init(
+                isShowingWaitText: false,
+                isShowingEggHatchText: false,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: true,
+                isShowingCharacter: false,
+                isShowingGlowEffect: false
+            )
+        case .willShowcharacter:
+            self.animationState = .init(
+                isShowingWaitText: false,
+                isShowingEggHatchText: false,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: true,
+                isShowingCharacter: true,
+                isShowingGlowEffect: false
+            )
+        case .willShowGlowEffect:
+            self.animationState = .init(
+                isShowingWaitText: false,
+                isShowingEggHatchText: false,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: true,
+                isShowingCharacter: true,
+                isShowingGlowEffect: true
+            )
         }
     }
     
