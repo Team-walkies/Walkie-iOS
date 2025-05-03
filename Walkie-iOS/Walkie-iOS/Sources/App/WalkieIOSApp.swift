@@ -5,6 +5,7 @@ import KakaoSDKCommon
 struct WalkieIOSApp: App {
     
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     init() {
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""

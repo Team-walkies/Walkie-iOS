@@ -132,7 +132,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
             currentScene = .login
         }
         
-        
         print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
         
