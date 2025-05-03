@@ -23,6 +23,8 @@ final class DIContainer {
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
+    
+    private lazy var stepStore = DefaultStepStore()
 }
 
 extension DIContainer {
@@ -122,5 +124,23 @@ extension DIContainer {
                 )
             )
         )
+    }
+    
+    func buildHatchEggView() -> HatchEggView {
+        return HatchEggView(
+            hatchEggViewModel: HatchEggViewModel(
+                hatchEggUseCase: DefaultHatchEggUseCase(
+                    eggRepository: eggRepo
+                )
+            )
+        )
+    }
+    
+    func resolveCheckStepUseCase() -> CheckStepUseCase {
+        return DefaultCheckStepUseCase(stepStore: stepStore)
+    }
+    
+    func resolveUpdateStepUseCase() -> UpdateStepUseCase {
+        return DefaultUpdateStepUseCase(stepStore: stepStore)
     }
 }
