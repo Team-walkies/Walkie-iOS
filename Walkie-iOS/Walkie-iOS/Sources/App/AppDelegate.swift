@@ -97,12 +97,18 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - Background Task Registration
     private func registerBackgroundTasks() {
         // checkStep 작업 등록
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: BackgroundTaskIdentifier.checkStep.rawValue, using: nil) { task in
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: BackgroundTaskIdentifier.checkStep.rawValue,
+            using: nil
+        ) { task in
             self.handleCheckStepTask(task: task)
         }
         
         // updateStep 작업 등록
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: BackgroundTaskIdentifier.updateStep.rawValue, using: nil) { task in
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: BackgroundTaskIdentifier.updateStep.rawValue,
+            using: nil
+        ) { task in
             self.handleUpdateStepTask(task: task)
         }
         

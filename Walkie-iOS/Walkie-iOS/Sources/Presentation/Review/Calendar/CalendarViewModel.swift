@@ -223,7 +223,10 @@ final class CalendarViewModel: ViewModelable {
     }
     
     // 3주의 날짜 생성
-    private func generateAdjacentWeeks(from date: Date, offset: Int) -> (
+    private func generateAdjacentWeeks(
+        from date: Date,
+        offset: Int
+    ) -> (
         start: Date,
         previous: Date,
         next: Date

@@ -30,7 +30,7 @@ enum MypageSheet: AppRoute {
     
     var id: String {
         switch self {
-            case .mypage:
+        case .mypage:
             return "mypage"
         }
     }
@@ -48,7 +48,7 @@ enum MypageFullScreenCover: AppRoute {
 
     var id: String {
         switch self {
-            case .mypage:
+        case .mypage:
             return "mypage"
         }
     }

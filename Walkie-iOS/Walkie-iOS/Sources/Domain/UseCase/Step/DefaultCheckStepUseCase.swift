@@ -16,10 +16,10 @@ final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
                 print("현재 걸음 수 \(stepCount), 목표 걸음 수 \(stepCountGoal)")
                 UserManager.shared.updateHatchState(stepCount >= stepCountGoal)
                 self.stepStore.resetStepCount()
-            case .failure(_):
+            case .failure:
                 print("💀💀💀 같이 걷고 있는 알이 없음 💀💀💀")
             }
-        case .failure(_):
+        case .failure:
             print("💀💀💀 걸음 수 불러오기 실패 💀💀💀")
         }
     }

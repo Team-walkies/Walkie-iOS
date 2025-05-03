@@ -93,7 +93,7 @@ extension Date {
         let inputComponents = calendar.dateComponents([.year, .month, .day], from: self)
         
         guard let todayDate = calendar.date(from: todayComponents),
-          let inputDate = calendar.date(from: inputComponents)
+            let inputDate = calendar.date(from: inputComponents)
         else {
             return .today
         }
