@@ -5,7 +5,6 @@ import BackgroundTasks
 @main
 struct WalkieIOSApp: App {
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
     
     private let checkStepUseCase = DIContainer.shared.resolveCheckStepUseCase()
