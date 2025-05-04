@@ -18,7 +18,9 @@ struct HatchEggView: View {
         ZStack(alignment: .center) {
             Color(white: 0, opacity: 0.6)
                 .onTapGesture {
-                    dismiss()
+                    if hatchEggViewModel.animationState.isShowingGlowEffect {
+                        dismiss()
+                    }
                 }
             switch hatchEggViewModel.state {
             case .loaded(let hatchState):
