@@ -8,7 +8,7 @@
 import Foundation
 
 struct GetEggPlayingDto: Codable {
-    let eggID, rank, needStep, nowStep: Int
+    let eggID, rank, characterClass, type, needStep, nowStep: Int
     let obtainedPosition, obtainedDate: String
     let picked: Bool
     let userCharacterID: Int
@@ -16,23 +16,8 @@ struct GetEggPlayingDto: Codable {
 
     enum CodingKeys: String, CodingKey {
         case eggID = "eggId"
-        case rank, needStep, nowStep, obtainedPosition, obtainedDate, picked
+        case rank, needStep, nowStep, obtainedPosition, obtainedDate, picked, type, characterClass
         case userCharacterID = "userCharacterId"
         case memberID = "memberId"
     }
-}
-
-extension GetEggPlayingDto: EmptyResponse {
-    
-    static let empty = GetEggPlayingDto(
-        eggID: -1,
-        rank: 0,
-        needStep: 0,
-        nowStep: 0,
-        obtainedPosition: "",
-        obtainedDate: "",
-        picked: false,
-        userCharacterID: -1,
-        memberID: nil
-    )
 }

@@ -26,7 +26,7 @@ final class DefaultMemberService {
 
 extension DefaultMemberService: MemberService {
     
-    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error> {
+    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, any Error> {
         memberProvider
             .requestPublisher(
                 .getEggPlaying,
@@ -36,7 +36,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, any Error> {
         memberProvider
             .requestPublisher(
                 .patchEggPlaying(eggId: eggId),

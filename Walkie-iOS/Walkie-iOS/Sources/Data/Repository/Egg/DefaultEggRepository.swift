@@ -35,7 +35,10 @@ extension DefaultEggRepository: EggRepository {
                     nowStep: Int.random(in: 0...5000),
                     needStep: Int.random(in: 1...5) * 1000,
                     isWalking: Bool.random(),
-                    detail: nil
+                    detail: nil,
+                    characterType: nil,
+                    jellyFishType: nil,
+                    dinoType: nil
                 )
             }
             return Just(dummyData)
@@ -54,7 +57,10 @@ extension DefaultEggRepository: EggRepository {
                             detail: EggDetailEntity(
                                 obtainedPosition: egg.obtainedPosition,
                                 obtainedDate: egg.obtainedDate
-                            )
+                            ),
+                            characterType: nil,
+                            jellyFishType: nil,
+                            dinoType: nil
                         )
                     }
                 }.mapToNetworkError()

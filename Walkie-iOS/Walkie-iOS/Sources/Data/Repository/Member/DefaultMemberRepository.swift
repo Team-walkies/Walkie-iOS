@@ -28,14 +28,46 @@ extension DefaultMemberRepository: MemberRepository {
     
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberService.getEggPlaying()
-            .map { dto in EggEntity(
-                eggId: dto.eggID,
-                eggType: EggType.from(number: dto.rank),
-                nowStep: dto.nowStep,
-                needStep: dto.needStep,
-                isWalking: true,
-                detail: nil)
-            }.mapToNetworkError()
+            .map { dto in
+                if dto.type == 0 {
+                    let jellyfishType = CharacterType.mapCharacterType(
+                        requestedType: .jellyfish,
+                        type: dto.type,
+                        rank: dto.rank,
+                        characterClass: dto.characterClass
+                    )
+                    return EggEntity(
+                        eggId: dto.eggID,
+                        eggType: EggType.from(number: dto.rank),
+                        nowStep: dto.nowStep,
+                        needStep: dto.needStep,
+                        isWalking: dto.picked,
+                        detail: nil,
+                        characterType: .jellyfish,
+                        jellyFishType: jellyfishType as? JellyfishType,
+                        dinoType: nil
+                    )
+                } else {
+                    let dinoType = CharacterType.mapCharacterType(
+                        requestedType: .dino,
+                        type: dto.type,
+                        rank: dto.rank,
+                        characterClass: dto.characterClass
+                    )
+                    return EggEntity(
+                        eggId: dto.eggID,
+                        eggType: EggType.from(number: dto.rank),
+                        nowStep: dto.nowStep,
+                        needStep: dto.needStep,
+                        isWalking: dto.picked,
+                        detail: nil,
+                        characterType: .dino,
+                        jellyFishType: nil,
+                        dinoType: dinoType as? DinoType
+                    )
+                }
+            }
+            .mapToNetworkError()
     }
     
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
