@@ -9,14 +9,8 @@ import Foundation
 
 protocol StepStore {
     // 걸음 수 초기화
-    func resetStepCount()
+    func resetStepCountCache()
     // 걸음 수 반환 및 저장
-    func getStepCount() -> Result<Int, StepStoreError>
-    func saveStepCount(_ count: Int)
-    // 목표치 반환
-    func getStepCountGoal() -> Result<Int, StepStoreError>
-}
-
-enum StepStoreError: Error {
-    case noDataFound
+    func getStepCountCache() -> Int
+    func setStepCountCache(_ count: Int)
 }

@@ -8,29 +8,20 @@
 import Foundation
 
 final class DefaultStepStore {
-    @UserDefaultsWrapper<Int>(key: "stepCount") private(set) var stepCount
+    @UserDefaultsWrapper<Int>(key: "stepCountCache") private(set) var stepCountCache
 }
 
 extension DefaultStepStore: StepStore {
-    func resetStepCount() {
-        self.stepCount = 0
+    
+    func resetStepCountCache() {
+        self.stepCountCache = 0
     }
     
-    func getStepCount() -> Result<Int, StepStoreError> {
-        guard let data = self.stepCount else {
-            return .failure(.noDataFound)
-        }
-        return .success(data)
+    func getStepCountCache() -> Int {
+        self.stepCountCache ?? 0
     }
     
-    func saveStepCount(_ count: Int) {
-        self.stepCount = count
-    }
-    
-    func getStepCountGoal() -> Result<Int, StepStoreError> {
-        guard let data = UserManager.shared.eggType?.walkCount else {
-            return .failure(.noDataFound)
-        }
-        return .success(data)
+    func setStepCountCache(_ count: Int) {
+        self.stepCountCache = count
     }
 }

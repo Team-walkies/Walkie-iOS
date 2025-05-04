@@ -14,12 +14,8 @@ final class UserManager {
     // MARK: - Properties
     
     @UserDefaultsWrapper<String>(key: "nickname") private(set) var nickname
-    
-    @UserDefaultsWrapper<Bool>(key: "willHatch") private(set) var willHatch
-    @UserDefaultsWrapper<EggType>(key: "eggType") private(set) var eggType
-    @UserDefaultsWrapper<CharacterType>(key: "characterType") private(set) var characterType
-    @UserDefaultsWrapper<JellyfishType>(key: "jellyfishType") private(set) var jellyfishType
-    @UserDefaultsWrapper<DinoType>(key: "dinoType") private(set) var dinoType
+    @UserDefaultsWrapper<Int>(key: "stepCount") private(set) var stepCount
+    @UserDefaultsWrapper<Int>(key: "stepCountGoal") private(set) var stepCountGoal
     
     private init() {}
 }
@@ -28,10 +24,8 @@ extension UserManager {
     
     var hasUserToken: Bool { return TokenKeychainManager.shared.hasToken() }
     var getUserNickname: String { return self.nickname ?? "" }
-    var getEggType: EggType { return self.eggType ?? .normal }
-    var getCharacterType: CharacterType { return self.characterType ?? .dino }
-    var getJellyfishType: JellyfishType { return self.jellyfishType ?? .defaultJellyfish }
-    var getDinoType: DinoType { return self.dinoType ?? .defaultDino }
+    var getStepCount: Int { return self.stepCount ?? 0 }
+    var getStepCountGoal: Int { return self.stepCountGoal ?? .max }
 }
 
 extension UserManager {
@@ -40,24 +34,12 @@ extension UserManager {
         self.nickname = nickname
     }
     
-    func updateHatchState(_ willHatch: Bool) {
-        self.willHatch = willHatch
+    func setStepCount(_ count: Int) {
+        self.stepCount = count
     }
     
-    func setEggType(_ eggType: EggType) {
-        self.eggType = eggType
-    }
-    
-    func setCharacterType(_ characterType: CharacterType) {
-        self.characterType = characterType
-    }
-    
-    func setJellyfishType(_ jellyfishType: JellyfishType) {
-        self.jellyfishType = jellyfishType
-    }
-    
-    func setDinoType(_ dinoType: DinoType) {
-        self.dinoType = dinoType
+    func setStepCountGoal(_ count: Int) {
+        self.stepCountGoal = count
     }
     
     func withdraw() {
