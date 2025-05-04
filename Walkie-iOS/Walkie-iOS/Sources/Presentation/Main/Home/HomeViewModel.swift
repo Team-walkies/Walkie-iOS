@@ -105,7 +105,7 @@ final class HomeViewModel: ViewModelable {
     
     private let pedometer = CMPedometer()
     private var needStep: Int = 0
-    private let locationManager = LocationManager()
+    private let locationManager = LocationManager.shared
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -185,7 +185,7 @@ final class HomeViewModel: ViewModelable {
     
     func fetchHomeStats() {
         
-        getEggPlayUseCase.getEggPlaying()
+        getEggPlayUseCase.execute()
             .walkieSink(
                 with: self,
                 receiveValue: { _, eggEntity in
