@@ -9,7 +9,7 @@ import Combine
 
 final class DefaultGetEggPlayUseCase: BaseMemberUseCase, GetEggPlayUseCase {
     
-    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
+    func execute() -> AnyPublisher<EggEntity, NetworkError> {
         memberRepository.getEggPlaying()
             .mapToNetworkError()
     }

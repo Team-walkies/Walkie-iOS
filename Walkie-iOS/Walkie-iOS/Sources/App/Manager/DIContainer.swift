@@ -129,9 +129,14 @@ extension DIContainer {
     func buildHatchEggView() -> HatchEggView {
         return HatchEggView(
             hatchEggViewModel: HatchEggViewModel(
-                hatchEggUseCase: DefaultHatchEggUseCase(
-                    eggRepository: eggRepo
-                )
+                getEggPlayUseCase:
+                    DefaultGetEggPlayUseCase(
+                        memberRepository: memberRepo
+                    ),
+                updateEggStepUseCase:
+                    DefaultUpdateEggStepUseCase(
+                        eggRepository: eggRepo
+                    )
             )
         )
     }
@@ -140,7 +145,15 @@ extension DIContainer {
         return DefaultCheckStepUseCase(stepStore: stepStore)
     }
     
-    func resolveUpdateStepUseCase() -> UpdateStepUseCase {
-        return DefaultUpdateStepUseCase(stepStore: stepStore)
+    func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
+        return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
+    }
+    
+    func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
+        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
+    }
+    
+    func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
+        return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
     }
 }
