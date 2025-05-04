@@ -6,10 +6,14 @@
 //
 
 import UIKit
+import Combine
 
 final class HatchEggViewModel: ViewModelable {
     
-    private let hatchEggUseCase: HatchEggUseCase
+    private let getEggPlayUseCase: GetEggPlayUseCase
+    private let updateEggStepUseCase: UpdateEggStepUseCase
+    
+    private var cancellables = Set<AnyCancellable>()
     
     enum Action {
         case willAppear // 0초
@@ -29,7 +33,6 @@ final class HatchEggViewModel: ViewModelable {
     }
     
     struct HatchEggState {
-        let eggId: Int
         let eggType: EggType
         let characterType: CharacterType
         let jellyfishType: JellyfishType
@@ -46,8 +49,8 @@ final class HatchEggViewModel: ViewModelable {
         let isShowingGlowEffect: Bool
     }
     
-    @Published var state: State = .loaded(
-        HatchEggState(eggId: 1, eggType: .normal, characterType: .dino, jellyfishType: .bunny, dinoType: .melonSoda))
+    @Published var state: State = .loading
+    var hatchEggState: EggEntity?
     @Published var animationState: AnimationState = .init(
         isShowingWaitText: false,
         isShowingEggHatchText: false,
@@ -58,14 +61,19 @@ final class HatchEggViewModel: ViewModelable {
         isShowingGlowEffect: false
     )
     
-    init(hatchEggUseCase: HatchEggUseCase) {
-        self.hatchEggUseCase = hatchEggUseCase
+    init(
+        getEggPlayUseCase: GetEggPlayUseCase,
+        updateEggStepUseCase: UpdateEggStepUseCase
+    ) {
+        self.getEggPlayUseCase = getEggPlayUseCase
+        self.updateEggStepUseCase = updateEggStepUseCase
     }
     
     func action(_ action: Action) {
         switch action {
         case .willAppear:
-            fetchHatchEgg()
+            getEggPlaying()
+            hatchEgg()
         case .willShowWaitText:
             self.animationState = .init(
                 isShowingWaitText: true,
@@ -139,7 +147,41 @@ final class HatchEggViewModel: ViewModelable {
         }
     }
     
-    private func fetchHatchEgg() {
-        hatchEggUseCase.hatchEgg()
+    private func getEggPlaying() {
+        getEggPlayUseCase.execute()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, data in
+                    self.hatchEggState = data
+                    guard let data = self.hatchEggState else {
+                        print(" --- 알 정보 불러오기 실패 --- ")
+                        return
+                    }
+                    self.state = .loaded(
+                        HatchEggState(
+                            eggType: data.eggType,
+                            characterType: data.characterType ?? .dino,
+                            jellyfishType: data.jellyFishType ?? .defaultJellyfish,
+                            dinoType: data.dinoType ?? .defaultDino
+                        )
+                    )
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                }
+            ).store(in: &cancellables)
+    }
+    
+    private func hatchEgg() {
+        guard let data = hatchEggState else {
+            print(" --- 알 정보 불러오기 실패 --- ")
+            return
+        }
+        updateEggStepUseCase
+            .execute(
+                egg: data,
+                step: data.needStep,
+                willHatch: true
+            )
     }
 }
