@@ -66,6 +66,7 @@ struct WalkieIOSApp: App {
         willHatch = UserManager.shared.getStepCount >= UserManager.shared.getStepCountGoal
         if willHatch {
             print("--- 알 부화 ---")
+            UserManager.shared.setStepCount(0)
         } else {
             getEggPlayingAndThenUpdateStep()
         }
