@@ -13,7 +13,11 @@ final class NotificationManager {
     @UserDefaultsWrapper<Bool>(key: "notifyEggHatch") private var notifyEggHatch
     
     func getNotificationMode() -> Bool {
-        return notifyEggHatch ?? false
+        guard let notifyEggHatch else {
+            notifyEggHatch = false
+            return false
+        }
+        return notifyEggHatch
     }
     
     func toggleNotificationMode() {

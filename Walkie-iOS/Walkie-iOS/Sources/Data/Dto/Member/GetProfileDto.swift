@@ -8,7 +8,7 @@
 import Foundation
 
 struct GetProfileDto: Decodable {
-    let id, exploredSpot, recordedSpot, eggId, userCharacterId: Int
+    let id, exploredSpot, recordedSpot, eggId, userCharacterId: Int?
     let providerId, provider, nickname, memberTier: String
     let isPublic: Bool
 }

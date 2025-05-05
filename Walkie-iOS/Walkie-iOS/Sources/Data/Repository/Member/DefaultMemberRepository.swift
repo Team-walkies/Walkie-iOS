@@ -130,8 +130,8 @@ extension DefaultMemberRepository: MemberRepository {
             .map { dto in
                 UserEntity(
                     nickname: dto.nickname,
-                    exploredSpotCount: dto.exploredSpot,
-                    recordedSpotCount: dto.recordedSpot,
+                    exploredSpotCount: dto.exploredSpot ?? 0,
+                    recordedSpotCount: dto.recordedSpot ?? 0,
                     isPublic: dto.isPublic,
                     memberTier: dto.memberTier
                 )
@@ -142,7 +142,6 @@ extension DefaultMemberRepository: MemberRepository {
         memberService.withdraw()
             .mapToNetworkError()
     }
-    
     
     func getRecordedSpotCount() -> AnyPublisher<Int, NetworkError> {
         memberService.getRecordedSpot()

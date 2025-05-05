@@ -11,7 +11,11 @@ import WalkieCommon
 
 struct MypageMainFeedbackButtonView: View {
     var body: some View {
-        NavigationLink(destination: EmptyView().navigationBarBackButtonHidden()) {
+        NavigationLink(
+            destination:
+                MypageNotionWebView(url: MypageNotionWebViewURL.questions.url)
+                .navigationBarBackButtonHidden()
+        ) {
             HStack(spacing: 0) {
                 Image(.icMyFeedback)
                     .frame(width: 36, height: 36)

@@ -27,6 +27,7 @@ final class MypageMainViewModel: ViewModelable {
         let nickname: String
         let userTier: String
         let spotCount: Int
+        let isPublic: Bool
     }
     
     enum Action {
@@ -41,6 +42,12 @@ final class MypageMainViewModel: ViewModelable {
         var isPresented: Bool
     }
     
+    private var mypageMainState: MypageMainState = MypageMainState(
+        nickname: "로딩 중...",
+        userTier: "초보워키",
+        spotCount: 0,
+        isPublic: false
+    )
     @Published var state: MypageMainViewState = .loading
     @Published var logoutViewState = LogoutViewState(isPresented: false)
     
@@ -76,13 +83,14 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, entity in
-                    self.state = .loaded(
-                        MypageMainState(
-                            nickname: entity.nickname,
-                            userTier: entity.memberTier,
-                            spotCount: entity.exploredSpotCount,
-                        )
+                    print("Fetch Success")
+                    self.mypageMainState = MypageMainState(
+                        nickname: entity.nickname,
+                        userTier: entity.memberTier,
+                        spotCount: entity.exploredSpotCount,
+                        isPublic: entity.isPublic
                     )
+                    self.state = .loaded(self.mypageMainState)
                     
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "Failed to fetch user data"
@@ -97,8 +105,14 @@ final class MypageMainViewModel: ViewModelable {
         patchProfileUseCase.patchProfileVisibility()
             .walkieSink(
                 with: self,
-                receiveValue: { _, entity in
-                    
+                receiveValue: { _, _ in
+                    self.mypageMainState = MypageMainState(
+                        nickname: self.mypageMainState.nickname,
+                        userTier: self.mypageMainState.userTier,
+                        spotCount: self.mypageMainState.spotCount,
+                        isPublic: !self.mypageMainState.isPublic
+                    )
+                    self.state = .loaded(self.mypageMainState)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "Failed to patch profile visibility"
                     self.state = .error(errorMessage)
@@ -142,3 +156,4 @@ final class MypageMainViewModel: ViewModelable {
             )
         .store(in: &self.cancellables)    }
 }
+

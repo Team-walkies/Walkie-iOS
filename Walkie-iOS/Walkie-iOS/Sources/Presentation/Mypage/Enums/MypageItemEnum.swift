@@ -71,6 +71,7 @@ enum MypageSettingSectionItem: MypageSectionItem {
 enum MypageServiceSectionItem: MypageSectionItem {
     case notice
     case privacyPolicy
+    case servicePolicy
     case appVersion
     
     var title: String {
@@ -81,6 +82,8 @@ enum MypageServiceSectionItem: MypageSectionItem {
             return "개인정보처리방침"
         case .appVersion:
             return "앱 버전"
+        case .servicePolicy:
+            return "서비스 이용 약관"
         }
     }
     
@@ -90,6 +93,8 @@ enum MypageServiceSectionItem: MypageSectionItem {
             return Image(.icMyNotice)
         case .privacyPolicy:
             return Image(.icMyPrivacy)
+        case .servicePolicy:
+            return Image(.icMyService)
         case .appVersion:
             return Image(.icMyVersion)
         }
@@ -110,7 +115,9 @@ enum MypageServiceSectionItem: MypageSectionItem {
         case .notice:
             NoticeView(viewModel: NoticeViewModel())
         case .privacyPolicy:
-            EmptyView()
+            MypageNotionWebView(url: MypageNotionWebViewURL.privacy.url)
+        case .servicePolicy:
+            MypageNotionWebView(url: MypageNotionWebViewURL.service.url)
         case .appVersion:
             EmptyView()
         }

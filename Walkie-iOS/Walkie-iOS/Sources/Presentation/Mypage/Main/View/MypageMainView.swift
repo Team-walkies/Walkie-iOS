@@ -9,7 +9,6 @@ import SwiftUI
 struct MypageMainView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
-    @State var navigateAlarmList: Bool = false
     
     var body: some View {
         ZStack {
