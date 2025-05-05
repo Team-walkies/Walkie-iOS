@@ -115,6 +115,35 @@ extension DefaultMemberRepository: MemberRepository {
             .mapToNetworkError()
     }
     
+    func patchProfileVisibility(isVisible: Bool) -> AnyPublisher<Void, NetworkError> {
+        memberService.patchProfileVisibility(isVisible: isVisible)
+            .mapToNetworkError()
+    }
+    
+    func patchProfile(requestBody: PatchProfileRequestDto) -> AnyPublisher<Void, NetworkError> {
+        memberService.patchProfile(requestBody: requestBody)
+            .mapToNetworkError()
+    }
+    
+    func getProfile() -> AnyPublisher<UserEntity, NetworkError> {
+        memberService.getProfile()
+            .map { dto in
+                UserEntity(
+                    nickname: dto.nickname,
+                    exploredSpotCount: dto.exploredSpot,
+                    recordedSpotCount: dto.recordedSpot,
+                    isPublic: dto.isPublic,
+                    memberTier: dto.memberTier
+                )
+            }.mapToNetworkError()
+    }
+    
+    func withdraw() -> AnyPublisher<Void, NetworkError> {
+        memberService.withdraw()
+            .mapToNetworkError()
+    }
+    
+    
     func getRecordedSpotCount() -> AnyPublisher<Int, NetworkError> {
         memberService.getRecordedSpot()
             .map { dto in

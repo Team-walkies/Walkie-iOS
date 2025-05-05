@@ -11,6 +11,7 @@ import Combine
 final class MypageMainViewModel: ViewModelable {
     
     private let logoutUseCase: DefaultLogoutUserUseCase
+    
     private var cancellables = Set<AnyCancellable>()
     
     enum MypageMainViewState {
@@ -88,18 +89,6 @@ final class MypageMainViewModel: ViewModelable {
     private func fetchMypageMainData() {
         let dummy = UserInformationResponse.getDummyData()
         
-        if dummy.status == 200, let userData = dummy.data {
-            let mypageState = MypageMainState(
-                nickname: userData.nickname,
-                userTier: userData.memberTier,
-                spotCount: userData.exploredSpotCount,
-                hasAlarm: true // TODO: 알림 조회 API 연결
-            )
-            self.myInformationState = MyInformationState(isPublic: userData.isPublic)
-            self.state = .loaded(mypageState)
-        } else {
-            self.state = .error(dummy.message)
-        }
     }
     
     private func updateMyInformationPublicSetting() {

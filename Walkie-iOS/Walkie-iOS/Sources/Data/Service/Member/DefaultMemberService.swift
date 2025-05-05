@@ -76,4 +76,47 @@ extension DefaultMemberService: MemberService {
             .filterSuccessfulStatusCodes()
             .mapWithoutDto(RecordedSpotDto.self)
     }
+    
+    func patchProfileVisibility() -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .patchUserProfileVisibility,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
+    func patchProfile(memberNickname: String) -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .patchUserProfile(
+                    memberNickname: memberNickname
+                ),
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
+    func getProfile() -> AnyPublisher<GetProfileDto, any Error> {
+        memberProvider
+            .requestPublisher(
+                .getUserProfile,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(GetProfileDto.self)
+    }
+    
+    func withdraw() -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .withdraw,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
 }
