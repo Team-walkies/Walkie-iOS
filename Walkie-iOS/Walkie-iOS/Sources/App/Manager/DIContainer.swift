@@ -52,10 +52,20 @@ extension DIContainer {
     }
     
     func buildMypageView() -> MypageMainView {
-        return MypageMainView(viewModel: MypageMainViewModel(
-            logoutUseCase: DefaultLogoutUserUseCase(
-                authRepository: authRepo,
-                memberRepository: memberRepo)))
+        return MypageMainView(
+            viewModel: MypageMainViewModel(
+                logoutUseCase: DefaultLogoutUserUseCase(
+                    authRepository: authRepo,
+                    memberRepository: memberRepo
+                ), patchProfileUseCase: DefaultPatchProfileUseCase(
+                    memberRepository: memberRepo
+                ), getProfileUseCase: DefaultGetProfileUseCase(
+                    memberRepository: memberRepo
+                ), withdrawUseCase: DefaultWithdrawUseCase(
+                    memberRepository: memberRepo
+                )
+            )
+        )
     }
     
     func buildEggView() -> EggView {
