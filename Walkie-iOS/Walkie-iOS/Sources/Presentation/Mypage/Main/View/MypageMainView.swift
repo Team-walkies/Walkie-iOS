@@ -38,9 +38,10 @@ struct MypageMainView: View {
                                 .frame(alignment: .top)
                                 .padding(.horizontal, 16)
                                 .padding(.top, 4)
+                                MypageLogoutView(viewModel: viewModel)
+                                    .padding(.bottom, 114)
                             }
                         }
-                        MypageLogoutView(viewModel: viewModel)
                     }
                 default:
                     EmptyView()
