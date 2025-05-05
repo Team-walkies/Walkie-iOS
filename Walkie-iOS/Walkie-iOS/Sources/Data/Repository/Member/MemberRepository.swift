@@ -19,9 +19,9 @@ protocol MemberRepository {
     // 같이 걷는 캐릭터 변경 API
     func patchWalkingCharacter(characterId: Int) -> AnyPublisher<Void, NetworkError>
     // 내 프로필 공개/비공개 토글 API
-    func patchProfileVisibility(isVisible: Bool) -> AnyPublisher<Void, NetworkError>
+    func patchProfileVisibility() -> AnyPublisher<Void, NetworkError>
     // 내 정보 수정하기 API
-    func patchProfile(requestBody: PatchProfileRequestDto) -> AnyPublisher<Void, NetworkError>
+    func patchProfile(memberNickname: String) -> AnyPublisher<Void, NetworkError>
     // 내 정보 조회하기 API
     func getProfile() -> AnyPublisher<UserEntity, NetworkError>
     // 회원탈퇴 하기 API

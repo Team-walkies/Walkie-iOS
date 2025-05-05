@@ -11,6 +11,9 @@ import Combine
 final class MypageMainViewModel: ViewModelable {
     
     private let logoutUseCase: DefaultLogoutUserUseCase
+    private let patchProfileUseCase: PatchProfileUseCase
+    private let getProfileUseCase: GetProfileUseCase
+    private let withdrawUseCase: WithdrawUseCase
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -24,24 +27,11 @@ final class MypageMainViewModel: ViewModelable {
         let nickname: String
         let userTier: String
         let spotCount: Int
-        let hasAlarm: Bool
-    }
-    
-    struct MyInformationState {
-        var isPublic: Bool
-    }
-    
-    struct PushNotificationState {
-        var notifyTodayWalkCount: Bool
-        var notifyArrivedSpot: Bool
-        var notifyEggHatches: Bool
     }
     
     enum Action {
         case mypageMainWillAppear
         case toggleMyInformationIsPublic
-        case toggleNotifyTodayWalkCount
-        case toggleNotifyArrivedSpot
         case toggleNotifyEggHatches
         case logout
         case withdraw
@@ -51,20 +41,19 @@ final class MypageMainViewModel: ViewModelable {
         var isPresented: Bool
     }
     
-    @Published var state: MypageMainViewState
-    @Published var myInformationState = MyInformationState(isPublic: false)
-    @Published var pushNotificationState = PushNotificationState(
-        notifyTodayWalkCount: false,
-        notifyArrivedSpot: false,
-        notifyEggHatches: false
-    )
+    @Published var state: MypageMainViewState = .loading
     @Published var logoutViewState = LogoutViewState(isPresented: false)
     
     init(
-        logoutUseCase: DefaultLogoutUserUseCase
+        logoutUseCase: DefaultLogoutUserUseCase,
+        patchProfileUseCase: PatchProfileUseCase,
+        getProfileUseCase: GetProfileUseCase,
+        withdrawUseCase: WithdrawUseCase
     ) {
-        state = .loading
         self.logoutUseCase = logoutUseCase
+        self.patchProfileUseCase = patchProfileUseCase
+        self.getProfileUseCase = getProfileUseCase
+        self.withdrawUseCase = withdrawUseCase
     }
     
     func action(_ action: Action) {
@@ -73,10 +62,6 @@ final class MypageMainViewModel: ViewModelable {
             fetchMypageMainData()
         case .toggleMyInformationIsPublic:
             updateMyInformationPublicSetting()
-        case .toggleNotifyTodayWalkCount:
-            updateNotifyTodayWalkCount()
-        case .toggleNotifyArrivedSpot:
-            updateNotifyArrivedSpot()
         case .toggleNotifyEggHatches:
             updateNotifyEggHatches()
         case .logout:
@@ -87,24 +72,44 @@ final class MypageMainViewModel: ViewModelable {
     }
     
     private func fetchMypageMainData() {
-        let dummy = UserInformationResponse.getDummyData()
-        
+        getProfileUseCase.execute()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, entity in
+                    self.state = .loaded(
+                        MypageMainState(
+                            nickname: entity.nickname,
+                            userTier: entity.memberTier,
+                            spotCount: entity.exploredSpotCount,
+                        )
+                    )
+                    
+                }, receiveFailure: { _, error  in
+                    let errorMessage = error?.description ?? "Failed to fetch user data"
+                    self.state = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
     }
     
     private func updateMyInformationPublicSetting() {
-        myInformationState.isPublic.toggle()
-    }
-
-    private func updateNotifyTodayWalkCount() {
-        pushNotificationState.notifyTodayWalkCount.toggle()
-    }
-    
-    private func updateNotifyArrivedSpot() {
-        pushNotificationState.notifyArrivedSpot.toggle()
+        
+        patchProfileUseCase.patchProfileVisibility()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, entity in
+                    
+                }, receiveFailure: { _, error  in
+                    let errorMessage = error?.description ?? "Failed to patch profile visibility"
+                    self.state = .error(errorMessage)
+                    
+                }
+            )
+            .store(in: &cancellables)
     }
     
     private func updateNotifyEggHatches() {
-        pushNotificationState.notifyEggHatches.toggle()
+        NotificationManager.shared.toggleNotificationMode()
     }
     
     private func logout() {
@@ -125,6 +130,15 @@ final class MypageMainViewModel: ViewModelable {
     }
     
     private func withdraw() {
-        // TODO: 탈퇴 API 연결
-    }
+        withdrawUseCase.execute()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    UserManager.shared.withdraw()
+                }, receiveFailure: { _, error  in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.state = .error(errorMessage)
+                }
+            )
+        .store(in: &self.cancellables)    }
 }

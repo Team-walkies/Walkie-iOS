@@ -115,13 +115,13 @@ extension DefaultMemberRepository: MemberRepository {
             .mapToNetworkError()
     }
     
-    func patchProfileVisibility(isVisible: Bool) -> AnyPublisher<Void, NetworkError> {
-        memberService.patchProfileVisibility(isVisible: isVisible)
+    func patchProfileVisibility() -> AnyPublisher<Void, NetworkError> {
+        memberService.patchProfileVisibility()
             .mapToNetworkError()
     }
     
-    func patchProfile(requestBody: PatchProfileRequestDto) -> AnyPublisher<Void, NetworkError> {
-        memberService.patchProfile(requestBody: requestBody)
+    func patchProfile(memberNickname: String) -> AnyPublisher<Void, NetworkError> {
+        memberService.patchProfile(memberNickname: memberNickname)
             .mapToNetworkError()
     }
     

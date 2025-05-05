@@ -68,7 +68,6 @@ struct MypageWithdrawView: View {
                     isEnabled: isChecked,
                     buttonAction: {
                         viewModel.action(.withdraw)
-                        UserManager.shared.withdraw()
                     })
                 .padding(.bottom, 38)
             }.ignoresSafeArea(.all)
