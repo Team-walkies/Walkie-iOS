@@ -28,20 +28,32 @@ extension DefaultMemberRepository: MemberRepository {
     
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError> {
         memberService.getEggPlaying()
-            .map { dto in
-                if dto.type == 0 {
+            .tryMap { dto in
+                // 필수 필드 유효성 검사
+                guard let eggID = dto.eggID,
+                      let type = dto.type,
+                      let rank = dto.rank,
+                      let characterClass = dto.characterClass,
+                      let nowStep = dto.nowStep,
+                      let needStep = dto.needStep,
+                      let picked = dto.picked else {
+                    throw NetworkError.responseDecodingError // 필수 데이터가 없으면 에러 던짐
+                }
+
+                // EggEntity 생성
+                if type == 0 {
                     let jellyfishType = CharacterType.mapCharacterType(
                         requestedType: .jellyfish,
-                        type: dto.type,
-                        rank: dto.rank,
-                        characterClass: dto.characterClass
+                        type: type,
+                        rank: rank,
+                        characterClass: characterClass
                     )
                     return EggEntity(
-                        eggId: dto.eggID,
-                        eggType: EggType.from(number: dto.rank),
-                        nowStep: dto.nowStep,
-                        needStep: dto.needStep,
-                        isWalking: dto.picked,
+                        eggId: eggID,
+                        eggType: EggType.from(number: rank),
+                        nowStep: nowStep,
+                        needStep: needStep,
+                        isWalking: picked,
                         detail: nil,
                         characterType: .jellyfish,
                         jellyFishType: jellyfishType as? JellyfishType,
@@ -50,16 +62,16 @@ extension DefaultMemberRepository: MemberRepository {
                 } else {
                     let dinoType = CharacterType.mapCharacterType(
                         requestedType: .dino,
-                        type: dto.type,
-                        rank: dto.rank,
-                        characterClass: dto.characterClass
+                        type: type,
+                        rank: rank,
+                        characterClass: characterClass
                     )
                     return EggEntity(
-                        eggId: dto.eggID,
-                        eggType: EggType.from(number: dto.rank),
-                        nowStep: dto.nowStep,
-                        needStep: dto.needStep,
-                        isWalking: dto.picked,
+                        eggId: eggID,
+                        eggType: EggType.from(number: rank),
+                        nowStep: nowStep,
+                        needStep: needStep,
+                        isWalking: picked,
                         detail: nil,
                         characterType: .dino,
                         jellyFishType: nil,
@@ -67,7 +79,14 @@ extension DefaultMemberRepository: MemberRepository {
                     )
                 }
             }
-            .mapToNetworkError()
+            .mapError { error in
+                // 기존 에러를 NetworkError로 변환
+                if error is NetworkError {
+                    return error as? NetworkError ?? .notFoundError
+                }
+                return NetworkError.responseDecodingError
+            }
+            .eraseToAnyPublisher()
     }
     
     func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {

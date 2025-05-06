@@ -9,7 +9,7 @@ import Combine
 
 final class DefaultGetCharactersCountUseCase: BaseCharactersUseCase, GetCharactersCountUseCase {
     func getCharactersCount() -> AnyPublisher<Int, NetworkError> {
-        characterRepository.getCharactersCount(dummy: false)
+        characterRepository.getCharactersCount()
             .mapToNetworkError()
     }
 }

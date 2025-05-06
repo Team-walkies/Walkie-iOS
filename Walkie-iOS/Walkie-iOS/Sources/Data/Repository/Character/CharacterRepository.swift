@@ -8,7 +8,7 @@
 import Combine
 
 protocol CharacterRepository {
-    func getCharactersDetail(dummy: Bool, characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError>
-    func getCharactersList(dummy: Bool, type: CharacterType) -> AnyPublisher<[CharacterEntity], NetworkError>
-    func getCharactersCount(dummy: Bool) -> AnyPublisher<Int, NetworkError>
+    func getCharactersDetail(characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError>
+    func getCharactersList(type: CharacterType) -> AnyPublisher<[CharacterEntity], NetworkError>
+    func getCharactersCount() -> AnyPublisher<Int, NetworkError>
 }

@@ -9,8 +9,8 @@ import Combine
 
 final class DefaultGetCharactersListUseCase: BaseCharactersUseCase, GetCharactersListUseCase {
     func getCharactersList() -> AnyPublisher<[CharacterEntity], NetworkError> {
-        let dinoPublisher = characterRepository.getCharactersList(dummy: false, type: .dino)
-        let jellyfishPublisher = characterRepository.getCharactersList(dummy: false, type: .jellyfish)
+        let dinoPublisher = characterRepository.getCharactersList(type: .dino)
+        let jellyfishPublisher = characterRepository.getCharactersList(type: .jellyfish)
         return Publishers.CombineLatest(dinoPublisher, jellyfishPublisher)
             .map { dinoList, jellyfishList in
                 return dinoList + jellyfishList
