@@ -53,12 +53,16 @@ final class NotificationManager {
         // 알림 요청 생성
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
-        // 알림 센터에 추가
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("ERROR: Failed to schedule notification - \(error)")
-            } else {
-                print("SUCCESS: Notification scheduled with identifier \(identifier)")
+        // 권한이 허용된 경우에만 알림 센터에 추가
+        NotificationManager.shared.requestAuthorization { granted in
+            if granted && NotificationManager.shared.getNotificationMode() {
+                UNUserNotificationCenter.current().add(request) { error in
+                    if let error = error {
+                        print("ERROR: Failed to schedule notification - \(error)")
+                    } else {
+                        print("SUCCESS: Notification scheduled with identifier \(identifier)")
+                    }
+                }
             }
         }
     }

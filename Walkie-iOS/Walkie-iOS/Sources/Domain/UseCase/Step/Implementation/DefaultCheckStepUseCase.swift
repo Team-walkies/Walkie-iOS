@@ -12,7 +12,10 @@ final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
         if UserManager.shared.getStepCountGoal
             >= UserManager.shared.getStepCount
             + stepStore.getStepCountCache() {
-            // 푸시 알림 전송
+            NotificationManager.shared.scheduleNotification(
+                title: "알이 부화하려고 해요!",
+                body: "어서 가서 깨워주세요"
+            )
         }
     }
 }
