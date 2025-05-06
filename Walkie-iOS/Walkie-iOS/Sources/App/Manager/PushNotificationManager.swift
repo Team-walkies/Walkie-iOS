@@ -66,4 +66,14 @@ final class NotificationManager {
             }
         }
     }
+    
+    func clearBadge() {
+        UNUserNotificationCenter.current().setBadgeCount(0) { error in
+            if let error = error {
+                print("ERROR: Failed to clear badge - \(error)")
+            } else {
+                print("SUCCESS: Badge cleared")
+            }
+        }
+    }
 }
