@@ -19,9 +19,6 @@ struct MapView: View {
             if let request = viewModel.webRequest {
                 WebView(request: request, viewModel: viewModel)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                Text("웹 페이지를 불러올 수 없습니다.")
-                    .foregroundColor(.red)
             }
         }
         .onAppear {

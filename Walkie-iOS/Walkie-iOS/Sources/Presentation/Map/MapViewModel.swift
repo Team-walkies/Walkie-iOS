@@ -43,14 +43,16 @@ final class MapViewModel: ViewModelable {
     private var placeName: String = ""
     private var lastLocation: CLLocation?
     private var lastLeftDistance: CLLocationDistance?
+    
     private var cancellables = Set<AnyCancellable>()
+    private var locationCancellable: AnyCancellable?
     
     var onPop: (() -> Void)?
-    var sendToWeb: ((String) -> Void)?
+    var sendToWeb: ((Int) -> Void)?
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
-    @Published var exploreStep: Int = 0
+    @Published var exploreStep: Int = 1234
     @Published var webRequest: URLRequest?
     
     private let getCharacterPlayUseCase: GetCharacterPlayUseCase
@@ -84,6 +86,8 @@ final class MapViewModel: ViewModelable {
             calculateTotal(payload: payload)
         case .getStepsFromMobile:
             sendStep()
+        case .stopExplore:
+            stopDynamicIsland()
         }
     }
 }
@@ -100,7 +104,7 @@ extension MapViewModel {
                     } catch {
                         print("🚨 웹 URL 설정 실패: \(error)")
                     }
-                }, receiveFailure: { _, error in
+                }, receiveFailure: { _, _ in
                     self.state = .error
                 }
             )
@@ -109,6 +113,8 @@ extension MapViewModel {
     
     func setWebURL(entity: CharactersPlayEntity) throws -> URLRequest {
         let token = (try? TokenKeychainManager.shared.getAccessToken())
+        print("🫨🫨🫨🫨🫨🫨")
+        print(token)
         var components = URLComponents(string: Config.webURL)
         components?.queryItems = [
             URLQueryItem(name: "accessToken", value: token),
@@ -147,7 +153,11 @@ private extension MapViewModel {
     
     func sendStep() {
         print("sendstep")
-        sendToWeb?("1234")
+        sendToWeb?(exploreStep)
+        updateArriveActivity()
+        
+        locationCancellable?.cancel()
+        locationCancellable = nil
     }
 }
 
@@ -263,7 +273,7 @@ private extension MapViewModel {
             }
         }
         
-        self.locationManager.$currentLocation
+        locationCancellable = self.locationManager.$currentLocation
             .compactMap { $0 }
             .dropFirst()
             .sink { [weak self] newLoc in
@@ -271,7 +281,6 @@ private extension MapViewModel {
                 print(newLoc)
                 self?.updateActivity(with: newLoc)
             }
-            .store(in: &self.cancellables)
     }
     
     func updateActivity(with userLoc: CLLocation) {
@@ -327,6 +336,23 @@ private extension MapViewModel {
             
             self.lastLocation = userLoc
             self.lastLeftDistance = distance
+        }
+    }
+    
+    func updateArriveActivity() {
+        guard
+            let total = totalDistance,
+            let activity = activity
+        else { return }
+        
+        let updated = WalkieWidgetAttributes.ContentState(
+            place: self.placeName,
+            leftDistance: 0,
+            totalDistance: total
+        )
+        print(updated)
+        Task {
+            await activity.update(ActivityContent(state: updated, staleDate: nil))
         }
     }
 }

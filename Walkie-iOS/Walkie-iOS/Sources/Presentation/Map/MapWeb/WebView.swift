@@ -63,6 +63,8 @@ struct WebView: UIViewRepresentable {
         webView.isInspectable = true
         webView.load(request)
         
+        context.coordinator.webView = webView
+        
         return webView
     }
     
@@ -91,9 +93,16 @@ struct WebView: UIViewRepresentable {
                 completionHandler(.performDefaultHandling, nil)
             }
         
-        func sendToWeb(message: String) {
+        func webView(
+            _ webView: WKWebView,
+            didFinish navigation: WKNavigation!) {
+            print("✅ WebView didFinish")
+            self.webView = webView
+        }
+        
+        func sendToWeb(message: Int) {
             print("😳😳send to web😳😳")
-            webView?.evaluateJavaScript("window.onReceiveStepsFromiOS('\(message)')") { result, error in
+            webView?.evaluateJavaScript("window.onReceiveStepsFromiOS(\(message))") { result, error in
                 if let error {
                     print("Error \(error.localizedDescription)")
                     return

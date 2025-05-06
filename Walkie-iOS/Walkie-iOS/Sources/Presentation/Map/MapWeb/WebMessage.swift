@@ -11,6 +11,7 @@ enum WebMessageType: String {
     case finishWebView
     case startExplore
     case getStepsFromMobile
+    case stopExplore
 }
 
 struct WebMessage {
