@@ -29,7 +29,7 @@ struct HomeView: View {
                 showLogo: true
             )
             ScrollView(.vertical) {
-                VStack {
+                VStack(spacing: 0) {
                     ZStack(alignment: .bottomTrailing) {
                         VStack {
                             let width = screenWidth - 32
