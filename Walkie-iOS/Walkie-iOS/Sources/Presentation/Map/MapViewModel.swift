@@ -46,9 +46,11 @@ final class MapViewModel: ViewModelable {
     private var cancellables = Set<AnyCancellable>()
     
     var onPop: (() -> Void)?
+    var sendToWeb: ((String) -> Void)?
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
+    @Published var exploreStep: Int = 0
     
     init() {
         state = .loading
@@ -102,7 +104,6 @@ extension MapViewModel {
 private extension MapViewModel {
     
     func triggerHaptic() {
-        print("✅ Triggering haptic feedback")
         let generator = UIImpactFeedbackGenerator(style: .heavy)
         generator.impactOccurred()
     }
@@ -123,7 +124,7 @@ private extension MapViewModel {
     
     func sendStep() {
         print("sendstep")
-        stopDynamicIsland()
+        sendToWeb?("1234")
     }
 }
 

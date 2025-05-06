@@ -47,7 +47,7 @@ struct WebView: UIViewRepresentable {
     
     let request: URLRequest
     let viewModel: MapViewModel
-    var webView: WKWebView?
+//    var webView: WKWebView?
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -71,14 +71,17 @@ struct WebView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
+        let coord = Coordinator(viewModel: viewModel)
+        viewModel.sendToWeb = coord.sendToWeb(message:)
+        return coord
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
-        let parent: WebView
+        let viewModel: MapViewModel
+        var webView: WKWebView?
         
-        init(parent: WebView) {
-            self.parent = parent
+        init(viewModel: MapViewModel) {
+            self.viewModel = viewModel
         }
         
         func webView(
@@ -87,24 +90,16 @@ struct WebView: UIViewRepresentable {
             completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
                 completionHandler(.performDefaultHandling, nil)
             }
-    }
-}
-
-extension WebView {
-    func sendToWeb() {
-        print("😳😳send to web😳😳")
-        webView?.evaluateJavaScript("mobileBridge('i am ahra')") { result, error in
-            if let error {
-                print("Error \(error.localizedDescription)")
-                return
+        
+        func sendToWeb(message: String) {
+            print("😳😳send to web😳😳")
+            webView?.evaluateJavaScript("window.onReceiveStepsFromiOS('\(message)')") { result, error in
+                if let error {
+                    print("Error \(error.localizedDescription)")
+                    return
+                }
+                print("Received Data \(result ?? "")")
             }
-            
-            if result == nil {
-                print("It's void function")
-                return
-            }
-            
-            print("Received Data \(result ?? "")")
         }
     }
 }
