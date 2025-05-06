@@ -54,6 +54,7 @@ struct HomeHistoryView: View {
                     }
                 }
                 .frame(height: 117)
+                .padding(.bottom, 114)
             }
             .padding(.horizontal, 16)
         }

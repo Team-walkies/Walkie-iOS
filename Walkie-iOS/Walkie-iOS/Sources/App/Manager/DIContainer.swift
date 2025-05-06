@@ -23,6 +23,8 @@ final class DIContainer {
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
+    
+    private lazy var stepStore = DefaultStepStore()
 }
 
 extension DIContainer {
@@ -50,10 +52,20 @@ extension DIContainer {
     }
     
     func buildMypageView() -> MypageMainView {
-        return MypageMainView(viewModel: MypageMainViewModel(
-            logoutUseCase: DefaultLogoutUserUseCase(
-                authRepository: authRepo,
-                memberRepository: memberRepo)))
+        return MypageMainView(
+            viewModel: MypageMainViewModel(
+                logoutUseCase: DefaultLogoutUserUseCase(
+                    authRepository: authRepo,
+                    memberRepository: memberRepo
+                ), patchProfileUseCase: DefaultPatchProfileUseCase(
+                    memberRepository: memberRepo
+                ), getProfileUseCase: DefaultGetProfileUseCase(
+                    memberRepository: memberRepo
+                ), withdrawUseCase: DefaultWithdrawUseCase(
+                    memberRepository: memberRepo
+                )
+            )
+        )
     }
     
     func buildEggView() -> EggView {
@@ -122,5 +134,36 @@ extension DIContainer {
                 )
             )
         )
+    }
+    
+    func buildHatchEggView() -> HatchEggView {
+        return HatchEggView(
+            hatchEggViewModel: HatchEggViewModel(
+                getEggPlayUseCase:
+                    DefaultGetEggPlayUseCase(
+                        memberRepository: memberRepo
+                    ),
+                updateEggStepUseCase:
+                    DefaultUpdateEggStepUseCase(
+                        eggRepository: eggRepo
+                    )
+            )
+        )
+    }
+    
+    func resolveCheckStepUseCase() -> CheckStepUseCase {
+        return DefaultCheckStepUseCase(stepStore: stepStore)
+    }
+    
+    func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
+        return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
+    }
+    
+    func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
+        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
+    }
+    
+    func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
+        return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
     }
 }

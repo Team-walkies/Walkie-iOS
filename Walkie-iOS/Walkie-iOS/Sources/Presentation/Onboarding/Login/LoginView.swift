@@ -95,6 +95,7 @@ struct LoginView: View {
             switch newState {
             case .loaded(let loginState):
                 appCoordinator.loginInfo = loginViewModel.loginInfo
+                UserManager.shared.setUserNickname(loginViewModel.loginInfo.username)
                 appCoordinator.currentScene = loginState.isExistMember ? .tabBar : .nickname
             default:
                 break

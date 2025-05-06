@@ -9,6 +9,8 @@ import SwiftUI
 
 struct HomeView: View {
     
+    @Environment(\.scenePhase) var scenePhase
+    
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
@@ -27,7 +29,7 @@ struct HomeView: View {
                 showLogo: true
             )
             ScrollView(.vertical) {
-                VStack {
+                VStack(spacing: 0) {
                     ZStack(alignment: .bottomTrailing) {
                         VStack {
                             let width = screenWidth - 32
@@ -92,6 +94,20 @@ struct HomeView: View {
                 default:
                     showBS = false
                 }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .background:
+                print("---background---")
+                StepManager.shared.executeBackgroundTasks()
+            case .inactive:
+                print("---inactive---")
+            case .active:
+                print("---active---")
+                StepManager.shared.executeForegroundTasks()
+            @unknown default:
+                fatalError()
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {

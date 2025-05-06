@@ -9,5 +9,5 @@ import Foundation
 
 struct CharacterDetailEntity {
     let obtainedPosition: String
-    let obtainedDate: String
+    let obtainedDate: [Int]
 }

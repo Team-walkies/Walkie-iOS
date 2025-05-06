@@ -8,5 +8,5 @@
 import Combine
 
 protocol GetEggPlayUseCase {
-    func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError>
+    func execute() -> AnyPublisher<EggEntity, NetworkError>
 }

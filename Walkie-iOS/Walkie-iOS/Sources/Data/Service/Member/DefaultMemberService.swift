@@ -26,7 +26,7 @@ final class DefaultMemberService {
 
 extension DefaultMemberService: MemberService {
     
-    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error> {
+    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, any Error> {
         memberProvider
             .requestPublisher(
                 .getEggPlaying,
@@ -36,7 +36,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, any Error> {
         memberProvider
             .requestPublisher(
                 .patchEggPlaying(eggId: eggId),
@@ -76,4 +76,47 @@ extension DefaultMemberService: MemberService {
             .filterSuccessfulStatusCodes()
             .mapWithoutDto(RecordedSpotDto.self)
     }
+    
+    func patchProfileVisibility() -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .patchUserProfileVisibility,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
+    func patchProfile(memberNickname: String) -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .patchUserProfile(
+                    memberNickname: memberNickname
+                ),
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
+    func getProfile() -> AnyPublisher<GetProfileDto, any Error> {
+        memberProvider
+            .requestPublisher(
+                .getUserProfile,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(GetProfileDto.self)
+    }
+    
+    func withdraw() -> AnyPublisher<Void, any Error> {
+        memberProvider
+            .requestPublisher(
+                .withdraw,
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
+    }
+    
 }

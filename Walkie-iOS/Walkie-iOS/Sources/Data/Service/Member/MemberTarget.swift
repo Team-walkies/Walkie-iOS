@@ -61,4 +61,30 @@ extension MemberTarget {
         method: .get,
         task: .requestPlain
     )
+    
+    static func patchUserProfile(memberNickname: String) -> MemberTarget {
+        MemberTarget(
+            path: URLConstant.members,
+            method: .post,
+            task: .requestJSONEncodable(["memberNickname": memberNickname])
+        )
+    }
+    
+    static let getUserProfile = MemberTarget(
+        path: URLConstant.members,
+        method: .get,
+        task: .requestPlain
+    )
+    
+    static let withdraw = MemberTarget(
+        path: URLConstant.members,
+        method: .delete,
+        task: .requestPlain
+    )
+    
+    static let patchUserProfileVisibility = MemberTarget(
+        path: URLConstant.membersProfile,
+        method: .patch,
+        task: .requestPlain
+    )
 }

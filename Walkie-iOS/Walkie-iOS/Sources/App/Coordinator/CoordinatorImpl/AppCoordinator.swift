@@ -70,7 +70,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .splash:
             SplashView()
         case .hatchEgg:
-            EmptyView()
+            diContainer.buildHatchEggView()
         case .nickname:
             diContainer.buildNicknameView()
         case .login:
@@ -131,7 +131,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
         } else {
             currentScene = .login
         }
-        
         
         print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
         print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")

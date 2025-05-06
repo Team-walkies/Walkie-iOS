@@ -105,7 +105,7 @@ final class HomeViewModel: ViewModelable {
     
     private let pedometer = CMPedometer()
     private var needStep: Int = 0
-    private let locationManager = LocationManager()
+    private let locationManager = LocationManager.shared
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -185,7 +185,7 @@ final class HomeViewModel: ViewModelable {
     
     func fetchHomeStats() {
         
-        getEggPlayUseCase.getEggPlaying()
+        getEggPlayUseCase.execute()
             .walkieSink(
                 with: self,
                 receiveValue: { _, eggEntity in
@@ -198,7 +198,12 @@ final class HomeViewModel: ViewModelable {
                     self.homeStatsState = .loaded(homeStatsState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
-                    self.homeStatsState = .error(errorMessage)
+                    let homeStatsState = HomeStatsState(
+                        hasEgg: false,
+                        eggImage: .imgEggEmpty,
+                        eggBackImage: .imgEggBack0
+                    )
+                    self.homeStatsState = .loaded(homeStatsState)
                 }
             )
             .store(in: &cancellables)

@@ -32,20 +32,16 @@ enum WalkieLottie {
     }
 }
 
-struct LottieView: UIViewRepresentable {
-    
-    let fileType: WalkieLottie
-    
-    func makeUIView(context: Context) -> Lottie.LottieAnimationView {
-        let animationView = LottieAnimationView(name: fileType.filename)
-        animationView.contentMode = .scaleAspectFit
-        animationView.loopMode = .loop
-        animationView.play()
-        
-        return animationView
-    }
-    
-    func updateUIView(_ uiView: LottieAnimationView, context: Context) {
-        uiView.play()
+struct WalkieLottieView: View {
+    let lottie: WalkieLottie
+    let isPlaying: Bool
+
+    var body: some View {
+        LottieView(animation: .named(lottie.filename))
+            .playbackMode(isPlaying ? .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) : .paused)
+            .configure { lottieAnimationView in
+                lottieAnimationView.contentMode = .scaleAspectFit
+                lottieAnimationView.shouldRasterizeWhenIdle = true
+            }
     }
 }

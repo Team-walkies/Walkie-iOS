@@ -17,9 +17,9 @@ struct DayViewState: Identifiable, Equatable {
     
     static func == (lhs: DayViewState, rhs: DayViewState) -> Bool {
         return lhs.date.isSameDay(date: rhs.date) &&
-               lhs.isSelected == rhs.isSelected &&
-               lhs.time == rhs.time &&
-               lhs.hasSpot == rhs.hasSpot
+        lhs.isSelected == rhs.isSelected &&
+        lhs.time == rhs.time &&
+        lhs.hasSpot == rhs.hasSpot
     }
 }
 

@@ -9,7 +9,6 @@ import SwiftUI
 struct MypageMainView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
-    @State var navigateAlarmList: Bool = false
     
     var body: some View {
         ZStack {
@@ -39,13 +38,10 @@ struct MypageMainView: View {
                                 .frame(alignment: .top)
                                 .padding(.horizontal, 16)
                                 .padding(.top, 4)
+                                MypageLogoutView(viewModel: viewModel)
+                                    .padding(.bottom, 114)
                             }
                         }
-                        MypageLogoutView(viewModel: viewModel)
-                    }
-                    .navigationDestination(isPresented: $navigateAlarmList) {
-                        DIContainer.shared.buildAlarmListView()
-                            .navigationBarBackButtonHidden()
                     }
                 default:
                     EmptyView()

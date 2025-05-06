@@ -13,6 +13,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
     
     private var locationManager: CLLocationManager!
     
+    static let shared = LocationManager()
+    
     override init() {
         super.init()
         locationManager = CLLocationManager()
@@ -33,5 +35,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate {
         @unknown default:
             break
         }
+    }
+    
+    func getCurrentLocation() -> CLLocation? {
+        return locationManager.location
     }
 }
