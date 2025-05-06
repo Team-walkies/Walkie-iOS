@@ -21,6 +21,7 @@ struct MapView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .onAppear {
             viewModel.action(.mapViewAppear)
             viewModel.onPop = {

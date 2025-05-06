@@ -6,9 +6,10 @@
 //
 
 struct CharactersPlayEntity: Codable {
-    let characterRank, characterType, characterClass: Int
+    let characterId, characterRank, characterType, characterClass: Int
 
     enum CodingKeys: String, CodingKey {
+        case characterId = "characterId"
         case characterRank = "characterRank"
         case characterType = "type"
         case characterClass = "class"

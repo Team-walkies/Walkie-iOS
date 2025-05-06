@@ -118,7 +118,7 @@ extension MapViewModel {
         var components = URLComponents(string: Config.webURL)
         components?.queryItems = [
             URLQueryItem(name: "accessToken", value: token),
-            URLQueryItem(name: "memberId", value: "6"),
+            URLQueryItem(name: "memberId", value: "\(entity.characterId)"),
             URLQueryItem(name: "characterRank", value: "\(entity.characterRank)"),
             URLQueryItem(name: "characterType", value: "\(entity.characterType)"),
             URLQueryItem(name: "characterClass", value: "\(entity.characterClass)")
@@ -146,13 +146,7 @@ private extension MapViewModel {
         stopDynamicIsland()
     }
     
-    func startExplore(payload: [String: Any]) {
-        print(payload)
-        
-    }
-    
     func sendStep() {
-        print("sendstep")
         sendToWeb?(exploreStep)
         updateArriveActivity()
         

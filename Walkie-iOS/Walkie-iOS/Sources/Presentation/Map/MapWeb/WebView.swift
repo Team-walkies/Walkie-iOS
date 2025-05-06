@@ -47,7 +47,6 @@ struct WebView: UIViewRepresentable {
     
     let request: URLRequest
     let viewModel: MapViewModel
-//    var webView: WKWebView?
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -62,6 +61,9 @@ struct WebView: UIViewRepresentable {
         webView.uiDelegate = context.coordinator
         webView.isInspectable = true
         webView.load(request)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.scrollView.contentInsetAdjustmentBehavior = .never
+        webView.scrollView.keyboardDismissMode = .interactive
         
         context.coordinator.webView = webView
         
