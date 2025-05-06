@@ -46,7 +46,10 @@ extension DIContainer {
     }
     
     func buildMapView() -> MapView {
-        return MapView(viewModel: MapViewModel())
+        return MapView(viewModel: MapViewModel(
+            getCharacterPlayUseCase: DefaultGetCharacterPlayUseCase(
+                memberRepository: memberRepo))
+        )
     }
     
     func buildMypageView() -> MypageMainView {

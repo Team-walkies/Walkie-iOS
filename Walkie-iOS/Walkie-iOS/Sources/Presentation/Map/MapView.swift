@@ -12,12 +12,11 @@ import WalkieCommon
 struct MapView: View {
     
     @ObservedObject var viewModel: MapViewModel
-    @State private var request: URLRequest?
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(spacing: 20) {
-            if let request {
+            if let request = viewModel.webRequest {
                 WebView(request: request, viewModel: viewModel)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -26,11 +25,7 @@ struct MapView: View {
             }
         }
         .onAppear {
-            do {
-                self.request = try viewModel.setWebURL()
-            } catch {
-                print("🚨 웹 URL 설정 실패: \(error)")
-            }
+            viewModel.action(.mapViewAppear)
             viewModel.onPop = {
                 dismiss()
             }

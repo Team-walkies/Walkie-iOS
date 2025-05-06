@@ -28,7 +28,7 @@ final class MapViewModel: ViewModelable {
     enum MapViewState {
         case loading
         case loaded(MapState)
-        case error(String)
+        case error
     }
     
     @Published var state: MapViewState
@@ -51,15 +51,21 @@ final class MapViewModel: ViewModelable {
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
     @Published var exploreStep: Int = 0
+    @Published var webRequest: URLRequest?
     
-    init() {
+    private let getCharacterPlayUseCase: GetCharacterPlayUseCase
+    
+    init(
+        getCharacterPlayUseCase: GetCharacterPlayUseCase
+    ) {
         state = .loading
+        self.getCharacterPlayUseCase = getCharacterPlayUseCase
     }
     
     func action(_ action: Action) {
         switch action {
         case .mapViewAppear:
-            startStepUpdates()
+            getCharacterPlay()
         case .mapViewDisappear:
             stopStepUpdates()
         }
@@ -84,15 +90,32 @@ final class MapViewModel: ViewModelable {
 
 extension MapViewModel {
     
-    func setWebURL() throws -> URLRequest {
+    func getCharacterPlay() {
+        getCharacterPlayUseCase.getCharacterPlay()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, entity in
+                    do {
+                        self.webRequest = try self.setWebURL(entity: entity)
+                    } catch {
+                        print("🚨 웹 URL 설정 실패: \(error)")
+                    }
+                }, receiveFailure: { _, error in
+                    self.state = .error
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func setWebURL(entity: CharactersPlayEntity) throws -> URLRequest {
         let token = (try? TokenKeychainManager.shared.getAccessToken())
         var components = URLComponents(string: Config.webURL)
         components?.queryItems = [
             URLQueryItem(name: "accessToken", value: token),
             URLQueryItem(name: "memberId", value: "6"),
-            URLQueryItem(name: "characterRank", value: "1"),
-            URLQueryItem(name: "characterType", value: "0"),
-            URLQueryItem(name: "characterClass", value: "1")
+            URLQueryItem(name: "characterRank", value: "\(entity.characterRank)"),
+            URLQueryItem(name: "characterType", value: "\(entity.characterType)"),
+            URLQueryItem(name: "characterClass", value: "\(entity.characterClass)")
         ]
         guard let url = components?.url else {
             throw WebURLError.invalidURL
