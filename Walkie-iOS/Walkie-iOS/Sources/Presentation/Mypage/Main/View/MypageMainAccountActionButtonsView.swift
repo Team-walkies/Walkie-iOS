@@ -23,12 +23,9 @@ struct MypageMainAccountActionButtonsView: View {
                     content: "앱에서 로그아웃할까요?",
                     style: .error,
                     button: .twobutton,
-                    cancelButtonAction: {
-                        appCoordinator.dismissAlert()
-                    },
+                    cancelButtonAction: {},
                     checkButtonAction: {
                         viewModel.action(.logout)
-                        appCoordinator.dismissAlert()
                     },
                     checkButtonTitle: "로그아웃",
                     cancelButtonTitle: "뒤로가기"

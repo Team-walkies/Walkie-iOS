@@ -86,18 +86,21 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .tabBar:
             ZStack {
                 tabBarView
-                if isShowingAlert, let modal = alertModal {
-                    ZStack {
-                        Color.black.opacity(0.6)
-                            .ignoresSafeArea()
-                            .transition(.opacity)
-                            .onTapGesture {
+                ZStack {
+                    Color.black.opacity(isShowingAlert && alertModal != nil ? 0.6 : 0.0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.25)) {
                                 self.dismissAlert()
                             }
+                        }
+                    if let modal = alertModal {
                         modal
                             .padding(.horizontal, 40)
-                    }.animation(.easeInOut(duration: 0.25), value: isShowingAlert)
+                            .opacity(isShowingAlert ? 1.0 : 0.0)
+                    }
                 }
+                .animation(.easeInOut(duration: 0.25), value: isShowingAlert)
             }
         case .complete:
             diContainer.buildSignupView()
@@ -157,18 +160,33 @@ final class AppCoordinator: Coordinator, ObservableObject {
             content: content,
             style: style,
             button: button,
-            cancelButtonAction: cancelButtonAction,
-            checkButtonAction: checkButtonAction,
+            cancelButtonAction: {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    self.dismissAlert()
+                }
+                cancelButtonAction()
+            },
+            checkButtonAction: {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    self.dismissAlert()
+                }
+                checkButtonAction()
+            },
             checkButtonTitle: checkButtonTitle,
             cancelButtonTitle: cancelButtonTitle
         )
     }
     
     func showAlert() {
-        self.isShowingAlert = true
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isShowingAlert = true
+        }
     }
     
     func dismissAlert() {
-        self.isShowingAlert = false
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isShowingAlert = false
+        }
+        self.alertModal = nil
     }
 }

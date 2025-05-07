@@ -138,15 +138,12 @@ struct HomeView: View {
                     content: content,
                     style: .primary,
                     button: .twobutton,
-                    cancelButtonAction: {
-                        appCoordinator.dismissAlert()
-                    },
+                    cancelButtonAction: {},
                     checkButtonAction: {
                         if let url = URL(string: UIApplication.openSettingsURLString)
                             , UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
-                        appCoordinator.dismissAlert()
                     },
                     checkButtonTitle: "허용하기"
                 )
