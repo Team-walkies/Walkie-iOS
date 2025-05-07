@@ -133,7 +133,24 @@ struct HomeView: View {
                     }
                 }
                 
-                appCoordinator.showAlertWithDim = HomeAlertStruct(title: title, content: content)
+                appCoordinator.buildAlert(
+                    title: title,
+                    content: content,
+                    style: .primary,
+                    button: .twobutton,
+                    cancelButtonAction: {
+                        appCoordinator.dismissAlert()
+                    },
+                    checkButtonAction: {
+                        if let url = URL(string: UIApplication.openSettingsURLString)
+                            , UIApplication.shared.canOpenURL(url) {
+                            UIApplication.shared.open(url)
+                        }
+                        appCoordinator.dismissAlert()
+                    },
+                    checkButtonTitle: "허용하기"
+                )
+                appCoordinator.showAlert()
             }
         }
         .permissionBottomSheet(
@@ -150,15 +167,15 @@ struct HomeView: View {
                     HomeAlarmBSView(isPresented: $showBS)
                 }
             }
-        .navigationDestination(isPresented: $navigateAlarmList) {
-            DIContainer.shared.buildAlarmListView()
-                .navigationBarBackButtonHidden()
-        }
+            .navigationDestination(isPresented: $navigateAlarmList) {
+                DIContainer.shared.buildAlarmListView()
+                    .navigationBarBackButtonHidden()
+            }
     }
     
     private func handlePermissionBS() {
         guard case .loaded(let state) = viewModel.state else { return }
-            
+        
         showBS = !(state.isLocationChecked.isAuthorized && state.isMotionChecked.isAuthorized)
         showLocationBS = !state.isLocationChecked.isAuthorized
         showMotionBS = !state.isMotionChecked.isAuthorized
