@@ -12,7 +12,7 @@ struct ReviewView: View {
     
     @ObservedObject var viewModel: ReviewViewModel
     @ObservedObject var calendarViewModel: CalendarViewModel
-    @State private var selectedReview: ReviewItemId? = nil
+    @State private var selectedReview: ReviewItemId?
     @State private var showReviewEdit: Bool = false
     @State private var showReviewDelete: Bool = false
     

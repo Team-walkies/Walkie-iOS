@@ -17,8 +17,11 @@ struct MapView: View {
     var body: some View {
         VStack(spacing: 20) {
             if let request = viewModel.webRequest {
-                WebView(request: request, viewModel: viewModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                WebView(
+                    request: request,
+                    messageHandlers: [viewModel]
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)

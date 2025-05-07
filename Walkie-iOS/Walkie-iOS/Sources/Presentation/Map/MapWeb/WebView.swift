@@ -11,47 +11,44 @@ import SwiftUI
 
 class ContentController: NSObject, WKScriptMessageHandler {
     
-    private weak var viewModel: MapViewModel?
+    private let handlers: [WebMessageHandling]
     
-    init(viewModel: MapViewModel) {
-        self.viewModel = viewModel
+    init(handlers: [WebMessageHandling]) {
+        self.handlers = handlers
     }
     
     func userContentController(
         _ userContentController: WKUserContentController,
         didReceive message: WKScriptMessage
     ) {
-        print("😬😬receive from web😬😬")
         guard message.name == "iOSBridge" else { return }
-        print("post Message : \(message.body)")
-        
-        guard let body = message.body as? [String: Any] else {
-            print("❌ message body is not a dictionary")
+        guard
+            let body = message.body as? [String: Any],
+            let typeString = body["type"] as? String,
+            let type = WebMessageType(rawValue: typeString)
+        else {
+            print("❌ Invalid WebMessage:", message.body)
             return
         }
-
-        let typeString = body["type"] as? String
+        
         let payload = body["payload"] as? [String: Any]
-
-        if let typeString, let type = WebMessageType(rawValue: typeString) {
-            let message = WebMessage(type: type, payload: payload)
-            print(message)
-            viewModel?.handleWebMessage(message)
-        } else {
-            print("❌ Unknown or missing type: \(String(describing: typeString))")
-        }
+        let webMessage = WebMessage(type: type, payload: payload)
+        print("💁💁💁💁")
+        print(webMessage)
+        handlers.forEach { $0.handleWebMessage(webMessage) }
     }
 }
 
 struct WebView: UIViewRepresentable {
     
     let request: URLRequest
-    let viewModel: MapViewModel
+    let messageHandlers: [WebMessageHandling]
+    let bridgeName: String = "iOSBridge"
     
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
         let contentController = WKUserContentController()
-        contentController.add(ContentController(viewModel: viewModel), name: "iOSBridge")
+        contentController.add(ContentController(handlers: messageHandlers), name: bridgeName)
         config.userContentController = contentController
         config.defaultWebpagePreferences.allowsContentJavaScript = true
         config.websiteDataStore = .default()
@@ -71,22 +68,14 @@ struct WebView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        uiView.load(request)
     }
     
     func makeCoordinator() -> Coordinator {
-        let coord = Coordinator(viewModel: viewModel)
-        viewModel.sendToWeb = coord.sendToWeb(message:)
-        return coord
+        Coordinator()
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
-        let viewModel: MapViewModel
-        var webView: WKWebView?
-        
-        init(viewModel: MapViewModel) {
-            self.viewModel = viewModel
-        }
+        weak var webView: WKWebView?
         
         func webView(
             _ webView: WKWebView,

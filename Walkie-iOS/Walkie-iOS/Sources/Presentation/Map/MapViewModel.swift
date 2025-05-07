@@ -13,7 +13,7 @@ import ActivityKit
 import WalkieCommon
 import MapKit
 
-final class MapViewModel: ViewModelable {
+final class MapViewModel: ViewModelable, WebMessageHandling {
     
     enum Action {
         case mapViewAppear
@@ -88,6 +88,11 @@ final class MapViewModel: ViewModelable {
             sendStep()
         case .stopExplore:
             stopDynamicIsland()
+        case .unauthorizedFromWeb:
+            stopDynamicIsland()
+            onPop?()
+        default:
+            break
         }
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-final class ReviewViewModel: ViewModelable {
+final class ReviewViewModel: ViewModelable, WebMessageHandling {
     
     private let reviewUseCase: ReviewUseCase
     private let delReviewUseCase: DeleteReviewUseCase
@@ -63,6 +63,18 @@ final class ReviewViewModel: ViewModelable {
         }
     }
     
+    func handleWebMessage(_ message: WebMessage) {
+        switch message.type {
+        case .unauthorizedFromWeb:
+            NotificationCenter.default.post(
+                name: .reissueFailed,
+                object: nil
+            )
+        default:
+            break
+        }
+    }
+    
     init(
         reviewUseCase: ReviewUseCase,
         delReviewUseCase: DeleteReviewUseCase
@@ -80,10 +92,6 @@ final class ReviewViewModel: ViewModelable {
                     let processedReviews = reviewList.reviewList.map { viewModel.processReviewEntity($0) }
                     viewModel.loadedReviewList = processedReviews
                     viewModel.reviewDateList = Array(Set(reviewList.reviewList.map { $0.date })).sorted()
-                    let filteredReview = reviewList.reviewList
-                        .map { viewModel.processReviewEntity($0) }
-                        .filter { $0.date == endDate }
-                    self.state = .loaded(filteredReview)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

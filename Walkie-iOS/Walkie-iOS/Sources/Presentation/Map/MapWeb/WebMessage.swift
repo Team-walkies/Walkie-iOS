@@ -12,9 +12,14 @@ enum WebMessageType: String {
     case startExplore
     case getStepsFromMobile
     case stopExplore
+    case unauthorizedFromWeb
 }
 
 struct WebMessage {
     let type: WebMessageType
     let payload: [String: Any]?
+}
+
+protocol WebMessageHandling {
+    func handleWebMessage(_ message: WebMessage)
 }
