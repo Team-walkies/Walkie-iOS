@@ -14,6 +14,7 @@ struct ReviewView: View {
     @ObservedObject var calendarViewModel: CalendarViewModel
     @State private var selectedReview: ReviewItemId? = nil
     @State private var showReviewEdit: Bool = false
+    @State private var showReviewDelete: Bool = false
     
     init(
         viewModel: ReviewViewModel
@@ -23,45 +24,68 @@ struct ReviewView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 0) {
-            NavigationBar(
-                showBackButton: true
-            )
-            CalendarView(viewModel: calendarViewModel)
-            switch viewModel.state {
-            case .loaded(let reviewState):
-                ScrollView {
-                    HStack(spacing: 4) {
-                        Text("기록")
-                            .font(.B1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+        ZStack {
+            VStack(alignment: .center, spacing: 0) {
+                NavigationBar(
+                    showBackButton: true
+                )
+                CalendarView(viewModel: calendarViewModel)
+                switch viewModel.state {
+                case .loaded(let reviewState):
+                    ScrollView {
+                        HStack(spacing: 4) {
+                            Text("기록")
+                                .font(.B1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                            
+                            Text("\(reviewState?.count ?? 0)")
+                                .font(.B1)
+                                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                            
+                            Spacer()
+                        }
+                        .padding(.top, 12)
+                        .padding(.leading, 16)
+                        .padding(.bottom, 12)
+                        .frame(maxWidth: .infinity)
                         
-                        Text("\(reviewState?.count ?? 0)")
-                            .font(.B1)
-                            .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                        
-                        Spacer()
-                    }
-                    .padding(.top, 12)
-                    .padding(.leading, 16)
-                    .padding(.bottom, 12)
-                    .frame(maxWidth: .infinity)
-                    
-                    if let reviewState {
-                        VStack(spacing: 40) {
-                            ForEach(reviewState, id: \.reviewID) { item in
-                                ReviewItemView(reviewState: item) { review in
-                                    selectedReview = review
-                                    showReviewEdit = true
+                        if let reviewState {
+                            VStack(spacing: 40) {
+                                ForEach(reviewState, id: \.reviewID) { item in
+                                    ReviewItemView(reviewState: item) { review in
+                                        selectedReview = review
+                                        showReviewEdit = true
+                                    }
                                 }
                             }
                         }
                     }
+                default:
+                    Spacer()
+                    ProgressView()
+                    Spacer()
                 }
-            default:
-                Spacer()
-                ProgressView()
-                Spacer()
+            }
+            
+            if showReviewDelete {
+                Color(white: 0, opacity: 0.6)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                Modal(
+                    title: "스팟 기록을 삭제할까요?",
+                    content: "삭제된 기록은 복구할 수 없어요",
+                    style: .error,
+                    button: .twobutton,
+                    cancelButtonAction: {
+                        showReviewDelete = false
+                    },
+                    checkButtonAction: {
+                        // 삭제 api
+                    },
+                    checkButtonTitle: "삭제하기",
+                    cancelButtonTitle: "뒤로가기"
+                )
+                .padding(.horizontal, 47)
             }
         }
         .onAppear {
@@ -79,7 +103,15 @@ struct ReviewView: View {
             )
         }
         .bottomSheet(isPresented: $showReviewEdit, height: 150) {
-            ReviewEditView()
+            ReviewEditView(
+                onDeleteTap: {
+                    showReviewEdit = false
+                    showReviewDelete = true
+                },
+                onEditTap: {
+                    print("show edit webview")
+                }
+            )
         }
     }
 }

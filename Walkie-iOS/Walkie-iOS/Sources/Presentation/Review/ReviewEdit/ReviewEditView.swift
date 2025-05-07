@@ -12,11 +12,13 @@ import WalkieCommon
 struct ReviewEditView: View {
     
     @Environment(\.screenWidth) var screenWidth
+    let onDeleteTap: () -> Void
+    let onEditTap: () -> Void
     
     var body: some View {
         HStack(spacing: 8) {
             Button(action: {
-                print("show delete alert")
+                onDeleteTap()
             }, label: {
                 VStack(alignment: .center, spacing: 4) {
                     Image(.icDelete)
@@ -35,7 +37,7 @@ struct ReviewEditView: View {
             .cornerRadius(12, corners: .allCorners)
             
             Button(action: {
-                print("show edit webview")
+                onEditTap()
             }, label: {
                 VStack(alignment: .center, spacing: 4) {
                     Image(.icEdit)
