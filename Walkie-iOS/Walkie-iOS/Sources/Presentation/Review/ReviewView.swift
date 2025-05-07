@@ -80,19 +80,29 @@ struct ReviewView: View {
                         showReviewDelete = false
                     },
                     checkButtonAction: {
-                        // 삭제 api
+                        viewModel.action(.deleteReview(reviewId: selectedReview?.reviewId ?? -1))
                     },
                     checkButtonTitle: "삭제하기",
                     cancelButtonTitle: "뒤로가기"
                 )
                 .padding(.horizontal, 47)
             }
+            ToastContainer()
         }
         .onAppear {
             viewModel.action(.loadReviewList(
                 startDate: calendarViewModel.firstDay.convertToDateString(),
                 endDate: calendarViewModel.lastDay.convertToDateString()
             ))
+        }
+        .onChange(of: viewModel.delState) { _, newState in
+            if case .loaded = newState {
+                showReviewDelete = false
+                ToastManager.shared.showToast(
+                    "기록을 삭제했어요",
+                    icon: .icCheck
+                )
+            }
         }
         .navigationBarBackButtonHidden()
         .bottomSheet(isPresented: $calendarViewModel.showPicker, height: 436) {

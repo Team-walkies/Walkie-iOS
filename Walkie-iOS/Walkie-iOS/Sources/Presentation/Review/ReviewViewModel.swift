@@ -11,15 +11,18 @@ import Combine
 final class ReviewViewModel: ViewModelable {
     
     private let reviewUseCase: ReviewUseCase
+    private let delReviewUseCase: DeleteReviewUseCase
     private var cancellables = Set<AnyCancellable>()
     
     @Published var state: ReviewViewState = .loading
+    @Published var delState: ReviewDeleteState = .loading
     @Published var loadedReviewList: [ReviewState] = []
     @Published var reviewDateList: [String] = []
     
     enum Action {
         case loadReviewList(startDate: String, endDate: String)
         case showReviewList(dateString: String)
+        case deleteReview(reviewId: Int)
     }
     
     struct ReviewState {
@@ -43,17 +46,29 @@ final class ReviewViewModel: ViewModelable {
         case error(String)
     }
     
+    enum ReviewDeleteState: Equatable {
+        case loading
+        case loaded
+        case error(String)
+    }
+    
     func action(_ action: Action) {
         switch action {
         case .loadReviewList(let startDate, let endDate):
             getReviewList(startDate: startDate, endDate: endDate)
         case .showReviewList(dateString: let dateString):
             showReviewList(dateString: dateString)
+        case .deleteReview(reviewId: let reviewId):
+            delReview(reviewId: reviewId)
         }
     }
     
-    init(reviewUseCase: ReviewUseCase) {
+    init(
+        reviewUseCase: ReviewUseCase,
+        delReviewUseCase: DeleteReviewUseCase
+    ) {
         self.reviewUseCase = reviewUseCase
+        self.delReviewUseCase = delReviewUseCase
     }
     
     func getReviewList(startDate: String, endDate: String) {
@@ -65,6 +80,10 @@ final class ReviewViewModel: ViewModelable {
                     let processedReviews = reviewList.reviewList.map { viewModel.processReviewEntity($0) }
                     viewModel.loadedReviewList = processedReviews
                     viewModel.reviewDateList = Array(Set(reviewList.reviewList.map { $0.date })).sorted()
+                    let filteredReview = reviewList.reviewList
+                        .map { viewModel.processReviewEntity($0) }
+                        .filter { $0.date == endDate }
+                    self.state = .loaded(filteredReview)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
@@ -76,6 +95,22 @@ final class ReviewViewModel: ViewModelable {
         self.state = .loaded(self.loadedReviewList.filter { review in
             review.date == dateString
         })
+    }
+    
+    func delReview(reviewId: Int) {
+        if reviewId < 0 { return }
+        
+        delReviewUseCase.deleteReview(reviewId: reviewId)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    self.delState = .loaded
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.delState = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
     }
 }
 

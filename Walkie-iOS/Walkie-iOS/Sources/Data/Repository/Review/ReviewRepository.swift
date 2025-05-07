@@ -10,4 +10,5 @@ import Combine
 protocol ReviewRepository {
     
     func getReviewList(date: ReviewsCalendarDate) -> AnyPublisher<ReviewListEntity, Error>
+    func delReview(reviewId: Int) -> AnyPublisher<Void, Error>
 }
