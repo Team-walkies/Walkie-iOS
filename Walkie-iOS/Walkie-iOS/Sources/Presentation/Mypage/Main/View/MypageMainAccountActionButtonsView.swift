@@ -12,12 +12,27 @@ import WalkieCommon
 struct MypageMainAccountActionButtonsView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
 
     var body: some View {
         HStack(spacing: 12) {
             Button(
             action: {
-                viewModel.logoutViewState.isPresented.toggle()
+                appCoordinator.buildAlert(
+                    title: "로그아웃",
+                    content: "앱에서 로그아웃할까요?",
+                    style: .error,
+                    button: .twobutton,
+                    cancelButtonAction: {
+                        appCoordinator.dismissAlert()
+                    },
+                    checkButtonAction: {
+                        viewModel.action(.logout)
+                        appCoordinator.dismissAlert()
+                    },
+                    checkButtonTitle: "로그아웃",
+                    cancelButtonTitle: "뒤로가기"
+                )
             }, label: {
                 Text("로그아웃")
                     .font(.B2)

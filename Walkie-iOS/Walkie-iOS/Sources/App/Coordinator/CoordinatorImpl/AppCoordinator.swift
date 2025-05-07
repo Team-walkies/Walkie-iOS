@@ -90,9 +90,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     ZStack {
                         Color.black.opacity(0.6)
                             .ignoresSafeArea()
+                            .transition(.opacity)
+                            .onTapGesture {
+                                self.dismissAlert()
+                            }
                         modal
                             .padding(.horizontal, 40)
-                    }
+                    }.animation(.easeInOut(duration: 0.25), value: isShowingAlert)
                 }
             }
         case .complete:
