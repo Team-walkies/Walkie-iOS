@@ -14,62 +14,66 @@ final class NotificationManager {
     
     func getNotificationMode() -> Bool {
         guard let notifyEggHatch else {
-            notifyEggHatch = false
             return false
         }
         return notifyEggHatch
     }
     
     func toggleNotificationMode() {
-        guard let notifyEggHatch else { return }
+        guard let notifyEggHatch else {
+            return
+        }
         self.notifyEggHatch = !notifyEggHatch
     }
     
     /// 알림 권한 요청
-    func requestAuthorization() {
+    func requestAuthorization(completion: @escaping (Bool) -> Void) {
         let options: UNAuthorizationOptions = [.alert, .sound, .badge]
-        UNUserNotificationCenter.current().requestAuthorization(options: options) { success, error in
-            if let error = error {
-                print("ERROR: \(error)")
-            } else {
-                print("SUCCESS: Notification authorization granted")
-            }
+        UNUserNotificationCenter.current().requestAuthorization(options: options) { granted, _ in
+            // 앱 알림 비허용 설정 반영
+            if !granted { self.notifyEggHatch = false }
+            return completion(granted)
         }
     }
     
     /// 로컬 푸시 알림 스케줄링 (즉시 또는 특정 시간)
-    func scheduleNotification(identifier: String, title: String, body: String, triggerDate: Date? = nil) {
+    func scheduleNotification(title: String, body: String) {
+        let identifier = UUID().uuidString
+        
+        // 내용
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
         content.badge = 1
         
-        // 트리거 설정: triggerDate가 nil이면 즉시 알림
-        let trigger: UNNotificationTrigger
-        if let date = triggerDate {
-            let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-            trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-        } else {
-            // 즉시 알림 (1초 후)
-            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        }
+        // 10초 후
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
         
         // 알림 요청 생성
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
-        // 알림 센터에 추가
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("ERROR: Failed to schedule notification - \(error)")
-            } else {
-                print("SUCCESS: Notification scheduled with identifier \(identifier)")
+        // 권한이 허용된 경우에만 알림 센터에 추가
+        NotificationManager.shared.requestAuthorization { granted in
+            if granted && NotificationManager.shared.getNotificationMode() {
+                UNUserNotificationCenter.current().add(request) { error in
+                    if let error = error {
+                        print("ERROR: Failed to schedule notification - \(error)")
+                    } else {
+                        print("SUCCESS: Notification scheduled with identifier \(identifier)")
+                    }
+                }
             }
         }
     }
     
-    /// 기존 알림 제거
-    func removeScheduledNotification(identifier: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+    func clearBadge() {
+        UNUserNotificationCenter.current().setBadgeCount(0) { error in
+            if let error = error {
+                print("ERROR: Failed to clear badge - \(error)")
+            } else {
+                print("SUCCESS: Badge cleared")
+            }
+        }
     }
 }
