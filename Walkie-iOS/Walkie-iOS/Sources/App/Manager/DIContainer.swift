@@ -11,6 +11,7 @@ final class DIContainer {
     static let shared = DIContainer()
     private init() {}
     
+    // Singleton Services
     private lazy var reissueService = DefaultReissueService()
     private lazy var eggService = DefaultEggService(reissueService: reissueService)
     private lazy var memberService = DefaultMemberService(reissueService: reissueService)
@@ -18,6 +19,7 @@ final class DIContainer {
     private lazy var characterService = DefaultCharacterService(reissueService: reissueService)
     private lazy var authService = DefaultAuthService(reissueService: reissueService)
     
+    // Singleton Repositories
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
     private lazy var memberRepo = DefaultMemberRepository(memberService: memberService)
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
@@ -25,12 +27,10 @@ final class DIContainer {
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
     
     private lazy var stepStore = DefaultStepStore()
-}
-
-extension DIContainer {
     
-    func buildHomeView() -> HomeView {
-        return HomeView(viewModel: HomeViewModel(
+    // Singleton ViewModels
+    private lazy var homeViewModel: HomeViewModel = {
+        HomeViewModel(
             getEggPlayUseCase: DefaultGetEggPlayUseCase(
                 memberRepository: memberRepo
             ),
@@ -39,129 +39,144 @@ extension DIContainer {
             ),
             getEggCountUseCase: DefaultGetEggCountUseCase(
                 eggRepository: eggRepo
-            ), getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
+            ),
+            getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
                 characterRepository: characterRepo
-            ), getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
+            ),
+            getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
                 memberRepository: memberRepo
             )
-        ))
-    }
-    
-    func buildMapView() -> MapView {
-        return MapView(viewModel: MapViewModel(
-            getCharacterPlayUseCase: DefaultGetCharacterPlayUseCase(
-                memberRepository: memberRepo))
         )
-    }
-    
-    func buildMypageView() -> MypageMainView {
-        return MypageMainView(
-            viewModel: MypageMainViewModel(
-                logoutUseCase: DefaultLogoutUserUseCase(
-                    authRepository: authRepo,
-                    memberRepository: memberRepo
-                ), patchProfileUseCase: DefaultPatchProfileUseCase(
-                    memberRepository: memberRepo
-                ), getProfileUseCase: DefaultGetProfileUseCase(
-                    memberRepository: memberRepo
-                ), withdrawUseCase: DefaultWithdrawUseCase(
-                    memberRepository: memberRepo
-                )
+    }()
+    private lazy var mapViewModel: MapViewModel = {
+        MapViewModel(
+            getCharacterPlayUseCase: DefaultGetCharacterPlayUseCase(
+                memberRepository: memberRepo
             )
         )
-    }
-    
-    func buildEggView() -> EggView {
-        let eggVM = EggViewModel(
+    }()
+    private lazy var mypageMainViewModel: MypageMainViewModel = {
+        MypageMainViewModel(
+            logoutUseCase: DefaultLogoutUserUseCase(
+                authRepository: authRepo,
+                memberRepository: memberRepo
+            ),
+            patchProfileUseCase: DefaultPatchProfileUseCase(
+                memberRepository: memberRepo
+            ),
+            getProfileUseCase: DefaultGetProfileUseCase(
+                memberRepository: memberRepo
+            ),
+            withdrawUseCase: DefaultWithdrawUseCase(
+                memberRepository: memberRepo
+            )
+        )
+    }()
+    private lazy var eggViewModel: EggViewModel = {
+        EggViewModel(
             eggUseCase: DefaultEggUseCase(
                 eggRepository: eggRepo,
                 memberRepository: memberRepo
             )
         )
-        return EggView(viewModel: eggVM)
-    }
+    }()
+    private lazy var alarmListViewModel: AlarmListViewModel = {
+        AlarmListViewModel()
+    }()
+    private lazy var reviewViewModel: ReviewViewModel = {
+        ReviewViewModel(
+            reviewUseCase: DefaultReviewUseCase(
+                reviewRepository: reviewRepo
+            )
+        )
+    }()
+    private lazy var characterViewModel: CharacterViewModel = {
+        CharacterViewModel(
+            getCharactersListUseCase: DefaultGetCharactersListUseCase(
+                characterRepository: characterRepo
+            ),
+            getCharactersDetailUseCase: DefaultGetCharactersDetailUseCase(
+                characterRepository: characterRepo
+            ),
+            patchWalkingCharacterUseCase: DefaultPatchWalkingCharacterUseCase(
+                memberRepository: memberRepo
+            )
+        )
+    }()
+    private lazy var loginViewModel: LoginViewModel = {
+        LoginViewModel(
+            loginUseCase: DefaultLoginUseCase(
+                authRepository: authRepo,
+                memberRepository: memberRepo
+            )
+        )
+    }()
+    private lazy var signupViewModel: SignupViewModel = {
+        SignupViewModel(
+            signupUseCase: DefaultSignupUseCase(
+                authRepository: authRepo,
+                memberRepository: memberRepo
+            )
+        )
+    }()
+    private lazy var hatchEggViewModel: HatchEggViewModel = {
+        HatchEggViewModel(
+            getEggPlayUseCase: DefaultGetEggPlayUseCase(
+                memberRepository: memberRepo
+            ),
+            updateEggStepUseCase: DefaultUpdateEggStepUseCase(
+                eggRepository: eggRepo
+            )
+        )
+    }()
+}
+
+extension DIContainer {
     
+    // MARK: - Main Views
+    func buildHomeView() -> HomeView {
+        return HomeView(viewModel: homeViewModel)
+    }
+    func buildMapView() -> MapView {
+        return MapView(viewModel: mapViewModel)
+    }
+    func buildMypageView() -> MypageMainView {
+        return MypageMainView(viewModel: mypageMainViewModel)
+    }
+    func buildEggView() -> EggView {
+        return EggView(viewModel: eggViewModel)
+    }
     func buildAlarmListView() -> AlarmListView {
-        return AlarmListView(viewModel: AlarmListViewModel())
+        return AlarmListView(viewModel: alarmListViewModel)
     }
-    
     func buildReviewView() -> ReviewView {
-        return ReviewView(
-            viewModel: ReviewViewModel(
-                reviewUseCase: DefaultReviewUseCase(
-                    reviewRepository: reviewRepo
-                )
-            )
-        )
+        return ReviewView(viewModel: reviewViewModel)
     }
-    
     func buildCharacterView() -> CharacterView {
-        return CharacterView(
-            viewModel: CharacterViewModel(
-                getCharactersListUseCase: DefaultGetCharactersListUseCase(
-                    characterRepository: characterRepo
-                ),
-                getCharactersDetailUseCase: DefaultGetCharactersDetailUseCase(
-                    characterRepository: characterRepo
-                ),
-                patchWalkingCharacterUseCase: DefaultPatchWalkingCharacterUseCase(
-                    memberRepository: memberRepo
-                )
-            )
-        )
+        return CharacterView(viewModel: characterViewModel)
     }
     
-    // Onboarding
-    
+    // MARK: - Onboarding Views
     func buildLoginView() -> LoginView {
-        return LoginView(
-            loginViewModel: LoginViewModel(
-                loginUseCase: DefaultLoginUseCase(
-                    authRepository: authRepo,
-                    memberRepository: memberRepo
-                )
-            )
-        )
+        return LoginView(loginViewModel: loginViewModel)
     }
-    
     func buildSignupView() -> OnboardingCompleteView {
         return OnboardingCompleteView()
     }
-    
     func buildNicknameView() -> NicknameView {
-        return NicknameView(
-            signupViewModel: SignupViewModel(
-                signupUseCase: DefaultSignupUseCase(
-                    authRepository: authRepo,
-                    memberRepository: memberRepo
-                )
-            )
-        )
+        return NicknameView(signupViewModel: signupViewModel)
     }
-    
     func buildHatchEggView() -> HatchEggView {
-        return HatchEggView(
-            hatchEggViewModel: HatchEggViewModel(
-                getEggPlayUseCase:
-                    DefaultGetEggPlayUseCase(
-                        memberRepository: memberRepo
-                    ),
-                updateEggStepUseCase:
-                    DefaultUpdateEggStepUseCase(
-                        eggRepository: eggRepo
-                    )
-            )
-        )
+        return HatchEggView(hatchEggViewModel: hatchEggViewModel)
     }
     
+    // MARK: - UseCases
     func resolveCheckStepUseCase() -> CheckStepUseCase {
         return DefaultCheckStepUseCase(stepStore: stepStore)
     }
-    
     func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
         return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
     }
-    
     func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
         return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
     }
