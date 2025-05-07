@@ -10,7 +10,7 @@ import UIKit
 final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
     func execute() {
         if UserManager.shared.getStepCountGoal
-            >= UserManager.shared.getStepCount
+            <= UserManager.shared.getStepCount
             + stepStore.getStepCountCache() {
             NotificationManager.shared.scheduleNotification(
                 title: "알이 부화하려고 해요!",
