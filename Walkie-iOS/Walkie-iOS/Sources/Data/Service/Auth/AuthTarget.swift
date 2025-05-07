@@ -54,7 +54,7 @@ extension AuthTarget {
                 [
                     "provider": info.provider.rawValue,
                     "loginAccessToken": info.socialToken,
-                    "nickname": UserManager.shared.getUserNickname
+                    "nickname": info.username
                     
                 ]
             ),

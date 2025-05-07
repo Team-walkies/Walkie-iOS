@@ -14,6 +14,8 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     private let locationManager = CLLocationManager()
     @Published var currentLocation: CLLocation?
     
+    static let shared = LocationManager()
+    
     override init() {
         super.init()
         locationManager.delegate = self
@@ -54,5 +56,9 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
         didFailWithError error: Error
     ) {
         print("위치 업데이트 실패:", error)
+    }
+    
+    func getCurrentLocation() -> CLLocation? {
+        return locationManager.location
     }
 }

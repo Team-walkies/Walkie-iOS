@@ -16,6 +16,7 @@ struct MypageMainServiceSectionView: View {
             ForEach([
                 MypageServiceSectionItem.notice,
                 MypageServiceSectionItem.privacyPolicy,
+                MypageServiceSectionItem.servicePolicy,
                 MypageServiceSectionItem.appVersion
             ], id: \.title) { item in
                 MypageMainItemView(

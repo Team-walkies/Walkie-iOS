@@ -73,7 +73,7 @@ final class CharacterDetailViewModel: ViewModelable {
                 receiveValue: { _, details in
                     self.obtainedState = details.map { detail in
                         ObtainedState(
-                            obtainedDate: self.convertDateFormat(from: detail.obtainedDate) ?? "날짜 변환 실패",
+                            obtainedDate: "\(detail.obtainedDate[0]).\(detail.obtainedDate[1]).\(detail.obtainedDate[2])",
                             obtainedPosition: detail.obtainedPosition)
                     }
                     self.state = .loaded(

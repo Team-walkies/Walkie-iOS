@@ -18,19 +18,34 @@ final class DefaultCalendarUseCase: CalendarUseCase {
         guard let startOfWeek = calendar.date(from: components) else {
             let today = Date()
             let fallbackStartOfWeek = calendar.date(
-                from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)
+                from: calendar.dateComponents(
+                    [.yearForWeekOfYear, .weekOfYear],
+                    from: today
+                )
             ) ?? today
             let previousWeekStart = calendar.date(
                 byAdding: .day,
                 value: -7,
                 to: fallbackStartOfWeek
             ) ?? fallbackStartOfWeek
-            let nextWeekEnd = calendar.date(byAdding: .day, value: 13, to: fallbackStartOfWeek) ?? fallbackStartOfWeek
+            let nextWeekEnd = calendar.date(
+                byAdding: .day,
+                value: 13,
+                to: fallbackStartOfWeek
+            ) ?? fallbackStartOfWeek
             return (startDate: previousWeekStart, endDate: nextWeekEnd)
         }
         
-        let previousWeekStart = calendar.date(byAdding: .day, value: -7, to: startOfWeek) ?? startOfWeek
-        let nextWeekEnd = calendar.date(byAdding: .day, value: 13, to: startOfWeek) ?? startOfWeek        
+        let previousWeekStart = calendar.date(
+            byAdding: .day,
+            value: -7,
+            to: startOfWeek
+        ) ?? startOfWeek
+        let nextWeekEnd = calendar.date(
+            byAdding: .day,
+            value: 13,
+            to: startOfWeek
+        ) ?? startOfWeek
         return (startDate: previousWeekStart, endDate: nextWeekEnd)
     }
     

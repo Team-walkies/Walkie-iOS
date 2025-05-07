@@ -44,7 +44,19 @@ let project = Project(
                     "NSAppTransportSecurity": [
                         "NSAllowsArbitraryLoads": true
                     ],
-                    "UIBackgroundModes": ["location"]
+                    "UIApplicationSceneManifest": [
+                        "UIApplicationSupportsMultipleScenes": false,
+                        "UISceneConfigurations": [:]
+                    ],
+                    "BGTaskSchedulerPermittedIdentifiers": [
+                        "com.walkie.ios.check.step",
+                        "com.walkie.ios.update.step"
+                    ],
+                    "UIBackgroundModes": [
+                        "fetch",
+                        "processing",
+                        "location"
+                    ]
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],

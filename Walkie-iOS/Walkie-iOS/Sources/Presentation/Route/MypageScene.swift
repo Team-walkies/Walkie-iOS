@@ -29,7 +29,10 @@ enum MypageSheet: AppRoute {
     case mypage
     
     var id: String {
-        return "mypage"
+        switch self {
+        case .mypage:
+            return "mypage"
+        }
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
@@ -44,7 +47,10 @@ enum MypageFullScreenCover: AppRoute {
     case mypage
 
     var id: String {
-        return "mypage"
+        switch self {
+        case .mypage:
+            return "mypage"
+        }
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {

@@ -14,5 +14,5 @@ struct CharacterEntity {
     let dinoType: DinoType?
     let count: Int
     let isWalking: Bool
-    let obtainedDetails: [CharacterDetailEntity]?
+    let obtainedDetails: [Int]?
 }

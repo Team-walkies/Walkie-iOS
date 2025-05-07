@@ -16,9 +16,11 @@ struct MypageMainProfileSectionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .center, spacing: 0) {
-                Text(UserManager.shared.getUserNickname)
+                Text(mypageMainState.nickname)
                     .font(.H2)
                     .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                    .truncationMode(.tail)
+                    .multiline(lineLimit: 1)
                 Text("님")
                     .font(.H2)
                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
@@ -30,7 +32,7 @@ struct MypageMainProfileSectionView: View {
                     .frame(height: 28)
                     .background(WalkieCommonAsset.blue50.swiftUIColor)
                     .cornerRadius(8)
-                Spacer()
+                Spacer(minLength: 0)
             }
             
             HighlightTextAttribute(
