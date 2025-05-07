@@ -12,6 +12,8 @@ struct ReviewView: View {
     
     @ObservedObject var viewModel: ReviewViewModel
     @ObservedObject var calendarViewModel: CalendarViewModel
+    @State private var selectedReview: ReviewItemId? = nil
+    @State private var showReviewEdit: Bool = false
     
     init(
         viewModel: ReviewViewModel
@@ -48,7 +50,10 @@ struct ReviewView: View {
                     if let reviewState {
                         VStack(spacing: 40) {
                             ForEach(reviewState, id: \.reviewID) { item in
-                                ReviewItemView(reviewState: item)
+                                ReviewItemView(reviewState: item) { review in
+                                    selectedReview = review
+                                    showReviewEdit = true
+                                }
                             }
                         }
                     }
@@ -72,6 +77,9 @@ struct ReviewView: View {
                     calendarViewModel: calendarViewModel,
                     selectedDate: calendarViewModel.state.selectedDate)
             )
+        }
+        .bottomSheet(isPresented: $showReviewEdit, height: 150) {
+            ReviewEditView()
         }
     }
 }
