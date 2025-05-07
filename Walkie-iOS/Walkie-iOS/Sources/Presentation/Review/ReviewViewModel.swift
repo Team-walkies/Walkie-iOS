@@ -18,6 +18,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     @Published var delState: ReviewDeleteState = .loading
     @Published var loadedReviewList: [ReviewState] = []
     @Published var reviewDateList: [String] = []
+    @Published var selectedDate: Date = Date()
     
     var onPop: (() -> Void)?
     
@@ -103,13 +104,15 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     
     func getReviewList(startDate: String, endDate: String) {
         let date = ReviewsCalendarDate(startDate: startDate, endDate: endDate)
-        self.reviewUseCase.getReviewList(date: date)
+        self.reviewUseCase
+            .getReviewList(date: date)
             .walkieSink(
                 with: self,
                 receiveValue: { viewModel, reviewList in
                     let processedReviews = reviewList.reviewList.map { viewModel.processReviewEntity($0) }
                     viewModel.loadedReviewList = processedReviews
                     viewModel.reviewDateList = Array(Set(reviewList.reviewList.map { $0.date })).sorted()
+                    self.showReviewList(dateString: self.selectedDate.convertToDateString())
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

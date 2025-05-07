@@ -90,11 +90,13 @@ struct ReviewView: View {
             }
             ToastContainer()
         }
-        .onAppear {
-            viewModel.action(.loadReviewList(
-                startDate: calendarViewModel.firstDay.convertToDateString(),
-                endDate: calendarViewModel.lastDay.convertToDateString()
-            ))
+        .onChange(of: showReviewEdit) { _, isPresented in
+            if !isPresented {
+                viewModel.action(.loadReviewList(
+                    startDate: calendarViewModel.firstDay.convertToDateString(),
+                    endDate: calendarViewModel.lastDay.convertToDateString()
+                ))
+            }
         }
         .onChange(of: viewModel.delState) { _, newState in
             if case .loaded = newState {
@@ -104,6 +106,9 @@ struct ReviewView: View {
                     icon: .icCheck
                 )
             }
+        }
+        .onChange(of: calendarViewModel.state.selectedDate) {
+            viewModel.selectedDate = calendarViewModel.state.selectedDate
         }
         .navigationBarBackButtonHidden()
         .bottomSheet(isPresented: $calendarViewModel.showPicker, height: 436) {
@@ -125,12 +130,20 @@ struct ReviewView: View {
                 }
             )
         }
-        .fullScreenCover(isPresented: $showReviewWeb, content: {
-            ReviewWebView(
-                viewModel: viewModel,
-                reviewInfo: selectedReview ?? ReviewItemId(spotId: -1, reviewId: -1)
-            )
-        })
+        .fullScreenCover(
+            isPresented: $showReviewWeb,
+            onDismiss: {
+                viewModel.action(.loadReviewList(
+                    startDate: calendarViewModel.firstDay.convertToDateString(),
+                    endDate: calendarViewModel.lastDay.convertToDateString()
+                ))
+                viewModel.state = .loading
+            }, content: {
+                ReviewWebView(
+                    viewModel: viewModel,
+                    reviewInfo: selectedReview ?? ReviewItemId(spotId: -1, reviewId: -1)
+                )
+            })
     }
 }
 
