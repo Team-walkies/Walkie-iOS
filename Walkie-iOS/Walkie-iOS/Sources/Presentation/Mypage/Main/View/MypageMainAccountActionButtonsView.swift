@@ -33,6 +33,7 @@ struct MypageMainAccountActionButtonsView: View {
                     checkButtonTitle: "로그아웃",
                     cancelButtonTitle: "뒤로가기"
                 )
+                appCoordinator.showAlert()
             }, label: {
                 Text("로그아웃")
                     .font(.B2)
