@@ -25,11 +25,11 @@ class ToastManager: ObservableObject {
         // 기존 타이머가 실행 중이면 취소합니다
         dismissWorkItem?.cancel()
 
-        withAnimation(.easeIn(duration: 0.1)) { isShowing = true }
+        withAnimation(.easeIn(duration: 0.3)) { isShowing = true }
 
         // 새로운 타이머를 설정합니다
         let workItem = DispatchWorkItem {
-            withAnimation(.easeOut(duration: 0.1)) { self.isShowing = false }
+            withAnimation(.easeOut(duration: 0.3)) { self.isShowing = false }
         }
         
         self.dismissWorkItem = workItem
