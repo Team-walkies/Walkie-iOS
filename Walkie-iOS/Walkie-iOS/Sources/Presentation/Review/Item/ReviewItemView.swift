@@ -106,7 +106,7 @@ struct ReviewItemView: View {
             )
             
             VStack(alignment: .leading, spacing: 8) {
-                RankStarView(rank: reviewState.rank)
+                RankStarView(rank: reviewState.rating)
                     .frame(maxWidth: .infinity)
                 Text(reviewState.review)
                     .font(.B2)
