@@ -118,8 +118,6 @@ extension MapViewModel {
     
     func setWebURL(entity: CharactersPlayEntity) throws -> URLRequest {
         let token = (try? TokenKeychainManager.shared.getAccessToken())
-        print("🫨🫨🫨🫨🫨🫨")
-        print(token)
         var components = URLComponents(string: Config.webURL)
         components?.queryItems = [
             URLQueryItem(name: "accessToken", value: token),

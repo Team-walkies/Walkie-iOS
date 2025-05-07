@@ -19,6 +19,8 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     @Published var loadedReviewList: [ReviewState] = []
     @Published var reviewDateList: [String] = []
     
+    var onPop: (() -> Void)?
+    
     enum Action {
         case loadReviewList(startDate: String, endDate: String)
         case showReviewList(dateString: String)
@@ -70,6 +72,8 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
                 name: .reissueFailed,
                 object: nil
             )
+        case .finishReviewModify:
+            onPop?()
         default:
             break
         }
@@ -81,6 +85,20 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     ) {
         self.reviewUseCase = reviewUseCase
         self.delReviewUseCase = delReviewUseCase
+    }
+    
+    func setWebURL(reviewInfo: ReviewItemId) throws -> URLRequest {
+        let token = (try? TokenKeychainManager.shared.getAccessToken())
+        var components = URLComponents(string: Config.webURL + "/rewrite")
+        components?.queryItems = [
+            URLQueryItem(name: "reviewId", value: "\(reviewInfo.reviewId)"),
+            URLQueryItem(name: "spotId", value: "\(reviewInfo.spotId)"),
+            URLQueryItem(name: "token", value: token)
+        ]
+        guard let url = components?.url else {
+            throw WebURLError.invalidURL
+        }
+        return URLRequest(url: url)
     }
     
     func getReviewList(startDate: String, endDate: String) {

@@ -15,6 +15,7 @@ struct ReviewView: View {
     @State private var selectedReview: ReviewItemId?
     @State private var showReviewEdit: Bool = false
     @State private var showReviewDelete: Bool = false
+    @State private var showReviewWeb: Bool = false
     
     init(
         viewModel: ReviewViewModel
@@ -119,9 +120,17 @@ struct ReviewView: View {
                     showReviewDelete = true
                 },
                 onEditTap: {
-                    print("show edit webview")
+                    showReviewEdit = false
+                    showReviewWeb = true
                 }
             )
+        }
+        .navigationDestination(isPresented: $showReviewWeb) {
+            ReviewWebView(
+                viewModel: viewModel,
+                reviewInfo: selectedReview ?? ReviewItemId(spotId: -1, reviewId: -1)
+            )
+            .navigationBarBackButtonHidden()
         }
     }
 }
