@@ -87,6 +87,7 @@ final class EggDetailViewModel: ViewModelable {
                             isWalking: true
                         )
                     )
+                    ToastManager.shared.showToast("같이 걷는 알을 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

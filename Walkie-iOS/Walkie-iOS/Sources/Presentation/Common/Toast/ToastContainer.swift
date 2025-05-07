@@ -22,7 +22,7 @@ struct ToastContainer: View {
         }
         .ignoresSafeArea(.all, edges: .bottom)
         .frame(alignment: .bottom)
-        .zIndex(1)
+        .zIndex(.infinity)
         .allowsHitTesting(false)
     }
 }
