@@ -125,13 +125,12 @@ struct ReviewView: View {
                 }
             )
         }
-        .navigationDestination(isPresented: $showReviewWeb) {
+        .fullScreenCover(isPresented: $showReviewWeb, content: {
             ReviewWebView(
                 viewModel: viewModel,
                 reviewInfo: selectedReview ?? ReviewItemId(spotId: -1, reviewId: -1)
             )
-            .navigationBarBackButtonHidden()
-        }
+        })
     }
 }
 
