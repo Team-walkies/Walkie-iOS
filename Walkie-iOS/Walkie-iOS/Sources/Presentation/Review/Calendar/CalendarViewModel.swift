@@ -251,7 +251,14 @@ final class CalendarViewModel: ViewModelable {
         )
         if let last = self.lastQuery, last.startDate != query.startDate {
             lastQuery = query
-            reviewViewModel.action(.loadReviewList(startDate: query.startDate, endDate: query.endDate))
+            reviewViewModel
+                .action(
+                    .loadReviewList(
+                        startDate: query.startDate,
+                        endDate: query.endDate,
+                        completion: { _ in }
+                    )
+                )
         }
     }
     
