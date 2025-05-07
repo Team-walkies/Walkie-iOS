@@ -20,6 +20,10 @@ extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+    
+    func popGestureEnabled(_ enabled: Bool) -> some View {
+        background(PopGestureConfigurator(enabled: enabled))
+    }
 }
 
 // MARK: - AlignmentModifier

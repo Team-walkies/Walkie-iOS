@@ -45,8 +45,10 @@ struct NicknameView: View {
                     .padding(.leading, 16)
                 
                 InputView(
-                    limitation: 20,
-                    placeholderText: appCoordinator.loginInfo.username,
+                    limitation: 10,
+                    placeholderText: appCoordinator.loginInfo.username == ""
+                    ? "닉네임 입력"
+                    : appCoordinator.loginInfo.username,
                     onlyText: true,
                     input: $userInput,
                     inputState: $inputState

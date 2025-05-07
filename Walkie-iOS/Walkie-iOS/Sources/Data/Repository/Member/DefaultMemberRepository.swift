@@ -98,7 +98,8 @@ extension DefaultMemberRepository: MemberRepository {
     func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError> {
         memberService.getCharacterPlay()
             .map { dto in CharactersPlayEntity(
-                characterID: dto.characterID,
+                characterId: dto.characterID,
+                characterRank: dto.rank,
                 characterType: dto.type,
                 characterClass: dto.characterClass
             )}

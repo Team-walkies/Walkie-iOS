@@ -10,12 +10,12 @@ import ActivityKit
 public struct WalkieWidgetAttributes: ActivityAttributes {
     public struct ContentState: Codable, Hashable {
         public var place: String
-        public var currentDistance: Double
+        public var leftDistance: Double
         public var totalDistance: Double
         
-        public init(place: String, currentDistance: Double, totalDistance: Double) {
+        public init(place: String, leftDistance: Double, totalDistance: Double) {
             self.place = place
-            self.currentDistance = currentDistance
+            self.leftDistance = leftDistance
             self.totalDistance = totalDistance
         }
     }

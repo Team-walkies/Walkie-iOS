@@ -54,7 +54,8 @@ let project = Project(
                     ],
                     "UIBackgroundModes": [
                         "fetch",
-                        "processing"
+                        "processing",
+                        "location"
                     ]
                 ]
             ),
@@ -63,6 +64,7 @@ let project = Project(
                 "Walkie-iOS/Resources/**",
                 "Walkie-iOS/Resources/GoogleService-Info.plist"
             ],
+            entitlements: "Walkie-iOS/Walkie-iOS.entitlements",
             scripts: [
                 .pre(
                     script: """
