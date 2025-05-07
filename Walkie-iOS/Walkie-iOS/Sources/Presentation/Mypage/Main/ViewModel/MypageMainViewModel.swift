@@ -40,10 +40,6 @@ final class MypageMainViewModel: ViewModelable {
         case withdraw
     }
     
-    struct LogoutViewState {
-        var isPresented: Bool
-    }
-    
     private var mypageMainState: MypageMainState = MypageMainState(
         nickname: "로딩 중...",
         userTier: "초보워키",
@@ -51,7 +47,6 @@ final class MypageMainViewModel: ViewModelable {
         isPublic: false
     )
     @Published var state: MypageMainViewState = .loading
-    @Published var logoutViewState = LogoutViewState(isPresented: false)
     
     init(
         logoutUseCase: DefaultLogoutUserUseCase,
@@ -161,4 +156,3 @@ final class MypageMainViewModel: ViewModelable {
             )
         .store(in: &self.cancellables)    }
 }
-

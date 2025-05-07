@@ -48,7 +48,7 @@ struct EggGuideView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
-        }
+        }.scrollIndicators(.never)
     }
 }
 

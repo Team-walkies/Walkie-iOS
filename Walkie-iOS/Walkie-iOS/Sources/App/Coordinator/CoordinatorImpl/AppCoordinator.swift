@@ -17,10 +17,10 @@ extension Notification.Name {
 @Observable
 final class AppCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer
-
+    
     var path = NavigationPath()
     var currentScene: AppScene = .splash
-
+    
     var sheet: (any AppRoute)?
     var appSheet: AppSheet? {
         get { sheet as? AppSheet }
@@ -32,14 +32,15 @@ final class AppCoordinator: Coordinator, ObservableObject {
         set { fullScreenCover = newValue }
     }
     
-    var showAlertWithDim: HomeAlertStruct?
-    
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
     
     let tabBarView: AnyView
     
     var loginInfo: LoginUserInfo = LoginUserInfo()
+    
+    private var isShowingAlert: Bool = false
+    private var alertModal: Modal?
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
@@ -63,7 +64,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             self?.changeRoot()
         }
     }
-
+    
     @ViewBuilder
     func buildScene(_ scene: AppScene) -> some View {
         switch scene {
@@ -85,42 +86,31 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .tabBar:
             ZStack {
                 tabBarView
-                
-                if let data = showAlertWithDim {
-                    ZStack {
-                        Color.black.opacity(0.6)
-                            .ignoresSafeArea()
-                        
-                        Modal(
-                            title: data.title,
-                            content: data.content,
-                            style: .primary,
-                            button: .twobutton,
-                            cancelButtonAction: {
-                                self.showAlertWithDim = nil
-                            },
-                            checkButtonAction: {
-                                if let url = URL(string: UIApplication.openSettingsURLString)
-                                    , UIApplication.shared.canOpenURL(url) {
-                                    UIApplication.shared.open(url)
-                                }
-                                self.showAlertWithDim = nil
-                            },
-                            checkButtonTitle: "허용하기"
-                        )
-                        .padding(.horizontal, 40)
+                ZStack {
+                    Color.black.opacity(isShowingAlert && alertModal != nil ? 0.6 : 0.0)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                self.dismissAlert()
+                            }
+                        }
+                    if let modal = alertModal {
+                        modal
+                            .padding(.horizontal, 40)
+                            .opacity(isShowingAlert ? 1.0 : 0.0)
                     }
                 }
+                .animation(.easeInOut(duration: 0.25), value: isShowingAlert)
             }
         case .complete:
             diContainer.buildSignupView()
         }
     }
-
+    
     @ViewBuilder
     func buildSheet(_ sheet: AppSheet) -> some View {
     }
-
+    
     @ViewBuilder
     func buildFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
     }
@@ -153,5 +143,50 @@ final class AppCoordinator: Coordinator, ObservableObject {
         UserManager.shared.withdraw()
         currentScene = .splash
         updateCurrentScene()
+    }
+    
+    func buildAlert(
+        title: String,
+        content: String,
+        style: ModalStyleType,
+        button: ModalButtonType,
+        cancelButtonAction: @escaping () -> Void,
+        checkButtonAction: @escaping () -> Void,
+        checkButtonTitle: String = "확인",
+        cancelButtonTitle: String = "취소"
+    ) {
+        self.alertModal = Modal(
+            title: title,
+            content: content,
+            style: style,
+            button: button,
+            cancelButtonAction: {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    self.dismissAlert()
+                }
+                cancelButtonAction()
+            },
+            checkButtonAction: {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    self.dismissAlert()
+                }
+                checkButtonAction()
+            },
+            checkButtonTitle: checkButtonTitle,
+            cancelButtonTitle: cancelButtonTitle
+        )
+    }
+    
+    func showAlert() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isShowingAlert = true
+        }
+    }
+    
+    func dismissAlert() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isShowingAlert = false
+        }
+        self.alertModal = nil
     }
 }
