@@ -20,9 +20,9 @@ struct MypageWithdrawView: View {
             showBackButton: true
         ).padding(.bottom, 40)
         switch viewModel.state {
-        case .loaded:
+        case .loaded(let state) :
             VStack(alignment: .center, spacing: 0) {
-                Text("\(UserManager.shared.getUserNickname)님이 떠나시다니,\n너무 아쉬워요")
+                Text("\(state.nickname)님이 떠나시다니,\n너무 아쉬워요")
                     .font(.H3)
                     .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     .multilineTextAlignment(.center)
