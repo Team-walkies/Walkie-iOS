@@ -13,13 +13,6 @@ struct ReviewView: View {
     @ObservedObject var viewModel: ReviewViewModel
     @ObservedObject var calendarViewModel: CalendarViewModel
     
-    init(
-        viewModel: ReviewViewModel
-    ) {
-        self.viewModel = viewModel
-        self.calendarViewModel = CalendarViewModel(reviewViewModel: viewModel)
-    }
-    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
@@ -66,11 +59,7 @@ struct ReviewView: View {
                     endDate: calendarViewModel.lastDay.convertToDateString(),
                     completion: { result in
                         if result {
-                            viewModel.action(
-                                .showReviewList(
-                                    dateString: Date().convertToDateString()
-                                )
-                            )
+                            calendarViewModel.action(.didTapTodayButton)
                         }
                     }
                 )
