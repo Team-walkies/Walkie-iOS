@@ -10,7 +10,7 @@ import UIKit
 final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
     func execute() {
         if UserManager.shared.getStepCountGoal
-            >= UserManager.shared.getStepCount
+            <= UserManager.shared.getStepCount
             + stepStore.getStepCountCache() {
             // 푸시 알림 전송
         }

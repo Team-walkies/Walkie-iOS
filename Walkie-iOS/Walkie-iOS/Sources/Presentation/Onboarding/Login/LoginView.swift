@@ -101,6 +101,9 @@ struct LoginView: View {
                 break
             }
         }
+        .onAppear {
+            loginViewModel.resetState()
+        }
     }
 }
 

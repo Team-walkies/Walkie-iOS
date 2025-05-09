@@ -140,6 +140,12 @@ extension LoginViewModel {
             )
             .store(in: &self.cancellables)
     }
+    
+    func resetState() {
+        state = .loading
+        loginInfo = LoginUserInfo(provider: .kakao, socialToken: "", username: "")
+        cancellables.removeAll()
+    }
 }
 
 extension LoginViewModel: ASAuthorizationControllerPresentationContextProviding, ASAuthorizationControllerDelegate {
