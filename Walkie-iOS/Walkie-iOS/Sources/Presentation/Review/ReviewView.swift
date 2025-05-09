@@ -17,13 +17,6 @@ struct ReviewView: View {
     @State private var showReviewDelete: Bool = false
     @State private var showReviewWeb: Bool = false
     
-    init(
-        viewModel: ReviewViewModel
-    ) {
-        self.viewModel = viewModel
-        self.calendarViewModel = CalendarViewModel(reviewViewModel: viewModel)
-    }
-    
     var body: some View {
         ZStack {
             VStack(alignment: .center, spacing: 0) {
@@ -90,13 +83,18 @@ struct ReviewView: View {
             }
             ToastContainer()
         }
-        .onChange(of: showReviewEdit) { _, isPresented in
-            if !isPresented {
-                viewModel.action(.loadReviewList(
+        .onAppear {
+            viewModel.action(
+                .loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString()
-                ))
-            }
+                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    completion: { result in
+                        if result {
+                            calendarViewModel.action(.didTapTodayButton)
+                        }
+                    }
+                )
+            )
         }
         .onChange(of: viewModel.delState) { _, newState in
             if case .loaded = newState {

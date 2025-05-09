@@ -26,66 +26,37 @@ final class DefaultEggRepository {
 
 extension DefaultEggRepository: EggRepository {
     
-    func getEggsList(dummy: Bool = false) -> AnyPublisher<[EggEntity], NetworkError> {
-        if dummy {
-            let dummyData = (0..<20).map { eggId in
-                EggEntity(
-                    eggId: eggId,
-                    eggType: EggType.from(number: Int.random(in: 0...3)),
-                    nowStep: Int.random(in: 0...5000),
-                    needStep: Int.random(in: 1...5) * 1000,
-                    isWalking: Bool.random(),
-                    detail: nil,
-                    characterType: nil,
-                    jellyFishType: nil,
-                    dinoType: nil
-                )
-            }
-            return Just(dummyData)
-                .setFailureType(to: NetworkError.self)
-                .mapToNetworkError()
-        } else {
-            return eggService.getEggsList()
-                .map { dto in
-                    dto.eggs.map { egg in
-                        EggEntity(
-                            eggId: egg.eggId,
-                            eggType: EggType.from(number: egg.rank),
-                            nowStep: egg.nowStep,
-                            needStep: egg.needStep,
-                            isWalking: egg.play,
-                            detail: EggDetailEntity(
-                                obtainedPosition: egg.obtainedPosition,
-                                obtainedDate: egg.obtainedDate
-                            ),
-                            characterType: nil,
-                            jellyFishType: nil,
-                            dinoType: nil
-                        )
-                    }
-                }.mapToNetworkError()
-        }
-    }
-    
-    func getEggDetail(dummy: Bool = false, eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
-        if dummy {
-            let dummyData = EggDetailEntity(
-                obtainedPosition: "부평구 삼산동",
-                obtainedDate: "2023-04-15"
-            )
-            return Just(dummyData)
-                .setFailureType(to: NetworkError.self)
-                .mapToNetworkError()
-        } else {
-            return eggService.getEggDetail(eggId: eggId)
-                .map { dto in
-                    EggDetailEntity(
-                        obtainedPosition: dto.obtainedPosition,
-                        obtainedDate: dto.obtainedDate
+    func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
+        return eggService.getEggsList()
+            .map { dto in
+                dto.eggs.map { egg in
+                    EggEntity(
+                        eggId: egg.eggId,
+                        eggType: EggType.from(number: egg.rank),
+                        nowStep: egg.nowStep,
+                        needStep: egg.needStep,
+                        isWalking: egg.play,
+                        detail: EggDetailEntity(
+                            obtainedPosition: egg.obtainedPosition,
+                            obtainedDate: egg.obtainedDate
+                        ),
+                        characterType: nil,
+                        jellyFishType: nil,
+                        dinoType: nil
                     )
                 }
-                .mapToNetworkError()
-        }
+            }.mapToNetworkError()
+    }
+    
+    func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError> {
+        return eggService.getEggDetail(eggId: eggId)
+            .map { dto in
+                EggDetailEntity(
+                    obtainedPosition: dto.obtainedPosition,
+                    obtainedDate: dto.obtainedDate
+                )
+            }
+            .mapToNetworkError()
     }
     
     func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError> {
