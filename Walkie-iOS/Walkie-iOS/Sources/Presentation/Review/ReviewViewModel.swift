@@ -23,7 +23,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     var onPop: (() -> Void)?
     
     enum Action {
-        case loadReviewList(startDate: String, endDate: String)
+        case loadReviewList(startDate: String, endDate: String, completion: (Bool) -> Void)
         case showReviewList(dateString: String)
         case deleteReview(reviewId: Int)
     }
@@ -57,8 +57,8 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     
     func action(_ action: Action) {
         switch action {
-        case .loadReviewList(let startDate, let endDate):
-            getReviewList(startDate: startDate, endDate: endDate)
+        case .loadReviewList(let startDate, let endDate, let completion):
+            getReviewList(startDate: startDate, endDate: endDate, completion: completion)
         case .showReviewList(dateString: let dateString):
             showReviewList(dateString: dateString)
         case .deleteReview(reviewId: let reviewId):
@@ -102,7 +102,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
         return URLRequest(url: url)
     }
     
-    func getReviewList(startDate: String, endDate: String) {
+    func getReviewList(startDate: String, endDate: String, completion: @escaping (Bool) -> Void) {
         let date = ReviewsCalendarDate(startDate: startDate, endDate: endDate)
         self.reviewUseCase
             .getReviewList(date: date)
@@ -112,18 +112,23 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
                     let processedReviews = reviewList.reviewList.map { viewModel.processReviewEntity($0) }
                     viewModel.loadedReviewList = processedReviews
                     viewModel.reviewDateList = Array(Set(reviewList.reviewList.map { $0.date })).sorted()
-                    self.showReviewList(dateString: self.selectedDate.convertToDateString())
+                    completion(true)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
+                    completion(false)
                 })
             .store(in: &cancellables)
     }
     
     func showReviewList(dateString: String) {
-        self.state = .loaded(self.loadedReviewList.filter { review in
-            review.date == dateString
-        })
+        DispatchQueue.main.async {
+            self.state = .loaded(
+                self.loadedReviewList.filter { review in
+                    review.date == dateString
+                }
+            )
+        }
     }
     
     func delReview(reviewId: Int) {

@@ -60,7 +60,7 @@ final class EggDetailViewModel: ViewModelable {
                             eggType: self.eggState.eggType,
                             nowStep: self.eggState.nowStep,
                             needStep: self.eggState.needStep,
-                            isWalking: true
+                            isWalking: self.eggState.isWalking
                         )
                     )
                 }, receiveFailure: { _, error in

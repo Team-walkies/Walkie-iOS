@@ -11,6 +11,6 @@ struct GetCharactersDetailDto: Codable {
     let obtainedDetails: [ObtainedDetail]
     struct ObtainedDetail: Codable {
         let obtainedPosition: String
-        let obtainedDate: [Int]
+        let obtainedDate: String
     }
 }

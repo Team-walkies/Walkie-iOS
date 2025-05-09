@@ -42,7 +42,7 @@ extension EggTarget {
     static func getEggDetail(eggId: Int) -> EggTarget {
         EggTarget(
             path: URLConstant.eggsDetail(eggId: eggId),
-            method: .patch,
+            method: .get,
             task: .requestPlain
         )
     }
