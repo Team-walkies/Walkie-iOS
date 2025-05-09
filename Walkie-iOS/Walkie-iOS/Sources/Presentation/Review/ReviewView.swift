@@ -134,7 +134,11 @@ struct ReviewView: View {
                 viewModel.action(.loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
                     endDate: calendarViewModel.lastDay.convertToDateString(),
-                    completion: { _ in }
+                    completion: { result in
+                        if result {
+                            viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                        }
+                    }
                 ))
                 viewModel.state = .loading
             }, content: {
