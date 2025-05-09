@@ -87,6 +87,8 @@ final class DIContainer {
         ReviewViewModel(
             reviewUseCase: DefaultReviewUseCase(
                 reviewRepository: reviewRepo
+            ), delReviewUseCase: DefaultDeleteReviewUseCase(
+                reviewRepository: reviewRepo
             )
         )
     }()

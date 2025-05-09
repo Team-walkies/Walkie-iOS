@@ -71,11 +71,25 @@ struct WebView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        let coord = Coordinator(handlers: messageHandlers)
+        
+        if let stepHandler = messageHandlers
+            .compactMap({ $0 as? MapViewModel })
+            .first
+        {
+            stepHandler.sendToWeb = coord.sendToWeb(message:)
+        }
+        
+        return coord
     }
     
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         weak var webView: WKWebView?
+        private let handlers: [WebMessageHandling]
+        
+        init(handlers: [WebMessageHandling]) {
+            self.handlers = handlers
+        }
         
         func webView(
             _ webView: WKWebView,
@@ -93,7 +107,9 @@ struct WebView: UIViewRepresentable {
         
         func sendToWeb(message: Int) {
             print("😳😳send to web😳😳")
-            webView?.evaluateJavaScript("window.onReceiveStepsFromiOS(\(message))") { result, error in
+            webView?.evaluateJavaScript(
+                "window.onReceiveStepsFromiOS(\(message))"
+            ) { result, error in
                 if let error {
                     print("Error \(error.localizedDescription)")
                     return

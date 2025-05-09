@@ -101,7 +101,7 @@ struct ReviewView: View {
                 showReviewDelete = false
                 ToastManager.shared.showToast(
                     "기록을 삭제했어요",
-                    icon: .icCheck
+                    icon: .icCheckBlue
                 )
             }
         }
@@ -133,7 +133,8 @@ struct ReviewView: View {
             onDismiss: {
                 viewModel.action(.loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString()
+                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    completion: { _ in }
                 ))
                 viewModel.state = .loading
             }, content: {
