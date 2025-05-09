@@ -129,6 +129,9 @@ final class DIContainer {
             )
         )
     }()
+    private lazy var calendarViewModel: CalendarViewModel = {
+        CalendarViewModel(reviewViewModel: reviewViewModel)
+    }()
 }
 
 extension DIContainer {
@@ -150,7 +153,10 @@ extension DIContainer {
         return AlarmListView(viewModel: alarmListViewModel)
     }
     func buildReviewView() -> ReviewView {
-        return ReviewView(viewModel: reviewViewModel)
+        return ReviewView(
+            viewModel: reviewViewModel,
+            calendarViewModel: calendarViewModel
+        )
     }
     func buildCharacterView() -> CharacterView {
         return CharacterView(viewModel: characterViewModel)

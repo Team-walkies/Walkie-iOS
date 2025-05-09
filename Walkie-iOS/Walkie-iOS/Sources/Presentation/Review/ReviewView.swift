@@ -13,13 +13,6 @@ struct ReviewView: View {
     @ObservedObject var viewModel: ReviewViewModel
     @ObservedObject var calendarViewModel: CalendarViewModel
     
-    init(
-        viewModel: ReviewViewModel
-    ) {
-        self.viewModel = viewModel
-        self.calendarViewModel = CalendarViewModel(reviewViewModel: viewModel)
-    }
-    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
@@ -60,10 +53,17 @@ struct ReviewView: View {
             }
         }
         .onAppear {
-            viewModel.action(.loadReviewList(
-                startDate: calendarViewModel.firstDay.convertToDateString(),
-                endDate: calendarViewModel.lastDay.convertToDateString()
-            ))
+            viewModel.action(
+                .loadReviewList(
+                    startDate: calendarViewModel.firstDay.convertToDateString(),
+                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    completion: { result in
+                        if result {
+                            calendarViewModel.action(.didTapTodayButton)
+                        }
+                    }
+                )
+            )
         }
         .navigationBarBackButtonHidden()
         .bottomSheet(isPresented: $calendarViewModel.showPicker, height: 436) {
