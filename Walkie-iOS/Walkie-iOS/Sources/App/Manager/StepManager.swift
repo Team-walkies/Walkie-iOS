@@ -15,6 +15,7 @@ final class StepManager {
     private let updateEggStepUseCase: UpdateEggStepUseCase
     private let checkStepUseCase: CheckStepUseCase
     private let updateStepCacheUseCase: UpdateStepCacheUseCase
+    private var eggEntity: EggEntity?
     
     private enum BackgroundTaskIdentifier: String, CaseIterable {
         case checkStep = "com.walkie.ios.check.step"
@@ -31,6 +32,7 @@ final class StepManager {
         
         // 백그라운드 태스크 등록
         registerBackgroundTasks()
+        getEggPlayingAndThenUpdateStep()
     }
     
     func getEggPlayingAndThenUpdateStep() {
@@ -45,6 +47,9 @@ final class StepManager {
                     }
                 },
                 receiveValue: { [weak self] eggEntityValue in
+                    self?.eggEntity = eggEntityValue
+                    UserManager.shared.setStepCount(eggEntityValue.nowStep)
+                    UserManager.shared.setStepCountGoal(eggEntityValue.needStep)
                     self?.updateEggStepUseCase.execute(
                         egg: eggEntityValue,
                         step: UserManager.shared.getStepCount,
@@ -56,12 +61,23 @@ final class StepManager {
             .store(in: &cancellables)
     }
     
+    func updateForeground() {
+        if let egg = self.eggEntity {
+            self.updateEggStepUseCase.execute(
+                egg: egg,
+                step: UserManager.shared.getStepCount,
+                willHatch: false) {
+                    
+                }
+        }
+    }
+    
     // MARK: - Task Execution
     
     func executeForegroundTasks() {
         updateStepCacheUseCase.execute { [self] in
             checkStepUseCase.execute()
-            getEggPlayingAndThenUpdateStep()
+            updateForeground()
         }
     }
     

@@ -110,7 +110,7 @@ struct HomeView: View {
                 DispatchQueue.main.async {
                     timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
                         print("UserManager.shared.getStepCount \(UserManager.shared.getStepCount)")
-                        print("UserManager.shared.getStepCount \(UserManager.shared.getStepCountGoal)")
+                        print("UserManager.shared.getStepCountGoal \(UserManager.shared.getStepCountGoal)")
                         print("DefaultStepStore().getStepCountCache  \(DefaultStepStore().getStepCountCache())")
                         StepManager.shared.executeForegroundTasks()
                         print("서버에 업데이트 완료")
