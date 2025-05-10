@@ -40,4 +40,15 @@ extension ReviewTarget {
                 encoding: URLEncoding.queryString)
         )
     }
+    
+    static func delReview(reviewId: Int) -> ReviewTarget {
+        return ReviewTarget(
+            path: URLConstant.reviewsEdit.replacingOccurrences(
+                of: "{reviewId}",
+                with: String(reviewId)
+            ),
+            method: .delete,
+            task: .requestPlain
+        )
+    }
 }

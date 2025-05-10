@@ -12,6 +12,7 @@ import WalkieCommon
 struct ReviewItemView: View {
     
     @State var reviewState: ReviewViewModel.ReviewState
+    let onReviewTap: (ReviewItemId) -> Void
     
     var body: some View {
         VStack(spacing: 8) {
@@ -43,7 +44,12 @@ struct ReviewItemView: View {
                 Spacer()
                 Button(
                     action: {
-                        print(reviewState.reviewID)
+                        let info = ReviewItemId(
+                            spotId: reviewState.spotID,
+                            reviewId: reviewState.reviewID
+                        )
+                        print(info)
+                        onReviewTap(info)
                     }, label: {
                         Image(.icMore)
                             .resizable()
@@ -106,7 +112,7 @@ struct ReviewItemView: View {
             )
             
             VStack(alignment: .leading, spacing: 8) {
-                RankStarView(rank: reviewState.rank)
+                RankStarView(rank: reviewState.rating)
                     .frame(maxWidth: .infinity)
                 Text(reviewState.review)
                     .font(.B2)

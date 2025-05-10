@@ -11,6 +11,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "Walkie",
+                    "CFBundleShortVersionString": "1.0.0",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",

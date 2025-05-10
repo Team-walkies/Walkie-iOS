@@ -13,6 +13,7 @@ import CombineMoya
 protocol ReviewService {
     
     func getReviewCalendar(date: ReviewsCalendarDate) -> AnyPublisher<ReviewsCalendarDto, Error>
+    func delReview(reviewId: Int) -> AnyPublisher<Void, Error>
 }
 
 final class DefaultReviewService: ReviewService {
@@ -36,5 +37,15 @@ final class DefaultReviewService: ReviewService {
             )
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(ReviewsCalendarDto.self)
+    }
+    
+    func delReview(reviewId: Int) -> AnyPublisher<Void, any Error> {
+        reviewProvider
+            .requestPublisher(
+                .delReview(reviewId: reviewId),
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapVoidResponse()
     }
 }

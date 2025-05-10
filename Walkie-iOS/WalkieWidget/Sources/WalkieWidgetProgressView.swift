@@ -25,7 +25,7 @@ struct WalkieWidgetProgressView: View {
             HStack {
                 Spacer()
                 
-                Image("img_widget_logo")
+                Image(.imgWidgetLogo)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 76, height: 24)
@@ -40,20 +40,24 @@ struct WalkieWidgetProgressView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(info.place)")
                     .font(.B2)
-                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                    .foregroundColor(info.isLiveActivity
+                                     ? WalkieCommonAsset.gray500.swiftUIColor
+                                     : WalkieCommonAsset.gray400.swiftUIColor)
                 
                 if info.leftDistance == 0 {
                     Text("도착 완료! 알을 확인해보세요")
                         .font(.H3)
-                        .foregroundColor(.white)
+                        .foregroundColor(info.isLiveActivity ? .black : .white)
                 } else {
                     let formatLeft = formatDistance(Double(info.leftDistance))
                     HighlightTextAttribute(
                         text: "도착까지 \(formatLeft) 남음",
-                        textColor: .white,
+                        textColor: info.isLiveActivity ? .black : .white,
                         font: .H3,
                         highlightText: "\(formatLeft)",
-                        highlightColor: WalkieCommonAsset.blue200.swiftUIColor,
+                        highlightColor: info.isLiveActivity
+                        ? WalkieCommonAsset.blue400.swiftUIColor
+                        : WalkieCommonAsset.blue200.swiftUIColor,
                         highlightFont: .H3
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -65,14 +69,16 @@ struct WalkieWidgetProgressView: View {
                     isSmall: false,
                     current: info.totalDistance - info.leftDistance,
                     total: info.totalDistance,
-                    isDynamicIsland: true
+                    isDynamicIsland: true,
+                    isLiveActivity: info.isLiveActivity
                 )
                 
-                Image("ic_widget_spot")
+                Image(.icWidgetDistance)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 20, height: 22)
                     .padding(.trailing, 25)
+                    .foregroundColor(info.isLiveActivity ? WalkieCommonAsset.gray400.swiftUIColor : WalkieCommonAsset.blue300.swiftUIColor)
             }
         }
         .padding(.leading, 30)

@@ -29,6 +29,7 @@ enum MypageNotionWebViewURL: String {
     case privacy = "https://zippy-cake-826.notion.site/1c2e3ac17cda80c9b4c8cc05f9812e14?pvs=4"
     case service = "https://zippy-cake-826.notion.site/1c2e3ac17cda80d68d32e75b8e72fef6?pvs=4"
     case questions = "https://docs.google.com/forms/d/e/1FAIpQLSeYLEpG80S2RbgeWpjHL3jpZ-pys3I0LR0MxjwpChrKOpf_zA/viewform?usp=dialog"
+    case notice = "https://zippy-cake-826.notion.site/1c2e3ac17cda8049b805df59fa31fae3"
     
     var url: URL? {
         return URL(string: self.rawValue)

@@ -54,4 +54,10 @@ extension DefaultReviewRepository: ReviewRepository {
             }
             .eraseToAnyPublisher()
     }
+    
+    func delReview(reviewId: Int) -> AnyPublisher<Void, any Error> {
+        reviewService
+            .delReview(reviewId: reviewId)
+            .eraseToAnyPublisher()
+    }
 }

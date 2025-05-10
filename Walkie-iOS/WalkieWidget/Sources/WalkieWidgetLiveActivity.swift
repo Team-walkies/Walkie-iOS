@@ -20,13 +20,12 @@ struct WalkieWidgetLiveActivity: Widget {
                 leftDistance: context.state.leftDistance,
                 totalDistance: context.state.totalDistance)
             )
-            .activityBackgroundTint(Color.black)
-            .activitySystemActionForegroundColor(Color.black)
+            .activityBackgroundTint(Color.white.opacity(0.7))
 
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.trailing) {
-                    Image("img_widget_logo")
+                    Image(.imgWidgetLogo)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 76, height: 24)
@@ -40,19 +39,21 @@ struct WalkieWidgetLiveActivity: Widget {
                     )
                 }
             } compactLeading: {
-                Image("ic_widget_distance")
+                Image(.icWidgetDistance)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 22, height: 22)
+                    .foregroundColor(WalkieCommonAsset.blue300.swiftUIColor)
             } compactTrailing: {
                 Text(formatDistance(context.state.leftDistance))
                     .font(.C1)
                     .foregroundColor(WalkieCommonAsset.blue200.swiftUIColor)
             } minimal: {
-                Image("ic_widget_distance")
+                Image(.icWidgetDistance)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 22, height: 22)
+                    .foregroundColor(WalkieCommonAsset.blue300.swiftUIColor)
             }
             .keylineTint(WalkieCommonAsset.blue200.swiftUIColor)
         }
