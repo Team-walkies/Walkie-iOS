@@ -14,6 +14,7 @@ enum WebMessageType: String {
     case stopExplore
     case unauthorizedFromWeb
     case finishReviewModify
+    case getEgg
 }
 
 struct WebMessage {

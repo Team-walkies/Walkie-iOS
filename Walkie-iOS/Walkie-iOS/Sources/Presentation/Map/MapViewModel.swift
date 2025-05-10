@@ -91,6 +91,8 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
         case .unauthorizedFromWeb:
             stopDynamicIsland()
             onPop?()
+        case .getEgg:
+            stopDynamicIsland()
         default:
             break
         }
