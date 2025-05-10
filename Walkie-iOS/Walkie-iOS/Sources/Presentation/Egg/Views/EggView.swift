@@ -100,7 +100,7 @@ struct EggView: View {
                 .navigationBarBackButtonHidden()
         }
         .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
-            EggDetailView(viewModel: viewModel.eggDetailViewModel!)
+            EggDetailView(eggViewModel: viewModel, viewModel: viewModel.eggDetailViewModel!)
         }
         .navigationBarBackButtonHidden()
     }
