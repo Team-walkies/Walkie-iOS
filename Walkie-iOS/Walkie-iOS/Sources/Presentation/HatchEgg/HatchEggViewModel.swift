@@ -181,7 +181,8 @@ final class HatchEggViewModel: ViewModelable {
             .execute(
                 egg: data,
                 step: data.needStep,
-                willHatch: true
-            )
+                willHatch: true) {
+                    
+                }
     }
 }

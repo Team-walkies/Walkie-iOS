@@ -48,8 +48,9 @@ final class StepManager {
                     self?.updateEggStepUseCase.execute(
                         egg: eggEntityValue,
                         step: UserManager.shared.getStepCount,
-                        willHatch: false
-                    )
+                        willHatch: false) {
+                            
+                        }
                 }
             )
             .store(in: &cancellables)

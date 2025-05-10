@@ -21,6 +21,8 @@ struct HomeView: View {
     @State private var showAlarmBS: Bool = false
     @State private var showBS: Bool = false
     
+    @State private var timer: Timer?
+    
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -105,9 +107,14 @@ struct HomeView: View {
                 print("---inactive---")
             case .active:
                 print("---active---")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-                    // 10초마다 업데이트
-                    StepManager.shared.executeForegroundTasks()
+                DispatchQueue.main.async {
+                    timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+                        print("UserManager.shared.getStepCount \(UserManager.shared.getStepCount)")
+                        print("UserManager.shared.getStepCount \(UserManager.shared.getStepCountGoal)")
+                        print("DefaultStepStore().getStepCountCache  \(DefaultStepStore().getStepCountCache())")
+                        StepManager.shared.executeForegroundTasks()
+                        print("서버에 업데이트 완료")
+                    }
                 }
             @unknown default:
                 fatalError()
@@ -151,6 +158,17 @@ struct HomeView: View {
                     checkButtonTitle: "허용하기"
                 )
                 appCoordinator.showAlert()
+            }
+        }
+        .onAppear {
+            // 초기 진입 시 .active 상태 처리
+            if scenePhase == .active {
+                DispatchQueue.main.async {
+                    timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+                        StepManager.shared.executeForegroundTasks()
+                        print("서버에 업데이트 완료")
+                    }
+                }
             }
         }
         .permissionBottomSheet(

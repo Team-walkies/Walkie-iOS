@@ -21,8 +21,11 @@ final class DefaultUpdateStepCacheUseCase: BaseStepUseCase, UpdateStepCacheUseCa
         guard CMPedometer.isStepCountingAvailable() else { return }
         recoverMissedSteps { [weak self] in
             guard let self else { return }
-            UserManager.shared.setStepCount(UserManager.shared.getStepCount + stepStore.getStepCountCache())
+            UserManager.shared.setStepCount(
+                UserManager.shared.getStepCount + stepStore.getStepCountCache()
+            )
             stepStore.resetStepCountCache()
+            print("[DEBUG][DefaultUpdateStepCacheUseCase][resetStepCountCache] executed")
             completion()
         }
     }

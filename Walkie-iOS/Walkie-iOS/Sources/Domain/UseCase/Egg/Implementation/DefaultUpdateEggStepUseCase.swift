@@ -11,7 +11,8 @@ final class DefaultUpdateEggStepUseCase: BaseEggUseCase, UpdateEggStepUseCase {
     func execute(
         egg: EggEntity,
         step: Int,
-        willHatch: Bool = false
+        willHatch: Bool = false,
+        completion: @escaping () -> Void
     ) {
         eggRepository.patchEggStep(egg: egg, step: step, willHatch: willHatch)
             .sink(
@@ -24,6 +25,7 @@ final class DefaultUpdateEggStepUseCase: BaseEggUseCase, UpdateEggStepUseCase {
                     }
                 },
                 receiveValue: { _ in
+                    
                 }
             )
             .store(in: &cancellables)
