@@ -13,24 +13,19 @@ final class DefaultUpdateEggStepUseCase: BaseEggUseCase, UpdateEggStepUseCase {
         step: Int,
         willHatch: Bool = false
     ) {
-        if let location = LocationManager.shared.getCurrentLocation(), willHatch {
-            _ = eggRepository.patchEggStep(
-                requestBody: .init(
-                    eggId: egg.eggId,
-                    nowStep: step,
-                    latitude: location.coordinate.latitude,
-                    longitude: location.coordinate.longitude
-                )
+        eggRepository.patchEggStep(egg: egg, step: step, willHatch: willHatch)
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("걸음 수 업데이트 성공!")
+                    case .failure(let error):
+                        print("걸음 수 업데이트 오류: \(error)")
+                    }
+                },
+                receiveValue: { _ in
+                }
             )
-        } else {
-            _ = eggRepository.patchEggStep(
-                requestBody: .init(
-                    eggId: egg.eggId,
-                    nowStep: step,
-                    latitude: nil,
-                    longitude: nil
-                )
-            )
-        }
+            .store(in: &cancellables)
     }
 }

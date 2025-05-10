@@ -10,6 +10,6 @@ import Combine
 protocol EggRepository {
     func getEggsList() -> AnyPublisher<[EggEntity], NetworkError>
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError>
-    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError>
+    func patchEggStep(egg: EggEntity, step: Int, willHatch: Bool) -> AnyPublisher<Void, NetworkError>
     func getEggsCount() -> AnyPublisher<Int, NetworkError>
 }

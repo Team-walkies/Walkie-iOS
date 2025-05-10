@@ -17,17 +17,17 @@ final class DefaultUpdateStepCacheUseCase: BaseStepUseCase, UpdateStepCacheUseCa
         super.init(stepStore: stepStore)
     }
     
-    func execute() {
-        // 권한 및 가용성 확인
-        guard CMPedometer.isStepCountingAvailable() else {
-            print("[ERROR][UpdateStepUseCase][execute] Step counting not available on this device")
-            return
+    func execute(completion: @escaping () -> Void) {
+        guard CMPedometer.isStepCountingAvailable() else { return }
+        recoverMissedSteps { [weak self] in
+            guard let self else { return }
+            UserManager.shared.setStepCount(UserManager.shared.getStepCount + stepStore.getStepCountCache())
+            stepStore.resetStepCountCache()
+            completion()
         }
-        // 이전 데이터 복구 (캐싱된 데이터 쿼리)
-        recoverMissedSteps()
     }
     
-    private func recoverMissedSteps() {
+    private func recoverMissedSteps(completion: @escaping () -> Void) {
         let lastUpdate = lastUpdateDate ?? Date.now
         let now = Date()
         print("[DEBUG][UpdateStepUseCase][recoverMissedSteps] Querying steps from \(lastUpdate) to \(now)")
@@ -60,6 +60,7 @@ final class DefaultUpdateStepCacheUseCase: BaseStepUseCase, UpdateStepCacheUseCa
             // 마지막 업데이트 시간 갱신
             self.lastUpdateDate = now
             print("[DEBUG][UpdateStepUseCase][recoverMissedSteps] Updated lastUpdateDate to \(now)")
+            completion()
         }
     }
 }

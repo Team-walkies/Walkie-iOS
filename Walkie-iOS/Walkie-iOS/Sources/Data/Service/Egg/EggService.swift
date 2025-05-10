@@ -10,6 +10,6 @@ import Combine
 protocol EggService {
     func getEggsList() -> AnyPublisher<GetEggListDto, Error>
     func getEggDetail(eggId: Int) -> AnyPublisher<GetEggDetailDto, Error>
-    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, Error>
+    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<GetEggPlayingDto, Error>
     func getEggsCount() -> AnyPublisher<EggCountDto, Error>
 }

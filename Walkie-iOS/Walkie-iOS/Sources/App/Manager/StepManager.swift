@@ -21,28 +21,13 @@ final class StepManager {
         case updateStep = "com.walkie.ios.update.step"
     }
     
-    static let shared = StepManager(diContainer: DIContainer.shared)
+    static let shared = StepManager()
     
-    init(diContainer: DIContainer) {
-        self.getEggPlayUseCase = diContainer.resolveGetEggPlayUseCase()
-        self.updateEggStepUseCase = diContainer.resolveUpdateEggStepUseCase()
-        self.checkStepUseCase = diContainer.resolveCheckStepUseCase()
-        self.updateStepCacheUseCase = diContainer.resolveUpdateStepCacheUseCase()
-        
-        // 백그라운드 태스크 등록
-        registerBackgroundTasks()
-    }
-    
-    init(
-        getEggPlayUseCase: GetEggPlayUseCase,
-        updateEggStepUseCase: UpdateEggStepUseCase,
-        checkStepUseCase: CheckStepUseCase,
-        updateStepCacheUseCase: UpdateStepCacheUseCase
-    ) {
-        self.getEggPlayUseCase = getEggPlayUseCase
-        self.updateEggStepUseCase = updateEggStepUseCase
-        self.checkStepUseCase = checkStepUseCase
-        self.updateStepCacheUseCase = updateStepCacheUseCase
+    init() {
+        self.getEggPlayUseCase = DIContainer.shared.resolveGetEggPlayUseCase()
+        self.updateEggStepUseCase = DIContainer.shared.resolveUpdateEggStepUseCase()
+        self.checkStepUseCase = DIContainer.shared.resolveCheckStepUseCase()
+        self.updateStepCacheUseCase = DIContainer.shared.resolveUpdateStepCacheUseCase()
         
         // 백그라운드 태스크 등록
         registerBackgroundTasks()
@@ -73,20 +58,16 @@ final class StepManager {
     // MARK: - Task Execution
     
     func executeForegroundTasks() {
-        print("[DEBUG][StepManager][executeForegroundTasks] Executing UpdateStepUseCase...")
-        updateStepCacheUseCase.execute()
-        print("[DEBUG][StepManager][executeForegroundTasks] UpdateStepUseCase completed")
-        
-        print("[DEBUG][StepManager][executeForegroundTasks] Executing CheckStepUseCase...")
-        checkStepUseCase.execute()
-        print("[DEBUG][StepManager][executeForegroundTasks] CheckStepUseCase completed")
+        updateStepCacheUseCase.execute { [self] in
+            checkStepUseCase.execute()
+            getEggPlayingAndThenUpdateStep()
+        }
     }
     
     func executeBackgroundTasks() {
-        print("[DEBUG][StepManager][executeBackgroundTasks] Executing UpdateStepUseCase...")
-        updateStepCacheUseCase.execute()
-        print("[DEBUG][StepManager][executeBackgroundTasks] UpdateStepUseCase completed")
-        
+        updateStepCacheUseCase.execute {
+            
+        }
         scheduleBackgroundTasks()
     }
     
@@ -106,38 +87,24 @@ final class StepManager {
         ) { [weak self] task in
             self?.handleUpdateStepTask(task: task)
         }
-        
-        print("[DEBUG][StepManager][registerBackgroundTasks] Background tasks registered")
     }
     
     private func handleCheckStepTask(task: BGTask) {
-        print("[DEBUG][StepManager][handleCheckStepTask] "
-              + "Starting checkStep background task on thread: \(Thread.isMainThread ? "Main" : "Background")")
-        
         task.expirationHandler = {
-            print("[DEBUG][StepManager][handleCheckStepTask] CheckStep task expired")
             task.setTaskCompleted(success: false)
         }
-        
         checkStepUseCase.execute()
-        print("[DEBUG][StepManager][handleCheckStepTask] CheckStepUseCase executed")
-        
         task.setTaskCompleted(success: true)
         scheduleBackgroundTasks()
     }
     
     private func handleUpdateStepTask(task: BGTask) {
-        print("[DEBUG][StepManager][handleUpdateStepTask] "
-              + "Starting updateStep background task on thread: \(Thread.isMainThread ? "Main" : "Background")")
-        
         task.expirationHandler = {
-            print("[DEBUG][StepManager][handleUpdateStepTask] UpdateStep task expired")
             task.setTaskCompleted(success: false)
         }
-        
-        updateStepCacheUseCase.execute()
-        print("[DEBUG][StepManager][handleUpdateStepTask] UpdateStepUseCase executed")
-        
+        updateStepCacheUseCase.execute {
+            
+        }
         task.setTaskCompleted(success: true)
         scheduleBackgroundTasks()
     }

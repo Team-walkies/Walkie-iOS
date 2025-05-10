@@ -11,7 +11,7 @@ protocol MemberRepository {
     // 같이 걷는 알 조회 API
     func getEggPlaying() -> AnyPublisher<EggEntity, NetworkError>
     // 같이 걷는 알 변경 API
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError>
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<EggEntity, NetworkError>
     // 같이 걷는 캐릭터 조회 API
     func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError>
     // 같이 걷는 캐릭터 조회 API(중복)

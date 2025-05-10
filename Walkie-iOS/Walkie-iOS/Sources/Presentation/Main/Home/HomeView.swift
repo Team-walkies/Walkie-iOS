@@ -105,7 +105,10 @@ struct HomeView: View {
                 print("---inactive---")
             case .active:
                 print("---active---")
-                StepManager.shared.executeForegroundTasks()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                    // 10초마다 업데이트
+                    StepManager.shared.executeForegroundTasks()
+                }
             @unknown default:
                 fatalError()
             }

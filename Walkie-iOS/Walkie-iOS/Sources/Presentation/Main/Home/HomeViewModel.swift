@@ -103,8 +103,8 @@ final class HomeViewModel: ViewModelable {
     @Published var stepState: StepViewState = .loading
     @Published var shouldShowDeniedAlert: Bool = false
     
+    private let stepStore = DefaultStepStore()
     private let pedometer = CMPedometer()
-    private var needStep: Int = 0
     private let locationManager = LocationManager.shared
     
     init(
@@ -351,7 +351,10 @@ private extension HomeViewModel {
     func updateStepData(step: Int, distance: Double) {
         let stepState = StepState(
             todayStep: step,
-            leftStep: self.needStep - step,
+            leftStep:
+                UserManager.shared.getStepCountGoal
+            - stepStore.getStepCountCache()
+            - UserManager.shared.getStepCount,
             todayDistance: distance,
             locationAlwaysAuthorized: isLocationAlwaysAuthorized()
         )

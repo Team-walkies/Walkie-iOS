@@ -45,14 +45,14 @@ extension DefaultEggService: EggService {
             .mapWalkieResponse(GetEggDetailDto.self)
     }
     
-    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, Error> {
+    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<GetEggPlayingDto, Error> {
         eggProvider
             .requestPublisher(
                 .patchEggStep(requestBody: requestBody),
                 reissueService: reissueService
             )
-            .filterSuccessfulStatusCodes()
-            .mapVoidResponse()
+            .mapWalkieResponse(GetEggPlayingDto.self)
+            
     }
     
     func getEggsCount() -> AnyPublisher<EggCountDto, Error> {
