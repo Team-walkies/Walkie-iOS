@@ -2,6 +2,10 @@ import ProjectDescription
 
 let project = Project(
     name: "Walkie-iOS",
+    options: .options(
+        defaultKnownRegions: ["ko"],
+        developmentRegion: "ko"
+    ),
     targets: [
         .target(
             name: "Walkie-iOS",
