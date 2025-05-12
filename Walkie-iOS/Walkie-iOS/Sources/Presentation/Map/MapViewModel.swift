@@ -17,17 +17,11 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
     
     enum Action {
         case mapViewAppear
-        case mapViewDisappear
-    }
-    
-    struct MapState {
-        let step: Int
-        let distance: Double
     }
     
     enum MapViewState {
         case loading
-        case loaded(MapState)
+        case loaded
         case error
     }
     
@@ -52,7 +46,6 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
     
     @Published var stepData: Int = 0
     @Published var distanceData: Double = 0
-    @Published var exploreStep: Int = 1234
     @Published var webRequest: URLRequest?
     
     private let getCharacterPlayUseCase: GetCharacterPlayUseCase
@@ -68,8 +61,6 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
         switch action {
         case .mapViewAppear:
             getCharacterPlay()
-        case .mapViewDisappear:
-            stopStepUpdates()
         }
     }
     
@@ -143,7 +134,7 @@ private extension MapViewModel {
     }
     
     func startCountingSteps() {
-        print("✅ Starting step counting")
+        startCount()
     }
     
     func finishWebView() {
@@ -152,7 +143,7 @@ private extension MapViewModel {
     }
     
     func sendStep() {
-        sendToWeb?(exploreStep)
+        stopCount()
         updateArriveActivity()
         
         locationCancellable?.cancel()
@@ -163,36 +154,35 @@ private extension MapViewModel {
 // step
 private extension MapViewModel {
     
-    func startStepUpdates() {
+    func startCount() {
         guard CMPedometer.isStepCountingAvailable() else { return }
-        
         let now = Date()
-        let startOfDay = Calendar.current.startOfDay(for: now)
+        UserManager.shared.setStartExploreDate(now)
+        print("✅ 걸음 수 측정 시작: \(now)")
+    }
+    
+    func stopCount() {
+        guard let start = UserManager.shared.getStartExploreDate else { return }
+        let end = Date()
+        print("걸음수 시작 시간 : \(start)")
+        print("걸음 수 측정 종료: \(end)")
         
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.pedometer.startUpdates(from: startOfDay) { data, error in
-                guard let self = self else { return }
-                
-                if let data = data, error == nil {
-                    DispatchQueue.main.async {
-                        let newStepData = data.numberOfSteps.intValue
-                        let newDistanceData = (data.distance?.doubleValue ?? 0.0) / 1000.0
-                        self.updateStepData(step: newStepData, distance: newDistanceData)
-                    }
+        pedometer.queryPedometerData(
+            from: start,
+            to: end
+        ) { [weak self] data, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("🚫 걸음 수 쿼리 실패: \(error)")
+                }
+                if let data = data {
+                    let totalSteps = data.numberOfSteps.intValue
+                    print("✅ 총 걸음 수: \(totalSteps)걸음")
+                    self?.sendToWeb?(totalSteps)
+                    UserManager.shared.clearExploreDate()
                 }
             }
         }
-    }
-    
-    func stopStepUpdates() {
-        timer?.invalidate()
-        timer = nil
-        pedometer.stopUpdates()
-    }
-    
-    func updateStepData(step: Int, distance: Double) {
-        let mapState = MapState(step: step, distance: distance)
-        state = .loaded(mapState)
     }
 }
 
