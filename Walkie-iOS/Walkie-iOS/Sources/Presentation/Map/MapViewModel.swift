@@ -69,7 +69,7 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
         case .haptic:
             triggerHaptic()
         case .startCountingSteps:
-            break
+            startCount()
         case .finishWebView:
             finishWebView()
         case .startExplore:
@@ -131,10 +131,6 @@ private extension MapViewModel {
     func triggerHaptic() {
         let generator = UIImpactFeedbackGenerator(style: .heavy)
         generator.impactOccurred()
-    }
-    
-    func startCountingSteps() {
-        startCount()
     }
     
     func finishWebView() {
