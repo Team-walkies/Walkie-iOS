@@ -159,7 +159,10 @@ private extension ReviewViewModel {
         }()
         
         let formattedDistance = String(format: "%.1f", entity.distance) + "km"
-        let duration = timeDifferenceInMinutes(startTime: entity.startTime, endTime: entity.endTime).map { "\($0)m" }
+        let duration = timeDifferenceString(
+            startTime: entity.startTime,
+            endTime: entity.endTime
+        )
         
         return ReviewState(
             reviewID: entity.reviewID,
@@ -181,19 +184,28 @@ private extension ReviewViewModel {
         )
     }
     
-    func timeDifferenceInMinutes(startTime: String, endTime: String) -> Int? {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "HH:mm:ss"
+    func timeDifferenceString(startTime: String, endTime: String) -> String? {
+        let df = DateFormatter()
+        df.dateFormat = "HH:mm:ss"
+        guard
+            let start = df.date(from: startTime),
+            let end = df.date(from: endTime)
+        else { return nil }
         
-        if
-            let start = dateFormatter.date(from: startTime),
-            let end = dateFormatter.date(from: endTime) {
-            let difference = end.timeIntervalSince(start)
-            return Int(difference / 60)
+        let totalMinutes = Int(end.timeIntervalSince(start) / 60)
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+        
+        switch (hours, minutes) {
+        case (0, let m):
+            return "\(m)분"
+        case (let h, 0):
+            return "\(h)시간"
+        default:
+            return "\(hours)시간 \(minutes)분"
         }
-        return nil
     }
-    
+
     func formatTimeString(_ timeString: String) -> String? {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "HH:mm:ss"
