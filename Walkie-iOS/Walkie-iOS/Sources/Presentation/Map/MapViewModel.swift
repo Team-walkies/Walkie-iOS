@@ -291,6 +291,11 @@ private extension MapViewModel {
                 return
             }
             
+            if distance > total {
+                print("🔁 총 거리 갱신")
+                self.totalDistance = distance
+            }
+            
             if let last = self.lastLocation {
                 let moved = userLoc.distance(from: last)
                 if moved < 10 {
@@ -312,7 +317,7 @@ private extension MapViewModel {
             let updated = WalkieWidgetAttributes.ContentState(
                 place: self.placeName,
                 leftDistance: distance,
-                totalDistance: total
+                totalDistance: self.totalDistance ?? total
             )
             print(updated)
             Task {
