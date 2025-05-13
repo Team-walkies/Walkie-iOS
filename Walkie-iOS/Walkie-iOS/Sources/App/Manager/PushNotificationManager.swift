@@ -100,13 +100,6 @@ final class NotificationManager {
                 switch settings.authorizationStatus {
                 case .authorized, .provisional:
                     self.notifyEggHatch = true
-                    completion(true) // 푸시 알림 허용됨
-                case .denied:
-                    self.notifyEggHatch = false
-                    completion(false) // 푸시 알림 거부됨
-                case .notDetermined:
-                    self.notifyEggHatch = false
-                    completion(false) // 아직 결정되지 않음
                 default:
                     self.notifyEggHatch = false
                     completion(false)
