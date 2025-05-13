@@ -7,11 +7,13 @@
 
 import UIKit
 import Combine
+import SwiftUICore
 
 final class HatchEggViewModel: ViewModelable {
     
     private let getEggPlayUseCase: GetEggPlayUseCase
     private let updateEggStepUseCase: UpdateEggStepUseCase
+    @EnvironmentObject private var appCoordinator: AppCoordinator
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -24,6 +26,7 @@ final class HatchEggViewModel: ViewModelable {
         case willShowConfettiEffectWithVibration // 3.7초
         case willShowcharacter // 3.9초
         case willShowGlowEffect // 4초
+        case willDismiss
     }
     
     enum State {
@@ -144,6 +147,8 @@ final class HatchEggViewModel: ViewModelable {
                 isShowingCharacter: true,
                 isShowingGlowEffect: true
             )
+        case .willDismiss:
+            self.appCoordinator.isPresentingHatchView = false
         }
     }
     

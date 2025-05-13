@@ -10,6 +10,9 @@ import BackgroundTasks
 
 final class StepManager {
     
+    // 부화 이벤트 Publisher 추가
+    let hatchEventSubject = PassthroughSubject<Void, Never>()
+    
     private var cancellables: Set<AnyCancellable> = []
     private let getEggPlayUseCase: GetEggPlayUseCase
     private let updateEggStepUseCase: UpdateEggStepUseCase
@@ -75,9 +78,12 @@ final class StepManager {
     // MARK: - Task Execution
     
     func executeForegroundTasks() {
-        updateStepCacheUseCase.execute { [self] in
-            checkStepUseCase.execute()
-            updateForeground()
+        updateStepCacheUseCase.execute { [weak self] in
+            // 부화 조건 확인 후 이벤트 발생
+            if self?.checkStepUseCase.execute() == true {
+                self?.hatchEventSubject.send(())
+            }
+            self?.updateForeground()
         }
     }
     
