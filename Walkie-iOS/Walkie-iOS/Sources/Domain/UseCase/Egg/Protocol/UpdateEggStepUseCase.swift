@@ -11,6 +11,7 @@ protocol UpdateEggStepUseCase {
     func execute(
         egg: EggEntity,
         step: Int,
-        willHatch: Bool
+        willHatch: Bool,
+        completion: @escaping () -> Void
     )
 }

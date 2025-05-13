@@ -106,6 +106,7 @@ final class CalendarViewModel: ViewModelable {
                 )
                 (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: date)
                 handleWeekScroll(baseDate: date, offset: 0, selectedDate: date)
+                showReviewList()
             }
             showPicker = false
         case .didTapTodayButton:
@@ -117,6 +118,7 @@ final class CalendarViewModel: ViewModelable {
             )
             (self.firstDay, self.lastDay) = calendarUseCase.setCalendarRange(baseDate: today)
             handleWeekScroll(baseDate: today, offset: 0, selectedDate: today)
+            showReviewList()
         case .willScrollToPreviousWeek(let date):
             scrollToWeek(date: date, direction: .previous)
         case .willScrollToNextWeek(let date):
@@ -256,7 +258,9 @@ final class CalendarViewModel: ViewModelable {
                     .loadReviewList(
                         startDate: query.startDate,
                         endDate: query.endDate,
-                        completion: { _ in }
+                        completion: { _ in
+                            self.showReviewList()
+                        }
                     )
                 )
         }

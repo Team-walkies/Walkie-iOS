@@ -8,9 +8,6 @@
 import Foundation
 
 struct GetEggDetailDto: Codable {
-    let rank: Int
-    let needStep: Int
-    let nowStep: Int
-    let obtainedPosition: String
-    let obtainedDate: String
+    let rank, needStep, nowStep, userCharacterId, characterRank, characterType, characterClass: Int
+    let obtainedPosition, obtainedDate: String
 }

@@ -11,7 +11,9 @@ import WalkieCommon
 struct EggDetailView: View {
     
     @Environment(\.screenWidth) var screenWidth
+    @ObservedObject var eggViewModel: EggViewModel
     @ObservedObject var viewModel: EggDetailViewModel
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -79,8 +81,17 @@ struct EggDetailView: View {
                     size: .large,
                     isEnabled: !eggState.isWalking,
                     buttonAction: {
-                        viewModel.action(.didSelectEggWalking)
-                    })
+                        viewModel
+                            .action(
+                                .didSelectEggWalking(
+                                    completion: {
+                                        dismiss()
+                                        eggViewModel.fetchEggListData()
+                                    }
+                                )
+                            )
+                    }
+                )
                 Spacer()
             case .error(let error):
                 Text(error.description)

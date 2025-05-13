@@ -9,9 +9,21 @@ final class NotificationManager {
     static let shared = NotificationManager()
     
     @UserDefaultsWrapper<Bool>(key: "notifyEggHatch") private var notifyEggHatch
+    @UserDefaultsWrapper<Bool>(key: "notified") private var notified
+    
+    init() {
+        /// 초깃값 설정
+        guard let notified else {
+            notified = false
+            return
+        }
+    }
     
     func getNotificationMode() -> Bool {
         guard let notifyEggHatch else {
+            checkNotificationPermission { _ in
+                return
+            }
             return false
         }
         return notifyEggHatch
@@ -51,14 +63,21 @@ final class NotificationManager {
         // 알림 요청 생성
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
-        // 권한이 허용된 경우에만 알림 센터에 추가
-        NotificationManager.shared.requestAuthorization { granted in
-            if granted && NotificationManager.shared.getNotificationMode() {
-                UNUserNotificationCenter.current().add(request) { error in
-                    if let error = error {
-                        print("ERROR: Failed to schedule notification - \(error)")
-                    } else {
-                        print("SUCCESS: Notification scheduled with identifier \(identifier)")
+        /// 알림 송신 조건
+        /// 1. 아직 알림을 보내지 않았음
+        /// 2. 부화 알림 권한 허용
+        /// 3. 앱 알림 권한 허용
+        if let notified = notified {
+            if !notified {
+                NotificationManager.shared.requestAuthorization { granted in
+                    if granted && NotificationManager.shared.getNotificationMode() {
+                        UNUserNotificationCenter.current().add(request) { error in
+                            if let error = error {
+                                print("ERROR: Failed to schedule notification - \(error)")
+                            } else {
+                                print("SUCCESS: Notification scheduled with identifier \(identifier)")
+                            }
+                        }
                     }
                 }
             }
@@ -71,6 +90,20 @@ final class NotificationManager {
                 print("ERROR: Failed to clear badge - \(error)")
             } else {
                 print("SUCCESS: Badge cleared")
+            }
+        }
+    }
+    
+    func checkNotificationPermission(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                switch settings.authorizationStatus {
+                case .authorized, .provisional:
+                    self.notifyEggHatch = true
+                default:
+                    self.notifyEggHatch = false
+                    completion(false)
+                }
             }
         }
     }

@@ -12,14 +12,13 @@ import WalkieCommon
 struct HatchEggView: View {
     
     @ObservedObject var hatchEggViewModel: HatchEggViewModel
-    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack(alignment: .center) {
             Color(white: 0, opacity: 0.6)
                 .onTapGesture {
                     if hatchEggViewModel.animationState.isShowingGlowEffect {
-                        dismiss()
+                        hatchEggViewModel.action(.willDismiss)
                     }
                 }
             switch hatchEggViewModel.state {

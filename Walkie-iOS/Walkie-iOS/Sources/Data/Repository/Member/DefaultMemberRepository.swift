@@ -90,12 +90,50 @@ extension DefaultMemberRepository: MemberRepository {
             .eraseToAnyPublisher()
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, NetworkError> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<EggEntity, NetworkError> {
         memberService.patchEggPlaying(eggId: eggId)
-            .map { _ in return }
+            .tryMap { dto in
+                guard let eggID = dto.eggID,
+                      let type = dto.characterType,
+                      let rank = dto.rank,
+                      let characterClass = dto.characterClass,
+                      let characterType = dto.characterType,
+                      let characterRank = dto.characterRank,
+                      let nowStep = dto.nowStep,
+                      let needStep = dto.needStep,
+                      let picked = dto.picked else {
+                    throw NetworkError.responseDecodingError // 필수 데이터가 없으면 에러 던짐
+                }
+                
+                return EggEntity(
+                    eggId: eggID,
+                    eggType: EggType.from(number: rank),
+                    nowStep: nowStep,
+                    needStep: needStep,
+                    isWalking: picked,
+                    detail: EggDetailEntity(
+                        obtainedPosition: dto.obtainedPosition ?? "",
+                        obtainedDate: dto.obtainedDate ?? ""
+                    ),
+                    characterType: type == 0 ? .jellyfish : .dino,
+                    jellyFishType: CharacterType.mapCharacterType(
+                        requestedType: .jellyfish,
+                        type: characterType,
+                        rank: characterRank,
+                        characterClass: characterClass
+                    ) as? JellyfishType ?? .defaultJellyfish,
+                    dinoType: CharacterType.mapCharacterType(
+                        requestedType: .dino,
+                        type: characterType,
+                        rank: characterRank,
+                        characterClass: characterClass
+                    ) as? DinoType ?? .defaultDino
+                )
+            }
             .mapToNetworkError()
     }
     
+    // 중복
     func getCharacterPlay() -> AnyPublisher<CharactersPlayEntity, NetworkError> {
         memberService.getCharacterPlay()
             .map { dto in CharactersPlayEntity(
@@ -107,6 +145,7 @@ extension DefaultMemberRepository: MemberRepository {
             .mapToNetworkError()
     }
     
+    // 중복
     func getWalkingCharacter() -> AnyPublisher<CharacterEntity, NetworkError> {
         memberService.getCharacterPlay()
             .map { dto in CharacterEntity(
