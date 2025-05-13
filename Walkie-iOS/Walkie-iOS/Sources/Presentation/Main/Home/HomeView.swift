@@ -87,6 +87,34 @@ struct HomeView: View {
                     handlePermissionBS()
                 }
             }
+            
+            // 포그라운드에서 Timer 시작
+            if timer == nil && scenePhase == .active {
+                startTimer()
+            }
+        }
+        .onDisappear {
+            // 뷰가 사라질 때 Timer 정리
+            stopTimer()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .background:
+                print("---background---")
+                // 백그라운드 작업 실행
+                StepManager.shared.executeBackgroundTasks()
+                stopTimer() // 포그라운드 Timer 중지
+            case .inactive:
+                print("---inactive---")
+                stopTimer() // 비활성 상태에서 Timer 중지
+            case .active:
+                print("---active---")
+                if timer == nil {
+                    startTimer() // 포그라운드에서 Timer 재시작
+                }
+            @unknown default:
+                fatalError()
+            }
         }
         .onChange(of: viewModel.state) { _, newState in
             if !AppSession.shared.hasEnteredHomeView {
@@ -96,28 +124,6 @@ struct HomeView: View {
                 default:
                     showBS = false
                 }
-            }
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
-            case .background:
-                print("---background---")
-                StepManager.shared.executeBackgroundTasks()
-            case .inactive:
-                print("---inactive---")
-            case .active:
-                print("---active---")
-                DispatchQueue.main.async {
-                    timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
-                        print("UserManager.shared.getStepCount \(UserManager.shared.getStepCount)")
-                        print("UserManager.shared.getStepCountGoal \(UserManager.shared.getStepCountGoal)")
-                        print("DefaultStepStore().getStepCountCache  \(DefaultStepStore().getStepCountCache())")
-                        StepManager.shared.executeForegroundTasks()
-                        print("서버에 업데이트 완료")
-                    }
-                }
-            @unknown default:
-                fatalError()
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
@@ -160,17 +166,6 @@ struct HomeView: View {
                 appCoordinator.showAlert()
             }
         }
-        .onAppear {
-            // 초기 진입 시 .active 상태 처리
-            if scenePhase == .active {
-                DispatchQueue.main.async {
-                    timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
-                        StepManager.shared.executeForegroundTasks()
-                        print("서버에 업데이트 완료")
-                    }
-                }
-            }
-        }
         .permissionBottomSheet(
             isPresented: $showBS,
             height: (showLocationBS && showMotionBS) ? 342 : (showAlarmBS ? 369 : 266)) {
@@ -189,6 +184,20 @@ struct HomeView: View {
                 DIContainer.shared.buildAlarmListView()
                     .navigationBarBackButtonHidden()
             }
+    }
+    
+    private func startTimer() {
+        // 포그라운드에서 10초 간격으로 서버 업데이트
+        timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+            StepManager.shared.executeForegroundTasks()
+            print("포그라운드: 서버에 업데이트 완료")
+        }
+    }
+    
+    private func stopTimer() {
+        // Timer 해제
+        timer?.invalidate()
+        timer = nil
     }
     
     private func handlePermissionBS() {
