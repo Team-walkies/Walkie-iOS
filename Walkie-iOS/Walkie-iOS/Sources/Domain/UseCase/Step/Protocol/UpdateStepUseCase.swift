@@ -8,5 +8,5 @@
 import Foundation
 
 protocol UpdateStepCacheUseCase {
-    func execute()
+    func execute(completion: @escaping () -> Void)
 }

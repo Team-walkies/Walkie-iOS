@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKAuth
 
 import Foundation
+import Combine
 
 extension Notification.Name {
     static let reissueFailed = Notification.Name("reissueFailed")
@@ -38,6 +39,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     let tabBarView: AnyView
     
     var loginInfo: LoginUserInfo = LoginUserInfo()
+    var isPresentingHatchView: Bool = false
+    private var cancellables: Set<AnyCancellable> = []
     
     private var isShowingAlert: Bool = false
     private var alertModal: Modal?
@@ -56,6 +59,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
             self.updateCurrentScene()
         }
         
+        // StepManager의 부화 이벤트 구독
+        StepManager.shared.hatchEventSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                self?.isPresentingHatchView = true
+            }
+            .store(in: &cancellables)
+        
         NotificationCenter.default.addObserver(
             forName: .reissueFailed,
             object: nil,
@@ -71,7 +82,9 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .splash:
             SplashView()
         case .hatchEgg:
-            diContainer.buildHatchEggView()
+            if isPresentingHatchView {
+                diContainer.buildHatchEggView()
+            }
         case .nickname:
             diContainer.buildNicknameView()
         case .login:

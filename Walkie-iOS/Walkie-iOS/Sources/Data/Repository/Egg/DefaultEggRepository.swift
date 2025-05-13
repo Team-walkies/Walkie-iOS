@@ -59,10 +59,34 @@ extension DefaultEggRepository: EggRepository {
             .mapToNetworkError()
     }
     
-    func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<Void, NetworkError> {
-        return eggService.patchEggStep(requestBody: requestBody)
+    func patchEggStep(
+        egg: EggEntity,
+        step: Int,
+        willHatch: Bool = false
+    ) -> AnyPublisher<Void, NetworkError> {
+        if let location = LocationManager.shared.getCurrentLocation(), willHatch {
+            eggService.patchEggStep(
+                requestBody: .init(
+                    eggId: egg.eggId,
+                    nowStep: step,
+                    latitude: location.coordinate.latitude,
+                    longitude: location.coordinate.longitude
+                )
+            )
             .map { _ in return }
             .mapToNetworkError()
+        } else {
+            eggService.patchEggStep(
+                requestBody: .init(
+                    eggId: egg.eggId,
+                    nowStep: step,
+                    latitude: nil,
+                    longitude: nil
+                )
+            )
+            .map { _ in return }
+            .mapToNetworkError()
+        }
     }
     
     func getEggsCount() -> AnyPublisher<Int, NetworkError> {

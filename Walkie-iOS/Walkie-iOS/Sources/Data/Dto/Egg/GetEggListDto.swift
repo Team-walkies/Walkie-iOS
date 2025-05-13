@@ -11,11 +11,7 @@ struct GetEggListDto: Codable {
     let eggs: [EggDto]
     
     struct EggDto: Codable {
-        let eggId: Int
-        let rank: Int
-        let needStep: Int
-        let nowStep: Int
-        let characterId: Int
+        let eggId, rank, needStep, nowStep, characterId, characterRank, characterType, characterClass: Int
         let play: Bool
         let obtainedPosition: String
         let obtainedDate: String

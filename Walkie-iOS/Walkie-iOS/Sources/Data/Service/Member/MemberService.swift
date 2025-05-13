@@ -19,7 +19,7 @@ protocol MemberService {
     func withdraw() -> AnyPublisher<Void, Error>
     
     func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error>
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, Error>
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<GetEggPlayingDto, Error>
     func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, Error>
     func patchCharacterPlay(characterId: Int) -> AnyPublisher<Void, Error>
     func getRecordedSpot() -> AnyPublisher<RecordedSpotDto, Error>

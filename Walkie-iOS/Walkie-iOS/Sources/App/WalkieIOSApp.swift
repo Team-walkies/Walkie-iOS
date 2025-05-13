@@ -14,8 +14,12 @@ struct WalkieIOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            appCoordinator.buildScene(appCoordinator.currentScene)
-                .environmentObject(appCoordinator)
+            ZStack {
+                appCoordinator.buildScene(appCoordinator.currentScene)
+                    .environmentObject(appCoordinator)
+                appCoordinator.buildScene(.hatchEgg)
+                    .environmentObject(appCoordinator)
+            }
         }
     }
 }

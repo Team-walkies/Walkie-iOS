@@ -8,5 +8,5 @@
 import Foundation
 
 protocol CheckStepUseCase {
-    func execute()
+    func execute() -> Bool
 }

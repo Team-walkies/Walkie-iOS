@@ -36,14 +36,14 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<Void, any Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<GetEggPlayingDto, any Error> {
         memberProvider
             .requestPublisher(
                 .patchEggPlaying(eggId: eggId),
                 reissueService: reissueService
             )
             .filterSuccessfulStatusCodes()
-            .mapVoidResponse()
+            .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
     func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, any Error> {

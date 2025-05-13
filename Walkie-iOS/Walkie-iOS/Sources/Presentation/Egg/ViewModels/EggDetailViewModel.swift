@@ -26,7 +26,7 @@ final class EggDetailViewModel: ViewModelable {
     
     enum Action {
         case willAppear
-        case didSelectEggWalking
+        case didSelectEggWalking(completion: () -> Void)
     }
     
     init(eggUseCase: EggUseCase, eggState: EggViewModel.EggState) {
@@ -41,8 +41,8 @@ final class EggDetailViewModel: ViewModelable {
         switch action {
         case .willAppear:
             fetchEggDetailData()
-        case .didSelectEggWalking:
-            patchEggWalking()
+        case .didSelectEggWalking(let completion):
+            patchEggWalking(completion: completion)
         }
     }
     
@@ -51,17 +51,13 @@ final class EggDetailViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, entity in
+                    self.detailState = EggDetailState(
+                        obtainedPosition: entity.obtainedPosition,
+                        obtainedDate: entity.obtainedDate
+                    )
                     self.state = .loaded(
-                        EggDetailViewModel.EggDetailState(
-                            obtainedPosition: entity.obtainedPosition,
-                            obtainedDate: entity.obtainedDate
-                        ), EggViewModel.EggState(
-                            eggId: self.eggState.eggId,
-                            eggType: self.eggState.eggType,
-                            nowStep: self.eggState.nowStep,
-                            needStep: self.eggState.needStep,
-                            isWalking: self.eggState.isWalking
-                        )
+                        self.detailState,
+                        self.eggState
                     )
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
@@ -70,16 +66,14 @@ final class EggDetailViewModel: ViewModelable {
             .store(in: &cancellables)
     }
     
-    func patchEggWalking() {
+    func patchEggWalking(completion: @escaping () -> Void) {
         eggUseCase.patchEggPlaying(eggId: eggState.eggId)
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
                     self.state = .loaded(
-                        EggDetailViewModel.EggDetailState(
-                            obtainedPosition: self.detailState.obtainedPosition,
-                            obtainedDate: self.detailState.obtainedDate
-                        ), EggViewModel.EggState(
+                        self.detailState,
+                        EggViewModel.EggState(
                             eggId: self.eggState.eggId,
                             eggType: self.eggState.eggType,
                             nowStep: self.eggState.nowStep,
@@ -87,10 +81,12 @@ final class EggDetailViewModel: ViewModelable {
                             isWalking: true
                         )
                     )
+                    completion()
                     ToastManager.shared.showToast("같이 걷는 알을 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
+                    completion()
                 })
             .store(in: &cancellables)
     }
