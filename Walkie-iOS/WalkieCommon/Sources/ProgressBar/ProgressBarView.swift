@@ -13,6 +13,7 @@ public struct ProgressBarView: View {
     var current: Int
     var total: Int
     var isDynamicIsland: Bool
+    var isLiveActivity: Bool = false
     
     public init(
         isSmall: Bool,
@@ -30,23 +31,27 @@ public struct ProgressBarView: View {
         isSmall: Bool,
         current: Double,
         total: Double,
-        isDynamicIsland: Bool = false
+        isDynamicIsland: Bool = false,
+        isLiveActivity: Bool
     ) {
         self.isSmall = isSmall
         self.current = Int(current)
         self.total = Int(total)
         self.isDynamicIsland = isDynamicIsland
+        self.isLiveActivity = isLiveActivity
     }
     
     public var body: some View {
         let width: CGFloat = isDynamicIsland ? 294 : (isSmall ? 64 : 180)
+        let backColor = isLiveActivity ? WalkieCommonAsset.gray400.swiftUIColor : (isDynamicIsland ? WalkieCommonAsset.gray800.swiftUIColor : WalkieCommonAsset.gray200.swiftUIColor)
+        let progressColor = isLiveActivity ? WalkieCommonAsset.gray600.swiftUIColor : WalkieCommonAsset.blue300.swiftUIColor
         
         ZStack(alignment: .leading) {
             Rectangle()
-                .foregroundStyle(WalkieCommonAsset.gray200.swiftUIColor)
+                .foregroundStyle(backColor)
                 .cornerRadius(100, corners: .allCorners)
             Rectangle()
-                .foregroundStyle(WalkieCommonAsset.blue300.swiftUIColor)
+                .foregroundStyle(progressColor)
                 .frame(width: min(Double(current)/Double(total), 1.0) * (isSmall ? 64 : width))
                 .cornerRadius(100, corners: .allCorners)
         }

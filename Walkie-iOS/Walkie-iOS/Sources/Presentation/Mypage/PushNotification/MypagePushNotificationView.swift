@@ -4,15 +4,13 @@
 //
 //  Created by 황채웅 on 3/1/25.
 //
-
 import SwiftUI
-
 struct MypagePushNotificationView: View {
-    
+
     @ObservedObject var viewModel: MypageMainViewModel
-    
+
     @State var isOn: Bool = NotificationManager.shared.getNotificationMode()
-    
+
     var body: some View {
         NavigationBar(
             title: "푸시 알림",

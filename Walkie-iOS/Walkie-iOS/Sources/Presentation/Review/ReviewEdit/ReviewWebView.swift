@@ -1,22 +1,24 @@
 //
-//  MapView.swift
+//  ReviewWebView.swift
 //  Walkie-iOS
 //
-//  Created by ahra on 2/24/25.
+//  Created by 고아라 on 5/7/25.
 //
 
 import SwiftUI
 
 import WalkieCommon
 
-struct MapView: View {
+struct ReviewWebView: View {
     
-    @ObservedObject var viewModel: MapViewModel
+    @ObservedObject var viewModel: ReviewViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var reviewWebRequest: URLRequest?
+    var reviewInfo: ReviewItemId
     
     var body: some View {
         VStack(spacing: 20) {
-            if let request = viewModel.webRequest {
+            if let request = reviewWebRequest {
                 WebView(
                     request: request,
                     messageHandlers: [viewModel]
@@ -26,7 +28,11 @@ struct MapView: View {
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .onAppear {
-            viewModel.action(.mapViewAppear)
+            do {
+                self.reviewWebRequest = try self.viewModel.setWebURL(reviewInfo: reviewInfo)
+            } catch {
+                print("🚨 웹 URL 설정 실패: \(error)")
+            }
             viewModel.onPop = {
                 dismiss()
             }

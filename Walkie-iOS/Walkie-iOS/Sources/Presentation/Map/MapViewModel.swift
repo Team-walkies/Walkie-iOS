@@ -13,7 +13,7 @@ import ActivityKit
 import WalkieCommon
 import MapKit
 
-final class MapViewModel: ViewModelable {
+final class MapViewModel: ViewModelable, WebMessageHandling {
     
     enum Action {
         case mapViewAppear
@@ -88,6 +88,13 @@ final class MapViewModel: ViewModelable {
             sendStep()
         case .stopExplore:
             stopDynamicIsland()
+        case .unauthorizedFromWeb:
+            stopDynamicIsland()
+            onPop?()
+        case .getEgg:
+            stopDynamicIsland()
+        default:
+            break
         }
     }
 }
@@ -113,8 +120,6 @@ extension MapViewModel {
     
     func setWebURL(entity: CharactersPlayEntity) throws -> URLRequest {
         let token = (try? TokenKeychainManager.shared.getAccessToken())
-        print("🫨🫨🫨🫨🫨🫨")
-        print(token)
         var components = URLComponents(string: Config.webURL)
         components?.queryItems = [
             URLQueryItem(name: "accessToken", value: token),

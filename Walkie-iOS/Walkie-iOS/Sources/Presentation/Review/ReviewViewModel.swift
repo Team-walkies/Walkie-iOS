@@ -8,18 +8,24 @@
 import SwiftUI
 import Combine
 
-final class ReviewViewModel: ViewModelable {
+final class ReviewViewModel: ViewModelable, WebMessageHandling {
     
     private let reviewUseCase: ReviewUseCase
+    private let delReviewUseCase: DeleteReviewUseCase
     private var cancellables = Set<AnyCancellable>()
     
     @Published var state: ReviewViewState = .loading
+    @Published var delState: ReviewDeleteState = .loading
     @Published var loadedReviewList: [ReviewState] = []
     @Published var reviewDateList: [String] = []
+    @Published var selectedDate: Date = Date()
+    
+    var onPop: (() -> Void)?
     
     enum Action {
         case loadReviewList(startDate: String, endDate: String, completion: (Bool) -> Void)
         case showReviewList(dateString: String)
+        case deleteReview(reviewId: Int)
     }
     
     struct ReviewState {
@@ -43,22 +49,63 @@ final class ReviewViewModel: ViewModelable {
         case error(String)
     }
     
+    enum ReviewDeleteState: Equatable {
+        case loading
+        case loaded
+        case error(String)
+    }
+    
     func action(_ action: Action) {
         switch action {
         case .loadReviewList(let startDate, let endDate, let completion):
             getReviewList(startDate: startDate, endDate: endDate, completion: completion)
         case .showReviewList(dateString: let dateString):
             showReviewList(dateString: dateString)
+        case .deleteReview(reviewId: let reviewId):
+            delReview(reviewId: reviewId)
         }
     }
     
-    init(reviewUseCase: ReviewUseCase) {
+    func handleWebMessage(_ message: WebMessage) {
+        switch message.type {
+        case .unauthorizedFromWeb:
+            NotificationCenter.default.post(
+                name: .reissueFailed,
+                object: nil
+            )
+        case .finishReviewModify:
+            onPop?()
+        default:
+            break
+        }
+    }
+    
+    init(
+        reviewUseCase: ReviewUseCase,
+        delReviewUseCase: DeleteReviewUseCase
+    ) {
         self.reviewUseCase = reviewUseCase
+        self.delReviewUseCase = delReviewUseCase
+    }
+    
+    func setWebURL(reviewInfo: ReviewItemId) throws -> URLRequest {
+        let token = (try? TokenKeychainManager.shared.getAccessToken())
+        var components = URLComponents(string: Config.webURL + "/rewrite")
+        components?.queryItems = [
+            URLQueryItem(name: "reviewId", value: "\(reviewInfo.reviewId)"),
+            URLQueryItem(name: "spotId", value: "\(reviewInfo.spotId)"),
+            URLQueryItem(name: "token", value: token)
+        ]
+        guard let url = components?.url else {
+            throw WebURLError.invalidURL
+        }
+        return URLRequest(url: url)
     }
     
     func getReviewList(startDate: String, endDate: String, completion: @escaping (Bool) -> Void) {
         let date = ReviewsCalendarDate(startDate: startDate, endDate: endDate)
-        self.reviewUseCase.getReviewList(date: date)
+        self.reviewUseCase
+            .getReviewList(date: date)
             .walkieSink(
                 with: self,
                 receiveValue: { viewModel, reviewList in
@@ -82,6 +129,22 @@ final class ReviewViewModel: ViewModelable {
                 }
             )
         }
+    }
+    
+    func delReview(reviewId: Int) {
+        if reviewId < 0 { return }
+        
+        delReviewUseCase.deleteReview(reviewId: reviewId)
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    self.delState = .loaded
+                }, receiveFailure: { _, error in
+                    let errorMessage = error?.description ?? "An unknown error occurred"
+                    self.delState = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
     }
 }
 
