@@ -12,6 +12,9 @@ final class NotificationManager {
     
     func getNotificationMode() -> Bool {
         guard let notifyEggHatch else {
+            checkNotificationPermission { _ in
+                return
+            }
             return false
         }
         return notifyEggHatch
@@ -71,6 +74,27 @@ final class NotificationManager {
                 print("ERROR: Failed to clear badge - \(error)")
             } else {
                 print("SUCCESS: Badge cleared")
+            }
+        }
+    }
+    
+    func checkNotificationPermission(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                switch settings.authorizationStatus {
+                case .authorized, .provisional:
+                    self.notifyEggHatch = true
+                    completion(true) // 푸시 알림 허용됨
+                case .denied:
+                    self.notifyEggHatch = false
+                    completion(false) // 푸시 알림 거부됨
+                case .notDetermined:
+                    self.notifyEggHatch = false
+                    completion(false) // 아직 결정되지 않음
+                default:
+                    self.notifyEggHatch = false
+                    completion(false)
+                }
             }
         }
     }
