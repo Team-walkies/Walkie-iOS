@@ -45,8 +45,8 @@ struct TabBarView: View {
                     case .map:
                         EmptyView()
                     }
-                    
                     VStack(spacing: 0) {
+                        Spacer(minLength: 0)
                         ZStack(alignment: .bottom) {
                             Rectangle()
                                 .fill(WalkieCommonAsset.gray50.swiftUIColor)
