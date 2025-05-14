@@ -14,7 +14,6 @@ enum AppScene: AppRoute {
     case complete
     case login
     
-    case hatchEgg
     
     case tabBar
     
@@ -22,8 +21,6 @@ enum AppScene: AppRoute {
         switch self {
         case .splash:
             return "splash"
-        case .hatchEgg:
-            return "hatchEgg"
         case .nickname:
             return "nickname"
         case .complete:
@@ -61,20 +58,33 @@ enum AppSheet: AppRoute {
     }
 }
 
-enum AppFullScreenCover: AppRoute {
-    case none
+enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
+    case hatchEgg
+    case alert(
+        title: String,
+        content: String,
+        style: ModalStyleType,
+        button: ModalButtonType,
+        cancelAction: () -> Void,
+        checkAction: () -> Void,
+        checkTitle: String,
+        cancelTitle: String
+    )
     
     var id: String {
         switch self {
-        case .none:
-            return "none"
+        case .hatchEgg:
+            return "hatchEgg"
+        case .alert(let title, _, _, _, _, _, _, _):
+            return "alert_\(title)"
         }
     }
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
+    
+    static func == (lhs: AppFullScreenCover, rhs: AppFullScreenCover) -> Bool {
         lhs.id == rhs.id
     }
+    
     func hash(into hasher: inout Hasher) {
-        id.hash(into: &hasher)
+        hasher.combine(id)
     }
 }

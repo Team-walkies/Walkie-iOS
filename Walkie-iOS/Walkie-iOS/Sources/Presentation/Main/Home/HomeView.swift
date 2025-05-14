@@ -163,7 +163,6 @@ struct HomeView: View {
                     },
                     checkButtonTitle: "허용하기"
                 )
-                appCoordinator.showAlert()
             }
         }
         .permissionBottomSheet(

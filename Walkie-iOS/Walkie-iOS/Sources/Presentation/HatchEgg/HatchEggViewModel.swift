@@ -26,7 +26,6 @@ final class HatchEggViewModel: ViewModelable {
         case willShowConfettiEffectWithVibration // 3.7초
         case willShowcharacter // 3.9초
         case willShowGlowEffect // 4초
-        case willDismiss
     }
     
     enum State {
@@ -76,7 +75,7 @@ final class HatchEggViewModel: ViewModelable {
         switch action {
         case .willAppear:
             getEggPlaying()
-            hatchEgg()
+            //            hatchEgg()
         case .willShowWaitText:
             self.animationState = .init(
                 isShowingWaitText: true,
@@ -143,12 +142,10 @@ final class HatchEggViewModel: ViewModelable {
                 isShowingEggHatchText: false,
                 isShowingEggLottie: false,
                 isPlayingEggLottie: false,
-                isPlayingConfetti: true,
+                isPlayingConfetti: false,
                 isShowingCharacter: true,
                 isShowingGlowEffect: true
             )
-        case .willDismiss:
-            self.appCoordinator.isPresentingHatchView = false
         }
     }
     
