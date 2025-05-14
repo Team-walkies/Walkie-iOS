@@ -2,6 +2,10 @@ import ProjectDescription
 
 let project = Project(
     name: "Walkie-iOS",
+    options: .options(
+        defaultKnownRegions: ["ko"],
+        developmentRegion: "ko"
+    ),
     targets: [
         .target(
             name: "Walkie-iOS",
@@ -11,7 +15,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "Walkie",
-                    "CFBundleShortVersionString": "1.0.0",
+                    "CFBundleShortVersionString": "1.0.1",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
@@ -89,7 +93,7 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.0"
+                    "MARKETING_VERSION": "1.0.1"
                 ],
                 configurations: [
                     .debug(name: "Debug", xcconfig: "Config/WalkieConfig.xcconfig"),

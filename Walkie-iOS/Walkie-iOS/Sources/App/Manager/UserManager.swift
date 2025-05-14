@@ -16,6 +16,7 @@ final class UserManager {
     @UserDefaultsWrapper<String>(key: "nickname") private(set) var nickname
     @UserDefaultsWrapper<Int>(key: "stepCount") private(set) var stepCount
     @UserDefaultsWrapper<Int>(key: "stepCountGoal") private(set) var stepCountGoal
+    @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     
     private init() {}
 }
@@ -26,6 +27,7 @@ extension UserManager {
     var getUserNickname: String { return self.nickname ?? "" }
     var getStepCount: Int { return self.stepCount ?? 0 }
     var getStepCountGoal: Int { return self.stepCountGoal ?? .max }
+    var getStartExploreDate: Date? { return self.startExploreDate }
 }
 
 extension UserManager {
@@ -40,6 +42,14 @@ extension UserManager {
     
     func setStepCountGoal(_ count: Int) {
         self.stepCountGoal = count
+    }
+    
+    func setStartExploreDate(_ date: Date) {
+        self.startExploreDate = date
+    }
+    
+    func clearExploreDate() {
+        self.startExploreDate = nil
     }
     
     func withdraw() {
