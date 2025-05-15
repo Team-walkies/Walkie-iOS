@@ -20,6 +20,11 @@ final class DefaultUpdateEggStepUseCase: BaseEggUseCase, UpdateEggStepUseCase {
                     switch completion {
                     case .finished:
                         print("걸음 수 업데이트 성공!")
+                        if willHatch {
+                            // 초기화
+                            UserManager.shared.setStepCountGoal(.max)
+                            NotificationManager.shared.notified = false
+                        }
                     case .failure(let error):
                         print("걸음 수 업데이트 오류: \(error)")
                     }
