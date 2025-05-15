@@ -62,7 +62,7 @@ struct HomeView: View {
                                     }
                                 )
                             default:
-                                ProgressView()
+                                HomeStatsSkeletonView()
                             }
                         }
                         .padding(.top, 8)
@@ -73,7 +73,7 @@ struct HomeView: View {
                         HomeHistoryView(homeState: homeHistoryState)
                             .padding(.top, 18)
                     default:
-                        ProgressView()
+                        HomeHistorySkeletonView()
                     }
                 }
             }
