@@ -10,6 +10,7 @@ import SwiftUI
 import Combine
 import CoreMotion
 import CoreLocation
+import WalkieCommon
 
 final class HomeViewModel: ViewModelable {
     
@@ -199,8 +200,24 @@ final class HomeViewModel: ViewModelable {
                         eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
                     self.homeStatsState = .loaded(homeStatsState)
-                }, receiveFailure: { _, _ in
-                    self.state = .error
+                }, receiveFailure: { _, error in
+                    if let netErr = error {
+                        switch netErr {
+                        case .responseDecodingError:
+                            let homeState = HomeStatsState(
+                                hasEgg: false,
+                                eggImage: .imgEggEmpty,
+                                eggGradientColors: [
+                                    WalkieCommonAsset.blue300.swiftUIColor,
+                                    WalkieCommonAsset.blue200.swiftUIColor
+                                ],
+                                eggEffectImage: nil
+                            )
+                            self.homeStatsState = .loaded(homeState)
+                        default:
+                            self.homeStatsState = .error("서버 오류")
+                        }
+                    }
                 }
             )
             .store(in: &cancellables)
