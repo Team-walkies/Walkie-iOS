@@ -21,7 +21,7 @@ struct HomeStatsView: View {
     
     var body: some View {
         
-        let statsHeight = min(safeScreenHeight - 359, 360)
+        let statsHeight = max(safeScreenHeight - 359, 360)
         
         ZStack(alignment: .bottom) {
             LinearGradient(
@@ -36,7 +36,6 @@ struct HomeStatsView: View {
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .frame(width: width, height: statsHeight)
             .cornerRadius(20, corners: .allCorners)
             
             ZStack(alignment: .bottom) {
@@ -155,7 +154,7 @@ struct HomeStatsView: View {
                 .padding(.bottom, 41)
             }
         }
-        .frame(width: width, height: 371)
+        .frame(width: width, height: statsHeight)
         .mask(RoundedRectangle(cornerRadius: 16))
         .onAppear {
             let locationWarning = !stepState.locationAlwaysAuthorized

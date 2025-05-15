@@ -14,11 +14,6 @@ struct HomeHistoryView: View {
     let homeState: HomeViewModel.HomeHistoryState
     let items: [HomeHistoryItem]
     let columns = [GridItem(.flexible())]
-//    let destination: [AnyView] = [
-//        AnyView(DIContainer.shared.buildEggView()),
-//        AnyView(DIContainer.shared.buildCharacterView()),
-//        AnyView(DIContainer.shared.buildReviewView())
-//    ]
     
     init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState
@@ -54,9 +49,9 @@ struct HomeHistoryView: View {
                     }
                 }
                 .frame(height: 117)
-                .padding(.bottom, 114)
             }
             .padding(.horizontal, 16)
         }
+        .padding(.bottom, 114)
     }
 }
