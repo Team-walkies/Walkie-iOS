@@ -15,6 +15,9 @@ struct TabBarView: View {
     
     @StateObject var homeCoordinator: HomeCoordinator
     @StateObject var mypageCoordinator: MypageCoordinator
+    
+    @Environment(\.scenePhase) var scenePhase
+    @State private var timer: Timer?
         
     var body: some View {
         GeometryReader { geometry in
@@ -109,7 +112,50 @@ struct TabBarView: View {
                     DIContainer.shared.buildMapView()
                         .navigationBarBackButtonHidden()
                 }
+                .onAppear {
+                    // 포그라운드에서 Timer 시작
+                    if timer == nil && scenePhase == .active {
+                        startTimer()
+                    }
+                }
+                .onDisappear {
+                    // 뷰가 사라질 때 Timer 정리
+                    stopTimer()
+                }
+                .onChange(of: scenePhase) { _, newPhase in
+                    switch newPhase {
+                    case .background:
+                        print("---background---")
+                        // 백그라운드 작업 실행
+                        StepManager.shared.executeBackgroundTasks()
+                        stopTimer() // 포그라운드 Timer 중지
+                    case .inactive:
+                        print("---inactive---")
+                        stopTimer() // 비활성 상태에서 Timer 중지
+                    case .active:
+                        print("---active---")
+                        if timer == nil {
+                            startTimer() // 포그라운드에서 Timer 재시작
+                        }
+                    @unknown default:
+                        fatalError()
+                    }
+                }
             }
         }
+    }
+    
+    private func startTimer() {
+        // 포그라운드에서 10초 간격으로 서버 업데이트
+        timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
+            StepManager.shared.executeForegroundTasks()
+            print("포그라운드: 서버에 업데이트 완료")
+        }
+    }
+    
+    private func stopTimer() {
+        // Timer 해제
+        timer?.invalidate()
+        timer = nil
     }
 }

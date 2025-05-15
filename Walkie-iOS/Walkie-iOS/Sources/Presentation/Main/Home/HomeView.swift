@@ -9,8 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @Environment(\.scenePhase) var scenePhase
-    
     @ObservedObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
@@ -20,8 +18,6 @@ struct HomeView: View {
     @State private var showMotionBS: Bool = false
     @State private var showAlarmBS: Bool = false
     @State private var showBS: Bool = false
-    
-    @State private var timer: Timer?
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
@@ -86,34 +82,6 @@ struct HomeView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     handlePermissionBS()
                 }
-            }
-            
-            // 포그라운드에서 Timer 시작
-            if timer == nil && scenePhase == .active {
-                startTimer()
-            }
-        }
-        .onDisappear {
-            // 뷰가 사라질 때 Timer 정리
-            stopTimer()
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            switch newPhase {
-            case .background:
-                print("---background---")
-                // 백그라운드 작업 실행
-                StepManager.shared.executeBackgroundTasks()
-                stopTimer() // 포그라운드 Timer 중지
-            case .inactive:
-                print("---inactive---")
-                stopTimer() // 비활성 상태에서 Timer 중지
-            case .active:
-                print("---active---")
-                if timer == nil {
-                    startTimer() // 포그라운드에서 Timer 재시작
-                }
-            @unknown default:
-                fatalError()
             }
         }
         .onChange(of: viewModel.state) { _, newState in
@@ -183,20 +151,6 @@ struct HomeView: View {
                 DIContainer.shared.buildAlarmListView()
                     .navigationBarBackButtonHidden()
             }
-    }
-    
-    private func startTimer() {
-        // 포그라운드에서 10초 간격으로 서버 업데이트
-        timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
-            StepManager.shared.executeForegroundTasks()
-            print("포그라운드: 서버에 업데이트 완료")
-        }
-    }
-    
-    private func stopTimer() {
-        // Timer 해제
-        timer?.invalidate()
-        timer = nil
     }
     
     private func handlePermissionBS() {
