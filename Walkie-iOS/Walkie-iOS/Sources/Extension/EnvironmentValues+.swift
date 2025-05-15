@@ -28,8 +28,7 @@ private struct SafeScreenHeightKey: EnvironmentKey {
             .first?
             .windows
             .first { $0.isKeyWindow }
-        let verticalInset = (window?.safeAreaInsets.top ?? 0)
-                         + (window?.safeAreaInsets.bottom ?? 0)
+        let verticalInset = (window?.safeAreaInsets.top ?? 0) + (window?.safeAreaInsets.bottom ?? 0)
         return fullH - verticalInset
     }()
 }
