@@ -75,7 +75,6 @@ final class HatchEggViewModel: ViewModelable {
         switch action {
         case .willAppear:
             getEggPlaying()
-            //            hatchEgg()
         case .willShowWaitText:
             self.animationState = .init(
                 isShowingWaitText: true,
@@ -155,10 +154,6 @@ final class HatchEggViewModel: ViewModelable {
                 with: self,
                 receiveValue: { _, data in
                     self.hatchEggState = data
-                    guard let data = self.hatchEggState else {
-                        print(" --- 알 정보 불러오기 실패 --- ")
-                        return
-                    }
                     self.state = .loaded(
                         HatchEggState(
                             eggType: data.eggType,
@@ -167,6 +162,7 @@ final class HatchEggViewModel: ViewModelable {
                             dinoType: data.dinoType ?? .defaultDino
                         )
                     )
+                    self.hatchEgg()
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
