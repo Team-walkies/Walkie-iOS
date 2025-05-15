@@ -121,6 +121,44 @@ enum EggType: String, CaseIterable, Hashable {
         }
     }
     
+    var eggBackgroundColor: [Color] {
+        switch self {
+        case .normal:
+            [
+                WalkieCommonAsset.blue300.swiftUIColor,
+                WalkieCommonAsset.blue200.swiftUIColor
+            ]
+        case .rare:
+            [
+                WalkieCommonAsset.green100.swiftUIColor,
+                WalkieCommonAsset.green50.swiftUIColor
+            ]
+        case .epic:
+            [
+                WalkieCommonAsset.orange100.swiftUIColor,
+                WalkieCommonAsset.orange100.swiftUIColor
+            ]
+        case .legendary:
+            [
+                WalkieCommonAsset.purple200.swiftUIColor,
+                WalkieCommonAsset.purple100.swiftUIColor
+            ]
+        }
+    }
+    
+    var eggBackEffect: ImageResource? {
+        switch self {
+        case .normal:
+                nil
+        case .rare:
+                .imgEggBackEffect1
+        case .epic:
+                .imgEggBackEffect2
+        case .legendary:
+                .imgEggBackEffect3
+        }
+    }
+    
     static func from(number: Int) -> EggType {
         switch number {
         case 0:

@@ -17,13 +17,34 @@ struct HomeStatsView: View {
     
     @State var showWarning: Bool = false
     @State var warningTypes: [WarningType] = []
+    @Environment(\.safeScreenHeight) private var safeScreenHeight
     
     var body: some View {
+        
+        let statsHeight = min(safeScreenHeight - 359, 360)
+        
         ZStack {
-            Image(homeStatsState.eggBackImage)
-                .resizable()
-                .scaledToFill()
-                .frame(width: width, height: 371)
+            ZStack(alignment: .bottom) {
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: homeStatsState.eggGradientColors[0], location: 0.0),
+                        .init(color: homeStatsState.eggGradientColors[0], location: 0.4),
+                        .init(color: homeStatsState.eggGradientColors[1], location: 0.4),
+                        .init(color: homeStatsState.eggGradientColors[1], location: 1.0)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(width: width, height: statsHeight)
+                .cornerRadius(20, corners: .allCorners)
+                
+                if let eggEffect = homeStatsState.eggEffectImage {
+                    Image(eggEffect)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 343, height: 343)
+                }
+            }
             ZStack(alignment: .bottom) {
                 VStack(spacing: 0) {
                     HStack(alignment: .bottom, spacing: 5) {

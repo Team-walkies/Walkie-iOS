@@ -34,7 +34,9 @@ final class HomeViewModel: ViewModelable {
     
     struct HomeStatsState {
         let hasEgg: Bool
-        let eggImage, eggBackImage: ImageResource
+        let eggImage: ImageResource
+        let eggGradientColors: [Color]
+        let eggEffectImage: ImageResource?
     }
     
     struct HomeCharacterState {
@@ -193,17 +195,12 @@ final class HomeViewModel: ViewModelable {
                     let homeStatsState = HomeStatsState(
                         hasEgg: hasEgg,
                         eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
-                        eggBackImage: hasEgg ? eggEntity.eggType.eggBackground : .imgEggBack0
+                        eggGradientColors: eggEntity.eggType.eggBackgroundColor,
+                        eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
                     self.homeStatsState = .loaded(homeStatsState)
-                }, receiveFailure: { _, error in
-                    let errorMessage = error?.description ?? "An unknown error occurred"
-                    let homeStatsState = HomeStatsState(
-                        hasEgg: false,
-                        eggImage: .imgEggEmpty,
-                        eggBackImage: .imgEggBack0
-                    )
-                    self.homeStatsState = .loaded(homeStatsState)
+                }, receiveFailure: { _, _ in
+                    self.state = .error
                 }
             )
             .store(in: &cancellables)
