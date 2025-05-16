@@ -195,7 +195,7 @@ final class HomeViewModel: ViewModelable {
                     let hasEgg: Bool = eggEntity.eggId >= 0
                     let homeStatsState = HomeStatsState(
                         hasEgg: hasEgg,
-                        eggImage: hasEgg ? eggEntity.eggType.eggClipImage : .imgEggEmpty,
+                        eggImage: hasEgg ? eggEntity.eggType.eggClipImage : .eggEmpty,
                         eggGradientColors: eggEntity.eggType.eggBackgroundColor,
                         eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
@@ -206,7 +206,7 @@ final class HomeViewModel: ViewModelable {
                         case .responseDecodingError:
                             let homeState = HomeStatsState(
                                 hasEgg: false,
-                                eggImage: .imgEggEmpty,
+                                eggImage: .eggEmpty,
                                 eggGradientColors: [
                                     WalkieCommonAsset.blue300.swiftUIColor,
                                     WalkieCommonAsset.blue200.swiftUIColor

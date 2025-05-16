@@ -24,6 +24,7 @@ struct HomeStatsView: View {
         let statsHeight = max(safeScreenHeight - 359, 360)
         let eggHeight = statsHeight * 0.57
         let eggWidth = eggHeight * 1.3
+        let emptyButtonInset = eggHeight / 3.2
         
         ZStack(alignment: .bottom) {
             LinearGradient(
@@ -120,7 +121,7 @@ struct HomeStatsView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: eggWidth, height: eggHeight)
-                        .overlay {
+                        .overlay(alignment: .bottom) {
                             if !showWarning {
                                 NavigationLink(destination: DIContainer.shared.buildEggView()) {
                                     Text("알을 선택해 주세요")
@@ -129,6 +130,7 @@ struct HomeStatsView: View {
                                         .underline()
                                 }
                                 .frame(height: 24)
+                                .padding(.bottom, emptyButtonInset)
                             }
                         }
                 }
