@@ -14,10 +14,6 @@ final class MypageMainViewModel: ViewModelable {
     private let patchProfileUseCase: PatchProfileUseCase
     private let getProfileUseCase: GetProfileUseCase
     private let withdrawUseCase: WithdrawUseCase
-//    @EnvironmentObject private var appCoordinator: AppCoordinator
-    
-    var hasFetchedInitialData = false
-    
     private var cancellables = Set<AnyCancellable>()
     
     enum MypageMainViewState {
@@ -64,10 +60,7 @@ final class MypageMainViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .mypageMainWillAppear:
-            if !hasFetchedInitialData {
-                fetchMypageMainData()
-                hasFetchedInitialData = true
-            }
+            fetchMypageMainData()
         case .toggleMyInformationIsPublic:
             updateMyInformationPublicSetting()
         case .toggleNotifyEggHatches:
