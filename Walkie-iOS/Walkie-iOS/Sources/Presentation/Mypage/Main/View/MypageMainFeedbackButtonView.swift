@@ -13,7 +13,7 @@ struct MypageMainFeedbackButtonView: View {
     var body: some View {
         NavigationLink(
             destination:
-                MypageNotionWebView(url: MypageNotionWebViewURL.questions.url)
+                MypageWebView(url: MypageNotionWebViewURL.questions.url)
                 .navigationBarBackButtonHidden()
         ) {
             HStack(spacing: 0) {
