@@ -76,7 +76,9 @@ struct HomeView: View {
                         HomeHistorySkeletonView()
                     }
                 }
+                .padding(.bottom, 114)
             }
+            .scrollIndicators(.never)
         }
         .onAppear {
             viewModel.action(.homeWillAppear)

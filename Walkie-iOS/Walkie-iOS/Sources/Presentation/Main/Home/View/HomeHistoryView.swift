@@ -13,7 +13,9 @@ struct HomeHistoryView: View {
     
     let homeState: HomeViewModel.HomeHistoryState
     let items: [HomeHistoryItem]
-    let columns = [GridItem(.flexible())]
+    
+    private let columns = [GridItem(.flexible())]
+    @Environment(\.screenWidth) private var screenWidth
     
     init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState
@@ -34,24 +36,22 @@ struct HomeHistoryView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            VStack(alignment: .leading, spacing: 8) {
-                Text("나의 히스토리")
-                    .font(.H4)
-                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+        
+        VStack(alignment: .leading, spacing: 8) {
+            Text("나의 히스토리")
+                .font(.H4)
+                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
 
-                let width = (geometry.size.width - 48) / 3
-                LazyHGrid(rows: columns) {
-                    ForEach(Array(HomeHistoryViewFactory.allCases.enumerated()), id: \.offset) { index, factory in
-                        NavigationLink(destination: factory.buildHistoryView()) {
-                            HomeHistoryItemView(item: items[index], width: width)
-                        }
+            let width = (screenWidth - 48) / 3
+            LazyHGrid(rows: columns) {
+                ForEach(Array(HomeHistoryViewFactory.allCases.enumerated()), id: \.offset) { index, factory in
+                    NavigationLink(destination: factory.buildHistoryView()) {
+                        HomeHistoryItemView(item: items[index], width: width)
                     }
                 }
-                .frame(height: 117)
             }
-            .padding(.horizontal, 16)
+            .frame(height: 117)
         }
-        .padding(.bottom, 114)
+        .padding(.horizontal, 16)
     }
 }
