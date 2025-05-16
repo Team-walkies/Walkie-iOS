@@ -75,6 +75,10 @@ final class StepManager {
         }
     }
     
+    func changeEggPlaying(egg: EggEntity) {
+        self.eggEntity = egg
+    }
+    
     // MARK: - Task Execution
     
     func executeForegroundTasks() {
@@ -82,8 +86,9 @@ final class StepManager {
             // 부화 조건 확인 후 이벤트 발생
             if self?.checkStepUseCase.execute() == true {
                 self?.hatchEventSubject.send(())
+            } else {
+                self?.updateForeground()
             }
-            self?.updateForeground()
         }
     }
     

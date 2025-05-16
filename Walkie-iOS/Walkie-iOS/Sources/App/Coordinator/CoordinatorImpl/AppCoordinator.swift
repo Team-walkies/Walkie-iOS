@@ -7,7 +7,6 @@
 
 import SwiftUI
 import KakaoSDKAuth
-
 import Foundation
 import Combine
 
@@ -39,11 +38,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     let tabBarView: AnyView
     
     var loginInfo: LoginUserInfo = LoginUserInfo()
-    var isPresentingHatchView: Bool = false
     private var cancellables: Set<AnyCancellable> = []
-    
-    private var isShowingAlert: Bool = false
-    private var alertModal: Modal?
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
@@ -63,7 +58,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         StepManager.shared.hatchEventSubject
             .receive(on: DispatchQueue.main)
             .sink { [weak self] in
-                self?.isPresentingHatchView = true
+                self?.presentFullScreenCover(AppFullScreenCover.hatchEgg, onDismiss: nil)
             }
             .store(in: &cancellables)
         
@@ -81,10 +76,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
         switch scene {
         case .splash:
             SplashView()
-        case .hatchEgg:
-            if isPresentingHatchView {
-                diContainer.buildHatchEggView()
-            }
         case .nickname:
             diContainer.buildNicknameView()
         case .login:
@@ -97,24 +88,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     }
                 }
         case .tabBar:
-            ZStack {
-                tabBarView
-                ZStack {
-                    Color.black.opacity(isShowingAlert && alertModal != nil ? 0.6 : 0.0)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                self.dismissAlert()
-                            }
-                        }
-                    if let modal = alertModal {
-                        modal
-                            .padding(.horizontal, 40)
-                            .opacity(isShowingAlert ? 1.0 : 0.0)
-                    }
-                }
-                .animation(.easeInOut(duration: 0.25), value: isShowingAlert)
-            }
+            tabBarView
         case .complete:
             diContainer.buildSignupView()
         }
@@ -126,6 +100,39 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     @ViewBuilder
     func buildFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
+        switch fullScreenCover {
+        case .hatchEgg:
+            diContainer.buildHatchEggView()
+        case .alert(let title, let content, let style, let button, let cancelAction, let checkAction, let checkTitle, let cancelTitle):
+            ZStack {
+                Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            self.dismissFullScreenCover()
+                        }
+                    }
+                Modal(
+                    title: title,
+                    content: content,
+                    style: style,
+                    button: button,
+                    cancelButtonAction: {
+                        self.dismissFullScreenCover()
+                        cancelAction()
+                    },
+                    checkButtonAction: {
+                        self.dismissFullScreenCover()
+                        checkAction()
+                    },
+                    checkButtonTitle: checkTitle,
+                    cancelButtonTitle: cancelTitle
+                )
+                .padding(.horizontal, 40)
+                .opacity(appFullScreenCover != nil ? 1.0 : 0.0)
+            }
+            .animation(.easeInOut(duration: 0.25), value: appFullScreenCover != nil)
+        }
     }
     
     private func updateCurrentScene() {
@@ -168,38 +175,18 @@ final class AppCoordinator: Coordinator, ObservableObject {
         checkButtonTitle: String = "확인",
         cancelButtonTitle: String = "취소"
     ) {
-        self.alertModal = Modal(
-            title: title,
-            content: content,
-            style: style,
-            button: button,
-            cancelButtonAction: {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    self.dismissAlert()
-                }
-                cancelButtonAction()
-            },
-            checkButtonAction: {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    self.dismissAlert()
-                }
-                checkButtonAction()
-            },
-            checkButtonTitle: checkButtonTitle,
-            cancelButtonTitle: cancelButtonTitle
+        presentFullScreenCover(
+            AppFullScreenCover.alert(
+                title: title,
+                content: content,
+                style: style,
+                button: button,
+                cancelAction: cancelButtonAction,
+                checkAction: checkButtonAction,
+                checkTitle: checkButtonTitle,
+                cancelTitle: cancelButtonTitle
+            ),
+            onDismiss: nil
         )
-    }
-    
-    func showAlert() {
-        withAnimation(.easeInOut(duration: 0.25)) {
-            self.isShowingAlert = true
-        }
-    }
-    
-    func dismissAlert() {
-        withAnimation(.easeInOut(duration: 0.25)) {
-            self.isShowingAlert = false
-        }
-        self.alertModal = nil
     }
 }

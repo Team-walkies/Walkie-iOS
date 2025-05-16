@@ -9,7 +9,7 @@ final class NotificationManager {
     static let shared = NotificationManager()
     
     @UserDefaultsWrapper<Bool>(key: "notifyEggHatch") private var notifyEggHatch
-    @UserDefaultsWrapper<Bool>(key: "notified") private var notified
+    @UserDefaultsWrapper<Bool>(key: "notified") var notified
     
     init() {
         /// 초깃값 설정
@@ -78,6 +78,7 @@ final class NotificationManager {
                                 print("SUCCESS: Notification scheduled with identifier \(identifier)")
                             }
                         }
+                        self.notified = true
                     }
                 }
             }

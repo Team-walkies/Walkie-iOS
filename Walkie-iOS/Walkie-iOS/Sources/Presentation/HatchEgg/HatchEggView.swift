@@ -12,21 +12,25 @@ import WalkieCommon
 struct HatchEggView: View {
     
     @ObservedObject var hatchEggViewModel: HatchEggViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         ZStack(alignment: .center) {
             Color(white: 0, opacity: 0.6)
+                .ignoresSafeArea()
                 .onTapGesture {
                     if hatchEggViewModel.animationState.isShowingGlowEffect {
-                        hatchEggViewModel.action(.willDismiss)
+                        appCoordinator.dismissFullScreenCover()
                     }
                 }
             switch hatchEggViewModel.state {
             case .loaded(let hatchState):
-                WalkieLottieView(
-                    lottie: WalkieLottie.confetti,
-                    isPlaying: hatchEggViewModel.animationState.isPlayingConfetti
-                )
+                if hatchEggViewModel.animationState.isPlayingConfetti {
+                    WalkieLottieView(
+                        lottie: WalkieLottie.confetti,
+                        isPlaying: hatchEggViewModel.animationState.isPlayingConfetti
+                    )
+                }
                 Image(.glowEffect)
                     .resizable()
                     .frame(width: 520, height: 372)
@@ -79,7 +83,6 @@ struct HatchEggView: View {
                 .alignmentGuide(VerticalAlignment.center) { view in
                     view[.bottom] + 132
                 }
-                
                 VStack(alignment: .center, spacing: 0) {
                     let characterName = switch hatchState.characterType {
                     case .jellyfish:
@@ -107,7 +110,6 @@ struct HatchEggView: View {
                 ProgressView()
             }
         }
-        .ignoresSafeArea(.all)
         .onAppear { hatchEggViewModel.action(.willAppear)
             scheduleAnimation()
         }

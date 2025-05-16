@@ -9,6 +9,9 @@ import UIKit
 
 final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
     func execute() -> Bool {
+        print("UserManager.shared.getStepCountGoal: \(UserManager.shared.getStepCountGoal)")
+        print("UserManager.shared.getStepCount: \(UserManager.shared.getStepCount)")
+        print("stepStore.getStepCountCache(): \(stepStore.getStepCountCache())")
         if UserManager.shared.getStepCountGoal
             <= UserManager.shared.getStepCount
             + stepStore.getStepCountCache() {
@@ -16,8 +19,10 @@ final class DefaultCheckStepUseCase: BaseStepUseCase, CheckStepUseCase {
                 title: "알이 부화하려고 해요!",
                 body: "어서 가서 깨워주세요"
             )
+            print("hatch true")
             return true
         }
+        print("hatch false")
         return false
     }
 }

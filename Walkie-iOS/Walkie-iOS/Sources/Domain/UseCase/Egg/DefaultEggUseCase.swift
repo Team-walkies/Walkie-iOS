@@ -41,6 +41,8 @@ extension DefaultEggUseCase: EggUseCase {
                 UserManager.shared.setStepCount(entity.nowStep)
                 // 캐시 초기화
                 self.stepStore.resetStepCountCache()
+                // 걸음 수 업데이트 대상 알 변경
+                StepManager.shared.changeEggPlaying(egg: entity)
             })
             .eraseToAnyPublisher()
     }
