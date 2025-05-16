@@ -14,7 +14,6 @@ enum AppScene: AppRoute {
     case complete
     case login
     
-    
     case tabBar
     
     var id: String {
