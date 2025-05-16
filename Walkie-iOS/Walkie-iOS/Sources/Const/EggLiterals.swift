@@ -40,6 +40,19 @@ enum EggType: String, CaseIterable, Hashable {
         }
     }
     
+    var eggClipImage: ImageResource {
+        switch self {
+        case .normal:
+            .eggBlue
+        case .rare:
+            .eggGreen
+        case .epic:
+            .eggYellow
+        case .legendary:
+            .eggPurple
+        }
+    }
+    
     var walkCount: Int {
         switch self {
         case .normal:
