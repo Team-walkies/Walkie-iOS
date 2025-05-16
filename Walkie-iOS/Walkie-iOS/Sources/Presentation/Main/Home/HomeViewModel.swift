@@ -195,7 +195,7 @@ final class HomeViewModel: ViewModelable {
                     let hasEgg: Bool = eggEntity.eggId >= 0
                     let homeStatsState = HomeStatsState(
                         hasEgg: hasEgg,
-                        eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
+                        eggImage: hasEgg ? eggEntity.eggType.eggClipImage : .imgEggEmpty,
                         eggGradientColors: eggEntity.eggType.eggBackgroundColor,
                         eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )

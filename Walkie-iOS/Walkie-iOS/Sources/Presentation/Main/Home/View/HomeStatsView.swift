@@ -22,6 +22,8 @@ struct HomeStatsView: View {
     var body: some View {
         
         let statsHeight = max(safeScreenHeight - 359, 360)
+        let eggHeight = statsHeight * 0.57
+        let eggWidth = eggHeight * 1.3
         
         ZStack(alignment: .bottom) {
             LinearGradient(
@@ -111,14 +113,13 @@ struct HomeStatsView: View {
                     
                     Image(homeStatsState.eggImage)
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: 296, height: 296)
-                        .padding(.bottom, -85)
+                        .scaledToFill()
+                        .frame(width: eggWidth, height: eggHeight)
                 } else {
                     Image(homeStatsState.eggImage)
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: 296, height: 296)
+                        .scaledToFill()
+                        .frame(width: eggWidth, height: eggHeight)
                         .overlay {
                             if !showWarning {
                                 NavigationLink(destination: DIContainer.shared.buildEggView()) {
@@ -130,7 +131,6 @@ struct HomeStatsView: View {
                                 .frame(height: 24)
                             }
                         }
-                        .padding(.bottom, -85)
                 }
             }
             
