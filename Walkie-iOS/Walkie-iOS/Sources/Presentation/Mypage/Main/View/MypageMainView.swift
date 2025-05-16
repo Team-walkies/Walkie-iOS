@@ -13,37 +13,37 @@ struct MypageMainView: View {
     var body: some View {
         ZStack {
             NavigationStack {
-                switch viewModel.state {
-                case .loaded(let mypageMainState):
-                    ZStack {
-                        VStack(alignment: .center, spacing: 0) {
-                            NavigationBar(
-                            )
-                            ScrollView(.vertical, showsIndicators: false) {
-                                VStack(spacing: 0) {
+                ZStack {
+                    VStack(alignment: .center, spacing: 0) {
+                        NavigationBar(
+                        )
+                        ScrollView(.vertical, showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                switch viewModel.state {
+                                case .loaded(let mypageMainState):
                                     MypageMainProfileSectionView(mypageMainState: mypageMainState)
                                         .padding(.bottom, 20)
-                                    
-                                    MypageMainSettingSectionView(viewModel: viewModel)
-                                        .padding(.bottom, 8)
-                                    
-                                    MypageMainServiceSectionView(viewModel: viewModel)
-                                        .padding(.bottom, 8)
-                                    
-                                    MypageMainFeedbackButtonView()
-                                        .padding(.bottom, 12)
-                                    
-                                    MypageMainAccountActionButtonsView(viewModel: viewModel)
+                                default:
+                                    MypageMainProfileSkeletonView()
+                                        .padding(.bottom, 20)
                                 }
-                                .frame(alignment: .top)
-                                .padding(.horizontal, 16)
-                                .padding(.top, 4)
-                                .padding(.bottom, 114)
+                                MypageMainSettingSectionView(viewModel: viewModel)
+                                    .padding(.bottom, 8)
+                                
+                                MypageMainServiceSectionView(viewModel: viewModel)
+                                    .padding(.bottom, 8)
+                                
+                                MypageMainFeedbackButtonView()
+                                    .padding(.bottom, 12)
+                                
+                                MypageMainAccountActionButtonsView(viewModel: viewModel)
                             }
+                            .frame(alignment: .top)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 4)
+                            .padding(.bottom, 114)
                         }
                     }
-                default:
-                    EmptyView()
                 }
             }
         }
