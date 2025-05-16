@@ -97,6 +97,24 @@ struct LoginView: View {
                 appCoordinator.loginInfo = loginViewModel.loginInfo
                 UserManager.shared.setUserNickname(loginViewModel.loginInfo.username)
                 appCoordinator.currentScene = loginState.isExistMember ? .tabBar : .nickname
+            case .error(retrySign: let retrySign):
+                if retrySign {
+                    appCoordinator.presentFullScreenCover(
+                        AppFullScreenCover
+                            .alert(
+                                title: "로그인 실패",
+                                content: "실패했숴 ㅋ",
+                                style: .error,
+                                button: .onebutton,
+                                cancelAction: {},
+                                checkAction: {},
+                                checkTitle: "확인",
+                                cancelTitle: ""),
+                        onDismiss: {
+                            loginViewModel.state = .loading
+                        }
+                    )
+                }
             default:
                 break
             }

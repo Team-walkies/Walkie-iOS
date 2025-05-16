@@ -103,7 +103,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
         switch fullScreenCover {
         case .hatchEgg:
             diContainer.buildHatchEggView()
-        case .alert(let title, let content, let style, let button, let cancelAction, let checkAction, let checkTitle, let cancelTitle):
+        case .alert(
+            let title,
+            let content,
+            let style,
+            let button,
+            let cancelAction,
+            let checkAction,
+            let checkTitle,
+            let cancelTitle
+        ):
             ZStack {
                 Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
                     .ignoresSafeArea()
