@@ -115,4 +115,12 @@ extension View {
                 .interactiveDismissDisabled(true)
         }
     }
+    
+    func shimmer() -> some View {
+        modifier(ShimmerModifier())
+    }
+    
+    func skeleton() -> some View {
+        modifier(SkeletonModifier())
+    }
 }

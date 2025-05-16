@@ -10,6 +10,7 @@ import SwiftUI
 import Combine
 import CoreMotion
 import CoreLocation
+import WalkieCommon
 
 final class HomeViewModel: ViewModelable {
     
@@ -34,7 +35,9 @@ final class HomeViewModel: ViewModelable {
     
     struct HomeStatsState {
         let hasEgg: Bool
-        let eggImage, eggBackImage: ImageResource
+        let eggImage: ImageResource
+        let eggGradientColors: [Color]
+        let eggEffectImage: ImageResource?
     }
     
     struct HomeCharacterState {
@@ -193,17 +196,28 @@ final class HomeViewModel: ViewModelable {
                     let homeStatsState = HomeStatsState(
                         hasEgg: hasEgg,
                         eggImage: hasEgg ? eggEntity.eggType.eggImage : .imgEggEmpty,
-                        eggBackImage: hasEgg ? eggEntity.eggType.eggBackground : .imgEggBack0
+                        eggGradientColors: eggEntity.eggType.eggBackgroundColor,
+                        eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
                     self.homeStatsState = .loaded(homeStatsState)
                 }, receiveFailure: { _, error in
-                    let errorMessage = error?.description ?? "An unknown error occurred"
-                    let homeStatsState = HomeStatsState(
-                        hasEgg: false,
-                        eggImage: .imgEggEmpty,
-                        eggBackImage: .imgEggBack0
-                    )
-                    self.homeStatsState = .loaded(homeStatsState)
+                    if let netErr = error {
+                        switch netErr {
+                        case .responseDecodingError:
+                            let homeState = HomeStatsState(
+                                hasEgg: false,
+                                eggImage: .imgEggEmpty,
+                                eggGradientColors: [
+                                    WalkieCommonAsset.blue300.swiftUIColor,
+                                    WalkieCommonAsset.blue200.swiftUIColor
+                                ],
+                                eggEffectImage: nil
+                            )
+                            self.homeStatsState = .loaded(homeState)
+                        default:
+                            self.homeStatsState = .error("서버 오류")
+                        }
+                    }
                 }
             )
             .store(in: &cancellables)

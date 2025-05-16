@@ -40,10 +40,13 @@ extension Publisher {
     
     func mapToNetworkError() -> AnyPublisher<Output, NetworkError> {
         mapError { error -> NetworkError in
-            if let moyaError = error as? MoyaError {
-                switch moyaError {
-                case .statusCode(let response):
-                    return NetworkError(rawValue: response.statusCode) ?? .unknownError
+            if let netErr = error as? NetworkError {
+                return netErr
+            }
+            if let moyaErr = error as? MoyaError {
+                switch moyaErr {
+                case .statusCode(let resp):
+                    return NetworkError(rawValue: resp.statusCode) ?? .unknownError
                 default:
                     return .unknownError
                 }
