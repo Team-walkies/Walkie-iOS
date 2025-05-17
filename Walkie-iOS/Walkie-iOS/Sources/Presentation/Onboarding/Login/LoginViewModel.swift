@@ -35,7 +35,7 @@ final class LoginViewModel: NSObject, ViewModelable {
     enum LoginViewState: Equatable {
         case loading
         case loaded(LoginState)
-        case error
+        case error(retrySign: Bool)
     }
     
     @Published var state: LoginViewState = .loading
@@ -134,8 +134,15 @@ extension LoginViewModel {
                     } catch {
                         
                     }
-                }, receiveFailure: { _, _ in
-                    self.state = .error
+                }, receiveFailure: { _, error in
+                    if let netErr = error {
+                        switch netErr {
+                        case .unauthorizedError: // 탈퇴후재가입시도
+                            self.state = .error(retrySign: true)
+                        default:
+                            self.state = .error(retrySign: false)
+                        }
+                    }
                 }
             )
             .store(in: &self.cancellables)

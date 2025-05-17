@@ -113,11 +113,11 @@ enum MypageServiceSectionItem: MypageSectionItem {
     func destinationView(viewModel: MypageMainViewModel) -> some View {
         switch self {
         case .notice:
-            MypageNotionWebView(url: MypageNotionWebViewURL.notice.url)
+            MypageWebView(url: MypageNotionWebViewURL.notice.url)
         case .privacyPolicy:
-            MypageNotionWebView(url: MypageNotionWebViewURL.privacy.url)
+            MypageWebView(url: MypageNotionWebViewURL.privacy.url)
         case .servicePolicy:
-            MypageNotionWebView(url: MypageNotionWebViewURL.service.url)
+            MypageWebView(url: MypageNotionWebViewURL.service.url)
         case .appVersion:
             EmptyView()
         }

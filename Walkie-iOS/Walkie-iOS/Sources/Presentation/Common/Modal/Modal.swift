@@ -42,12 +42,14 @@ struct Modal: View {
             Text(title)
                 .font(.H4)
                 .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                .padding(.horizontal, 16)
                 .padding(.bottom, 4)
             
             Text(content)
                 .font(.B2)
                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20)   
                 .multilineTextAlignment(
                     content.contains("백그라운드 동작") ? .leading : .center
                 )

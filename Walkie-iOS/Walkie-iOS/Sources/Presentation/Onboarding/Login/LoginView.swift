@@ -97,6 +97,24 @@ struct LoginView: View {
                 appCoordinator.loginInfo = loginViewModel.loginInfo
                 UserManager.shared.setUserNickname(loginViewModel.loginInfo.username)
                 appCoordinator.currentScene = loginState.isExistMember ? .tabBar : .nickname
+            case .error(retrySign: let retrySign):
+                if retrySign {
+                    appCoordinator.presentFullScreenCover(
+                        AppFullScreenCover
+                            .alert(
+                                title: "탈퇴 처리된 계정",
+                                content: "해당 아이디는 탈퇴 처리된 계정입니다. 자세한 사항은 이메일로 문의해 주시면 안내해 드리겠습니다. \n📧 이메일: walkieofficial@gmail.com",
+                                style: .error,
+                                button: .onebutton,
+                                cancelAction: {},
+                                checkAction: {},
+                                checkTitle: "확인",
+                                cancelTitle: ""),
+                        onDismiss: {
+                            loginViewModel.state = .loading
+                        }
+                    )
+                }
             default:
                 break
             }
