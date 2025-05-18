@@ -18,7 +18,7 @@ struct EggDetailView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             switch viewModel.state {
-            case .loaded(let detail, let eggState):
+            case .loaded(let eggState):
                 Image(eggState.eggType.eggImage)
                     .resizable()
                     .frame(width: 180, height: 180)
@@ -56,7 +56,7 @@ struct EggDetailView: View {
                         Text("획득 날짜")
                             .font(.B2)
                             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        Text(detail.obtainedDate ?? "오류")
+                        Text(eggState.obtainedDate)
                             .font(.H6)
                             .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
@@ -67,7 +67,7 @@ struct EggDetailView: View {
                         Text("획득 장소")
                             .font(.B2)
                             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        Text(detail.obtainedPosition ?? "오류")
+                        Text(eggState.obtainedPosition)
                             .font(.H6)
                             .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
