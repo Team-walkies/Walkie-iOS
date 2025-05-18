@@ -8,6 +8,7 @@
 import SwiftUI
 
 import WalkieCommon
+import FirebaseAnalytics
 
 struct HomeStatsView: View {
     
@@ -174,6 +175,9 @@ struct HomeStatsView: View {
                     return []
                 }
             }()
+        }
+        .onTapGesture {
+            Analytics.logEvent(StringLiterals.WalkieLog.menuCard, parameters: nil)
         }
     }
 }
