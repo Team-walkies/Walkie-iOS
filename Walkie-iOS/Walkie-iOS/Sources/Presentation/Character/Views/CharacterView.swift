@@ -78,7 +78,6 @@ struct CharacterView: View {
                     .padding(.top, 28)
                     .background(.white)
             }
-            ToastContainer()
         }
         .navigationBarBackButtonHidden()
     }

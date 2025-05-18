@@ -96,7 +96,6 @@ struct EggView: View {
                 }
                 .scrollIndicators(.never)
             }
-            ToastContainer()
         }
         .navigationDestination(isPresented: $isPresentingGuideView) {
             EggGuideView()

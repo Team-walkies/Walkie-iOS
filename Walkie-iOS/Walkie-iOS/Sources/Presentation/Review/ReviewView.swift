@@ -88,7 +88,6 @@ struct ReviewView: View {
                 )
                 .padding(.horizontal, 47)
             }
-            ToastContainer()
         }
         .onAppear {
             viewModel.action(
