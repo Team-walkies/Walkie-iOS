@@ -6,6 +6,7 @@
 //
 
 import Combine
+import SwiftUI
 
 final class EggViewModel: ViewModelable {
     
@@ -69,7 +70,9 @@ final class EggViewModel: ViewModelable {
                                 isWalking: eggEntity.isWalking)
                         }),
                         eggsCount: entity.count)
-                    self.state = .loaded(eggsState)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3 ) {
+                        self.state = .loaded(eggsState)
+                    }
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
