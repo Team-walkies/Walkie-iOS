@@ -42,12 +42,16 @@ struct HatchEggView: View {
                     Image(hatchState.jellyfishType.getCharacterImage())
                         .frame(width: 200, height: 200)
                         .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
-                        .animation(.easeInOut(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
+                        .animation(
+                            .easeInOut(duration: 0.3),
+                            value: hatchEggViewModel.animationState.isShowingCharacter)
                 case .dino:
                     Image(hatchState.dinoType.getCharacterImage())
                         .frame(width: 200, height: 200)
                         .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
-                        .animation(.easeInOut(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
+                        .animation(
+                            .easeInOut(duration: 0.3),
+                            value: hatchEggViewModel.animationState.isShowingCharacter)
                 }
                 let eggLottie = switch hatchState.eggType {
                 case .normal:

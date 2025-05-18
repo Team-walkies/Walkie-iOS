@@ -13,9 +13,8 @@ final class NotificationManager {
     
     init() {
         /// 초깃값 설정
-        guard let notified else {
+        if notified == nil {
             notified = false
-            return
         }
     }
     

@@ -45,7 +45,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     
     enum ReviewViewState {
         case loading
-        case loaded([ReviewState]?)
+        case loaded([ReviewState])
         case error(String)
     }
     

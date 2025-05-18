@@ -116,11 +116,24 @@ extension View {
         }
     }
     
-    func shimmer() -> some View {
-        modifier(ShimmerModifier())
+    func shimmer(isGray100: Bool) -> some View {
+        modifier(ShimmerModifier(isGray100: isGray100))
     }
     
     func skeleton() -> some View {
         modifier(SkeletonModifier())
+    }
+    
+    func skeletonGray200() -> some View {
+        modifier(SkeletonModifierGray200())
+    }
+    
+    @ViewBuilder
+    func applySkeleton(isGray100: Bool) -> some View {
+        if isGray100 {
+            self.skeleton()
+        } else {
+            self.skeletonGray200()
+        }
     }
 }

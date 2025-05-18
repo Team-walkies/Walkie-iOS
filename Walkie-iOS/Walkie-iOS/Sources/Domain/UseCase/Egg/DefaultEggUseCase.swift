@@ -67,7 +67,7 @@ extension DefaultEggUseCase: EggUseCase {
             willHatch: willHatch
         )
         .mapToNetworkError()
-        .handleEvents(receiveOutput: { entity in
+        .handleEvents(receiveOutput: { _ in
             // 현재 걸음 수 초기화
             UserManager.shared.setStepCount(step)
             // 캐시 초기화

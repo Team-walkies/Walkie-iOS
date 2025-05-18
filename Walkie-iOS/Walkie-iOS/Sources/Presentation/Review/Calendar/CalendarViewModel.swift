@@ -108,6 +108,7 @@ final class CalendarViewModel: ViewModelable {
                 handleWeekScroll(baseDate: date, offset: 0, selectedDate: date)
                 showReviewList()
             }
+            reviewViewModel.selectedDate = date
             showPicker = false
         case .didTapTodayButton:
             let today = Date()

@@ -71,11 +71,9 @@ extension Publisher where Output == Moya.Response {
                         if let empty = emptyResponseType.empty as? Response {
                             return empty
                         } else {
-                            print(NetworkError.emptyDataError.description)
                             throw NetworkError.emptyDataError
                         }
                     } else {
-                        print(NetworkError.emptyDataError.description)
                         throw NetworkError.emptyDataError
                     }
                 }

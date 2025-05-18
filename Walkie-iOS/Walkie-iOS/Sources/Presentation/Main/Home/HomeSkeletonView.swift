@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import WalkieCommon
-
 struct HomeStatsSkeletonView: View {
     
     @Environment(\.screenWidth) var screenWidth

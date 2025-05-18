@@ -93,15 +93,17 @@ extension DefaultMemberRepository: MemberRepository {
     func patchEggPlaying(eggId: Int) -> AnyPublisher<EggEntity, NetworkError> {
         memberService.patchEggPlaying(eggId: eggId)
             .tryMap { dto in
-                guard let eggID = dto.eggID,
-                      let type = dto.characterType,
-                      let rank = dto.rank,
-                      let characterClass = dto.characterClass,
-                      let characterType = dto.characterType,
-                      let characterRank = dto.characterRank,
-                      let nowStep = dto.nowStep,
-                      let needStep = dto.needStep,
-                      let picked = dto.picked else {
+                guard
+                    let eggID = dto.eggID,
+                    let type = dto.characterType,
+                    let rank = dto.rank,
+                    let characterClass = dto.characterClass,
+                    let characterType = dto.characterType,
+                    let characterRank = dto.characterRank,
+                    let nowStep = dto.nowStep,
+                    let needStep = dto.needStep,
+                    let picked = dto.picked
+                else {
                     throw NetworkError.responseDecodingError // 필수 데이터가 없으면 에러 던짐
                 }
                 

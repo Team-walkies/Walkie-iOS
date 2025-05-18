@@ -162,13 +162,13 @@ enum EggType: String, CaseIterable, Hashable {
     var eggBackEffect: ImageResource? {
         switch self {
         case .normal:
-                nil
+            nil
         case .rare:
-                .imgEggBackEffect1
+            .imgEggBackEffect1
         case .epic:
-                .imgEggBackEffect2
+            .imgEggBackEffect2
         case .legendary:
-                .imgEggBackEffect3
+            .imgEggBackEffect3
         }
     }
     
