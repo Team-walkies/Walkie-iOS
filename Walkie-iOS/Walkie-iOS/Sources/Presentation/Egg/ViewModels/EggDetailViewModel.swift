@@ -11,6 +11,7 @@ final class EggDetailViewModel: ViewModelable {
     
     let eggState: EggViewModel.EggState
     private let eggUseCase: EggUseCase
+    private let eggViewModel: EggViewModel
     private var cancellables = Set<AnyCancellable>()
     
     enum EggDetailViewState {
@@ -21,12 +22,13 @@ final class EggDetailViewModel: ViewModelable {
     
     enum Action {
         case willAppear
-        case didSelectEggWalking(completion: () -> Void)
+        case didSelectEggWalking
     }
     
-    init(eggUseCase: EggUseCase, eggState: EggViewModel.EggState) {
+    init(eggUseCase: EggUseCase, eggState: EggViewModel.EggState, eggViewModel: EggViewModel) {
         self.eggUseCase = eggUseCase
         self.eggState = eggState
+        self.eggViewModel = eggViewModel
     }
     
     @Published var state: EggDetailViewState = .loading
@@ -35,12 +37,12 @@ final class EggDetailViewModel: ViewModelable {
         switch action {
         case .willAppear:
             state = .loaded(self.eggState)
-        case .didSelectEggWalking(let completion):
-            patchEggWalking(completion: completion)
+        case .didSelectEggWalking:
+            patchEggWalking()
         }
     }
     
-    func patchEggWalking(completion: @escaping () -> Void) {
+    func patchEggWalking() {
         eggUseCase.patchEggPlaying(eggId: eggState.eggId)
             .walkieSink(
                 with: self,
@@ -56,12 +58,11 @@ final class EggDetailViewModel: ViewModelable {
                             obtainedDate: self.eggState.obtainedDate
                         )
                     )
-                    completion()
+                    self.eggViewModel.fetchEggListData()
                     ToastManager.shared.showToast("같이 걷는 알을 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
-                    completion()
                 })
             .store(in: &cancellables)
     }

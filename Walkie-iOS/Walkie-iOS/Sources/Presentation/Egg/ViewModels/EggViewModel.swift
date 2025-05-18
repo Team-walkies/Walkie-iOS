@@ -52,7 +52,9 @@ final class EggViewModel: ViewModelable {
         case .didTapEggDetail(let eggState):
             eggDetailViewModel = EggDetailViewModel(
                 eggUseCase: self.eggUseCase,
-                eggState: eggState)
+                eggState: eggState,
+                eggViewModel: self
+            )
         }
     }
     
