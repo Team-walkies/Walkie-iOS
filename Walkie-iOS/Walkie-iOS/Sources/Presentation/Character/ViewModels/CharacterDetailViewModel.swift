@@ -17,7 +17,7 @@ final class CharacterDetailViewModel: ViewModelable {
     
     enum CharacterDetailViewState {
         case loading
-        case loaded(obtainedState: [ObtainedState], detailState: CharacterDetailState)
+        case loaded(obtainedState: [ObtainedState])
         case error(String)
     }
     
@@ -79,8 +79,7 @@ final class CharacterDetailViewModel: ViewModelable {
                             obtainedPosition: detail.obtainedPosition)
                     }
                     self.state = .loaded(
-                        obtainedState: self.obtainedState ?? [],
-                        detailState: self.detailState
+                        obtainedState: self.obtainedState ?? []
                     )
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
@@ -90,7 +89,6 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     private func patchCharacterWalking() {
-        self.state = .loading
         patchWalkingCharacterUseCase.patchCharacterWalking(characterId: detailState.characterId)
             .walkieSink(
                 with: self,
@@ -104,9 +102,7 @@ final class CharacterDetailViewModel: ViewModelable {
                         characterCount: self.detailState.characterCount,
                         isWalking: true)
                     self.state = .loaded(
-                        obtainedState: self.obtainedState ?? [],
-                        detailState: self.detailState
-                    )
+                        obtainedState: self.obtainedState ?? [])
                     self.characterViewModel.action(.fetchData)
                     ToastManager.shared.showToast("같이 걷는 캐릭터를 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
