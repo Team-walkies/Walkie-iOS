@@ -24,26 +24,24 @@ struct ReviewView: View {
                     showBackButton: true
                 )
                 CalendarView(viewModel: calendarViewModel)
-                switch viewModel.state {
-                case .loaded(let reviewState):
-                    ScrollView {
+                ScrollView {
+                    switch viewModel.state {
+                    case .loaded(let reviewState):
                         HStack(spacing: 4) {
                             Text("기록")
                                 .font(.B1)
                                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                             
-                            Text("\(reviewState?.count ?? 0)")
+                            Text("\(reviewState.count)")
                                 .font(.B1)
                                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                             
                             Spacer()
                         }
                         .padding(.top, 12)
-                        .padding(.leading, 16)
-                        .padding(.bottom, 12)
                         .frame(maxWidth: .infinity)
                         
-                        if let reviewState {
+                        if reviewState.count > 0 {
                             VStack(spacing: 40) {
                                 ForEach(reviewState, id: \.reviewID) { item in
                                     ReviewItemView(reviewState: item) { review in
@@ -53,12 +51,12 @@ struct ReviewView: View {
                                 }
                             }
                         }
+                    default:
+                        ReviewSkeletonView()
                     }
-                default:
-                    Spacer()
-                    ProgressView()
-                    Spacer()
                 }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 12)
             }
             
             if showReviewDelete {
@@ -87,11 +85,11 @@ struct ReviewView: View {
             viewModel.action(
                 .loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString(),
-                    completion: { result in
-                        if result {
-                            calendarViewModel.action(.didTapTodayButton)
-                        }
+                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        completion: { result in
+                            if result {
+                                calendarViewModel.action(.didTapTodayButton)
+                            }
                     }
                 )
             )
@@ -109,11 +107,11 @@ struct ReviewView: View {
             viewModel.action(
                 .loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString(),
-                    completion: { result in
-                        if result {
-                            calendarViewModel.action(.willSelectDate(newDate))
-                        }
+                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        completion: { result in
+                            if result {
+                                calendarViewModel.action(.willSelectDate(newDate))
+                            }
                     }
                 )
             )

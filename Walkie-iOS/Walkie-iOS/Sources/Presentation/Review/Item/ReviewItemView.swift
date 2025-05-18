@@ -124,6 +124,5 @@ struct ReviewItemView: View {
             .background(WalkieCommonAsset.gray100.swiftUIColor)
             .cornerRadius(12, corners: .allCorners)
         }
-        .padding(.horizontal, 16)
     }
 }
