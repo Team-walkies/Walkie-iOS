@@ -147,6 +147,20 @@ struct ReviewView: View {
         }
         .fullScreenCover(
             isPresented: $showReviewWeb,
+            onDismiss: {
+                viewModel.state = .loading
+                viewModel.action(
+                    .loadReviewList(
+                        startDate: calendarViewModel.firstDay.convertToDateString(),
+                            endDate: calendarViewModel.lastDay.convertToDateString(),
+                            completion: { result in
+                                if result {
+                                    viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                                }
+                        }
+                    )
+                )
+            },
             content: {
                 ReviewWebView(
                     viewModel: viewModel,
