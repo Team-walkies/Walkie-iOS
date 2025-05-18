@@ -11,6 +11,7 @@ import WalkieCommon
 struct CharacterDetailView: View {
     
     @ObservedObject var viewModel: CharacterDetailViewModel
+    @Environment(\.screenWidth) private var screenWidth
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -73,9 +74,8 @@ struct CharacterDetailView: View {
                             .padding(.horizontal, 16)
                         }
                     default:
-                        SkeletonRect(width: .infinity, height: 36, cornerRadius: 8)
+                        SkeletonRect(width: screenWidth - 32, height: 36, cornerRadius: 8)
                             .padding(.bottom, 8)
-                            .padding(.horizontal, 16)
                     }
                 }.padding(.bottom, 114)
             }.scrollIndicators(.never)

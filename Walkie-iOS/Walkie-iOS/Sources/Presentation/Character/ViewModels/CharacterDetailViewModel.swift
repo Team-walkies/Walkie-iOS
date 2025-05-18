@@ -102,7 +102,8 @@ final class CharacterDetailViewModel: ViewModelable {
                         characterCount: self.detailState.characterCount,
                         isWalking: true)
                     self.state = .loaded(
-                        obtainedState: self.obtainedState ?? [])
+                        obtainedState: self.obtainedState ?? []
+                    )
                     self.characterViewModel.action(.fetchData)
                     ToastManager.shared.showToast("같이 걷는 캐릭터를 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
