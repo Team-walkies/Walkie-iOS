@@ -110,6 +110,18 @@ struct ReviewView: View {
                     "기록을 삭제했어요",
                     icon: .icCheckBlue
                 )
+                viewModel.state = .loading
+                viewModel.action(
+                    .loadReviewList(
+                        startDate: calendarViewModel.firstDay.convertToDateString(),
+                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        completion: { result in
+                            if result {
+                                viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                            }
+                        }
+                    )
+                )
             }
         }
         .onChange(of: calendarViewModel.state.selectedDate) { _, newDate in
@@ -152,11 +164,11 @@ struct ReviewView: View {
                 viewModel.action(
                     .loadReviewList(
                         startDate: calendarViewModel.firstDay.convertToDateString(),
-                            endDate: calendarViewModel.lastDay.convertToDateString(),
-                            completion: { result in
-                                if result {
-                                    viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
-                                }
+                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        completion: { result in
+                            if result {
+                                viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                            }
                         }
                     )
                 )
