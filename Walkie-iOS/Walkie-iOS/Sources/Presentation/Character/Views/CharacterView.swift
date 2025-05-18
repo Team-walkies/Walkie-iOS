@@ -65,6 +65,9 @@ struct CharacterView: View {
                     .onAppear {
                         viewModel.action(.willAppear)
                     }
+                    .onDisappear {
+                        viewModel.state = .loading
+                    }
                 }.scrollIndicators(.never)
             }
             .bottomSheet(
@@ -156,20 +159,12 @@ private struct CharacterListView: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: 0) {
-                switch viewModel.state {
-                case .loaded(let state):
-                    ForEach(CharacterType.allCases, id: \.self) { type in
-                        CharacterTypeView(
-                            type: type,
-                            state: state,
-                            viewModel: viewModel,
-                            isPresentingBottomSheet: $isPresentingBottomSheet
-                        )
-                    }
-                case .loading:
-                    ProgressView()
-                case .error(let error):
-                    Text(error.description)
+                ForEach(CharacterType.allCases, id: \.self) { type in
+                    CharacterTypeView(
+                        type: type,
+                        viewModel: viewModel,
+                        isPresentingBottomSheet: $isPresentingBottomSheet
+                    )
                 }
             }.scrollTargetLayout()
         }
@@ -180,7 +175,6 @@ private struct CharacterListView: View {
 }
 private struct CharacterTypeView: View {
     let type: CharacterType
-    let state: CharacterViewModel.CharacterListState
     let viewModel: CharacterViewModel
     @Binding var isPresentingBottomSheet: Bool
     
@@ -201,23 +195,36 @@ private struct CharacterTypeView: View {
             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
             .padding(.bottom, 20)
             LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                if type == .jellyfish {
-                    ForEach(JellyfishType.allCases, id: \.self) { jellyfish in
-                        JellyfishItemView(
-                            jellyfish: jellyfish,
-                            state: state,
-                            viewModel: viewModel,
-                            isPresentingBottomSheet: $isPresentingBottomSheet
-                        )
+                switch viewModel.state {
+                case .loaded(let state):
+                    if type == .jellyfish {
+                        ForEach(JellyfishType.allCases, id: \.self) { jellyfish in
+                            JellyfishItemView(
+                                jellyfish: jellyfish,
+                                state: state,
+                                viewModel: viewModel,
+                                isPresentingBottomSheet: $isPresentingBottomSheet
+                            )
+                        }
+                    } else {
+                        ForEach(DinoType.allCases, id: \.self) { dino in
+                            DinoItemView(
+                                dino: dino,
+                                state: state,
+                                viewModel: viewModel,
+                                isPresentingBottomSheet: $isPresentingBottomSheet
+                            )
+                        }
                     }
-                } else {
-                    ForEach(DinoType.allCases, id: \.self) { dino in
-                        DinoItemView(
-                            dino: dino,
-                            state: state,
-                            viewModel: viewModel,
-                            isPresentingBottomSheet: $isPresentingBottomSheet
-                        )
+                default:
+                    if type == .jellyfish {
+                        ForEach(JellyfishType.allCases, id: \.self) { _ in
+                            CharacterItemSkeletonView()
+                        }
+                    } else {
+                        ForEach(DinoType.allCases, id: \.self) { _ in
+                            CharacterItemSkeletonView()
+                        }
                     }
                 }
             }
