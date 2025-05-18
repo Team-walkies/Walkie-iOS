@@ -26,7 +26,6 @@ struct ShimmerModifier: ViewModifier {
             WalkieCommonAsset.gray200.swiftUIColor
         ]
         
-        
         content
             .overlay {
                 GeometryReader { proxy in

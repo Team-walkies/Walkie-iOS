@@ -94,11 +94,11 @@ struct ReviewView: View {
             viewModel.action(
                 .loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                        endDate: calendarViewModel.lastDay.convertToDateString(),
-                        completion: { result in
-                            if result {
-                                calendarViewModel.action(.didTapTodayButton)
-                            }
+                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    completion: { result in
+                        if result {
+                            calendarViewModel.action(.didTapTodayButton)
+                        }
                     }
                 )
             )
@@ -128,11 +128,11 @@ struct ReviewView: View {
             viewModel.action(
                 .loadReviewList(
                     startDate: calendarViewModel.firstDay.convertToDateString(),
-                        endDate: calendarViewModel.lastDay.convertToDateString(),
-                        completion: { result in
-                            if result {
-                                calendarViewModel.action(.willSelectDate(newDate))
-                            }
+                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    completion: { result in
+                        if result {
+                            calendarViewModel.action(.willSelectDate(newDate))
+                        }
                     }
                 )
             )

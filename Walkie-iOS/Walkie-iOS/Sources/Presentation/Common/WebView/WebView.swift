@@ -75,8 +75,7 @@ struct WebView: UIViewRepresentable {
         
         if let stepHandler = messageHandlers
             .compactMap({ $0 as? MapViewModel })
-            .first
-        {
+            .first {
             stepHandler.sendToWeb = coord.sendToWeb(message:)
         }
         
