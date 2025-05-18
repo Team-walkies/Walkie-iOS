@@ -17,6 +17,8 @@ struct ReviewView: View {
     @State private var showReviewDelete: Bool = false
     @State private var showReviewWeb: Bool = false
     
+    @Environment(\.screenHeight) var screenHeight
+    
     var body: some View {
         ZStack {
             VStack(alignment: .center, spacing: 0) {
@@ -49,6 +51,13 @@ struct ReviewView: View {
                                         showReviewEdit = true
                                     }
                                 }
+                            }
+                        } else {
+                            VStack(alignment: .center) {
+                                Text("해당 날짜에 기록이 없어요")
+                                    .font(.B1)
+                                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                                    .padding(.top, screenHeight * 170 / 812)
                             }
                         }
                     default:
