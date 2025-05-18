@@ -29,7 +29,7 @@ struct EggDetailView: View {
                     .foregroundStyle(eggState.eggType.fontColor)
                     .frame(width: 57, height: 36)
                     .background(WalkieCommonAsset.gray100.swiftUIColor)
-                    .cornerRadius(99)
+                    .cornerRadius(99, corners: .allCorners)
                     .padding(.bottom, 4)
                 HighlightTextAttribute(
                     text: String(
@@ -62,7 +62,7 @@ struct EggDetailView: View {
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
                     .background(WalkieCommonAsset.gray50.swiftUIColor)
-                    .cornerRadius(12)
+                    .cornerRadius(12, corners: .allCorners)
                     VStack(alignment: .center, spacing: 4) {
                         Text("획득 장소")
                             .font(.B2)
@@ -73,7 +73,7 @@ struct EggDetailView: View {
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
                     .background(WalkieCommonAsset.gray50.swiftUIColor)
-                    .cornerRadius(12)
+                    .cornerRadius(12, corners: .allCorners)
                 }.padding(.bottom, 20)
                 CTAButton(
                     title: eggState.isWalking ? "같이 걷는 중..." : "이 알과 같이 걷기",

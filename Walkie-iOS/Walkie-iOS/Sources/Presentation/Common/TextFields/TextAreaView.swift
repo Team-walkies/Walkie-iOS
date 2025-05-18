@@ -37,7 +37,7 @@ struct TextAreaView: View {
                     }
                 }
                 .frame(height: 233)
-                .cornerRadius(20)
+                .cornerRadius(20, corners: .allCorners)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(inputState.barColor, lineWidth: 1)

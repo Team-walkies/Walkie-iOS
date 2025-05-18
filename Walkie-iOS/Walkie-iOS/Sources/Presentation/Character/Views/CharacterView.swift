@@ -130,7 +130,7 @@ private struct CharacterItemView: View {
         }
         .frame(width: (screenWidth - 16*2 - 11)/2, height: 192)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
-        .cornerRadius(20)
+        .cornerRadius(20, corners: .allCorners)
         .overlay {
             if isWalking {
                 Image(.icFoot)

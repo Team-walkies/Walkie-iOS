@@ -31,7 +31,7 @@ struct MypageMainProfileSectionView: View {
                     .padding(.horizontal, 8)
                     .frame(height: 28)
                     .background(WalkieCommonAsset.blue50.swiftUIColor)
-                    .cornerRadius(8)
+                    .cornerRadius(8, corners: .allCorners)
                 Spacer(minLength: 0)
             }
             
