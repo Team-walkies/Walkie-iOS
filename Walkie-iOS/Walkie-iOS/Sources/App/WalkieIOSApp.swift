@@ -28,13 +28,14 @@ struct WalkieIOSApp: App {
                                 onDismiss()
                                 appCoordinator.fullScreenCoverOnDismiss = nil
                             }
+                        },
+                        content: { fullScreenCover in
+                            appCoordinator.buildFullScreenCover(fullScreenCover)
+                                .environmentObject(appCoordinator)
+                                .ignoresSafeArea(.all)
+                                .presentationBackground(.black.opacity(0))
                         }
-                    ) { fullScreenCover in
-                        appCoordinator.buildFullScreenCover(fullScreenCover)
-                            .environmentObject(appCoordinator)
-                            .ignoresSafeArea(.all)
-                            .presentationBackground(.black.opacity(0))
-                    }
+                    )
                     .transaction { $0.disablesAnimations = true }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)

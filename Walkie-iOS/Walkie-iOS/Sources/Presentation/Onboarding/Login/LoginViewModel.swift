@@ -173,7 +173,6 @@ extension LoginViewModel: ASAuthorizationControllerPresentationContextProviding,
     ) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            let fullName = appleIDCredential.fullName
             let idToken = appleIDCredential.identityToken!
             
             if let nameComponents = appleIDCredential.fullName {

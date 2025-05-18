@@ -11,8 +11,21 @@ import WalkieCommon
 
 struct ShimmerModifier: ViewModifier {
     @State private var phase: CGFloat = -1
+    @State var isGray100: Bool
     
     func body(content: Content) -> some View {
+        
+        let colorArr =
+        isGray100 ? [
+            WalkieCommonAsset.gray100.swiftUIColor,
+            WalkieCommonAsset.gray200.swiftUIColor,
+            WalkieCommonAsset.gray100.swiftUIColor
+        ] : [
+            WalkieCommonAsset.gray200.swiftUIColor,
+            WalkieCommonAsset.gray300.swiftUIColor,
+            WalkieCommonAsset.gray200.swiftUIColor
+        ]
+        
         content
             .overlay {
                 GeometryReader { proxy in
@@ -20,11 +33,7 @@ struct ShimmerModifier: ViewModifier {
                     let h = proxy.size.height
                     
                     LinearGradient(
-                        gradient: Gradient(colors: [
-                            WalkieCommonAsset.gray100.swiftUIColor,
-                            WalkieCommonAsset.gray200.swiftUIColor,
-                            WalkieCommonAsset.gray100.swiftUIColor
-                        ]),
+                        gradient: Gradient(colors: colorArr),
                         startPoint: .leading,
                         endPoint: .trailing
                     )

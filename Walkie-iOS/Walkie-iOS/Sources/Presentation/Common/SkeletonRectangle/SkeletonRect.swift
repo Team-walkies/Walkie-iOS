@@ -11,10 +11,22 @@ import WalkieCommon
 
 struct SkeletonRect: View {
     
-    let isGray100: Bool = true
+    let isGray100: Bool
     let width: CGFloat
     let height: CGFloat
     let cornerRadius: CGFloat
+    
+    init(
+        isGray100: Bool = true,
+        width: CGFloat,
+        height: CGFloat,
+        cornerRadius: CGFloat
+    ) {
+        self.isGray100 = isGray100
+        self.width = width
+        self.height = height
+        self.cornerRadius = cornerRadius
+    }
     
     var body: some View {
         Rectangle()
@@ -30,6 +42,6 @@ struct SkeletonRect: View {
                 cornerRadius,
                 corners: .allCorners
             )
-            .skeleton()
+            .applySkeleton(isGray100: isGray100)
     }
 }
