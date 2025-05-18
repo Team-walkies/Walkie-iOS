@@ -12,6 +12,7 @@ import CoreMotion
 import ActivityKit
 import WalkieCommon
 import MapKit
+import FirebaseAnalytics
 
 final class MapViewModel: ViewModelable, WebMessageHandling {
     
@@ -154,6 +155,7 @@ private extension MapViewModel {
         guard CMPedometer.isStepCountingAvailable() else { return }
         let now = Date()
         UserManager.shared.setStartExploreDate(now)
+        Analytics.logEvent(StringLiterals.WalkieLog.mapStart, parameters: nil)
         print("✅ 걸음 수 측정 시작: \(now)")
     }
     
