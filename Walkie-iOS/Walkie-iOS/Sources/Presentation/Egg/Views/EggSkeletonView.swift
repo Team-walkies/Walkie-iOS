@@ -45,7 +45,7 @@ private struct EggItemSkeletonView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
-            SkeletonRect(width: 80, height: 80, cornerRadius: 0)
+            SkeletonRect(isGray100: false, width: 80, height: 80, cornerRadius: 0)
                 .mask(
                     Image(.imgEggSkeleton)
                         .resizable()
@@ -53,9 +53,9 @@ private struct EggItemSkeletonView: View {
                 )
                 .padding(.top, 26)
                 .padding(.bottom, 8)
-            SkeletonRect(width: 40, height: 20, cornerRadius: 8)
+            SkeletonRect(isGray100: false, width: 40, height: 20, cornerRadius: 8)
                 .padding(.bottom, 8)
-            SkeletonRect(width: (screenWidth - 16*2 - 11)/2 - 60, height: 20, cornerRadius: 8)
+            SkeletonRect(isGray100: false, width: (screenWidth - 16*2 - 11)/2 - 60, height: 20, cornerRadius: 8)
                 .padding(.bottom, 26)
         }
         .frame(width: (screenWidth - 16*2 - 11)/2, height: 188)
