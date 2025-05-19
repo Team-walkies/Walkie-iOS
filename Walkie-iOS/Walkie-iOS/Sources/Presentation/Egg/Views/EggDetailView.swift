@@ -82,6 +82,7 @@ struct EggDetailView: View {
                     isEnabled: !eggState.isWalking,
                     buttonAction: {
                         viewModel.action(.didSelectEggWalking)
+                        dismiss()
                     }
                 )
                 Spacer()
