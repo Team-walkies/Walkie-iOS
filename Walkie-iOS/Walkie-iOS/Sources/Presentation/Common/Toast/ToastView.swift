@@ -30,6 +30,6 @@ struct ToastView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(WalkieCommonAsset.gray700.swiftUIColor)
-        .cornerRadius(12)
+        .cornerRadius(12, corners: .allCorners)
     }
 }

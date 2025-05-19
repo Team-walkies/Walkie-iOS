@@ -29,6 +29,8 @@ final class EggViewModel: ViewModelable {
         let nowStep: Int
         let needStep: Int
         let isWalking: Bool
+        let obtainedPosition: String
+        let obtainedDate: String
     }
     
     enum Action {
@@ -50,7 +52,9 @@ final class EggViewModel: ViewModelable {
         case .didTapEggDetail(let eggState):
             eggDetailViewModel = EggDetailViewModel(
                 eggUseCase: self.eggUseCase,
-                eggState: eggState)
+                eggState: eggState,
+                eggViewModel: self
+            )
         }
     }
     
@@ -60,16 +64,19 @@ final class EggViewModel: ViewModelable {
                 with: self,
                 receiveValue: { _, entity in
                     let eggsState = EggsState(
-                        eggs: entity.map({ eggEntity in
+                        eggs: entity.map({ (egg, detail) in
                             EggState(
-                                eggId: eggEntity.eggId,
-                                eggType: eggEntity.eggType,
-                                nowStep: eggEntity.nowStep,
-                                needStep: eggEntity.needStep,
-                                isWalking: eggEntity.isWalking)
+                                eggId: egg.eggId,
+                                eggType: egg.eggType,
+                                nowStep: egg.nowStep,
+                                needStep: egg.needStep,
+                                isWalking: egg.isWalking,
+                                obtainedPosition: detail.obtainedPosition,
+                                obtainedDate: detail.obtainedDate
+                            )
                         }),
                         eggsCount: entity.count)
-                    self.state = .loaded(eggsState)
+                        self.state = .loaded(eggsState)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

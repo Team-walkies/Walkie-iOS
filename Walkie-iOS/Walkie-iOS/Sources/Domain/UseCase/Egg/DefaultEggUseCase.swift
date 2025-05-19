@@ -46,7 +46,7 @@ extension DefaultEggUseCase: EggUseCase {
             })
             .eraseToAnyPublisher()
     }
-    func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
+    func getEggsList() -> AnyPublisher<[(EggEntity, EggDetailEntity)], NetworkError> {
         eggRepository.getEggsList()
             .mapToNetworkError()
     }

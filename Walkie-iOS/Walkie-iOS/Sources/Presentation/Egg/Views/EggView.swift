@@ -82,13 +82,16 @@ struct EggView: View {
                         case .error(let error):
                             Text(error.description)
                         default:
-                            ProgressView()
+                            EggSkeletonView()
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
                     .onAppear {
                         viewModel.action(.willAppear)
+                    }
+                    .onDisappear {
+                        viewModel.state = .loading
                     }
                 }
                 .scrollIndicators(.never)
@@ -124,7 +127,7 @@ private struct EggItemView: View {
                 .foregroundStyle(state.eggType.fontColor)
                 .frame(width: 37, height: 24)
                 .background(.white)
-                .cornerRadius(99)
+                .cornerRadius(99, corners: .allCorners)
                 .padding(.bottom, 8)
             ProgressBarView(
                 isSmall: true,
@@ -142,7 +145,7 @@ private struct EggItemView: View {
         }
         .frame(width: (screenWidth - 16*2 - 11)/2, height: 188)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
-        .cornerRadius(20)
+        .cornerRadius(20, corners: .allCorners)
         .overlay {
             if state.isWalking {
                 Image(.icFoot)

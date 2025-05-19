@@ -49,7 +49,7 @@ struct DayView: View {
             }
             .frame(width: 45, height: 58)
             .background(backgroundColor)
-            .cornerRadius(12)
+            .cornerRadius(12, corners: .allCorners)
             ZStack {
                 if state.hasSpot {
                     Circle()

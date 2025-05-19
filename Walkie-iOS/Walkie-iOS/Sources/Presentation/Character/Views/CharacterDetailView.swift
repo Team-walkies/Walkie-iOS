@@ -38,7 +38,7 @@ struct CharacterDetailView: View {
                                     .foregroundStyle(detailState.characterRank.fontColor)
                                     .frame(width: 57, height: 36)
                                     .background(WalkieCommonAsset.gray100.swiftUIColor)
-                                    .cornerRadius(99)
+                                    .cornerRadius(99, corners: .allCorners)
                                 HighlightTextAttribute(
                                     text: "\(detailState.characterCount)마리 보유",
                                     textColor: WalkieCommonAsset.gray500.swiftUIColor,
@@ -50,7 +50,7 @@ struct CharacterDetailView: View {
                                 .frame(height: 36)
                                 .padding(.horizontal, 16)
                                 .background(WalkieCommonAsset.gray100.swiftUIColor)
-                                .cornerRadius(99)
+                                .cornerRadius(99, corners: .allCorners)
                             }.padding(.bottom, 20)
                             ForEach(obtainedState, id: \.id) { obtainedState in
                                 HStack(spacing: 0) {
@@ -69,7 +69,7 @@ struct CharacterDetailView: View {
                                 .padding(.horizontal, 16)
                                 .frame(height: 36)
                                 .background(WalkieCommonAsset.gray100.swiftUIColor)
-                                .cornerRadius(8)
+                                .cornerRadius(8, corners: .allCorners)
                                 .padding(.bottom, 8)
                                 .padding(.horizontal, 16)
                             }

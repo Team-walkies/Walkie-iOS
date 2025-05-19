@@ -54,7 +54,7 @@ struct CalendarView: View {
                 }
                 .frame(width: 45, height: 32)
                 .background(WalkieCommonAsset.gray100.swiftUIColor)
-                .cornerRadius(16)
+                .cornerRadius(16, corners: .allCorners)
                 .padding(.trailing, 1)
             })
         }
