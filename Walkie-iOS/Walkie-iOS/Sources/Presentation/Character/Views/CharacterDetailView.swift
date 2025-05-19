@@ -12,6 +12,7 @@ struct CharacterDetailView: View {
     
     @ObservedObject var viewModel: CharacterDetailViewModel
     @Environment(\.screenWidth) private var screenWidth
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -105,6 +106,7 @@ struct CharacterDetailView: View {
                 isEnabled: !viewModel.detailState.isWalking,
                 buttonAction: {
                     viewModel.action(.didSelectCharacterWalking)
+                    dismiss()
                 }
             ).padding(.bottom, 38)
         }
