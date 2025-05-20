@@ -33,7 +33,8 @@ extension DefaultMemberRepository: MemberRepository {
                 guard
                     let eggID = dto.eggID,
                     let type = dto.characterType,
-                    let rank = dto.rank,
+                    let eggRank = dto.rank,
+                    let characterRank = dto.characterRank,
                     let characterClass = dto.characterClass,
                     let nowStep = dto.nowStep,
                     let needStep = dto.needStep,
@@ -43,40 +44,30 @@ extension DefaultMemberRepository: MemberRepository {
 
                 // EggEntity 생성
                 if type == 0 {
-                    let jellyfishType = CharacterType.mapCharacterType(
-                        requestedType: .jellyfish,
-                        type: type,
-                        rank: rank,
-                        characterClass: characterClass
-                    )
+                    let jellyfishType = try JellyfishType.mapCharacterType(rank: characterRank, characterClass: characterClass)
                     return EggEntity(
                         eggId: eggID,
-                        eggType: EggType.from(number: rank),
+                        eggType: EggType.from(number: eggRank),
                         nowStep: nowStep,
                         needStep: needStep,
                         isWalking: picked,
                         detail: nil,
                         characterType: .jellyfish,
-                        jellyFishType: jellyfishType as? JellyfishType,
+                        jellyFishType: jellyfishType,
                         dinoType: nil
                     )
                 } else {
-                    let dinoType = CharacterType.mapCharacterType(
-                        requestedType: .dino,
-                        type: type,
-                        rank: rank,
-                        characterClass: characterClass
-                    )
+                    let dinoType = try DinoType.mapCharacterType(rank: characterRank, characterClass: characterClass)
                     return EggEntity(
                         eggId: eggID,
-                        eggType: EggType.from(number: rank),
+                        eggType: EggType.from(number: eggRank),
                         nowStep: nowStep,
                         needStep: needStep,
                         isWalking: picked,
                         detail: nil,
                         characterType: .dino,
                         jellyFishType: nil,
-                        dinoType: dinoType as? DinoType
+                        dinoType: dinoType
                     )
                 }
             }
@@ -96,7 +87,7 @@ extension DefaultMemberRepository: MemberRepository {
                 guard
                     let eggID = dto.eggID,
                     let type = dto.characterType,
-                    let rank = dto.rank,
+                    let eggRank = dto.rank,
                     let characterClass = dto.characterClass,
                     let characterType = dto.characterType,
                     let characterRank = dto.characterRank,
@@ -109,7 +100,7 @@ extension DefaultMemberRepository: MemberRepository {
                 
                 return EggEntity(
                     eggId: eggID,
-                    eggType: EggType.from(number: rank),
+                    eggType: EggType.from(number: eggRank),
                     nowStep: nowStep,
                     needStep: needStep,
                     isWalking: picked,
@@ -118,18 +109,8 @@ extension DefaultMemberRepository: MemberRepository {
                         obtainedDate: dto.obtainedDate ?? ""
                     ),
                     characterType: type == 0 ? .jellyfish : .dino,
-                    jellyFishType: CharacterType.mapCharacterType(
-                        requestedType: .jellyfish,
-                        type: characterType,
-                        rank: characterRank,
-                        characterClass: characterClass
-                    ) as? JellyfishType ?? .defaultJellyfish,
-                    dinoType: CharacterType.mapCharacterType(
-                        requestedType: .dino,
-                        type: characterType,
-                        rank: characterRank,
-                        characterClass: characterClass
-                    ) as? DinoType ?? .defaultDino
+                    jellyFishType: try JellyfishType.mapCharacterType(rank: characterRank, characterClass: characterClass),
+                    dinoType: try DinoType.mapCharacterType(rank: characterRank, characterClass: characterClass)
                 )
             }
             .mapToNetworkError()
@@ -153,18 +134,8 @@ extension DefaultMemberRepository: MemberRepository {
             .map { dto in CharacterEntity(
                 characterId: dto.characterID,
                 type: dto.type == 0 ? .jellyfish : .dino,
-                jellyfishType: dto.type == 0 ? CharacterType.mapCharacterType(
-                    requestedType: .jellyfish,
-                    type: dto.type,
-                    rank: dto.rank,
-                    characterClass: dto.characterClass
-                ) as? JellyfishType : nil,
-                dinoType: dto.type == 1 ? CharacterType.mapCharacterType(
-                    requestedType: .dino,
-                    type: dto.type,
-                    rank: dto.rank,
-                    characterClass: dto.characterClass
-                ) as? DinoType : nil,
+                jellyfishType: try? JellyfishType.mapCharacterType(rank: dto.rank, characterClass: dto.characterClass),
+                dinoType: try? DinoType.mapCharacterType(rank: dto.rank, characterClass: dto.characterClass),
                 count: dto.count ?? 0,
                 isWalking: dto.picked,
                 obtainedDetails: nil)
