@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct HatchEggView: View {
     
-    @ObservedObject var hatchEggViewModel: HatchEggViewModel
+    @StateObject var hatchEggViewModel: HatchEggViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {

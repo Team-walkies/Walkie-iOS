@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
     @State var navigateAlarmList: Bool = false
@@ -20,6 +20,10 @@ struct HomeView: View {
     @State private var showBS: Bool = false
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
+    
+//    init(viewModel: HomeViewModel) {
+//           _viewModel = StateObject(wrappedValue: viewModel)
+//       }
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {

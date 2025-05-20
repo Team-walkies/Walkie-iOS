@@ -11,7 +11,7 @@ import WalkieCommon
 struct CharacterView: View {
     @Environment(\.screenHeight) var screenHeight
     
-    @ObservedObject var viewModel: CharacterViewModel
+    @StateObject var viewModel: CharacterViewModel
     @State var isPresentingBottomSheet: Bool = false
     
     var body: some View {

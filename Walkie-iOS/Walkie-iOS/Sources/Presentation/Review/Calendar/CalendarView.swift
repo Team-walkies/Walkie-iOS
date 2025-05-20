@@ -9,7 +9,7 @@ import SwiftUI
 import WalkieCommon
 
 struct CalendarView: View {
-    @ObservedObject var viewModel: CalendarViewModel
+    @StateObject var viewModel: CalendarViewModel
     @State private var currentWeekOffset: CGFloat = 0
     
     var body: some View {

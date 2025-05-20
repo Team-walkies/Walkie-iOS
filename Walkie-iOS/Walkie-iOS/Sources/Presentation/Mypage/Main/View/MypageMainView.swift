@@ -8,7 +8,7 @@
 import SwiftUI
 struct MypageMainView: View {
     
-    @ObservedObject var viewModel: MypageMainViewModel
+    @StateObject var viewModel: MypageMainViewModel
     
     var body: some View {
         ZStack {

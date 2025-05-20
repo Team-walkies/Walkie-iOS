@@ -15,7 +15,7 @@ struct EggView: View {
         GridItem(.flexible())
     ]
     
-    @ObservedObject var viewModel: EggViewModel
+    @StateObject var viewModel: EggViewModel
     @State var isPresentingGuideView: Bool = false
     @State var isPresentingBottomSheet: Bool = false
     
