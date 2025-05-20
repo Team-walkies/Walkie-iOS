@@ -90,9 +90,6 @@ struct EggView: View {
                     .onAppear {
                         viewModel.action(.willAppear)
                     }
-                    .onDisappear {
-                        viewModel.state = .loading
-                    }
                 }
                 .scrollIndicators(.never)
             }
