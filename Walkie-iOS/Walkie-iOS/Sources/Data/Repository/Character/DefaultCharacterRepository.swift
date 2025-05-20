@@ -44,18 +44,14 @@ extension DefaultCharacterRepository: CharacterRepository {
                     CharacterEntity(
                         characterId: character.characterId,
                         type: type,
-                        jellyfishType: CharacterType.mapCharacterType(
-                            requestedType: type,
-                            type: character.type,
+                        jellyfishType: try? JellyfishType.mapCharacterType(
                             rank: character.rank,
                             characterClass: character.characterClass
-                        ) as? JellyfishType,
-                        dinoType: CharacterType.mapCharacterType(
-                            requestedType: type,
-                            type: character.type,
+                        ),
+                        dinoType: try? DinoType.mapCharacterType(
                             rank: character.rank,
                             characterClass: character.characterClass
-                        ) as? DinoType,
+                        ),
                         count: character.count,
                         isWalking: character.picked,
                         obtainedDetails: nil
