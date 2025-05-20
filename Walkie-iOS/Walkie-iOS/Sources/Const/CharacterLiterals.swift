@@ -41,6 +41,48 @@ enum JellyfishType: String, CaseIterable {
             .legendary
         }
     }
+    
+    static func mapCharacterType(rank: Int, characterClass: Int) throws -> JellyfishType {
+        switch rank {
+        case 0:
+            switch characterClass {
+            case 0:
+                return .defaultJellyfish
+            case 1:
+                return .red
+            case 2:
+                return .green
+            case 3:
+                return .purple
+            case 4:
+                return .pink
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 1:
+            switch characterClass {
+            case 0:
+                return .bunny
+            case 1:
+                return .starfish
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 2:
+            switch characterClass {
+            case 0:
+                return .shocked
+            case 1:
+                return .strawberry
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 3:
+            return .space
+        default:
+            throw NetworkError.responseDecodingError
+        }
+    }
 }
 
 enum DinoType: String, CaseIterable {
@@ -72,50 +114,47 @@ enum DinoType: String, CaseIterable {
             .legendary
         }
     }
-}
+    
+    static func mapCharacterType(rank: Int, characterClass: Int) throws -> DinoType {
+        switch rank {
+        case 0:
+            switch characterClass {
+            case 0:
+                return .defaultDino
+            case 1:
+                return .red
+            case 2:
+                return .mint
+            case 3:
+                return .purple
+            case 4:
+                return .pink
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 1:
+            switch characterClass {
+            case 0:
+                return .reindeer
+            case 1:
+                return .nessie
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 2:
+            switch characterClass {
+            case 0:
+                return .pancake
+            case 1:
+                return .melonSoda
+            default:
+                throw NetworkError.responseDecodingError
+            }
+        case 3:
+            return .dragon
+        default:
+            throw NetworkError.responseDecodingError
+        }
+    }
 
-extension CharacterType {
-    
-    static func getCharacterName(type: Int, characterClass: Int) -> String? {
-        switch type {
-        case 1:
-            let jellyfishTypes: [JellyfishType] = [
-                .defaultJellyfish, .red, .green, .purple, .pink, .bunny,
-                .starfish, .shocked, .strawberry, .space
-            ]
-            return jellyfishTypes[safe: characterClass]?.rawValue
-            
-        case 2:
-            let dinoTypes: [DinoType] = [
-                .defaultDino, .red, .mint, .purple, .pink, .reindeer,
-                .nessie, .pancake, .melonSoda, .dragon
-            ]
-            return dinoTypes[safe: characterClass]?.rawValue
-            
-        default:
-            return nil
-        }
-    }
-    
-    static func getCharacterImage(type: Int, characterClass: Int) -> ImageResource? {
-        switch type {
-        case 1:
-            return ImageResource(name: "img_jellyfish\(characterClass)", bundle: .main)
-            
-        case 2:
-            return ImageResource(name: "img_dino\(characterClass)", bundle: .main)
-        default:
-            return nil
-        }
-    }
-    
-    static func mapCharacterType(
-        requestedType: CharacterType,
-        type: Int,
-        rank: Int,
-        characterClass: Int) -> (any CaseIterable)? {
-        if requestedType == .jellyfish && type == 1 { return nil }
-        let index = rank == 0 ? characterClass : characterClass + 5 + (rank - 1) * 2
-        return type == 0 ? JellyfishType.allCases[index] : DinoType.allCases[index]
-    }
 }
