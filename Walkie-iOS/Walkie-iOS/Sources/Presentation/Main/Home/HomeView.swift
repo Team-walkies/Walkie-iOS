@@ -21,10 +21,6 @@ struct HomeView: View {
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
-//    init(viewModel: HomeViewModel) {
-//           _viewModel = StateObject(wrappedValue: viewModel)
-//       }
-    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
