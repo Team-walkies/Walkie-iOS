@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
     @State var navigateAlarmList: Bool = false

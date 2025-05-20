@@ -16,7 +16,7 @@ struct LoginView: View {
     
     private let onboardingPage = OnboardingPageStruct.makeOnboardingPage()
     @EnvironmentObject private var appCoordinator: AppCoordinator
-    @ObservedObject var loginViewModel: LoginViewModel
+    @StateObject var loginViewModel: LoginViewModel
     
     var body: some View {
         NavigationStack(path: $appCoordinator.path) {

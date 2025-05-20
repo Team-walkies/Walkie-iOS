@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct HatchEggView: View {
     
-    @ObservedObject var hatchEggViewModel: HatchEggViewModel
+    @StateObject var hatchEggViewModel: HatchEggViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -82,7 +82,10 @@ struct HatchEggView: View {
                         .foregroundStyle(.white)
                         .padding(.bottom, 4)
                         .opacity(hatchEggViewModel.animationState.isShowingEggHatchText ? 1 : 0)
-                        .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingEggHatchText)
+                        .animation(
+                            .easeIn(duration: 0.3),
+                            value: hatchEggViewModel.animationState.isShowingEggHatchText
+                        )
                 }
                 .alignmentGuide(VerticalAlignment.center) { view in
                     view[.bottom] + 132

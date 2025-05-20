@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct AlarmListView: View {
     
-    @ObservedObject var viewModel: AlarmListViewModel
+    @StateObject var viewModel: AlarmListViewModel
     @Environment(\.dismiss) var dismiss
     
     var body: some View {

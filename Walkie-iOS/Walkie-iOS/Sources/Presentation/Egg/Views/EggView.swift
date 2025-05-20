@@ -15,7 +15,7 @@ struct EggView: View {
         GridItem(.flexible())
     ]
     
-    @ObservedObject var viewModel: EggViewModel
+    @StateObject var viewModel: EggViewModel
     @State var isPresentingGuideView: Bool = false
     @State var isPresentingBottomSheet: Bool = false
     
@@ -89,9 +89,6 @@ struct EggView: View {
                     .padding(.horizontal, 16)
                     .onAppear {
                         viewModel.action(.willAppear)
-                    }
-                    .onDisappear {
-                        viewModel.state = .loading
                     }
                 }
                 .scrollIndicators(.never)

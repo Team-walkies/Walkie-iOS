@@ -15,7 +15,7 @@ struct NicknameView: View {
     @State private var isButtonEnabled: Bool = false
     @State private var inputState: InputState = .default
     @FocusState private var focused: Bool
-    @ObservedObject var signupViewModel: SignupViewModel
+    @StateObject var signupViewModel: SignupViewModel
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
