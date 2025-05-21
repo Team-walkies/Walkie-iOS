@@ -210,6 +210,12 @@ extension DIContainer {
         )
     }
     
+    func buildWithdrawView() -> MypageWithdrawView {
+        return MypageWithdrawView(
+            viewModel: self.makeMypageMainViewModel()
+        )
+    }
+    
     // MARK: - Onboarding Views
     func buildLoginView() -> LoginView {
         return LoginView(

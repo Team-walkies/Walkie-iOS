@@ -10,15 +10,24 @@ import SwiftUI
 import WalkieCommon
 
 struct MypageMainItemView<Item: MypageSectionItem>: View {
+    
+    @EnvironmentObject private var coordinator: MypageCoordinator
+    @StateObject var viewModel: MypageMainViewModel
+    
     let item: Item
-    let viewModel: MypageMainViewModel
     var versionText: String?
     
     var body: some View {
         if item.hasNavigation {
-            NavigationLink {
-                item.destinationView(viewModel: viewModel)
-                    .navigationBarBackButtonHidden()
+            Button {
+                switch item {
+                case let setting as MypageSettingSectionItem:
+                    coordinator.push(MypageScene.setting(item: setting))
+                case let service as MypageServiceSectionItem:
+                    coordinator.push(MypageScene.service(item: service))
+                default:
+                    break
+                }
             } label: {
                 itemContent
             }

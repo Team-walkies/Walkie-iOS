@@ -13,6 +13,7 @@ struct MypageMainAccountActionButtonsView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @EnvironmentObject var mypageCoordinator: MypageCoordinator
 
     var body: some View {
         HStack(spacing: 12) {
@@ -39,15 +40,14 @@ struct MypageMainAccountActionButtonsView: View {
             Rectangle()
                 .frame(width: 1, height: 16)
                 .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
-            NavigationLink(
-                destination: MypageWithdrawView(viewModel: viewModel)
-                    .navigationBarBackButtonHidden(),
-                label: {
+            
+            Button(action: {
+                mypageCoordinator.push(MypageScene.withdraw)
+            }, label: {
                 Text("탈퇴하기")
                     .font(.B2)
                     .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
-            }
-            )
+            })
         }
         .frame(alignment: .center)
     }
