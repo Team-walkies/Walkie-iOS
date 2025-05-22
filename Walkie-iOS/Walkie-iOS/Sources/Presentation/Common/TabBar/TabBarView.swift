@@ -27,12 +27,18 @@ struct TabBarView: View {
                     case .home:
                         NavigationStack(path: $homeCoordinator.path) {
                             homeCoordinator.buildScene(.home)
+                                .environmentObject(homeCoordinator)
                         }
                         .sheet(item: $homeCoordinator.appSheet) {
                             self.homeCoordinator.buildSheet($0)
                         }
                         .fullScreenCover(item: $homeCoordinator.appFullScreenCover) {
                             self.homeCoordinator.buildFullScreenCover($0)
+                        }
+                        .navigationDestination(for: HomeScene.self) { scene in
+                            homeCoordinator.buildScene(scene)
+                                .environmentObject(homeCoordinator)
+                                .navigationBarBackButtonHidden()
                         }
                     case .mypage:
                         NavigationStack(path: $mypageCoordinator.path) {

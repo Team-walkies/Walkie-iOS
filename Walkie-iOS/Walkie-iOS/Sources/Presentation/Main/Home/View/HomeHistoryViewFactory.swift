@@ -9,16 +9,12 @@ import SwiftUI
 
 enum HomeHistoryViewFactory: CaseIterable {
     case egg, character, review
-
-    @ViewBuilder
-    func buildHistoryView() -> some View {
+    
+    var scene: HomeScene {
         switch self {
-        case .egg:
-            DIContainer.shared.buildEggView()
-        case .character:
-            DIContainer.shared.buildCharacterView()
-        case .review:
-            DIContainer.shared.buildReviewView()
+        case .egg: return .egg
+        case .character: return .character
+        case .review: return .review
         }
     }
 }
