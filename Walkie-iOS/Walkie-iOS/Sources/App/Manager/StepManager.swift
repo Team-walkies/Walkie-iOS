@@ -21,7 +21,6 @@ final class StepManager {
     private var eggEntity: EggEntity?
     
     private enum BackgroundTaskIdentifier: String, CaseIterable {
-        case checkStep = "com.walkie.ios.check.step"
         case updateStep = "com.walkie.ios.update.step"
     }
     
@@ -64,6 +63,7 @@ final class StepManager {
             .store(in: &cancellables)
     }
     
+    // 서버에 걸음 수 업데이트
     func updateForeground() {
         if let egg = self.eggEntity {
             self.updateEggStepUseCase.execute(
@@ -75,40 +75,28 @@ final class StepManager {
         }
     }
     
+    // 걷고있는 알 변경
     func changeEggPlaying(egg: EggEntity) {
         self.eggEntity = egg
     }
     
-    // MARK: - Task Execution
-    
+    // MARK: 포그라운드 테스크
+    ///
     func executeForegroundTasks() {
         updateStepCacheUseCase.execute { [weak self] in
-            // 부화 조건 확인 후 이벤트 발생
-            if self?.checkStepUseCase.execute() == true {
-                self?.hatchEventSubject.send(())
-            } else {
-                self?.updateForeground()
-            }
+            self?.handleHatchingCondition(shouldUpdateForeground: true)
         }
     }
     
     func executeBackgroundTasks() {
-        updateStepCacheUseCase.execute {
-            
+        updateStepCacheUseCase.execute { [weak self] in
+            self?.handleHatchingCondition(shouldUpdateForeground: false)
         }
-        scheduleBackgroundTasks()
     }
     
     // MARK: - Background Task Scheduling
     
     private func registerBackgroundTasks() {
-        BGTaskScheduler.shared.register(
-            forTaskWithIdentifier: BackgroundTaskIdentifier.checkStep.rawValue,
-            using: nil
-        ) { [weak self] task in
-            self?.handleCheckStepTask(task: task)
-        }
-        
         BGTaskScheduler.shared.register(
             forTaskWithIdentifier: BackgroundTaskIdentifier.updateStep.rawValue,
             using: nil
@@ -117,45 +105,55 @@ final class StepManager {
         }
     }
     
-    private func handleCheckStepTask(task: BGTask) {
-        task.expirationHandler = {
-            task.setTaskCompleted(success: false)
-        }
-        checkStepUseCase.execute()
-        task.setTaskCompleted(success: true)
-        scheduleBackgroundTasks()
-    }
-    
     private func handleUpdateStepTask(task: BGTask) {
         task.expirationHandler = {
             task.setTaskCompleted(success: false)
         }
-        updateStepCacheUseCase.execute {
-            
+        updateStepCacheUseCase.execute() {
+            self.handleHatchingCondition(shouldUpdateForeground: false)
         }
         task.setTaskCompleted(success: true)
-        scheduleBackgroundTasks()
     }
     
+    // MARK: - Helper Methods
+    
+    // 부화 조건 확인
+    /// 포그라운드인 경우 서버에 업데이트
+    /// 백그라운드인 경우 부화 알림 전송 + 백그라운드 테스크 스케줄링 중단
+    private func handleHatchingCondition(shouldUpdateForeground: Bool) {
+        if checkStepUseCase.execute() { // 부화 조건 확인
+            // 부화 조건인 경우
+            if shouldUpdateForeground {
+                hatchEventSubject.send(()) // 부화 UI 및 서버 처리
+            }
+            return // 부화 조건에 도달한 경우 더이상 스케줄링 하지 않음
+        } else {
+            // 부화 조건이 아닌 경우
+            if shouldUpdateForeground {
+                updateForeground() // 부화 UI 및 서버 처리
+                return
+            } else {
+                scheduleBackgroundTasks() // 백그라운드 업데이트 지속
+            }
+        }
+    }
+    
+    // 백그라운드 태스크 스케줄링
+    private func scheduleTask(identifier: String, earliestBeginDate: Date) {
+        let taskRequest = BGAppRefreshTaskRequest(identifier: identifier)
+        taskRequest.earliestBeginDate = earliestBeginDate
+        
+        do {
+            try BGTaskScheduler.shared.submit(taskRequest)
+            print("[DEBUG][StepManager][scheduleTask] \(identifier) task scheduled")
+        } catch {
+            print("[DEBUG][StepManager][scheduleTask] Failed to schedule \(identifier) task: \(error)")
+        }
+    }
+    
+    // 백그라운드 태스크 스케줄링 관리
     private func scheduleBackgroundTasks() {
-        let checkStepRequest = BGAppRefreshTaskRequest(identifier: BackgroundTaskIdentifier.checkStep.rawValue)
-        checkStepRequest.earliestBeginDate = Date(timeIntervalSinceNow: 60)
-        
-        do {
-            try BGTaskScheduler.shared.submit(checkStepRequest)
-            print("[DEBUG][StepManager][scheduleBackgroundTasks] CheckStep task scheduled")
-        } catch {
-            print("[DEBUG][StepManager][scheduleBackgroundTasks] Failed to schedule CheckStep task: \(error)")
-        }
-        
-        let updateStepRequest = BGAppRefreshTaskRequest(identifier: BackgroundTaskIdentifier.updateStep.rawValue)
-        updateStepRequest.earliestBeginDate = Date(timeIntervalSinceNow: 60)
-        
-        do {
-            try BGTaskScheduler.shared.submit(updateStepRequest)
-            print("[DEBUG][StepManager][scheduleBackgroundTasks] UpdateStep task scheduled")
-        } catch {
-            print("[DEBUG][StepManager][scheduleBackgroundTasks] Failed to schedule UpdateStep task: \(error)")
-        }
+        let earliestDate = Date(timeIntervalSinceNow: 60)
+        scheduleTask(identifier: BackgroundTaskIdentifier.updateStep.rawValue, earliestBeginDate: earliestDate)
     }
 }
