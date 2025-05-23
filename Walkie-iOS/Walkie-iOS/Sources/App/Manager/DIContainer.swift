@@ -27,13 +27,34 @@ final class DIContainer {
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
     
     private lazy var stepStore = DefaultStepStore()
+}
+
+// UseCases
+
+extension DIContainer {
     
-    // Singleton ViewModels
-    private lazy var homeViewModel: HomeViewModel = {
-        HomeViewModel(
-            getEggPlayUseCase: DefaultGetEggPlayUseCase(
-                memberRepository: memberRepo
-            ),
+    func resolveCheckStepUseCase() -> CheckStepUseCase {
+        return DefaultCheckStepUseCase(stepStore: stepStore)
+    }
+    func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
+        return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
+    }
+    func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
+        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
+    }
+    
+    func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
+        return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
+    }
+}
+
+// ViewModels
+
+extension DIContainer {
+    
+    func makeHomeViewModel() -> HomeViewModel {
+        return HomeViewModel(
+            getEggPlayUseCase: resolveGetEggPlayUseCase(),
             getCharacterPlayUseCase: DefaultGetWalkingCharacterUseCase(
                 memberRepository: memberRepo
             ),
@@ -47,16 +68,25 @@ final class DIContainer {
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var mapViewModel: MapViewModel = {
-        MapViewModel(
+    }
+    
+    func makeMapViewModel() -> MapViewModel {
+        return MapViewModel(
             getCharacterPlayUseCase: DefaultGetCharacterPlayUseCase(
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var mypageMainViewModel: MypageMainViewModel = {
-        MypageMainViewModel(
+    }
+    
+    func makeReviewViewModel() -> ReviewViewModel {
+        return ReviewViewModel(
+            reviewUseCase: DefaultReviewUseCase(reviewRepository: reviewRepo),
+            delReviewUseCase: DefaultDeleteReviewUseCase(reviewRepository: reviewRepo)
+        )
+    }
+    
+    func makeMypageMainViewModel() -> MypageMainViewModel {
+        return MypageMainViewModel(
             logoutUseCase: DefaultLogoutUserUseCase(
                 authRepository: authRepo,
                 memberRepository: memberRepo
@@ -71,29 +101,23 @@ final class DIContainer {
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var eggViewModel: EggViewModel = {
-        EggViewModel(
+    }
+    
+    func makeCalendarViewModel(using reviewVM: ReviewViewModel) -> CalendarViewModel {
+        return CalendarViewModel(reviewViewModel: reviewVM)
+    }
+    
+    func makeEggViewModel() -> EggViewModel {
+        return EggViewModel(
             eggUseCase: DefaultEggUseCase(
                 eggRepository: eggRepo,
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var alarmListViewModel: AlarmListViewModel = {
-        AlarmListViewModel()
-    }()
-    private lazy var reviewViewModel: ReviewViewModel = {
-        ReviewViewModel(
-            reviewUseCase: DefaultReviewUseCase(
-                reviewRepository: reviewRepo
-            ), delReviewUseCase: DefaultDeleteReviewUseCase(
-                reviewRepository: reviewRepo
-            )
-        )
-    }()
-    private lazy var characterViewModel: CharacterViewModel = {
-        CharacterViewModel(
+    }
+    
+    func makeCharacterViewModel() -> CharacterViewModel {
+        return CharacterViewModel(
             getCharactersListUseCase: DefaultGetCharactersListUseCase(
                 characterRepository: characterRepo
             ),
@@ -104,92 +128,108 @@ final class DIContainer {
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var loginViewModel: LoginViewModel = {
-        LoginViewModel(
+    }
+    
+    func makeLoginViewModel() -> LoginViewModel {
+        return LoginViewModel(
             loginUseCase: DefaultLoginUseCase(
                 authRepository: authRepo,
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var signupViewModel: SignupViewModel = {
-        SignupViewModel(
+    }
+    
+    func makeSignupViewModel() -> SignupViewModel {
+        return SignupViewModel(
             signupUseCase: DefaultSignupUseCase(
                 authRepository: authRepo,
                 memberRepository: memberRepo
             )
         )
-    }()
-    private lazy var hatchEggViewModel: HatchEggViewModel = {
-        HatchEggViewModel(
-            getEggPlayUseCase: DefaultGetEggPlayUseCase(
-                memberRepository: memberRepo
-            ),
+    }
+    
+    func makeHatchEggViewModel() -> HatchEggViewModel {
+        return HatchEggViewModel(
+            getEggPlayUseCase: resolveGetEggPlayUseCase(),
             updateEggStepUseCase: DefaultUpdateEggStepUseCase(
                 eggRepository: eggRepo
             )
         )
-    }()
-    private lazy var calendarViewModel: CalendarViewModel = {
-        CalendarViewModel(reviewViewModel: reviewViewModel)
-    }()
+    }
+    
+    func makeAlarmListViewModel() -> AlarmListViewModel {
+        return AlarmListViewModel()
+    }
 }
 
 extension DIContainer {
     
     // MARK: - Main Views
     func buildHomeView() -> HomeView {
-        return HomeView(viewModel: homeViewModel)
-    }
-    func buildMapView() -> MapView {
-        return MapView(viewModel: mapViewModel)
-    }
-    func buildMypageView() -> MypageMainView {
-        return MypageMainView(viewModel: mypageMainViewModel)
-    }
-    func buildEggView() -> EggView {
-        return EggView(viewModel: eggViewModel)
-    }
-    func buildAlarmListView() -> AlarmListView {
-        return AlarmListView(viewModel: alarmListViewModel)
-    }
-    func buildReviewView() -> ReviewView {
-        return ReviewView(
-            viewModel: reviewViewModel,
-            calendarViewModel: calendarViewModel
+        return HomeView(
+            viewModel: self.makeHomeViewModel()
         )
     }
+    
+    func buildMapView() -> MapView {
+        return MapView(
+            viewModel: self.makeMapViewModel()
+        )
+    }
+    
+    func buildMypageView() -> MypageMainView {
+        return MypageMainView(
+            viewModel: self.makeMypageMainViewModel()
+        )
+    }
+    
+    func buildEggView() -> EggView {
+        return EggView(
+            viewModel: self.makeEggViewModel()
+        )
+    }
+    
+    func buildReviewView() -> ReviewView {
+        let reviewVM = makeReviewViewModel()
+        let calendarVM = makeCalendarViewModel(using: reviewVM)
+        return ReviewView(
+            viewModel: reviewVM,
+            calendarViewModel: calendarVM
+        )
+    }
+    
     func buildCharacterView() -> CharacterView {
-        return CharacterView(viewModel: characterViewModel)
+        return CharacterView(
+            viewModel: self.makeCharacterViewModel()
+        )
+    }
+    
+    func buildAlarmListView() -> AlarmListView {
+        return AlarmListView(
+            viewModel: self.makeAlarmListViewModel()
+        )
     }
     
     // MARK: - Onboarding Views
     func buildLoginView() -> LoginView {
-        return LoginView(loginViewModel: loginViewModel)
+        return LoginView(
+            loginViewModel: self.makeLoginViewModel()
+        )
     }
+    
     func buildSignupView() -> OnboardingCompleteView {
         return OnboardingCompleteView()
     }
+    
     func buildNicknameView() -> NicknameView {
-        return NicknameView(signupViewModel: signupViewModel)
+        return NicknameView(
+            signupViewModel: self.makeSignupViewModel()
+        )
     }
+    
     func buildHatchEggView() -> HatchEggView {
-        return HatchEggView(hatchEggViewModel: hatchEggViewModel)
-    }
-    
-    // MARK: - UseCases
-    func resolveCheckStepUseCase() -> CheckStepUseCase {
-        return DefaultCheckStepUseCase(stepStore: stepStore)
-    }
-    func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
-        return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
-    }
-    func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
-        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
-    }
-    
-    func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
-        return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
+        return HatchEggView(
+            hatchEggViewModel: self.makeHatchEggViewModel()
+        )
     }
 }

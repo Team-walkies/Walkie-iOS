@@ -79,7 +79,7 @@ private struct EggGuideItemView: View {
         }
         .frame(height: 76)
         .background(WalkieCommonAsset.gray50.swiftUIColor)
-        .cornerRadius(12)
+        .cornerRadius(12, corners: .allCorners)
         .padding(.top, 8)
     }
 }

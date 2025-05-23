@@ -18,7 +18,7 @@ struct EggDetailView: View {
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             switch viewModel.state {
-            case .loaded(let detail, let eggState):
+            case .loaded(let eggState):
                 Image(eggState.eggType.eggImage)
                     .resizable()
                     .frame(width: 180, height: 180)
@@ -29,7 +29,7 @@ struct EggDetailView: View {
                     .foregroundStyle(eggState.eggType.fontColor)
                     .frame(width: 57, height: 36)
                     .background(WalkieCommonAsset.gray100.swiftUIColor)
-                    .cornerRadius(99)
+                    .cornerRadius(99, corners: .allCorners)
                     .padding(.bottom, 4)
                 HighlightTextAttribute(
                     text: String(
@@ -56,24 +56,24 @@ struct EggDetailView: View {
                         Text("획득 날짜")
                             .font(.B2)
                             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        Text(detail.obtainedDate ?? "오류")
+                        Text(eggState.obtainedDate)
                             .font(.H6)
                             .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
                     .background(WalkieCommonAsset.gray50.swiftUIColor)
-                    .cornerRadius(12)
+                    .cornerRadius(12, corners: .allCorners)
                     VStack(alignment: .center, spacing: 4) {
                         Text("획득 장소")
                             .font(.B2)
                             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        Text(detail.obtainedPosition ?? "오류")
+                        Text(eggState.obtainedPosition)
                             .font(.H6)
                             .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                     }
                     .frame(width: (screenWidth-41)/2, height: 68)
                     .background(WalkieCommonAsset.gray50.swiftUIColor)
-                    .cornerRadius(12)
+                    .cornerRadius(12, corners: .allCorners)
                 }.padding(.bottom, 20)
                 CTAButton(
                     title: eggState.isWalking ? "같이 걷는 중..." : "이 알과 같이 걷기",
@@ -81,15 +81,8 @@ struct EggDetailView: View {
                     size: .large,
                     isEnabled: !eggState.isWalking,
                     buttonAction: {
-                        viewModel
-                            .action(
-                                .didSelectEggWalking(
-                                    completion: {
-                                        dismiss()
-                                        eggViewModel.fetchEggListData()
-                                    }
-                                )
-                            )
+                        viewModel.action(.didSelectEggWalking)
+                        dismiss()
                     }
                 )
                 Spacer()

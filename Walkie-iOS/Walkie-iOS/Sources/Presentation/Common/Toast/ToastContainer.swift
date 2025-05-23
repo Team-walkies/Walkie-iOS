@@ -20,9 +20,6 @@ struct ToastContainer: View {
                     .animation(.easeInOut, value: toastManager.isShowing)
             }
         }
-        .ignoresSafeArea(.all, edges: .bottom)
-        .frame(alignment: .bottom)
-        .zIndex(.infinity)
         .allowsHitTesting(false)
     }
 }

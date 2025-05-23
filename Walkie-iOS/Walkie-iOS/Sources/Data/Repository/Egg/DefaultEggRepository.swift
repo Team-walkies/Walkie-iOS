@@ -26,23 +26,29 @@ final class DefaultEggRepository {
 
 extension DefaultEggRepository: EggRepository {
     
-    func getEggsList() -> AnyPublisher<[EggEntity], NetworkError> {
+    func getEggsList() -> AnyPublisher<[(EggEntity, EggDetailEntity)], NetworkError> {
         return eggService.getEggsList()
             .map { dto in
                 dto.eggs.map { egg in
-                    EggEntity(
-                        eggId: egg.eggId,
-                        eggType: EggType.from(number: egg.rank),
-                        nowStep: egg.nowStep,
-                        needStep: egg.needStep,
-                        isWalking: egg.play,
-                        detail: EggDetailEntity(
+                    (
+                        EggEntity(
+                            eggId: egg.eggId,
+                            eggType: EggType.from(number: egg.rank),
+                            nowStep: egg.nowStep,
+                            needStep: egg.needStep,
+                            isWalking: egg.play,
+                            detail: EggDetailEntity(
+                                obtainedPosition: egg.obtainedPosition,
+                                obtainedDate: egg.obtainedDate
+                            ),
+                            characterType: nil,
+                            jellyFishType: nil,
+                            dinoType: nil
+                        ),
+                        EggDetailEntity(
                             obtainedPosition: egg.obtainedPosition,
                             obtainedDate: egg.obtainedDate
-                        ),
-                        characterType: nil,
-                        jellyFishType: nil,
-                        dinoType: nil
+                        )
                     )
                 }
             }.mapToNetworkError()

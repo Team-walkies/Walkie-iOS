@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct MapView: View {
     
-    @ObservedObject var viewModel: MapViewModel
+    @StateObject var viewModel: MapViewModel
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {

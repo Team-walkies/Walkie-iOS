@@ -9,7 +9,7 @@ import SwiftUI
 import WalkieCommon
 
 struct CalendarView: View {
-    @ObservedObject var viewModel: CalendarViewModel
+    @StateObject var viewModel: CalendarViewModel
     @State private var currentWeekOffset: CGFloat = 0
     
     var body: some View {
@@ -54,7 +54,7 @@ struct CalendarView: View {
                 }
                 .frame(width: 45, height: 32)
                 .background(WalkieCommonAsset.gray100.swiftUIColor)
-                .cornerRadius(16)
+                .cornerRadius(16, corners: .allCorners)
                 .padding(.trailing, 1)
             })
         }

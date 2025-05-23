@@ -28,7 +28,7 @@ struct MypageMainSectionView<Content: View>: View {
         }
         .padding(.all, 16)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
-        .cornerRadius(12)
+        .cornerRadius(12, corners: .allCorners)
         .shadow(color: .black.opacity(0.03), radius: 10, x: 0, y: 4)
     }
 }

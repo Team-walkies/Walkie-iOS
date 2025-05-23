@@ -363,12 +363,14 @@ private extension HomeViewModel {
     }
     
     func updateStepData(step: Int, distance: Double) {
+        let leftStep =
+        UserManager.shared.getStepCountGoal
+        - stepStore.getStepCountCache()
+        - UserManager.shared.getStepCount
+        
         let stepState = StepState(
             todayStep: step,
-            leftStep:
-                UserManager.shared.getStepCountGoal
-            - stepStore.getStepCountCache()
-            - UserManager.shared.getStepCount,
+            leftStep: leftStep >= 0 ? leftStep : 0,
             todayDistance: distance,
             locationAlwaysAuthorized: isLocationAlwaysAuthorized()
         )

@@ -76,7 +76,7 @@ struct CTAButton: View {
                     .frame(height: height)
                     .frame(maxWidth: .infinity)
                     .background(backgroundColor)
-                    .cornerRadius(12)
+                    .cornerRadius(12, corners: .allCorners)
                     .animation(.easeInOut(duration: 0.2), value: isEnabled)
             }
         )

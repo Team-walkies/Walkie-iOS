@@ -10,8 +10,8 @@ import WalkieCommon
 
 struct ReviewView: View {
     
-    @ObservedObject var viewModel: ReviewViewModel
-    @ObservedObject var calendarViewModel: CalendarViewModel
+    @StateObject var viewModel: ReviewViewModel
+    @StateObject var calendarViewModel: CalendarViewModel
     @State private var selectedReview: ReviewItemId?
     @State private var showReviewEdit: Bool = false
     @State private var showReviewDelete: Bool = false
@@ -88,7 +88,6 @@ struct ReviewView: View {
                 )
                 .padding(.horizontal, 47)
             }
-            ToastContainer()
         }
         .onAppear {
             viewModel.action(

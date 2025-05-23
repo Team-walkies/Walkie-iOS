@@ -39,6 +39,10 @@ struct WalkieIOSApp: App {
                         }
                     )
                     .transaction { $0.disablesAnimations = true }
+                ToastContainer()
+                    .ignoresSafeArea(.all, edges: .bottom)
+                    .frame(alignment: .bottom)
+                    .zIndex(.infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

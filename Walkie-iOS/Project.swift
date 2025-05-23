@@ -15,7 +15,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "Walkie",
-                    "CFBundleShortVersionString": "1.0.1",
+                    "CFBundleShortVersionString": "1.0.2",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
@@ -95,7 +95,7 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.1",
+                    "MARKETING_VERSION": "1.0.2"
                     "OTHER_LDFLAGS": "-ObjC"
                 ],
                 configurations: [
@@ -111,6 +111,7 @@ let project = Project(
             bundleId: "com.walkie.ios.walkiewidget",
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
+                "CFBundleShortVersionString": "1.0.2",
                 "NSExtension": [
                     "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
                 ],
@@ -129,7 +130,8 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "TARGETED_DEVICE_FAMILY": "1"
+                    "TARGETED_DEVICE_FAMILY": "1",
+                    "MARKETING_VERSION": "1.0.2"
                 ],
                 configurations: []
             )

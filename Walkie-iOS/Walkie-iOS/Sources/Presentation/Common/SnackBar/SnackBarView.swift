@@ -40,12 +40,12 @@ struct SnackBarView: View {
                 })
                 .frame(height: 32)
                 .background(state.buttonColor)
-                .cornerRadius(8)
+                .cornerRadius(8, corners: .allCorners)
             }
         }
         .padding(.horizontal, 16)
         .frame(height: 56)
         .background(WalkieCommonAsset.gray900.swiftUIColor.opacity(0.7))
-        .cornerRadius(12)
+        .cornerRadius(12, corners: .allCorners)
     }
 }
