@@ -82,7 +82,9 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
+                .external(name: "FirebaseCore"),
                 .external(name: "FirebaseMessaging"),
+                .external(name: "FirebaseAnalytics"),
                 .external(name: "Moya"),
                 .external(name: "CombineMoya"),
                 .external(name: "KakaoSDKAuth"),
@@ -93,7 +95,8 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.2"
+                    "MARKETING_VERSION": "1.0.2",
+                    "OTHER_LDFLAGS": "-ObjC"
                 ],
                 configurations: [
                     .debug(name: "Debug", xcconfig: "Config/WalkieConfig.xcconfig"),

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import WalkieCommon
+import FirebaseAnalytics
 
 struct DatePickerView: View {
     @StateObject var viewModel: DatePickerViewModel
@@ -114,8 +115,9 @@ struct DatePickerView: View {
                 isEnabled: true,
                 buttonAction: {
                     viewModel.calendarViewModel.action(.willSelectDate(state.selectedDate))
+                    Analytics.logEvent(StringLiterals.WalkieLog.spotCalendarMove, parameters: nil)
                 }
-            ).padding(.bottom, 38)
+            ).padding(.bottom, 38) 
         }
         .onAppear {
             viewModel.action(.willAppear)
