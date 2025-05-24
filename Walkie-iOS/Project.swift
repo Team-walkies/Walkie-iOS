@@ -95,7 +95,7 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.2"
+                    "MARKETING_VERSION": "1.0.2",
                     "OTHER_LDFLAGS": "-ObjC"
                 ],
                 configurations: [

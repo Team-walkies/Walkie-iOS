@@ -177,7 +177,7 @@ struct HomeStatsView: View {
             }()
         }
         .onTapGesture {
-            Analytics.logEvent(StringLiterals.WalkieLog.menuCard, parameters: nil)
+            Analytics.logEvent(StringLiterals.WalkieLog.mainCard, parameters: nil)
         }
     }
 }
