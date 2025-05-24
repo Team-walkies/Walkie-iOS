@@ -67,15 +67,10 @@ enum StringLiterals {
     }
     
     enum WalkieLog {
-        static let menuCard = "menu_card"
+        static let mainCard = "main_bluecard"
         static let mainCharacter = "main_character"
         static let mainTogether = "main_together"
-        static let mypageAlarm = "mypage_alarm"
         static let mypageSurvey = "mypage_survey"
-        static let mapPhoto = "map_photo"
-        static let mapStart = "map_start"
-        static let mapFinish = "map_finish"
         static let spotCalendarMove = "spot_calendar_move"
-        static let spotCompleteWithoutReview = "spot_complete_without_review"
     }
 }
