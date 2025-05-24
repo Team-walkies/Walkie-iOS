@@ -141,7 +141,7 @@ final class HatchEggViewModel: ViewModelable {
                 isShowingEggHatchText: false,
                 isShowingEggLottie: false,
                 isPlayingEggLottie: false,
-                isPlayingConfetti: false,
+                isPlayingConfetti: true,
                 isShowingCharacter: true,
                 isShowingGlowEffect: true
             )
