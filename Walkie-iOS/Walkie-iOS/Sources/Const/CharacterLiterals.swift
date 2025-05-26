@@ -21,7 +21,7 @@ enum JellyfishType: String, CaseIterable {
     case bunny = "토끼 해파리"
     case starfish = "불가사리 해파리"
     case shocked = "벼직 해파리"
-    case strawberry = "딸기꼬치 해파리"
+    case strawberry = "딸기모찌 해파리"
     case space = "우주 해파리"
     
     func getCharacterImage() -> ImageResource {

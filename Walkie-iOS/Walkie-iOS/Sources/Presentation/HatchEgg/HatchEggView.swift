@@ -13,6 +13,7 @@ struct HatchEggView: View {
     
     @StateObject var hatchEggViewModel: HatchEggViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @Environment(\.screenHeight) var screenHeight
     
     var body: some View {
         ZStack(alignment: .center) {
@@ -29,25 +30,25 @@ struct HatchEggView: View {
                     WalkieLottieView(
                         lottie: WalkieLottie.confetti,
                         isPlaying: hatchEggViewModel.animationState.isPlayingConfetti
-                    )
+                    ).frame(width: screenHeight * 0.54, height: screenHeight * 0.54)
                 }
                 Image(.glowEffect)
                     .resizable()
-                    .frame(width: 520, height: 372)
+                    .frame(width: screenHeight * 0.5, height: screenHeight * 0.5)
                     .opacity(hatchEggViewModel.animationState.isShowingGlowEffect ? 1 : 0)
                     .animation(.easeInOut(duration: 0.2), value: hatchEggViewModel.animationState.isShowingGlowEffect)
                 
                 switch hatchState.characterType {
                 case .jellyfish:
                     Image(hatchState.jellyfishType.getCharacterImage())
-                        .frame(width: 200, height: 200)
+                        .frame(width: screenHeight * 0.27, height: screenHeight * 0.27)
                         .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
                         .animation(
                             .easeInOut(duration: 0.3),
                             value: hatchEggViewModel.animationState.isShowingCharacter)
                 case .dino:
                     Image(hatchState.dinoType.getCharacterImage())
-                        .frame(width: 200, height: 200)
+                        .frame(width: screenHeight * 0.27, height: screenHeight * 0.27)
                         .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
                         .animation(
                             .easeInOut(duration: 0.3),
@@ -67,7 +68,7 @@ struct HatchEggView: View {
                     lottie: eggLottie,
                     isPlaying: hatchEggViewModel.animationState.isPlayingEggLottie
                 )
-                .frame(width: 200, height: 200)
+                .frame(width: screenHeight * 0.27, height: screenHeight * 0.27)
                 .opacity(hatchEggViewModel.animationState.isShowingEggLottie ? 1 : 0)
                 .animation(.easeIn(duration: 0.3), value: !hatchEggViewModel.animationState.isShowingEggLottie)
                 .animation(.easeIn(duration: 0.3), value: !hatchEggViewModel.animationState.isShowingEggLottie)
