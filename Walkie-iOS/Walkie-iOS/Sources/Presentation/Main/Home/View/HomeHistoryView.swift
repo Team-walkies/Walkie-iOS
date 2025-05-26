@@ -16,7 +16,8 @@ struct HomeHistoryView: View {
     
     private let columns = [GridItem(.flexible())]
     @Environment(\.screenWidth) private var screenWidth
-    @EnvironmentObject private var coordinator: HomeCoordinator
+//    @EnvironmentObject private var coordinator: HomeCoordinator
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState

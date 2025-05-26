@@ -13,49 +13,57 @@ struct TabBarView: View {
     @State private var selectedTab: TabBarItem = .home
     @State private var tabMapView: Bool = false
     
-    @StateObject var homeCoordinator: HomeCoordinator
-    @StateObject var mypageCoordinator: MypageCoordinator
+//    @StateObject var homeCoordinator: HomeCoordinator
+//    @StateObject var mypageCoordinator: MypageCoordinator
     
     @Environment(\.scenePhase) var scenePhase
+    @EnvironmentObject var appCoordinator: AppCoordinator
     @State private var timer: Timer?
     
     var body: some View {
         GeometryReader { geometry in
-            NavigationStack {
+//            NavigationStack(path: $appCoordinator.path) {
                 ZStack(alignment: .bottom) {
+//                    DIContainer.shared.buildHomeView()
+//                        .environmentObject(appCoordinator)
                     switch selectedTab {
                     case .home:
-                        NavigationStack(path: $homeCoordinator.path) {
-                            homeCoordinator.buildScene(.home)
-                                .environmentObject(homeCoordinator)
-                        }
-                        .sheet(item: $homeCoordinator.appSheet) {
-                            self.homeCoordinator.buildSheet($0)
-                        }
-                        .fullScreenCover(item: $homeCoordinator.appFullScreenCover) {
-                            self.homeCoordinator.buildFullScreenCover($0)
-                        }
-                        .navigationDestination(for: HomeScene.self) { scene in
-                            homeCoordinator.buildScene(scene)
-                                .environmentObject(homeCoordinator)
-                                .navigationBarBackButtonHidden()
-                        }
+                        DIContainer.shared.buildHomeView()
+                            .environmentObject(appCoordinator)
+//                        NavigationStack(path: $homeCoordinator.path) {
+//                            homeCoordinator.buildScene(.home)
+//                                .environmentObject(homeCoordinator)
+//                        }
+//                        .sheet(item: $homeCoordinator.appSheet) {
+//                            self.homeCoordinator.buildSheet($0)
+//                        }
+//                        .fullScreenCover(item: $homeCoordinator.appFullScreenCover) {
+//                            self.homeCoordinator.buildFullScreenCover($0)
+//                        }
+//                        .navigationDestination(for: HomeScene.self) { scene in
+//                            homeCoordinator.buildScene(scene)
+//                                .environmentObject(homeCoordinator)
+//                                .navigationBarBackButtonHidden()
+//                        }
                     case .mypage:
-                        NavigationStack(path: $mypageCoordinator.path) {
-                            mypageCoordinator.buildScene(.mypage)
-                                .environmentObject(mypageCoordinator)
-                        }
-                        .sheet(item: $mypageCoordinator.appSheet) { sheet in
-                            mypageCoordinator.buildSheet(sheet)
-                        }
-                        .fullScreenCover(item: $mypageCoordinator.appFullScreenCover) { cover in
-                            mypageCoordinator.buildFullScreenCover(cover)
-                        }
-                        .navigationDestination(for: MypageScene.self) { scene in
-                            mypageCoordinator.buildScene(scene)
-                                .environmentObject(mypageCoordinator)
-                                .navigationBarBackButtonHidden()
-                        }
+                        DIContainer.shared.buildMypageView()
+                            .environmentObject(appCoordinator)
+//                        tabBarCoordinator.push(TabBarScene.mypage)
+//                        NavigationStack(path: $mypageCoordinator.path) {
+//                            mypageCoordinator.buildScene(.mypage)
+//                                .environmentObject(mypageCoordinator)
+//                        }
+//                        .sheet(item: $mypageCoordinator.appSheet) { sheet in
+//                            mypageCoordinator.buildSheet(sheet)
+//                        }
+//                        .fullScreenCover(item: $mypageCoordinator.appFullScreenCover) { cover in
+//                            mypageCoordinator.buildFullScreenCover(cover)
+//                        }
+//                        .navigationDestination(for: MypageScene.self) { scene in
+//                            mypageCoordinator.buildScene(scene)
+//                                .environmentObject(mypageCoordinator)
+//                                .navigationBarBackButtonHidden()
+//                        }
                     case .map:
                         EmptyView()
                     }
@@ -124,6 +132,11 @@ struct TabBarView: View {
                     DIContainer.shared.buildMapView()
                         .navigationBarBackButtonHidden()
                 }
+//                .navigationDestination(for: AppScene.self) { scene in
+//                    appCoordinator.buildScene(scene)
+//                        .environmentObject(appCoordinator)
+//                        .navigationBarBackButtonHidden()
+//                }
                 .onAppear {
                     // 포그라운드에서 Timer 시작
                     if timer == nil && scenePhase == .active {
@@ -154,7 +167,7 @@ struct TabBarView: View {
                     }
                 }
             }
-        }
+//        }
     }
     
     private func startTimer() {

@@ -36,25 +36,25 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var fullScreenCoverOnDismiss: (() -> Void)?
     
 //    let tabBarView: TabBarView
-    
-    let homeCoordinator: HomeCoordinator
-    let mypageCoordinator: MypageCoordinator
+//    
+//    let homeCoordinator: HomeCoordinator
+//    let mypageCoordinator: MypageCoordinator
     var loginInfo: LoginUserInfo = LoginUserInfo()
     private var cancellables: Set<AnyCancellable> = []
     
 //    @ViewBuilder
-    var tabBarView: some View {
-        TabBarView(
-            homeCoordinator: self.homeCoordinator,
-            mypageCoordinator: self.mypageCoordinator
-        )
-    }
+//    var tabBarView: some View {
+//        TabBarView(
+//            homeCoordinator: self.homeCoordinator,
+//            mypageCoordinator: self.mypageCoordinator
+//        )
+//    }
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
-        self.homeCoordinator   = HomeCoordinator(diContainer: diContainer)
-        self.mypageCoordinator = MypageCoordinator(diContainer: diContainer)
-        
+//        self.homeCoordinator   = HomeCoordinator(diContainer: diContainer)
+//        self.mypageCoordinator = MypageCoordinator(diContainer: diContainer)
+//        
 //        self.tabBarView = TabBarView(
 //            homeCoordinator: HomeCoordinator(diContainer: diContainer),
 //            mypageCoordinator: MypageCoordinator(diContainer: diContainer)
@@ -98,9 +98,15 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     }
                 }
         case .tabBar:
-            tabBarView
+            diContainer.buildTabBarView()
         case .complete:
             diContainer.buildSignupView()
+        case .egg:
+            diContainer.buildEggView()
+        case .character:
+            diContainer.buildCharacterView()
+        case .review: 
+            diContainer.buildReviewView()
         }
     }
     

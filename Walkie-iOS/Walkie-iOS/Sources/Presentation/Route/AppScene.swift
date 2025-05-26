@@ -16,6 +16,10 @@ enum AppScene: AppRoute {
     
     case tabBar
     
+    case egg
+    case character
+    case review
+    
     var id: String {
         switch self {
         case .splash:
@@ -28,6 +32,12 @@ enum AppScene: AppRoute {
             return "login"
         case .tabBar:
             return "tabBar"
+        case .egg:
+            return "egg"
+        case .character:
+            return "character"
+        case .review:
+            return "review"
         }
     }
 

@@ -165,6 +165,10 @@ extension DIContainer {
 extension DIContainer {
     
     // MARK: - Main Views
+    func buildTabBarView() -> TabBarView {
+        return TabBarView()
+    }
+    
     func buildHomeView() -> HomeView {
         return HomeView(
             viewModel: self.makeHomeViewModel()

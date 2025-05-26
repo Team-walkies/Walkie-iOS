@@ -10,7 +10,7 @@ import SwiftUI
 enum HomeHistoryViewFactory: CaseIterable {
     case egg, character, review
     
-    var scene: HomeScene {
+    var scene: AppScene {
         switch self {
         case .egg: return .egg
         case .character: return .character

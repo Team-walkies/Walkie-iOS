@@ -17,20 +17,20 @@ struct ReviewItemView: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                let characterImg = CharacterType.getCharacterImage(
-                    type: reviewState.type + 1,
-                    characterClass: reviewState.characterClass)
-                Image(characterImg ?? .imgDino0)
+//                let characterImg = CharacterType.getCharacterImage(
+//                    type: reviewState.type + 1,
+//                    characterClass: reviewState.characterClass)
+                Image(.imgDino0)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 38, height: 38)
                 
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
-                        let characterName = CharacterType.getCharacterName(
-                            type: reviewState.type + 1,
-                            characterClass: reviewState.characterClass)
-                        Text("\(characterName ?? "")")
+//                        let characterName = CharacterType.getCharacterName(
+//                            type: reviewState.type + 1,
+//                            characterClass: reviewState.characterClass)
+                        Text("")
                             .font(.H6)
                             .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                         Text("와 걸었어요")
