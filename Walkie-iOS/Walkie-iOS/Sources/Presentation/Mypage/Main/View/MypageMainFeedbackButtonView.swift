@@ -39,7 +39,7 @@ struct MypageMainFeedbackButtonView: View {
         .buttonStyle(PlainButtonStyle())
         .frame(height: 72)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
-        .cornerRadius(12)
+        .cornerRadius(12, corners: .allCorners)
         .onTapGesture {
             Analytics.logEvent(StringLiterals.WalkieLog.mypageSurvey, parameters: nil)
         }
