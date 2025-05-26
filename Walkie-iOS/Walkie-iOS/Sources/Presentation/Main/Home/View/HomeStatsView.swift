@@ -151,7 +151,7 @@ struct HomeStatsView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 35, height: 21)
-                        .padding(.trailing, 100)
+                        .padding(.trailing, 129)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.bottom, 41)
