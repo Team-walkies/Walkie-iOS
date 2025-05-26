@@ -18,12 +18,12 @@ struct TabBarView: View {
     
     @Environment(\.scenePhase) var scenePhase
     @State private var timer: Timer?
+    @State private var cacheTimer: Timer?
         
     var body: some View {
         GeometryReader { geometry in
             NavigationStack {
                 ZStack(alignment: .bottom) {
-                    
                     switch selectedTab {
                     case .home:
                         NavigationStack(path: $homeCoordinator.path) {
@@ -113,9 +113,11 @@ struct TabBarView: View {
                         .navigationBarBackButtonHidden()
                 }
                 .onAppear {
+                    // 진입 시 업데이트
+                    StepManager.shared.executeForegroundTasks()
                     // 포그라운드에서 Timer 시작
                     if timer == nil && scenePhase == .active {
-                        startTimer()
+                        startServerTimer()
                     }
                 }
                 .onDisappear {
@@ -135,7 +137,10 @@ struct TabBarView: View {
                     case .active:
                         print("---active---")
                         if timer == nil {
-                            startTimer() // 포그라운드에서 Timer 재시작
+                            startServerTimer() // 포그라운드에서 Timer 재시작
+                        }
+                        if cacheTimer == nil {
+                            startCacheTimer() // 포그라운드에서 Timer 재시작
                         }
                     @unknown default:
                         fatalError()
@@ -145,7 +150,7 @@ struct TabBarView: View {
         }
     }
     
-    private func startTimer() {
+    private func startServerTimer() {
         // 포그라운드에서 10초 간격으로 서버 업데이트
         timer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { _ in
             StepManager.shared.executeForegroundTasks()
@@ -153,9 +158,19 @@ struct TabBarView: View {
         }
     }
     
+    private func startCacheTimer() {
+        // 포그라운드에서 1초 간격으로 캐시 업데이트
+        cacheTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            StepManager.shared.updateStepCache()
+            print("포그라운드: 캐시 업데이트 완료")
+        }
+    }
+    
     private func stopTimer() {
         // Timer 해제
         timer?.invalidate()
+        cacheTimer?.invalidate()
         timer = nil
+        cacheTimer = nil
     }
 }

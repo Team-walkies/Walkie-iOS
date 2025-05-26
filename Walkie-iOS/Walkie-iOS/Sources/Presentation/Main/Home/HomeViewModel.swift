@@ -22,6 +22,8 @@ final class HomeViewModel: ViewModelable {
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
     
+    private var isUpdatingSteps = false
+    
     private var cancellables = Set<AnyCancellable>()
     
     enum Action {
@@ -331,7 +333,7 @@ private extension HomeViewModel {
 }
 
 private extension HomeViewModel {
-    
+
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else { return }
         
@@ -345,7 +347,7 @@ private extension HomeViewModel {
                         step: data.numberOfSteps.intValue,
                         distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
                     )
-                } else { // 권한 거부인경우
+                } else {
                     self.updateStepData(step: -1, distance: 0)
                 }
             }
@@ -354,24 +356,46 @@ private extension HomeViewModel {
         self.pedometer.startUpdates(from: startOfDay) { data, error in
             if let data = data, error == nil {
                 DispatchQueue.main.async {
-                    let newStepData = data.numberOfSteps.intValue
-                    let newDistanceData = (data.distance?.doubleValue ?? 0.0) / 1000.0
-                    self.updateStepData(step: newStepData, distance: newDistanceData)
+                    self.updateStepData(
+                        step: data.numberOfSteps.intValue,
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
+                    )
                 }
             }
         }
+        
+        StepManager.shared.hatchEventSubject
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                guard let self = self else { return }
+                self.homeStatsState = .loaded(
+                    HomeStatsState(
+                        hasEgg: false,
+                        eggImage: .eggEmpty,
+                        eggGradientColors: [
+                            WalkieCommonAsset.blue300.swiftUIColor,
+                            WalkieCommonAsset.blue200.swiftUIColor
+                        ],
+                        eggEffectImage: nil
+                    )
+                )
+            }
+            .store(in: &cancellables)
     }
-    
+
     func updateStepData(step: Int, distance: Double) {
-        let leftStep =
-        UserManager.shared.getStepCountGoal
-        - stepStore.getStepCountCache()
-        - UserManager.shared.getStepCount
+        guard !isUpdatingSteps else { return }
+        isUpdatingSteps = true
+        defer { isUpdatingSteps = false }
+        
+        let todayStep = step
+        let todayDistance = distance
+        let leftStep = max(0, UserManager.shared.getStepCountGoal - stepStore.getStepCountCache() - UserManager.shared.getStepCount)
         
         let stepState = StepState(
-            todayStep: step,
-            leftStep: leftStep >= 0 ? leftStep : 0,
-            todayDistance: distance,
+            todayStep: todayStep,
+            leftStep: UserManager.shared.getStepCountGoal <= 10000 ? leftStep : 0,
+            todayDistance: todayDistance,
             locationAlwaysAuthorized: isLocationAlwaysAuthorized()
         )
         self.stepState = .loaded(stepState)

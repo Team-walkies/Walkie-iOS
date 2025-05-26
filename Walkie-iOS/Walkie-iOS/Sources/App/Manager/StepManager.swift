@@ -10,8 +10,10 @@ import BackgroundTasks
 
 final class StepManager {
     
-    // 부화 이벤트 Publisher 추가
+    // 부화 이벤트 Publisher
     let hatchEventSubject = PassthroughSubject<Void, Never>()
+    // 걸음 수 캐시 업데이트 Publisher
+    let updateCacheEventSubject = PassthroughSubject<Void, Never>()
     
     private var cancellables: Set<AnyCancellable> = []
     private let getEggPlayUseCase: GetEggPlayUseCase
@@ -46,21 +48,23 @@ final class StepManager {
                         print("EggEntity 조회 완료")
                     case .failure(let error):
                         print("EggEntity 조회 오류: \(error)")
+                        self.eggEntity = nil
                     }
                 },
                 receiveValue: { [weak self] eggEntityValue in
                     self?.eggEntity = eggEntityValue
                     UserManager.shared.setStepCount(eggEntityValue.nowStep)
                     UserManager.shared.setStepCountGoal(eggEntityValue.needStep)
-                    self?.updateEggStepUseCase.execute(
-                        egg: eggEntityValue,
-                        step: UserManager.shared.getStepCount,
-                        willHatch: false) {
-                            
-                        }
+                    self?.updateForeground()
                 }
             )
             .store(in: &cancellables)
+    }
+    
+    func updateStepCache() {
+        updateStepCacheUseCase.execute {
+            self.updateCacheEventSubject.send(())
+        }
     }
     
     // 서버에 걸음 수 업데이트
@@ -125,13 +129,12 @@ final class StepManager {
             // 부화 조건인 경우
             if shouldUpdateForeground {
                 hatchEventSubject.send(()) // 부화 UI 및 서버 처리
+                // 부화 조건에 도달한 경우 더이상 스케줄링 하지 않음
             }
-            return // 부화 조건에 도달한 경우 더이상 스케줄링 하지 않음
         } else {
             // 부화 조건이 아닌 경우
             if shouldUpdateForeground {
-                updateForeground() // 부화 UI 및 서버 처리
-                return
+                updateForeground() // 서버 업데이트 처리
             } else {
                 scheduleBackgroundTasks() // 백그라운드 업데이트 지속
             }
