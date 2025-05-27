@@ -51,13 +51,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
             }
             .store(in: &cancellables)
         
-        NotificationCenter.default.addObserver(
-            forName: .reissueFailed,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.changeToSplash()
-        }
+        NotificationCenter.default
+            .publisher(for: .reissueFailed)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.changeToSplash()
+            }
+            .store(in: &cancellables)
     }
     
     @ViewBuilder
