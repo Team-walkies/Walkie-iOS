@@ -21,6 +21,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     @Published var selectedDate: Date = Date()
     
     var onPop: (() -> Void)?
+    var goToSplash: ((Bool) -> Void)?
     
     enum Action {
         case loadReviewList(startDate: String, endDate: String, completion: (Bool) -> Void)
@@ -69,10 +70,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
     func handleWebMessage(_ message: WebMessage) {
         switch message.type {
         case .unauthorizedFromWeb:
-            NotificationCenter.default.post(
-                name: .reissueFailed,
-                object: nil
-            )
+            goToSplash?(true)
         case .finishReviewModify:
             onPop?()
         default:

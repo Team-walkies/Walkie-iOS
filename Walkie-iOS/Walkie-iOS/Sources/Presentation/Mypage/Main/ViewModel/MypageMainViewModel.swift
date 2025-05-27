@@ -16,6 +16,8 @@ final class MypageMainViewModel: ViewModelable {
     private let withdrawUseCase: WithdrawUseCase
     private var cancellables = Set<AnyCancellable>()
     
+    var goToRoot: ((Bool) -> Void)?
+    
     enum MypageMainViewState {
         case loading
         case loaded(MypageMainState)
@@ -126,10 +128,7 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    NotificationCenter.default.post(
-                        name: .reissueFailed,
-                        object: nil
-                    )
+                    self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
@@ -143,10 +142,7 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    NotificationCenter.default.post(
-                        name: .reissueFailed,
-                        object: nil
-                    )
+                    self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

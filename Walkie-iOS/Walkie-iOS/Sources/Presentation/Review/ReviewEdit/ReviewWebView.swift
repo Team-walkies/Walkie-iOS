@@ -15,6 +15,7 @@ struct ReviewWebView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var reviewWebRequest: URLRequest?
     var reviewInfo: ReviewItemId
+    @EnvironmentObject var coordinator: AppCoordinator
     
     var body: some View {
         VStack(spacing: 20) {
@@ -35,6 +36,11 @@ struct ReviewWebView: View {
             }
             viewModel.onPop = {
                 dismiss()
+            }
+            viewModel.goToSplash = { success in
+                if success {
+                    coordinator.changeToSplash()
+                }
             }
         }
         .popGestureEnabled(false)

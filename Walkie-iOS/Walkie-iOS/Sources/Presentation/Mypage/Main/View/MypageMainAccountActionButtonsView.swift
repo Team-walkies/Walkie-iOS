@@ -49,5 +49,12 @@ struct MypageMainAccountActionButtonsView: View {
             })
         }
         .frame(alignment: .center)
+        .onAppear {
+            viewModel.goToRoot = { success in
+                if success {
+                    appCoordinator.changeToSplash()
+                }
+            }
+        }
     }
 }

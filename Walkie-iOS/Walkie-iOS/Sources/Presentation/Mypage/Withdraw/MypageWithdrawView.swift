@@ -13,6 +13,7 @@ struct MypageWithdrawView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject var viewModel: MypageMainViewModel
     @State var isChecked: Bool = false
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack {
@@ -79,6 +80,11 @@ struct MypageWithdrawView: View {
         }
         .onAppear {
             viewModel.action(.withdrawWillAppear)
+            viewModel.goToRoot = { success in
+                if success {
+                    appCoordinator.changeToSplash()
+                }
+            }
         }
     }
 }

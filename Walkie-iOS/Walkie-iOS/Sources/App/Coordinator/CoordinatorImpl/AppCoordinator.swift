@@ -56,7 +56,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.changeRoot()
+            self?.changeToSplash()
         }
     }
     
@@ -201,7 +201,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
     }
     
-    func changeRoot() {
+    func changeToSplash() {
         UserManager.shared.withdraw()
         startSplash()
     }
