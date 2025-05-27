@@ -9,7 +9,6 @@ import SwiftUI
 struct MypageMainView: View {
     
     @StateObject var viewModel: MypageMainViewModel
-    @EnvironmentObject var mypageCoordinator: MypageCoordinator
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {

@@ -9,53 +9,47 @@ import Foundation
 
 enum AppScene: AppRoute {
     
-    case splash
-    case nickname
-    case complete
-    case login
-    
-    case tabBar
-    
-    case egg
-    case character
-    case review
+    case splash, nickname, complete, login, tabBar
+    case map
+    case egg, character, review
+    case feedback, withdraw
+    case setting(item: MypageSettingSectionItem)
+    case service(item: MypageServiceSectionItem)
     
     var id: String {
         switch self {
-        case .splash:
-            return "splash"
-        case .nickname:
-            return "nickname"
-        case .complete:
-            return "complete"
-        case .login:
-            return "login"
-        case .tabBar:
-            return "tabBar"
-        case .egg:
-            return "egg"
-        case .character:
-            return "character"
-        case .review:
-            return "review"
+        case .setting(let item):
+            return "setting_\(item)"
+        case .service(let item):
+            return "service_\(item)"
+        default:
+            return String(describing: self)
         }
     }
-
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+    
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
     }
 }
 
 enum AppSheet: AppRoute {
-    case none
     
-    var id: String {
+    case eggDetail
+    case authBottomSheet
+    case homeAlarmBottomSheet
+    
+    public var id: String {
         switch self {
-        case .none:
-            return "none"
+        case .eggDetail:
+            return "eggDetail"
+        case .authBottomSheet:
+            return "authBottomSheet"
+        case .homeAlarmBottomSheet:
+            return "homeAlarmBottomSheet"
         }
     }
     

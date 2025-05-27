@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct MypageMainFeedbackButtonView: View {
     
-    @EnvironmentObject var coordinator: MypageCoordinator
+    @EnvironmentObject var coordinator: AppCoordinator
     
     var body: some View {
         HStack(spacing: 0) {
@@ -32,7 +32,7 @@ struct MypageMainFeedbackButtonView: View {
                 .foregroundColor(WalkieCommonAsset.gray300.swiftUIColor)
         }
         .onTapGesture {
-            coordinator.push(MypageScene.feedback)
+            coordinator.push(AppScene.feedback)
         }
         .padding(16)
         .buttonStyle(PlainButtonStyle())

@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct MypageMainItemView<Item: MypageSectionItem>: View {
     
-    @EnvironmentObject private var coordinator: MypageCoordinator
+    @EnvironmentObject private var coordinator: AppCoordinator
     @StateObject var viewModel: MypageMainViewModel
     
     let item: Item
@@ -22,9 +22,9 @@ struct MypageMainItemView<Item: MypageSectionItem>: View {
             Button {
                 switch item {
                 case let setting as MypageSettingSectionItem:
-                    coordinator.push(MypageScene.setting(item: setting))
+                    coordinator.push(AppScene.setting(item: setting))
                 case let service as MypageServiceSectionItem:
-                    coordinator.push(MypageScene.service(item: service))
+                    coordinator.push(AppScene.service(item: service))
                 default:
                     break
                 }
