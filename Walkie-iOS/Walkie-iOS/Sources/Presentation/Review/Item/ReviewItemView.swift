@@ -17,22 +17,10 @@ struct ReviewItemView: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-//                let characterImg = CharacterType.getCharacterImage(
-//                    type: reviewState.type + 1,
-//                    characterClass: reviewState.characterClass)
-                Image(.imgDino0)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 38, height: 38)
-                
+                characterImage
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 0) {
-//                        let characterName = CharacterType.getCharacterName(
-//                            type: reviewState.type + 1,
-//                            characterClass: reviewState.characterClass)
-                        Text("")
-                            .font(.H6)
-                            .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                        characterName
                         Text("와 걸었어요")
                             .font(.B2)
                             .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
@@ -124,5 +112,47 @@ struct ReviewItemView: View {
             .background(WalkieCommonAsset.gray100.swiftUIColor)
             .cornerRadius(12, corners: .allCorners)
         }
+    }
+    
+    @ViewBuilder
+    private var characterImage: some View {
+        if reviewState.type == 0 {
+            Image(jellyfishType?.getCharacterImage() ?? .imgJellyfish0)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 38, height: 38)
+        } else {
+            Image(dinoType?.getCharacterImage() ?? .imgDino0)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 38, height: 38)
+        }
+    }
+    
+    @ViewBuilder
+    private var characterName: some View {
+        if reviewState.type == 0 {
+            Text(jellyfishType?.rawValue ?? "")
+                .font(.H6)
+                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+        } else {
+            Text(dinoType?.rawValue ?? "")
+                .font(.H6)
+                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+        }
+    }
+    
+    private var jellyfishType: JellyfishType? {
+        try? JellyfishType.mapCharacterType(
+            rank: reviewState.rank,
+            characterClass: reviewState.characterClass
+        )
+    }
+    
+    private var dinoType: DinoType? {
+        try? DinoType.mapCharacterType(
+            rank: reviewState.rank,
+            characterClass: reviewState.characterClass
+        )
     }
 }

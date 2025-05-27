@@ -8,6 +8,7 @@
 import SwiftUI
 
 import WalkieCommon
+import FirebaseAnalytics
 
 struct HomeCharacterView: View {
     
@@ -34,6 +35,8 @@ struct HomeCharacterView: View {
         )
         .background(WalkieCommonAsset.gray100.swiftUIColor)
         .mask(RoundedRectangle(cornerRadius: 12))
-        
+        .onTapGesture {
+            Analytics.logEvent(StringLiterals.WalkieLog.mainTogether, parameters: nil)
+        }
     }
 }

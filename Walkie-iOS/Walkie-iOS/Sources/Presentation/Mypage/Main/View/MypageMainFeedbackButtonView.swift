@@ -8,6 +8,7 @@
 import SwiftUI
 
 import WalkieCommon
+import FirebaseAnalytics
 
 struct MypageMainFeedbackButtonView: View {
     
@@ -39,5 +40,8 @@ struct MypageMainFeedbackButtonView: View {
         .frame(height: 72)
         .background(WalkieCommonAsset.gray100.swiftUIColor)
         .cornerRadius(12, corners: .allCorners)
+        .onTapGesture {
+            Analytics.logEvent(StringLiterals.WalkieLog.mypageSurvey, parameters: nil)
+        }
     }
 }

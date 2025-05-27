@@ -15,7 +15,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "Walkie",
-                    "CFBundleShortVersionString": "1.0.2",
+                    "CFBundleShortVersionString": "1.0.3",
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
@@ -82,7 +82,9 @@ let project = Project(
             ],
             dependencies: [
                 .external(name: "Lottie"),
+                .external(name: "FirebaseCore"),
                 .external(name: "FirebaseMessaging"),
+                .external(name: "FirebaseAnalytics"),
                 .external(name: "Moya"),
                 .external(name: "CombineMoya"),
                 .external(name: "KakaoSDKAuth"),
@@ -93,7 +95,8 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.2"
+                    "MARKETING_VERSION": "1.0.3",
+                    "OTHER_LDFLAGS": "-ObjC"
                 ],
                 configurations: [
                     .debug(name: "Debug", xcconfig: "Config/WalkieConfig.xcconfig"),
@@ -108,7 +111,7 @@ let project = Project(
             bundleId: "com.walkie.ios.walkiewidget",
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
-                "CFBundleShortVersionString": "1.0.2",
+                "CFBundleShortVersionString": "1.0.3",
                 "NSExtension": [
                     "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
                 ],
@@ -128,7 +131,7 @@ let project = Project(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "TARGETED_DEVICE_FAMILY": "1",
-                    "MARKETING_VERSION": "1.0.2"
+                    "MARKETING_VERSION": "1.0.3"
                 ],
                 configurations: []
             )

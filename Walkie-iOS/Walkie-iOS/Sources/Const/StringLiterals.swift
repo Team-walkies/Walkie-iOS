@@ -65,4 +65,12 @@ enum StringLiterals {
             }
         }
     }
+    
+    enum WalkieLog {
+        static let mainCard = "main_bluecard"
+        static let mainCharacter = "main_character"
+        static let mainTogether = "main_together"
+        static let mypageSurvey = "mypage_survey"
+        static let spotCalendarMove = "spot_calendar_move"
+    }
 }

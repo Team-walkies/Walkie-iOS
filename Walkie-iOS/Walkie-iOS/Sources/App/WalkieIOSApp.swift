@@ -1,5 +1,6 @@
 import SwiftUI
 import KakaoSDKCommon
+import FirebaseCore
 
 @main
 struct WalkieIOSApp: App {
@@ -11,6 +12,7 @@ struct WalkieIOSApp: App {
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
+        FirebaseApp.configure()
     }
 
     var body: some Scene {
