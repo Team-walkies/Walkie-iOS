@@ -6,12 +6,14 @@
 //
 
 import Combine
+import CoreMotion
 
 class BaseStepUseCase {
     
     // MARK: - Dependency
     
-    let stepStore: StepStore
+    let store: StepStatusStore
+    let pedometer: CMPedometer
     
     // MARK: - Properties
     
@@ -19,7 +21,8 @@ class BaseStepUseCase {
     
     // MARK: - Life Cycle
     
-    init(stepStore: StepStore) {
-        self.stepStore = stepStore
+    init(store: StepStatusStore) {
+        self.store = store
+        self.pedometer = CMPedometer()
     }
 }

@@ -158,7 +158,3 @@ private struct EggItemView: View {
         }
     }
 }
-
-#Preview{
-    DIContainer.shared.buildEggView()
-}

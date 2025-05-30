@@ -34,14 +34,18 @@ struct HomeView: View {
                             switch (
                                 viewModel.homeStatsState,
                                 viewModel.stepState,
-                                viewModel.homeCharacterState) {
+                                viewModel.homeCharacterState,
+                                viewModel.leftStepState) {
                             case let (
                                 .loaded(homeStatsState),
                                 .loaded(stepState),
-                                .loaded(characterState)):
+                                .loaded(characterState),
+                                .loaded(leftStepState)
+                            ):
                                 HomeStatsView(
                                     homeStatsState: homeStatsState,
                                     stepState: stepState,
+                                    leftStepState: leftStepState,
                                     width: width)
                                 HomeCharacterView(
                                     homeState: characterState,
@@ -66,7 +70,8 @@ struct HomeView: View {
                     
                     switch viewModel.homeHistoryViewState {
                     case .loaded(let homeHistoryState):
-                        HomeHistoryView(homeState: homeHistoryState)
+                        HomeHistoryView(homeState: homeHistoryState,
+                                        appCoordinator: appCoordinator)
                             .padding(.top, 18)
                     default:
                         HomeHistorySkeletonView()
@@ -85,6 +90,9 @@ struct HomeView: View {
                     handlePermissionBS()
                 }
             }
+        }
+        .onDisappear {
+            viewModel.action(.homeWillDisappear)
         }
         .onChange(of: viewModel.state) { _, newState in
             if !AppSession.shared.hasEnteredHomeView {

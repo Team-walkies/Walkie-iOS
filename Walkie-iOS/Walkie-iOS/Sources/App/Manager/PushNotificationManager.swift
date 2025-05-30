@@ -72,9 +72,9 @@ final class NotificationManager {
                     if granted && NotificationManager.shared.getNotificationMode() {
                         UNUserNotificationCenter.current().add(request) { error in
                             if let error = error {
-                                print("ERROR: Failed to schedule notification - \(error)")
+                                print("🛎️ 알림 전송 완료 \(identifier)🛎️")
                             } else {
-                                print("SUCCESS: Notification scheduled with identifier \(identifier)")
+                                print("🛎️ 알림 전송 스케줄링 실패 \(identifier)🛎️")
                             }
                         }
                         self.notified = true
@@ -87,9 +87,9 @@ final class NotificationManager {
     func clearBadge() {
         UNUserNotificationCenter.current().setBadgeCount(0) { error in
             if let error = error {
-                print("ERROR: Failed to clear badge - \(error)")
+                print("🛎️ 알림 뱃지 초기화 실패 \(error.localizedDescription)🛎️")
             } else {
-                print("SUCCESS: Badge cleared")
+                print("🛎️ 알림 뱃지 초기화 완료 🛎️")
             }
         }
     }
@@ -105,6 +105,24 @@ final class NotificationManager {
                     completion(false)
                 }
             }
+        }
+    }
+}
+
+enum NotificationLiterals {
+    case eggHatch
+    
+    var title: String {
+        switch self {
+        case .eggHatch:
+            return "알이 부화하려고 해요!"
+        }
+    }
+    
+    var body: String {
+        switch self {
+        case .eggHatch:
+            return "어서 가서 꺠워주세요"
         }
     }
 }

@@ -26,18 +26,21 @@ final class HomeCoordinator: Coordinator, ObservableObject {
 
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
+    
+    var appCoordinator: AppCoordinator
 
-    init(diContainer: DIContainer) {
+    init(diContainer: DIContainer, appCoordinator: AppCoordinator) {
         self.diContainer = diContainer
+        self.appCoordinator = appCoordinator
     }
 
     @ViewBuilder
     func buildScene(_ scene: HomeScene) -> some View {
         switch scene {
         case .home:
-            diContainer.buildHomeView()
+            diContainer.buildHomeView(appCoordinator: appCoordinator)
         case .egg:
-            diContainer.buildEggView()
+            diContainer.buildEggView(appCoordinator: appCoordinator)
         case .character:
             diContainer.buildCharacterView()
         case .review:

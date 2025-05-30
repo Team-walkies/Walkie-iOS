@@ -11,10 +11,10 @@ enum HomeHistoryViewFactory: CaseIterable {
     case egg, character, review
 
     @ViewBuilder
-    func buildHistoryView() -> some View {
+    func buildHistoryView(appCoordinator: AppCoordinator) -> some View {
         switch self {
         case .egg:
-            DIContainer.shared.buildEggView()
+            DIContainer.shared.buildEggView(appCoordinator: appCoordinator)
         case .character:
             DIContainer.shared.buildCharacterView()
         case .review:

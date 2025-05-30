@@ -12,13 +12,15 @@ import WalkieCommon
 struct HomeHistoryView: View {
     
     let homeState: HomeViewModel.HomeHistoryState
+    let appCoordinator: AppCoordinator
     let items: [HomeHistoryItem]
     
     private let columns = [GridItem(.flexible())]
     @Environment(\.screenWidth) private var screenWidth
     
-    init(homeState: HomeViewModel.HomeHistoryState) {
+    init(homeState: HomeViewModel.HomeHistoryState, appCoordinator: AppCoordinator) {
         self.homeState = homeState
+        self.appCoordinator = appCoordinator
         self.items = [
             HomeHistoryItem(
                 imageName: "img_history_egg",
@@ -45,7 +47,7 @@ struct HomeHistoryView: View {
             let width = (screenWidth - 48) / 3
             LazyHGrid(rows: columns) {
                 ForEach(Array(HomeHistoryViewFactory.allCases.enumerated()), id: \.offset) { index, factory in
-                    NavigationLink(destination: factory.buildHistoryView()) {
+                    NavigationLink(destination: factory.buildHistoryView(appCoordinator: appCoordinator)) {
                         HomeHistoryItemView(item: items[index], width: width)
                     }
                 }

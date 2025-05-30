@@ -13,7 +13,7 @@ final class DefaultEggUseCase {
     
     private let eggRepository: EggRepository
     private let memberRepository: MemberRepository
-    private let stepStore: StepStore
+    private let stepStatusStore: StepStatusStore
     
     // MARK: - Properties
     
@@ -21,10 +21,10 @@ final class DefaultEggUseCase {
     
     // MARK: - Life Cycle
     
-    init(eggRepository: EggRepository, memberRepository: MemberRepository) {
+    init(eggRepository: EggRepository, memberRepository: MemberRepository, stepStatusStore: StepStatusStore) {
         self.eggRepository = eggRepository
         self.memberRepository = memberRepository
-        self.stepStore = DefaultStepStore()
+        self.stepStatusStore = stepStatusStore
     }
 }
 
@@ -35,14 +35,9 @@ extension DefaultEggUseCase: EggUseCase {
             .mapToNetworkError()
         return data
             .handleEvents(receiveOutput: { entity in
-                // 목표치 초기화
-                UserManager.shared.setStepCountGoal(entity.needStep)
-                // 현재 걸음 수 초기화
-                UserManager.shared.setStepCount(entity.nowStep)
-                // 캐시 초기화
-                self.stepStore.resetStepCountCache()
-                // 걸음 수 업데이트 대상 알 변경
-                StepManager.shared.changeEggPlaying(egg: entity)
+                self.stepStatusStore.resetStepStatus()
+                self.stepStatusStore.setNowStep(entity.nowStep)
+                self.stepStatusStore.setNeedStep(entity.needStep)
             })
             .eraseToAnyPublisher()
     }
@@ -58,21 +53,14 @@ extension DefaultEggUseCase: EggUseCase {
     
     func patchEggStep(
         egg: EggEntity,
-        step: Int,
-        willHatch: Bool = false
+        step: Int
     ) -> AnyPublisher<Void, NetworkError> {
         eggRepository.patchEggStep(
             egg: egg,
             step: step,
-            willHatch: willHatch
+            willHatch: false
         )
         .mapToNetworkError()
-        .handleEvents(receiveOutput: { _ in
-            // 현재 걸음 수 초기화
-            UserManager.shared.setStepCount(step)
-            // 캐시 초기화
-            self.stepStore.resetStepCountCache()
-        })
-        .eraseToAnyPublisher()
+        
     }
 }
