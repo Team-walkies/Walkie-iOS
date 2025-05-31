@@ -18,8 +18,9 @@ struct MypageMainSettingSectionView: View {
                 MypageSettingSectionItem.pushNotification
             ], id: \.title) { item in
                 MypageMainItemView(
-                    item: item,
-                    viewModel: viewModel)
+                    viewModel: viewModel,
+                    item: item
+                )
             }
         }
     }

@@ -20,11 +20,12 @@ struct MypageMainServiceSectionView: View {
                 MypageServiceSectionItem.appVersion
             ], id: \.title) { item in
                 MypageMainItemView(
+                    viewModel: viewModel, 
                     item: item,
-                    viewModel: viewModel,
                     versionText: (item == .appVersion)
                     ? Bundle.main.formattedAppVersion
-                    : nil)
+                    : nil
+                )
             }
         }
     }

@@ -11,10 +11,6 @@ protocol MypageSectionItem {
     var title: String { get }
     var icon: Image { get }
     var hasNavigation: Bool { get }
-    
-    associatedtype DestinationView: View
-    @ViewBuilder
-    func destinationView(viewModel: MypageMainViewModel) -> DestinationView
 }
 
 enum MypageItem {
@@ -56,16 +52,6 @@ enum MypageSettingSectionItem: MypageSectionItem {
     var hasNavigation: Bool {
         return true
     }
-    
-    @ViewBuilder
-    func destinationView(viewModel: MypageMainViewModel) -> some View {
-        switch self {
-        case .myInfo:
-            MypageMyInformationView(viewModel: viewModel)
-        case .pushNotification:
-            MypagePushNotificationView(viewModel: viewModel)
-        }
-    }
 }
 
 enum MypageServiceSectionItem: MypageSectionItem {
@@ -106,20 +92,6 @@ enum MypageServiceSectionItem: MypageSectionItem {
             return false
         default:
             return true
-        }
-    }
-    
-    @ViewBuilder
-    func destinationView(viewModel: MypageMainViewModel) -> some View {
-        switch self {
-        case .notice:
-            MypageWebView(url: MypageNotionWebViewURL.notice.url)
-        case .privacyPolicy:
-            MypageWebView(url: MypageNotionWebViewURL.privacy.url)
-        case .servicePolicy:
-            MypageWebView(url: MypageNotionWebViewURL.service.url)
-        case .appVersion:
-            EmptyView()
         }
     }
 }

@@ -39,16 +39,22 @@ struct MypageMainAccountActionButtonsView: View {
             Rectangle()
                 .frame(width: 1, height: 16)
                 .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
-            NavigationLink(
-                destination: MypageWithdrawView(viewModel: viewModel)
-                    .navigationBarBackButtonHidden(),
-                label: {
+            
+            Button(action: {
+                appCoordinator.push(AppScene.withdraw)
+            }, label: {
                 Text("탈퇴하기")
                     .font(.B2)
                     .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
-            }
-            )
+            })
         }
         .frame(alignment: .center)
+        .onAppear {
+            viewModel.goToRoot = { success in
+                if success {
+                    appCoordinator.changeToSplash()
+                }
+            }
+        }
     }
 }

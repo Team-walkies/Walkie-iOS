@@ -16,6 +16,8 @@ final class MypageMainViewModel: ViewModelable {
     private let withdrawUseCase: WithdrawUseCase
     private var cancellables = Set<AnyCancellable>()
     
+    var goToRoot: ((Bool) -> Void)?
+    
     enum MypageMainViewState {
         case loading
         case loaded(MypageMainState)
@@ -35,6 +37,7 @@ final class MypageMainViewModel: ViewModelable {
         case toggleNotifyEggHatches
         case logout
         case withdraw
+        case withdrawWillAppear
     }
     
     private var mypageMainState: MypageMainState = MypageMainState(
@@ -69,6 +72,8 @@ final class MypageMainViewModel: ViewModelable {
             logout()
         case .withdraw:
             withdraw()
+        case .withdrawWillAppear:
+            fetchMypageMainData()
         }
     }
     
@@ -77,7 +82,6 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, entity in
-                    print("Fetch Success")
                     self.mypageMainState = MypageMainState(
                         nickname: entity.nickname,
                         userTier: entity.memberTier,
@@ -85,7 +89,6 @@ final class MypageMainViewModel: ViewModelable {
                         isPublic: entity.isPublic
                     )
                     self.state = .loaded(self.mypageMainState)
-                    
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "Failed to fetch user data"
                     self.state = .error(errorMessage)
@@ -125,10 +128,7 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    NotificationCenter.default.post(
-                        name: .reissueFailed,
-                        object: nil
-                    )
+                    self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
@@ -142,10 +142,7 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    NotificationCenter.default.post(
-                        name: .reissueFailed,
-                        object: nil
-                    )
+                    self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)

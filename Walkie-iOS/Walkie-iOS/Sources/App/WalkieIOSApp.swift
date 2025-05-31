@@ -17,34 +17,41 @@ struct WalkieIOSApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                appCoordinator.buildScene(appCoordinator.currentScene)
-                    .environmentObject(appCoordinator)
-                    .fullScreenCover(
-                        item: Binding(
-                            get: { appCoordinator.appFullScreenCover },
-                            set: { appCoordinator.appFullScreenCover = $0 }
-                        ),
-                        onDismiss: {
-                            if let onDismiss = appCoordinator.fullScreenCoverOnDismiss {
-                                onDismiss()
-                                appCoordinator.fullScreenCoverOnDismiss = nil
+            NavigationStack(path: $appCoordinator.path) {
+                ZStack {
+                    appCoordinator.buildScene(appCoordinator.currentScene)
+                        .environmentObject(appCoordinator)
+                        .fullScreenCover(
+                            item: Binding(
+                                get: { appCoordinator.appFullScreenCover },
+                                set: { appCoordinator.appFullScreenCover = $0 }
+                            ),
+                            onDismiss: {
+                                if let onDismiss = appCoordinator.fullScreenCoverOnDismiss {
+                                    onDismiss()
+                                    appCoordinator.fullScreenCoverOnDismiss = nil
+                                }
+                            },
+                            content: { fullScreenCover in
+                                appCoordinator.buildFullScreenCover(fullScreenCover)
+                                    .environmentObject(appCoordinator)
+                                    .ignoresSafeArea(.all)
+                                    .presentationBackground(.black.opacity(0))
                             }
-                        },
-                        content: { fullScreenCover in
-                            appCoordinator.buildFullScreenCover(fullScreenCover)
-                                .environmentObject(appCoordinator)
-                                .ignoresSafeArea(.all)
-                                .presentationBackground(.black.opacity(0))
-                        }
-                    )
-                    .transaction { $0.disablesAnimations = true }
-                ToastContainer()
-                    .ignoresSafeArea(.all, edges: .bottom)
-                    .frame(alignment: .bottom)
-                    .zIndex(.infinity)
+                        )
+                        .transaction { $0.disablesAnimations = true }
+                    ToastContainer()
+                        .ignoresSafeArea(.all, edges: .bottom)
+                        .frame(alignment: .bottom)
+                        .zIndex(.infinity)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationDestination(for: AppScene.self) { scene in
+                    appCoordinator.buildScene(scene)
+                        .environmentObject(appCoordinator)
+                        .navigationBarBackButtonHidden()
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }

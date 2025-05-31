@@ -16,6 +16,7 @@ struct HomeHistoryView: View {
     
     private let columns = [GridItem(.flexible())]
     @Environment(\.screenWidth) private var screenWidth
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     init(homeState: HomeViewModel.HomeHistoryState) {
         self.homeState = homeState
@@ -44,9 +45,17 @@ struct HomeHistoryView: View {
 
             let width = (screenWidth - 48) / 3
             LazyHGrid(rows: columns) {
-                ForEach(Array(HomeHistoryViewFactory.allCases.enumerated()), id: \.offset) { index, factory in
-                    NavigationLink(destination: factory.buildHistoryView()) {
-                        HomeHistoryItemView(item: items[index], width: width)
+                ForEach(
+                    Array(
+                        HomeHistoryViewFactory.allCases.enumerated()),
+                    id: \.offset
+                ) { index, factory in
+                    HomeHistoryItemView(
+                        item: items[index],
+                        width: width
+                    )
+                    .onTapGesture {
+                        coordinator.push(factory.scene)
                     }
                 }
             }

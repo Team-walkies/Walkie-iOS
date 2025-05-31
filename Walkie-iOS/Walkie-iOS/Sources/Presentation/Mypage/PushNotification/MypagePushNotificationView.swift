@@ -7,7 +7,7 @@
 import SwiftUI
 struct MypagePushNotificationView: View {
 
-    @ObservedObject var viewModel: MypageMainViewModel
+    @StateObject var viewModel: MypageMainViewModel
 
     @State var isOn: Bool = NotificationManager.shared.getNotificationMode()
 

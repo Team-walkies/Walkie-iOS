@@ -8,12 +8,25 @@
 import UIKit
 
 enum MypageScene: AppRoute {
+    
     case mypage
+    case setting(item: MypageSettingSectionItem)
+    case service(item: MypageServiceSectionItem)
+    case feedback
+    case withdraw
     
     var id: String {
         switch self {
         case .mypage:
             return "mypage"
+        case .setting(let item):
+            return "setting_\(item)"
+        case .service(let item):
+            return "service_\(item)"
+        case .feedback:
+            return "feedback"
+        case .withdraw:
+            return "withdraw"
         }
     }
 

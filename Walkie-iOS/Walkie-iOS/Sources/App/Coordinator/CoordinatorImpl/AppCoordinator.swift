@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKAuth
 import Foundation
 import Combine
+import Observation
 
 extension Notification.Name {
     static let reissueFailed = Notification.Name("reissueFailed")
@@ -35,24 +36,12 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
     
-    let tabBarView: AnyView
-    
     var loginInfo: LoginUserInfo = LoginUserInfo()
     private var cancellables: Set<AnyCancellable> = []
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
-        
-        self.tabBarView = AnyView(
-            TabBarView(
-                homeCoordinator: HomeCoordinator(diContainer: diContainer),
-                mypageCoordinator: MypageCoordinator(diContainer: diContainer)
-            )
-        )
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.updateCurrentScene()
-        }
+        startSplash()
         
         // StepManager의 부화 이벤트 구독
         StepManager.shared.hatchEventSubject
@@ -62,13 +51,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
             }
             .store(in: &cancellables)
         
-        NotificationCenter.default.addObserver(
-            forName: .reissueFailed,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.changeRoot()
-        }
+        NotificationCenter.default
+            .publisher(for: .reissueFailed)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.changeToSplash()
+            }
+            .store(in: &cancellables)
     }
     
     @ViewBuilder
@@ -87,10 +76,26 @@ final class AppCoordinator: Coordinator, ObservableObject {
                         }
                     }
                 }
+        case .map:
+            diContainer.buildMapView()
         case .tabBar:
-            tabBarView
+            diContainer.buildTabBarView()
         case .complete:
             diContainer.buildSignupView()
+        case .egg:
+            diContainer.buildEggView()
+        case .character:
+            diContainer.buildCharacterView()
+        case .review: 
+            diContainer.buildReviewView()
+        case .setting(let item):
+            buildSetting(item)
+        case .service(let item):
+            buildService(item)
+        case .feedback:
+            buildFeedback()
+        case .withdraw:
+            diContainer.buildWithdrawView()
         }
     }
     
@@ -144,34 +149,61 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
     }
     
+    @ViewBuilder
+    private func buildSetting(_ item: MypageSettingSectionItem) -> some View {
+        let vm = diContainer.makeMypageMainViewModel()
+        switch item {
+        case .myInfo:
+            MypageMyInformationView(viewModel: vm)
+                .toolbar(.hidden, for: .tabBar)
+        case .pushNotification:
+            MypagePushNotificationView(viewModel: vm)
+                .toolbar(.hidden, for: .tabBar)
+        }
+    }
+    
+    @ViewBuilder
+    private func buildService(_ item: MypageServiceSectionItem) -> some View {
+        switch item {
+        case .notice:
+            MypageWebView(url: MypageNotionWebViewURL.notice.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .privacyPolicy:
+            MypageWebView(url: MypageNotionWebViewURL.privacy.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .servicePolicy:
+            MypageWebView(url: MypageNotionWebViewURL.service.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .appVersion:
+            Text("앱 버전 \(Bundle.main.formattedAppVersion)")
+                .toolbar(.hidden, for: .tabBar)
+        }
+    }
+    
+    @ViewBuilder
+    private func buildFeedback() -> some View {
+        MypageWebView(url: MypageNotionWebViewURL.questions.url)
+            .toolbar(.hidden, for: .tabBar)
+    }
+    
     private func updateCurrentScene() {
         if UserManager.shared.hasUserToken { // 기존 사용자
             currentScene = .tabBar
         } else {
             currentScene = .login
         }
-        
-        print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
-        print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
-        
-        do {
-            let token = try TokenKeychainManager.shared.getAccessToken()
-            let refresh = try TokenKeychainManager.shared.getRefreshToken()
-            print("💁💁access💁💁")
-            print(token ?? "no token")
-            print("💁💁access💁💁")
-            print("💁💁refresh💁💁")
-            print(refresh ?? "no token")
-            print("💁💁refresh💁💁")
-        } catch {
-            print("no token")
+    }
+    
+    private func startSplash() {
+        currentScene = .splash
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.updateCurrentScene()
         }
     }
     
-    func changeRoot() {
+    func changeToSplash() {
         UserManager.shared.withdraw()
-        currentScene = .splash
-        updateCurrentScene()
+        startSplash()
     }
     
     func buildAlert(
