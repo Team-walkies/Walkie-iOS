@@ -62,7 +62,10 @@ struct HomeView: View {
                                             .frame(width: 120, height: 120)
                                             .padding(.trailing, 8)
                                             .onTapGesture {
-                                                Analytics.logEvent(StringLiterals.WalkieLog.mainCharacter, parameters: nil)
+                                                Analytics.logEvent(
+                                                    StringLiterals.WalkieLog.mainCharacter,
+                                                    parameters: nil
+                                                )
                                             }
                                     }
                                 )
@@ -72,12 +75,12 @@ struct HomeView: View {
                         }
                         .padding(.top, 8)
                     }
-                    
                     switch viewModel.homeHistoryViewState {
-                    case .loaded(let homeHistoryState):
-                        HomeHistoryView(homeState: homeHistoryState,
-                                        appCoordinator: appCoordinator)
-                            .padding(.top, 18)
+                    case let .loaded(homeHistoryState):
+                        HomeHistoryView(
+                            homeState: homeHistoryState,
+                            appCoordinator: appCoordinator
+                        ).padding(.top, 18)
                     default:
                         HomeHistorySkeletonView()
                     }

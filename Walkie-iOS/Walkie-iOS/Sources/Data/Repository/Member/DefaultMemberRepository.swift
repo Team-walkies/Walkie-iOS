@@ -89,7 +89,6 @@ extension DefaultMemberRepository: MemberRepository {
                     let type = dto.characterType,
                     let eggRank = dto.rank,
                     let characterClass = dto.characterClass,
-                    let characterType = dto.characterType,
                     let characterRank = dto.characterRank,
                     let nowStep = dto.nowStep,
                     let needStep = dto.needStep,
@@ -109,8 +108,14 @@ extension DefaultMemberRepository: MemberRepository {
                         obtainedDate: dto.obtainedDate ?? ""
                     ),
                     characterType: type == 0 ? .jellyfish : .dino,
-                    jellyFishType: try JellyfishType.mapCharacterType(rank: characterRank, characterClass: characterClass),
-                    dinoType: try DinoType.mapCharacterType(rank: characterRank, characterClass: characterClass)
+                    jellyFishType: try JellyfishType.mapCharacterType(
+                        rank: characterRank,
+                        characterClass: characterClass
+                    ),
+                    dinoType: try DinoType.mapCharacterType(
+                        rank: characterRank,
+                        characterClass: characterClass
+                    )
                 )
             }
             .mapToNetworkError()

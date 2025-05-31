@@ -10,6 +10,7 @@ import KakaoSDKAuth
 import Foundation
 import Combine
 import BackgroundTasks
+import Observation
 
 extension Notification.Name {
     static let reissueFailed = Notification.Name("reissueFailed")
@@ -35,9 +36,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
-    
-    var tabBarView: AnyView?
-    
+        
     var loginInfo: LoginUserInfo = LoginUserInfo()
     private var cancellables: Set<AnyCancellable> = []
     
@@ -59,28 +58,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
+        startSplash()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.updateCurrentScene()
-        }
-        
-        NotificationCenter.default.addObserver(
-            forName: .reissueFailed,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.changeRoot()
-        }
-        initialize()
-    }
-    
-    func initialize() {
-        self.tabBarView = AnyView(
-            TabBarView(
-                homeCoordinator: HomeCoordinator(diContainer: self.diContainer, appCoordinator: self),
-                mypageCoordinator: MypageCoordinator(diContainer: self.diContainer)
-            )
-        )
+        NotificationCenter.default
+            .publisher(for: .reissueFailed)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.changeToSplash()
+            }
+            .store(in: &cancellables)
+            
     }
     
     @ViewBuilder
@@ -99,10 +86,26 @@ final class AppCoordinator: Coordinator, ObservableObject {
                         }
                     }
                 }
+        case .map:
+            diContainer.buildMapView()
         case .tabBar:
-            tabBarView
+            diContainer.buildTabBarView()
         case .complete:
             diContainer.buildSignupView()
+        case .egg:
+            diContainer.buildEggView(appCoordinator: self)
+        case .character:
+            diContainer.buildCharacterView()
+        case .review: 
+            diContainer.buildReviewView()
+        case let .setting(item, viewModel):
+            buildSetting(item, viewModel: viewModel)
+        case .service(let item):
+            buildService(item)
+        case .feedback:
+            buildFeedback()
+        case .withdraw:
+            diContainer.buildWithdrawView()
         }
     }
     
@@ -156,34 +159,60 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
     }
     
+    @ViewBuilder
+    private func buildSetting(_ item: MypageSettingSectionItem, viewModel: MypageMainViewModel) -> some View {
+        switch item {
+        case .myInfo:
+            MypageMyInformationView(viewModel: viewModel)
+                .toolbar(.hidden, for: .tabBar)
+        case .pushNotification:
+            MypagePushNotificationView(viewModel: viewModel)
+                .toolbar(.hidden, for: .tabBar)
+        }
+    }
+    
+    @ViewBuilder
+    private func buildService(_ item: MypageServiceSectionItem) -> some View {
+        switch item {
+        case .notice:
+            MypageWebView(url: MypageNotionWebViewURL.notice.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .privacyPolicy:
+            MypageWebView(url: MypageNotionWebViewURL.privacy.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .servicePolicy:
+            MypageWebView(url: MypageNotionWebViewURL.service.url)
+                .toolbar(.hidden, for: .tabBar)
+        case .appVersion:
+            Text("앱 버전 \(Bundle.main.formattedAppVersion)")
+                .toolbar(.hidden, for: .tabBar)
+        }
+    }
+    
+    @ViewBuilder
+    private func buildFeedback() -> some View {
+        MypageWebView(url: MypageNotionWebViewURL.questions.url)
+            .toolbar(.hidden, for: .tabBar)
+    }
+    
     private func updateCurrentScene() {
         if UserManager.shared.hasUserToken { // 기존 사용자
             currentScene = .tabBar
         } else {
             currentScene = .login
         }
-        
-        print("🌀🌀🌀🌀\(currentScene)🌀🌀🌀🌀")
-        print("🌀🌀🌀🌀userinfo🌀🌀🌀🌀")
-        
-        do {
-            let token = try TokenKeychainManager.shared.getAccessToken()
-            let refresh = try TokenKeychainManager.shared.getRefreshToken()
-            print("💁💁access💁💁")
-            print(token ?? "no token")
-            print("💁💁access💁💁")
-            print("💁💁refresh💁💁")
-            print(refresh ?? "no token")
-            print("💁💁refresh💁💁")
-        } catch {
-            print("no token")
+    }
+    
+    private func startSplash() {
+        currentScene = .splash
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.updateCurrentScene()
         }
     }
     
-    func changeRoot() {
+    func changeToSplash() {
         UserManager.shared.withdraw()
-        currentScene = .splash
-        updateCurrentScene()
+        startSplash()
     }
     
     func buildAlert(
@@ -210,22 +239,28 @@ final class AppCoordinator: Coordinator, ObservableObject {
             onDismiss: nil
         )
     }
-    
-    // MARK: - Background 걸음 수 측정
+}
+
+// MARK: - Background 걸음 수 측정
+extension AppCoordinator {
     func handleStepRefresh(task: BGAppRefreshTask) {
         task.expirationHandler = {
             print("⏳ 백그라운드 테스크 만료 ⏳")
             task.setTaskCompleted(success: false)
         }
+        
         guard let needStep = stepStatusStore.needStep, needStep <= 10000 else {
             task.setTaskCompleted(success: true)
-            print("⏳ 백그라운드 걸음 수 안함 : 알 없음 ⏳")
+            print("⏳ 백그라운드 걸음 수 업데이트 및 스케줄링 하지 않음 : 알 없음 ⏳")
             return
             // 알 없는 경우 백그라운드 테스크 스케줄링 X
         }
+        
+        // 백그라운드 작업 수행
         updateStepBackgroundUseCase.execute()
         print("⏳ 백그라운드 걸음 수 업데이트 완료 ⏳")
         task.setTaskCompleted(success: true)
+        
         /// 다음 작업 스케줄링
         if checkHatchConditionUseCase.execute() {
             /// 푸시알림 전송
@@ -240,54 +275,83 @@ final class AppCoordinator: Coordinator, ObservableObject {
             BGTaskManager.shared.scheduleAppRefresh(.step)
         }
     }
-    
-    // MARK: - Foreground 걸음 수 측정
-    func startStepUpdates() {
-        stopStepUpdates()
-        print("🏃 cancellables 수: \(cancellables.count) 🏃")
-        getEggPlayUseCase.execute() // 1. 같이 걷는 알 조회
+}
+
+// MARK: - Foreground 걸음 수 측정
+extension AppCoordinator {
+    /// 같이 걷는 알을 조회하고 결과를 처리합니다.
+    func fetchEggPlay(completion: @escaping (Result<EggEntity, Error>) -> Void) {
+        getEggPlayUseCase.execute()
             .walkieSink(
                 with: self,
-                receiveValue: { [weak self] _, data in
-                    guard let self = self else { return }
-                    updateStepForegroundUseCase.start() // 2. 걸음 수 쿼리 및 업데이트 시작
-                        .receive(on: DispatchQueue.main)
-                        .sink(
-                            receiveCompletion: { completion in
-                                if case let .failure(error) = completion {
-                                    print("🏃 updateStepForegroundUseCase 에러: \(error.localizedDescription) 🏃")
-                                }
-                            },
-                            receiveValue: { _ in
-                                // 업데이트 이벤트 수신
-                                if self.checkHatchConditionUseCase.execute() { // 3. 부화 조건 검사
-                                    // 4-a. 부화 처리
-                                    self.presentFullScreenCover(AppFullScreenCover.hatchEgg)
-                                    // 홈뷰 알 없는 상태로 뷰 업데이트
-                                    self.hatchSubject.send(true)
-                                    // 걸음 수 쿼리 종료
-                                    self.stopStepUpdates()
-                                } else {
-                                    let newStep = self.stepStatusStore.getNowStep()
-                                    // 4-b. 서버에 업데이트
-                                    self.updateEggStepUseCase.execute(
-                                        egg: data,
-                                        step: newStep,
-                                        willHatch: false) {
-                                            // 홈뷰 남은 걸음 수 업데이트를 위한 이벤트 방출
-                                            self.hatchSubject.send(false)
-                                        }
-                                }
-                            }
-                        ).store(in: &cancellables)
-                }, receiveFailure: { _, error in
+                receiveValue: { _, egg in
+                    print("🥚 같이 걷는 알 가져오기 성공 🥚")
+                    dump(egg)
+                    completion(.success(egg))
+                },
+                receiveFailure: { _, error in
                     print("🥚 같이 걷는 알 가져오기 실패 : \(String(describing: error?.localizedDescription))🥚")
-                    self.stopStepUpdates() // 알이 없는 경우 업데이트 중지
-                    return
+                    completion(.failure(error ?? .emptyDataError))
                 }
-            ).store(in: &cancellables)
+            )
+            .store(in: &cancellables)
     }
     
+    /// 걸음 수 쿼리를 시작하고 업데이트 이벤트를 처리합니다.
+    func startStepQuery(onUpdate: @escaping () -> Void) {
+        updateStepForegroundUseCase.start()
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { completion in
+                    if case let .failure(error) = completion {
+                        print("🏃 포그라운드 걸음 수 쿼리 실패 : \(error.localizedDescription) 🏃")
+                    }
+                },
+                receiveValue: { _ in
+                    onUpdate()
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    /// 부화 조건을 확인하고 결과를 반환합니다.
+    func checkHatchCondition() -> Bool {
+        checkHatchConditionUseCase.execute()
+    }
+    
+    /// 알 부화 화면을 표시합니다.
+    func presentHatchEggScreen() {
+        presentFullScreenCover(AppFullScreenCover.hatchEgg)
+        hatchSubject.send(true)
+        stopStepUpdates()
+    }
+    
+    /// Foreground 걸음 수 업데이트 시작
+    func startStepUpdates() {
+        stopStepUpdates() // 기존 쿼리 정리
+        fetchEggPlay { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let egg):
+                startStepQuery { [weak self] in
+                    guard let self = self else { return }
+                    let newStep = self.stepStatusStore.getNowStep()
+                    
+                    if self.checkHatchCondition() {
+                        self.presentHatchEggScreen()
+                    } else {
+                        self.updateEggStepUseCase.execute(egg: egg, step: newStep, willHatch: false) {
+                            self.hatchSubject.send(false)
+                        }
+                    }
+                }
+            case .failure:
+                self.stopStepUpdates()
+            }
+        }
+    }
+    
+    /// Foreground 걸음 수 업데이트 종료 및 구독 제거
     func stopStepUpdates() {
         updateStepForegroundUseCase.stop()
         cancellables.removeAll()

@@ -180,6 +180,10 @@ extension DIContainer {
 extension DIContainer {
     
     // MARK: - Main Views
+    func buildTabBarView() -> TabBarView {
+        return TabBarView()
+    }
+    
     func buildHomeView(appCoordinator: AppCoordinator) -> HomeView {
         return HomeView(
             viewModel: self.makeHomeViewModel(appCoordinator: appCoordinator)
@@ -222,6 +226,12 @@ extension DIContainer {
     func buildAlarmListView() -> AlarmListView {
         return AlarmListView(
             viewModel: self.makeAlarmListViewModel()
+        )
+    }
+    
+    func buildWithdrawView() -> MypageWithdrawView {
+        return MypageWithdrawView(
+            viewModel: self.makeMypageMainViewModel()
         )
     }
     

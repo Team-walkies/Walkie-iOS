@@ -72,9 +72,9 @@ final class NotificationManager {
                     if granted && NotificationManager.shared.getNotificationMode() {
                         UNUserNotificationCenter.current().add(request) { error in
                             if let error = error {
-                                print("🛎️ 알림 전송 완료 \(identifier)🛎️")
+                                print("🛎️ 알림 전송 스케줄링 실패 : \(error.localizedDescription)🛎️")
                             } else {
-                                print("🛎️ 알림 전송 스케줄링 실패 \(identifier)🛎️")
+                                print("🛎️ 알림 전송 완료 \(identifier)🛎️")
                             }
                         }
                         self.notified = true

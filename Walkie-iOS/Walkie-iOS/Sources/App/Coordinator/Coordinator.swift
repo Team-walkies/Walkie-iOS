@@ -15,7 +15,7 @@ protocol Coordinator: AnyObject {
     var sheetOnDismiss: (() -> Void)? { get set }
     var fullScreenCoverOnDismiss: (() -> Void)? { get set }
 
-    func push(_ scene: any AppRoute)
+    func push<Route: AppRoute>(_ route: Route)
     func pop()
     func popToRoot()
     func presentSheet(_ sheet: any AppRoute, onDismiss: (() -> Void)?)
@@ -28,8 +28,9 @@ protocol Coordinator: AnyObject {
 }
 
 extension Coordinator {
-    func push(_ scene: any AppRoute) {
-        path.append(scene)
+    
+    func push<Route: AppRoute>(_ route: Route) {
+        path.append(route)
     }
 
     func pop() {

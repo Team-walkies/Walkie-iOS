@@ -26,7 +26,12 @@ final class EggDetailViewModel: ViewModelable {
         case didSelectEggWalking
     }
     
-    init(eggUseCase: EggUseCase, eggState: EggViewModel.EggState, eggViewModel: EggViewModel, appCoordinator: AppCoordinator) {
+    init(
+        eggUseCase: EggUseCase,
+        eggState: EggViewModel.EggState,
+        eggViewModel: EggViewModel,
+        appCoordinator: AppCoordinator
+    ) {
         self.eggUseCase = eggUseCase
         self.eggState = eggState
         self.eggViewModel = eggViewModel
