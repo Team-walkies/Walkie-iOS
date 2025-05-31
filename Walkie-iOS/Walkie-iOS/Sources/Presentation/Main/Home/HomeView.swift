@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import FirebaseAnalytics
+
 struct HomeView: View {
     
     @StateObject var viewModel: HomeViewModel
@@ -59,6 +61,9 @@ struct HomeView: View {
                                             .scaledToFit()
                                             .frame(width: 120, height: 120)
                                             .padding(.trailing, 8)
+                                            .onTapGesture {
+                                                Analytics.logEvent(StringLiterals.WalkieLog.mainCharacter, parameters: nil)
+                                            }
                                     }
                                 )
                             default:

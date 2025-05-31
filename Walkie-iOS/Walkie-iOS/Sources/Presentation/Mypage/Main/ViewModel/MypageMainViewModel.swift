@@ -23,10 +23,10 @@ final class MypageMainViewModel: ViewModelable {
     }
     
     struct MypageMainState {
-        let nickname: String
-        let userTier: String
-        let spotCount: Int
-        let isPublic: Bool
+        var nickname: String
+        var userTier: String
+        var spotCount: Int
+        var isPublic: Bool
     }
     
     enum Action {
@@ -37,13 +37,15 @@ final class MypageMainViewModel: ViewModelable {
         case withdraw
     }
     
-    private var mypageMainState: MypageMainState = MypageMainState(
-        nickname: "로딩 중...",
-        userTier: "초보워키",
+    @Published var state: MypageMainViewState = .loading
+    private var mypageState: MypageMainState = MypageMainState(
+        nickname: "",
+        userTier: "",
         spotCount: 0,
         isPublic: false
     )
-    @Published var state: MypageMainViewState = .loading
+    
+    private var hasInitialized: Bool = false
     
     init(
         logoutUseCase: DefaultLogoutUserUseCase,
@@ -60,7 +62,7 @@ final class MypageMainViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .mypageMainWillAppear:
-            fetchMypageMainData()
+            if !hasInitialized { fetchMypageMainData() }
         case .toggleMyInformationIsPublic:
             updateMyInformationPublicSetting()
         case .toggleNotifyEggHatches:
@@ -78,14 +80,14 @@ final class MypageMainViewModel: ViewModelable {
                 with: self,
                 receiveValue: { _, entity in
                     print("Fetch Success")
-                    self.mypageMainState = MypageMainState(
+                    self.mypageState = MypageMainState(
                         nickname: entity.nickname,
                         userTier: entity.memberTier,
                         spotCount: entity.exploredSpotCount,
                         isPublic: entity.isPublic
                     )
-                    self.state = .loaded(self.mypageMainState)
-                    
+                    self.state = .loaded(self.mypageState)
+                    self.hasInitialized = true
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "Failed to fetch user data"
                     self.state = .error(errorMessage)
@@ -100,16 +102,10 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    self.mypageMainState = MypageMainState(
-                        nickname: self.mypageMainState.nickname,
-                        userTier: self.mypageMainState.userTier,
-                        spotCount: self.mypageMainState.spotCount,
-                        isPublic: !self.mypageMainState.isPublic
-                    )
-                    self.state = .loaded(self.mypageMainState)
+                    self.mypageState.isPublic.toggle()
+                    self.state = .loaded(self.mypageState)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "Failed to patch profile visibility"
-                    self.state = .error(errorMessage)
                     
                 }
             )

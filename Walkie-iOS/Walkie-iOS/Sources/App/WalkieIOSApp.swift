@@ -1,6 +1,7 @@
 import SwiftUI
 import BackgroundTasks
 import KakaoSDKCommon
+import FirebaseCore
 
 @main
 struct WalkieIOSApp: App {
@@ -19,6 +20,7 @@ struct WalkieIOSApp: App {
         backgroundTaskManager.registerBackgroundTasks(.step) { [self] task in
             appCoordinator.handleStepRefresh(task: task)
         }
+        FirebaseApp.configure()
     }
 
     var body: some Scene {

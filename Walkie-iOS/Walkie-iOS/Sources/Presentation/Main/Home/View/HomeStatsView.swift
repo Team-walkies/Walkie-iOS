@@ -8,6 +8,7 @@
 import SwiftUI
 
 import WalkieCommon
+import FirebaseAnalytics
 
 struct HomeStatsView: View {
     
@@ -152,7 +153,7 @@ struct HomeStatsView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 35, height: 21)
-                        .padding(.trailing, 100)
+                        .padding(.trailing, 129)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.bottom, 41)
@@ -176,6 +177,9 @@ struct HomeStatsView: View {
                     return []
                 }
             }()
+        }
+        .onTapGesture {
+            Analytics.logEvent(StringLiterals.WalkieLog.mainCard, parameters: nil)
         }
     }
 }

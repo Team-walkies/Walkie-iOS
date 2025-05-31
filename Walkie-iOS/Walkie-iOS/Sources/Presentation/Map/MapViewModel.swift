@@ -12,6 +12,7 @@ import CoreMotion
 import ActivityKit
 import WalkieCommon
 import MapKit
+import FirebaseAnalytics
 
 final class MapViewModel: ViewModelable, WebMessageHandling {
     
