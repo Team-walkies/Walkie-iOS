@@ -76,10 +76,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 }
         case .map:
             diContainer.buildMapView()
-        case .map:
-            diContainer.buildMapView()
         case .tabBar:
-            diContainer.buildTabBarView()
             diContainer.buildTabBarView()
         case .complete:
             diContainer.buildSignupView()
@@ -198,19 +195,11 @@ final class AppCoordinator: Coordinator, ObservableObject {
         currentScene = .splash
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.updateCurrentScene()
-    }
-    
-    private func startSplash() {
-        currentScene = .splash
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.updateCurrentScene()
         }
     }
     
     func changeToSplash() {
-    func changeToSplash() {
         UserManager.shared.withdraw()
-        startSplash()
         startSplash()
     }
     

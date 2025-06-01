@@ -18,8 +18,6 @@ final class MypageMainViewModel: ViewModelable {
     
     var goToRoot: ((Bool) -> Void)?
     
-    var goToRoot: ((Bool) -> Void)?
-    
     enum MypageMainViewState {
         case loading
         case loaded(MypageMainState)
@@ -39,7 +37,6 @@ final class MypageMainViewModel: ViewModelable {
         case toggleNotifyEggHatches
         case logout
         case withdraw
-        case withdrawWillAppear
         case withdrawWillAppear
     }
     
@@ -129,7 +126,6 @@ final class MypageMainViewModel: ViewModelable {
                 with: self,
                 receiveValue: { _, _ in
                     self.goToRoot?(true)
-                    self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
@@ -143,7 +139,6 @@ final class MypageMainViewModel: ViewModelable {
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    self.goToRoot?(true)
                     self.goToRoot?(true)
                 }, receiveFailure: { _, error  in
                     let errorMessage = error?.description ?? "An unknown error occurred"
