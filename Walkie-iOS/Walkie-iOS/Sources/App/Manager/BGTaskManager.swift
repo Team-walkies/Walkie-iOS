@@ -35,6 +35,10 @@ final class BGTaskManager {
             print("⏳ 백그라운드 테스크 스케줄링 에러 : \(error.localizedDescription) ⏳")
         }
     }
+    
+    func cancelAll() {
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: WalkieBackgroundTask.step.rawValue)
+    }
 }
 
 enum WalkieBackgroundTask: String {

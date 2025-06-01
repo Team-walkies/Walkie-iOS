@@ -150,7 +150,6 @@ final class HomeViewModel: ViewModelable {
             updateLeftStep()
         case .homeWillDisappear:
             stopStepUpdates()
-            cancellables.removeAll() // 구독 취소
         case .homeAuthAllowTapped:
             showPermission()
         default:
@@ -396,10 +395,11 @@ private extension HomeViewModel {
     
     func stopStepUpdates() {
         pedometer.stopUpdates()
+        cancellables.removeAll() // 구독 취소
     }
     
     func subscribeToStepUpdate() {
-        appCoordinator.hatchPublisher
+        appCoordinator.stepCoordinator?.hatchPublisher
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 if case let .failure(error) = completion {

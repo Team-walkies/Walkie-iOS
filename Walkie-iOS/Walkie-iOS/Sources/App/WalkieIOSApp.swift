@@ -7,19 +7,18 @@ import FirebaseCore
 struct WalkieIOSApp: App {
     
     @Environment(\.scenePhase) private var scenePhase
-    private let backgroundTaskManager: BGTaskManager
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
     init() {
-        self.backgroundTaskManager = BGTaskManager()
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
         
         // 백그라운드 작업 등록
-        backgroundTaskManager.registerBackgroundTasks(.step) { [self] task in
+        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
             appCoordinator.handleStepRefresh(task: task)
         }
+        
         FirebaseApp.configure()
     }
 
@@ -58,20 +57,39 @@ struct WalkieIOSApp: App {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: scenePhase) { _, newValue in
+            .onChange(of: scenePhase, initial: true) { _, newValue in
                 switch newValue {
                 case .active:
-                    // 포그라운드 실시간 걸음 수 추적 시작
-                    appCoordinator.startStepUpdates()
-                    // 백그라운드 스케줄링 모두 취소
-                    BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: WalkieBackgroundTask.step.rawValue)
+                    if
+                        appCoordinator.currentScene != .splash
+                            || appCoordinator.currentScene != .login
+                            || appCoordinator.currentScene != .complete
+                            || appCoordinator.currentScene != .tabBar // 탭바의 경우 onAppear에서 호출합니다
+                    {
+                        executeForegroundActions()
+                    }
+                case .background:
+                    executeBackgroundActions()
                 default:
-                    // 포그라운드 실시간 걸음 수 추적 종료
-                    appCoordinator.stopStepUpdates()
-                    // 백그라운드 작업 스케줄링
-                    backgroundTaskManager.scheduleAppRefresh(.step)
+                    break
                 }
             }
         }
+    }
+}
+
+extension WalkieIOSApp {
+    func executeForegroundActions() {
+        // 포그라운드 실시간 걸음 수 추적 시작
+        appCoordinator.startStepUpdates()
+        // 백그라운드 스케줄링 모두 취소
+        BGTaskManager.shared.cancelAll()
+    }
+    
+    func executeBackgroundActions() {
+        // 포그라운드 실시간 걸음 수 추적 종료
+        appCoordinator.stopStepUpdates()
+        // 백그라운드 작업 스케줄링
+        BGTaskManager.shared.scheduleAppRefresh(.step)
     }
 }

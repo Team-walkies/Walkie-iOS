@@ -36,30 +36,15 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
-        
     var loginInfo: LoginUserInfo = LoginUserInfo()
+    
+    var stepCoordinator: StepCoordinator?
     private var cancellables: Set<AnyCancellable> = []
-    
-    // MARK: - Foreground 걸음 수 측정
-    /// 뷰 업데이트를 위한 Publisher입니다.
-    private let hatchSubject = PassthroughSubject<Bool, Error>()
-    /// 각 뷰에서 stepPublisher를 구독하여 이벤트를 방출 받습니다.
-    var hatchPublisher: AnyPublisher<Bool, Error> {
-        hatchSubject.share().eraseToAnyPublisher()
-    }
-    
-    // MARK: - UseCases
-    private let getEggPlayUseCase = DIContainer.shared.resolveGetEggPlayUseCase()
-    private let updateStepForegroundUseCase = DIContainer.shared.resolveUpdateStepForegroundUseCase()
-    private let checkHatchConditionUseCase = DIContainer.shared.resolveCheckHatchConditionUseCase()
-    private let updateEggStepUseCase = DIContainer.shared.resolveUpdateEggStepUseCase()
-    private let updateStepBackgroundUseCase = DIContainer.shared.resolveUpdateStepBackgroundUseCase()
-    private let stepStatusStore = DIContainer.shared.stepStatusStore
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
         startSplash()
-        
+        initializeStepCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
             .receive(on: DispatchQueue.main)
@@ -67,7 +52,10 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 self?.changeToSplash()
             }
             .store(in: &cancellables)
-            
+    }
+    
+    private func initializeStepCoordinator() {
+        self.stepCoordinator = StepCoordinator(diContainer: diContainer, appCoordinator: self)
     }
     
     @ViewBuilder
@@ -96,7 +84,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             diContainer.buildEggView(appCoordinator: self)
         case .character:
             diContainer.buildCharacterView()
-        case .review: 
+        case .review:
             diContainer.buildReviewView()
         case let .setting(item, viewModel):
             buildSetting(item, viewModel: viewModel)
@@ -239,121 +227,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
             onDismiss: nil
         )
     }
-}
-
-// MARK: - Background 걸음 수 측정
-extension AppCoordinator {
-    func handleStepRefresh(task: BGAppRefreshTask) {
-        task.expirationHandler = {
-            print("⏳ 백그라운드 테스크 만료 ⏳")
-            task.setTaskCompleted(success: false)
-        }
-        
-        guard let needStep = stepStatusStore.needStep, needStep <= 10000 else {
-            task.setTaskCompleted(success: true)
-            print("⏳ 백그라운드 걸음 수 업데이트 및 스케줄링 하지 않음 : 알 없음 ⏳")
-            return
-            // 알 없는 경우 백그라운드 테스크 스케줄링 X
-        }
-        
-        // 백그라운드 작업 수행
-        updateStepBackgroundUseCase.execute()
-        print("⏳ 백그라운드 걸음 수 업데이트 완료 ⏳")
-        task.setTaskCompleted(success: true)
-        
-        /// 다음 작업 스케줄링
-        if checkHatchConditionUseCase.execute() {
-            /// 푸시알림 전송
-            print("⏳ 백그라운드 걸음 수 업데이트 스케줄링 중단 : 부화 조건 달성, 푸시 알림 전송 ⏳")
-            NotificationManager.shared.scheduleNotification(
-                title: NotificationLiterals.eggHatch.title,
-                body: NotificationLiterals.eggHatch.body
-            )
-        } else {
-            /// 부화 조건이 아닌 경우 다시 백그라운드 테스크 스케줄링
-            print("⏳ 백그라운드 걸음 수 업데이트 스케줄링 ⏳")
-            BGTaskManager.shared.scheduleAppRefresh(.step)
-        }
-    }
-}
-
-// MARK: - Foreground 걸음 수 측정
-extension AppCoordinator {
-    /// 같이 걷는 알을 조회하고 결과를 처리합니다.
-    func fetchEggPlay(completion: @escaping (Result<EggEntity, Error>) -> Void) {
-        getEggPlayUseCase.execute()
-            .walkieSink(
-                with: self,
-                receiveValue: { _, egg in
-                    print("🥚 같이 걷는 알 가져오기 성공 🥚")
-                    dump(egg)
-                    completion(.success(egg))
-                },
-                receiveFailure: { _, error in
-                    print("🥚 같이 걷는 알 가져오기 실패 : \(String(describing: error?.localizedDescription))🥚")
-                    completion(.failure(error ?? .emptyDataError))
-                }
-            )
-            .store(in: &cancellables)
-    }
     
-    /// 걸음 수 쿼리를 시작하고 업데이트 이벤트를 처리합니다.
-    func startStepQuery(onUpdate: @escaping () -> Void) {
-        updateStepForegroundUseCase.start()
-            .receive(on: DispatchQueue.main)
-            .sink(
-                receiveCompletion: { completion in
-                    if case let .failure(error) = completion {
-                        print("🏃 포그라운드 걸음 수 쿼리 실패 : \(error.localizedDescription) 🏃")
-                    }
-                },
-                receiveValue: { _ in
-                    onUpdate()
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    /// 부화 조건을 확인하고 결과를 반환합니다.
-    func checkHatchCondition() -> Bool {
-        checkHatchConditionUseCase.execute()
-    }
-    
-    /// 알 부화 화면을 표시합니다.
-    func presentHatchEggScreen() {
-        presentFullScreenCover(AppFullScreenCover.hatchEgg)
-        hatchSubject.send(true)
-        stopStepUpdates()
-    }
-    
-    /// Foreground 걸음 수 업데이트 시작
     func startStepUpdates() {
-        stopStepUpdates() // 기존 쿼리 정리
-        fetchEggPlay { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let egg):
-                startStepQuery { [weak self] in
-                    guard let self = self else { return }
-                    let newStep = self.stepStatusStore.getNowStep()
-                    
-                    if self.checkHatchCondition() {
-                        self.presentHatchEggScreen()
-                    } else {
-                        self.updateEggStepUseCase.execute(egg: egg, step: newStep, willHatch: false) {
-                            self.hatchSubject.send(false)
-                        }
-                    }
-                }
-            case .failure:
-                self.stopStepUpdates()
-            }
-        }
+        stepCoordinator?.startStepUpdates()
     }
     
-    /// Foreground 걸음 수 업데이트 종료 및 구독 제거
     func stopStepUpdates() {
-        updateStepForegroundUseCase.stop()
-        cancellables.removeAll()
+        stepCoordinator?.stopStepUpdates()
+    }
+    
+    func handleStepRefresh(task: BGAppRefreshTask) {
+        stepCoordinator?.handleStepRefresh(task: task)
     }
 }
