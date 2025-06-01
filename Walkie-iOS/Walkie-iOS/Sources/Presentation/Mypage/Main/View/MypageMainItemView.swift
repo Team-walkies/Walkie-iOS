@@ -14,6 +14,10 @@ struct MypageMainItemView<Item: MypageSectionItem>: View {
     @EnvironmentObject private var coordinator: AppCoordinator
     @StateObject var viewModel: MypageMainViewModel
     
+    
+    @EnvironmentObject private var coordinator: AppCoordinator
+    @StateObject var viewModel: MypageMainViewModel
+    
     let item: Item
     var versionText: String?
     

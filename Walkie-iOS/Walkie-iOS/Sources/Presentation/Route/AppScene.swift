@@ -27,9 +27,11 @@ enum AppScene: AppRoute {
         }
     }
     
+    
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+    
     
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
@@ -42,8 +44,19 @@ enum AppSheet: AppRoute {
     case authBottomSheet
     case homeAlarmBottomSheet
     
+    case eggDetail
+    case authBottomSheet
+    case homeAlarmBottomSheet
+    
+    public var id: String {
     public var id: String {
         switch self {
+        case .eggDetail:
+            return "eggDetail"
+        case .authBottomSheet:
+            return "authBottomSheet"
+        case .homeAlarmBottomSheet:
+            return "homeAlarmBottomSheet"
         case .eggDetail:
             return "eggDetail"
         case .authBottomSheet:
