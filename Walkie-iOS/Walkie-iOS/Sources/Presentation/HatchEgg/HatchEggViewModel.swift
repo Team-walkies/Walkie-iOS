@@ -12,7 +12,7 @@ import SwiftUICore
 final class HatchEggViewModel: ViewModelable {
     
     private let getEggPlayUseCase: GetEggPlayUseCase
-    private let updateEggStepUseCase: UpdateEggStepUseCase
+    private let hatchEggUseCase: HatchEggUseCase
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
     private var cancellables = Set<AnyCancellable>()
@@ -65,10 +65,10 @@ final class HatchEggViewModel: ViewModelable {
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
-        updateEggStepUseCase: UpdateEggStepUseCase
+        hatchEggUseCase: HatchEggUseCase
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
-        self.updateEggStepUseCase = updateEggStepUseCase
+        self.hatchEggUseCase = hatchEggUseCase
     }
     
     func action(_ action: Action) {
@@ -172,15 +172,12 @@ final class HatchEggViewModel: ViewModelable {
     
     private func hatchEgg() {
         guard let data = hatchEggState else {
-            print(" --- 알 정보 불러오기 실패 --- ")
+            print(" 🥚 알 정보 불러오기 실패 🥚 ")
             return
         }
-        updateEggStepUseCase
-            .execute(
-                egg: data,
-                step: data.needStep,
-                willHatch: true) {
-                    
-                }
+        print(" 🥚 알 정보 불러오기 성공 🥚 ")
+        dump(data)
+        print(" 🥚 알 부화 처리 시작 🥚 ")
+        hatchEggUseCase.execute(egg: data)
     }
 }

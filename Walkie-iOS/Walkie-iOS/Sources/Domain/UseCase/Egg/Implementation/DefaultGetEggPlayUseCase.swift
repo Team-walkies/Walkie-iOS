@@ -12,5 +12,6 @@ final class DefaultGetEggPlayUseCase: BaseMemberUseCase, GetEggPlayUseCase {
     func execute() -> AnyPublisher<EggEntity, NetworkError> {
         memberRepository.getEggPlaying()
             .mapToNetworkError()
+            .eraseToAnyPublisher()
     }
 }

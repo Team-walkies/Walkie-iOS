@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - 현재 사용하지 않음
 @Observable
 final class MypageCoordinator: Coordinator, ObservableObject {
     var diContainer: DIContainer

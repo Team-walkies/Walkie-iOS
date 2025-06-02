@@ -12,6 +12,7 @@ class BaseEggUseCase {
     // MARK: - Dependency
     
     let eggRepository: EggRepository
+    let stepStatusStore: StepStatusStore
     
     // MARK: - Properties
     
@@ -19,7 +20,8 @@ class BaseEggUseCase {
     
     // MARK: - Life Cycle
     
-    init(eggRepository: EggRepository) {
+    init(eggRepository: EggRepository, stepStatusStore: StepStatusStore) {
         self.eggRepository = eggRepository
+        self.stepStatusStore = stepStatusStore
     }
 }

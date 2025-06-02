@@ -12,6 +12,7 @@ import WalkieCommon
 struct MypageMyInformationView: View {
     
     @ObservedObject var viewModel: MypageMainViewModel
+    @Environment(\.screenWidth) private var screenWidth
     
     var body: some View {
         NavigationBar(
@@ -35,7 +36,11 @@ struct MypageMyInformationView: View {
                             toggle: { viewModel.action(.toggleMyInformationIsPublic) }
                         )
                     default:
-                        ProgressView()
+                        SkeletonRect(
+                            width: screenWidth - 32,
+                            height: 60,
+                            cornerRadius: 12
+                        )
                     }
                 }
                 .padding(.top, 12)

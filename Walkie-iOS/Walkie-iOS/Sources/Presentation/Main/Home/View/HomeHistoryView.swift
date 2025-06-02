@@ -12,14 +12,16 @@ import WalkieCommon
 struct HomeHistoryView: View {
     
     let homeState: HomeViewModel.HomeHistoryState
+    let appCoordinator: AppCoordinator
     let items: [HomeHistoryItem]
     
     private let columns = [GridItem(.flexible())]
     @Environment(\.screenWidth) private var screenWidth
     @EnvironmentObject private var coordinator: AppCoordinator
     
-    init(homeState: HomeViewModel.HomeHistoryState) {
+    init(homeState: HomeViewModel.HomeHistoryState, appCoordinator: AppCoordinator) {
         self.homeState = homeState
+        self.appCoordinator = appCoordinator
         self.items = [
             HomeHistoryItem(
                 imageName: "img_history_egg",

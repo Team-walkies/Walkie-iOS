@@ -11,6 +11,7 @@ final class EggViewModel: ViewModelable {
     
     private let eggUseCase: EggUseCase
     private var cancellables = Set<AnyCancellable>()
+    private let appCoordinator: AppCoordinator
     
     enum EggViewState {
         case loading
@@ -38,8 +39,9 @@ final class EggViewModel: ViewModelable {
         case didTapEggDetail(EggState)
     }
     
-    init(eggUseCase: EggUseCase) {
+    init(eggUseCase: EggUseCase, appCoordinator: AppCoordinator) {
         self.eggUseCase = eggUseCase
+        self.appCoordinator = appCoordinator
     }
     
     @Published var state: EggViewState = .loading
@@ -53,7 +55,8 @@ final class EggViewModel: ViewModelable {
             eggDetailViewModel = EggDetailViewModel(
                 eggUseCase: self.eggUseCase,
                 eggState: eggState,
-                eggViewModel: self
+                eggViewModel: self,
+                appCoordinator: appCoordinator
             )
         }
     }

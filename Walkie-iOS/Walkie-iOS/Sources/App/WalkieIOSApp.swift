@@ -1,17 +1,24 @@
 import SwiftUI
+import BackgroundTasks
 import KakaoSDKCommon
 import FirebaseCore
 
 @main
 struct WalkieIOSApp: App {
     
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
     init() {
-        _ = StepManager.shared
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
+        
+        // 백그라운드 작업 등록
+        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
+            appCoordinator.handleStepRefresh(task: task)
+        }
+        
         FirebaseApp.configure()
     }
 
@@ -22,10 +29,7 @@ struct WalkieIOSApp: App {
                     appCoordinator.buildScene(appCoordinator.currentScene)
                         .environmentObject(appCoordinator)
                         .fullScreenCover(
-                            item: Binding(
-                                get: { appCoordinator.appFullScreenCover },
-                                set: { appCoordinator.appFullScreenCover = $0 }
-                            ),
+                            item: $appCoordinator.appFullScreenCover,
                             onDismiss: {
                                 if let onDismiss = appCoordinator.fullScreenCoverOnDismiss {
                                     onDismiss()
@@ -50,6 +54,15 @@ struct WalkieIOSApp: App {
                     appCoordinator.buildScene(scene)
                         .environmentObject(appCoordinator)
                         .navigationBarBackButtonHidden()
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .onChange(of: scenePhase) { _, newValue in
+                switch newValue {
+                case .background:
+                    appCoordinator.executeBackgroundActions()
+                default:
+                    break
                 }
             }
         }

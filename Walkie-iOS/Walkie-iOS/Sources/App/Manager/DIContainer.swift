@@ -26,25 +26,35 @@ final class DIContainer {
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
     
-    private lazy var stepStore = DefaultStepStore()
+    private lazy var updateStepForegroundUseCase = DefaultUpdateStepForegroundUseCase(store: stepStatusStore)
+    private lazy var updateStepBackgroundUseCase = DefaultUpdateStepBackgroundUseCase(store: stepStatusStore)
+    private lazy var checkHatchConditionUseCase = DefaultCheckHatchConditionUseCase(store: stepStatusStore)
+    
+    lazy var stepStatusStore = DefaultStepStatusStore()
 }
 
 // UseCases
 
 extension DIContainer {
     
-    func resolveCheckStepUseCase() -> CheckStepUseCase {
-        return DefaultCheckStepUseCase(stepStore: stepStore)
-    }
-    func resolveUpdateStepCacheUseCase() -> UpdateStepCacheUseCase {
-        return DefaultUpdateStepCacheUseCase(stepStore: stepStore)
-    }
     func resolveUpdateEggStepUseCase() -> UpdateEggStepUseCase {
-        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo)
+        return DefaultUpdateEggStepUseCase(eggRepository: eggRepo, stepStatusStore: stepStatusStore)
     }
     
     func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
         return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
+    }
+    
+    func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
+        return updateStepForegroundUseCase
+    }
+    
+    func resolveUpdateStepBackgroundUseCase() -> UpdateStepBackgroundUseCase {
+        return updateStepBackgroundUseCase
+    }
+    
+    func resolveCheckHatchConditionUseCase() -> CheckHatchConditionUseCase {
+        return checkHatchConditionUseCase
     }
 }
 
@@ -52,21 +62,23 @@ extension DIContainer {
 
 extension DIContainer {
     
-    func makeHomeViewModel() -> HomeViewModel {
+    func makeHomeViewModel(appCoordinator: AppCoordinator) -> HomeViewModel {
         return HomeViewModel(
             getEggPlayUseCase: resolveGetEggPlayUseCase(),
             getCharacterPlayUseCase: DefaultGetWalkingCharacterUseCase(
                 memberRepository: memberRepo
             ),
             getEggCountUseCase: DefaultGetEggCountUseCase(
-                eggRepository: eggRepo
+                eggRepository: eggRepo, stepStatusStore: stepStatusStore
             ),
             getCharactersCountUseCase: DefaultGetCharactersCountUseCase(
                 characterRepository: characterRepo
             ),
             getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
                 memberRepository: memberRepo
-            )
+            ),
+            appCoordinator: appCoordinator,
+            stepStatusStore: stepStatusStore
         )
     }
     
@@ -107,12 +119,14 @@ extension DIContainer {
         return CalendarViewModel(reviewViewModel: reviewVM)
     }
     
-    func makeEggViewModel() -> EggViewModel {
+    func makeEggViewModel(appCoordinator: AppCoordinator) -> EggViewModel {
         return EggViewModel(
             eggUseCase: DefaultEggUseCase(
                 eggRepository: eggRepo,
-                memberRepository: memberRepo
-            )
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
+            ),
+            appCoordinator: appCoordinator
         )
     }
     
@@ -151,8 +165,9 @@ extension DIContainer {
     func makeHatchEggViewModel() -> HatchEggViewModel {
         return HatchEggViewModel(
             getEggPlayUseCase: resolveGetEggPlayUseCase(),
-            updateEggStepUseCase: DefaultUpdateEggStepUseCase(
-                eggRepository: eggRepo
+            hatchEggUseCase: DefaultHatchEggUseCase(
+                eggRepository: eggRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }
@@ -169,9 +184,9 @@ extension DIContainer {
         return TabBarView()
     }
     
-    func buildHomeView() -> HomeView {
+    func buildHomeView(appCoordinator: AppCoordinator) -> HomeView {
         return HomeView(
-            viewModel: self.makeHomeViewModel()
+            viewModel: self.makeHomeViewModel(appCoordinator: appCoordinator)
         )
     }
     
@@ -187,9 +202,9 @@ extension DIContainer {
         )
     }
     
-    func buildEggView() -> EggView {
+    func buildEggView(appCoordinator: AppCoordinator) -> EggView {
         return EggView(
-            viewModel: self.makeEggViewModel()
+            viewModel: self.makeEggViewModel(appCoordinator: appCoordinator)
         )
     }
     

@@ -13,7 +13,6 @@ protocol EggUseCase {
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError>
     func patchEggStep(
         egg: EggEntity,
-        step: Int,
-        willHatch: Bool
+        step: Int
     ) -> AnyPublisher<Void, NetworkError>
 }

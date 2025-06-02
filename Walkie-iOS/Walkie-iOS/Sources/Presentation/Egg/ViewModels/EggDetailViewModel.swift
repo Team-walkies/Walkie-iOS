@@ -9,6 +9,7 @@ import Combine
 
 final class EggDetailViewModel: ViewModelable {
     
+    let appCoordinator: AppCoordinator
     let eggState: EggViewModel.EggState
     private let eggUseCase: EggUseCase
     private let eggViewModel: EggViewModel
@@ -25,10 +26,16 @@ final class EggDetailViewModel: ViewModelable {
         case didSelectEggWalking
     }
     
-    init(eggUseCase: EggUseCase, eggState: EggViewModel.EggState, eggViewModel: EggViewModel) {
+    init(
+        eggUseCase: EggUseCase,
+        eggState: EggViewModel.EggState,
+        eggViewModel: EggViewModel,
+        appCoordinator: AppCoordinator
+    ) {
         self.eggUseCase = eggUseCase
         self.eggState = eggState
         self.eggViewModel = eggViewModel
+        self.appCoordinator = appCoordinator
     }
     
     @Published var state: EggDetailViewState = .loading
@@ -59,6 +66,7 @@ final class EggDetailViewModel: ViewModelable {
                         )
                     )
                     self.eggViewModel.fetchEggListData()
+                    self.appCoordinator.executeForegroundActions() // 다시 재개
                     ToastManager.shared.showToast("같이 걷는 알을 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"

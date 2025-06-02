@@ -13,12 +13,12 @@ enum AppScene: AppRoute {
     case map
     case egg, character, review
     case feedback, withdraw
-    case setting(item: MypageSettingSectionItem)
+    case setting(item: MypageSettingSectionItem, viewModel: MypageMainViewModel)
     case service(item: MypageServiceSectionItem)
     
     var id: String {
         switch self {
-        case .setting(let item):
+        case .setting(let item, _):
             return "setting_\(item)"
         case .service(let item):
             return "service_\(item)"

@@ -22,6 +22,8 @@ final class HomeViewModel: ViewModelable {
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
     
+    private var isUpdatingSteps = false
+    
     private var cancellables = Set<AnyCancellable>()
     
     enum Action {
@@ -33,11 +35,18 @@ final class HomeViewModel: ViewModelable {
     
     // states
     
-    struct HomeStatsState {
+    struct HomeStatsState: Equatable {
         let hasEgg: Bool
         let eggImage: ImageResource
         let eggGradientColors: [Color]
         let eggEffectImage: ImageResource?
+        
+        static func == (lhs: HomeStatsState, rhs: HomeStatsState) -> Bool {
+            return lhs.hasEgg == rhs.hasEgg &&
+            lhs.eggImage == rhs.eggImage &&
+            lhs.eggGradientColors == rhs.eggGradientColors &&
+            lhs.eggEffectImage == rhs.eggEffectImage
+        }
     }
     
     struct HomeCharacterState {
@@ -50,9 +59,13 @@ final class HomeViewModel: ViewModelable {
     }
     
     struct StepState {
-        let todayStep, leftStep: Int
+        let todayStep: Int
         let todayDistance: Double
         let locationAlwaysAuthorized: Bool
+    }
+    
+    struct LeftStepState {
+        let leftStep: Int
     }
     
     struct HomePermissionState: Equatable {
@@ -75,7 +88,7 @@ final class HomeViewModel: ViewModelable {
         case error
     }
     
-    enum HomeStatsViewState {
+    enum HomeStatsViewState: Equatable {
         case loading
         case loaded(HomeStatsState)
         case error(String)
@@ -99,35 +112,49 @@ final class HomeViewModel: ViewModelable {
         case error(StepState)
     }
     
+    enum LeftStepViewState {
+        case loading
+        case loaded(LeftStepState)
+        case error(String)
+    }
+    
     @Published var state: HomeViewState = .loading
     @Published var homeStatsState: HomeStatsViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
+    @Published var leftStepState: LeftStepViewState = .loading
     @Published var shouldShowDeniedAlert: Bool = false
     
-    private let stepStore = DefaultStepStore()
     private let pedometer = CMPedometer()
     private let locationManager = LocationManager.shared
+    private let appCoordinator: AppCoordinator
+    private let stepStatusStore: StepStatusStore
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
         getCharacterPlayUseCase: GetWalkingCharacterUseCase,
         getEggCountUseCase: GetEggCountUseCase,
         getCharactersCountUseCase: GetCharactersCountUseCase,
-        getRecordedSpotUseCase: RecordedSpotUseCase
+        getRecordedSpotUseCase: RecordedSpotUseCase,
+        appCoordinator: AppCoordinator,
+        stepStatusStore: StepStatusStore
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
         self.getEggCountUseCase = getEggCountUseCase
         self.getCharactersCountUseCase = getCharactersCountUseCase
         self.getRecordedSpotUseCase = getRecordedSpotUseCase
+        self.appCoordinator = appCoordinator
+        self.stepStatusStore = stepStatusStore
     }
     
     func action(_ action: Action) {
         switch action {
         case .homeWillAppear:
             checkPermission()
+            subscribeToStepUpdate()
+            updateLeftStep()
         case .homeWillDisappear:
             stopStepUpdates()
         case .homeAuthAllowTapped:
@@ -331,7 +358,7 @@ private extension HomeViewModel {
 }
 
 private extension HomeViewModel {
-    
+
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else { return }
         
@@ -345,7 +372,7 @@ private extension HomeViewModel {
                         step: data.numberOfSteps.intValue,
                         distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
                     )
-                } else { // 권한 거부인경우
+                } else {
                     self.updateStepData(step: -1, distance: 0)
                 }
             }
@@ -354,30 +381,63 @@ private extension HomeViewModel {
         self.pedometer.startUpdates(from: startOfDay) { data, error in
             if let data = data, error == nil {
                 DispatchQueue.main.async {
-                    let newStepData = data.numberOfSteps.intValue
-                    let newDistanceData = (data.distance?.doubleValue ?? 0.0) / 1000.0
-                    self.updateStepData(step: newStepData, distance: newDistanceData)
+                    self.updateStepData(
+                        step: data.numberOfSteps.intValue,
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
+                    )
                 }
             }
         }
     }
-    
+
     func updateStepData(step: Int, distance: Double) {
-        let leftStep =
-        UserManager.shared.getStepCountGoal
-        - stepStore.getStepCountCache()
-        - UserManager.shared.getStepCount
-        
-        let stepState = StepState(
-            todayStep: step,
-            leftStep: leftStep >= 0 ? leftStep : 0,
-            todayDistance: distance,
-            locationAlwaysAuthorized: isLocationAlwaysAuthorized()
+        self.stepState = .loaded(
+            StepState(
+                todayStep: step,
+                todayDistance: distance,
+                locationAlwaysAuthorized: isLocationAlwaysAuthorized()
+            )
         )
-        self.stepState = .loaded(stepState)
     }
     
     func stopStepUpdates() {
         pedometer.stopUpdates()
+        cancellables.removeAll() // 구독 취소
+    }
+    
+    func subscribeToStepUpdate() {
+        appCoordinator.stepCoordinator?.hatchPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case let .failure(error) = completion {
+                    print("🏃 홈 뷰모델 걸음 수 업데이트 에러: \(error.localizedDescription) 🏃")
+                }
+            } receiveValue: { [weak self] isHatch in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    if isHatch {
+                        let homeState = HomeStatsState(
+                            hasEgg: false,
+                            eggImage: .eggEmpty,
+                            eggGradientColors: [
+                                WalkieCommonAsset.blue300.swiftUIColor,
+                                WalkieCommonAsset.blue200.swiftUIColor
+                            ],
+                            eggEffectImage: nil
+                        )
+                        self.homeStatsState = .loaded(homeState)
+                        print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
+                    } else {
+                        self.updateLeftStep()
+                        print("🏃 홈 뷰모델 걸음 수 업데이트 완료 🏃")
+                    }
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func updateLeftStep() {
+        let leftStep = stepStatusStore.getNeedStep() - stepStatusStore.getNowStep()
+        self.leftStepState = .loaded(LeftStepState(leftStep: leftStep))
     }
 }
