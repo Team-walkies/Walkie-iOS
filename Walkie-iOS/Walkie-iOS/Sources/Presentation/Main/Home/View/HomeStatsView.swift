@@ -94,26 +94,29 @@ struct HomeStatsView: View {
                 Spacer()
                 
                 if homeStatsState.hasEgg {
-                    ZStack {
-                        Image(.imgSpeechbubble)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 136, height: 45)
-                        
-                        HStack(spacing: 0) {
-                            Text("부화까지 ")
-                                .font(.B2)
-                                .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                    if !showWarning {
+                        ZStack {
+                            Image(.imgSpeechbubble)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 136, height: 45)
                             
-                            Text("\(stepState.leftStep)걸음")
-                                .font(.B2)
-                                .foregroundColor(.white)
+                            HStack(spacing: 0) {
+                                Text("부화까지 ")
+                                    .font(.B2)
+                                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                                
+                                Text("\(stepState.leftStep)걸음")
+                                    .font(.B2)
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.top, -8)
                         }
-                        .padding(.top, -8)
+                        .padding(.bottom, -17)
+                        
                     }
-                    .padding(.bottom, -17)
                     
-                    Image(homeStatsState.eggImage)
+                    Image(showWarning ? .eggEmpty : homeStatsState.eggImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: eggWidth, height: eggHeight)
