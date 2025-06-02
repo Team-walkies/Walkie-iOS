@@ -57,16 +57,8 @@ struct WalkieIOSApp: App {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: scenePhase, initial: true) { _, newValue in
+            .onChange(of: scenePhase) { _, newValue in
                 switch newValue {
-                case .active:
-                    if
-                        appCoordinator.currentScene != .splash
-                            && appCoordinator.currentScene != .login
-                            && appCoordinator.currentScene != .complete
-                    {
-                        appCoordinator.executeForegroundActions()
-                    }
                 case .background:
                     appCoordinator.executeBackgroundActions()
                 default:

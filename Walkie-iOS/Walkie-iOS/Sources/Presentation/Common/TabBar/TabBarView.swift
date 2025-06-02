@@ -12,7 +12,6 @@ struct TabBarView: View {
     
     @State private var selectedTab: TabBarItem = .home
     
-    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -88,6 +87,8 @@ struct TabBarView: View {
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
+        }.onAppear {
+            appCoordinator.executeForegroundActions()
         }
     }
 }

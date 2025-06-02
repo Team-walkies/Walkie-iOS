@@ -35,11 +35,18 @@ final class HomeViewModel: ViewModelable {
     
     // states
     
-    struct HomeStatsState {
+    struct HomeStatsState: Equatable {
         let hasEgg: Bool
         let eggImage: ImageResource
         let eggGradientColors: [Color]
         let eggEffectImage: ImageResource?
+        
+        static func == (lhs: HomeStatsState, rhs: HomeStatsState) -> Bool {
+            return lhs.hasEgg == rhs.hasEgg &&
+            lhs.eggImage == rhs.eggImage &&
+            lhs.eggGradientColors == rhs.eggGradientColors &&
+            lhs.eggEffectImage == rhs.eggEffectImage
+        }
     }
     
     struct HomeCharacterState {
@@ -81,7 +88,7 @@ final class HomeViewModel: ViewModelable {
         case error
     }
     
-    enum HomeStatsViewState {
+    enum HomeStatsViewState: Equatable {
         case loading
         case loaded(HomeStatsState)
         case error(String)
@@ -407,21 +414,23 @@ private extension HomeViewModel {
                 }
             } receiveValue: { [weak self] isHatch in
                 guard let self else { return }
-                if isHatch {
-                    let homeState = HomeStatsState(
-                        hasEgg: false,
-                        eggImage: .eggEmpty,
-                        eggGradientColors: [
-                            WalkieCommonAsset.blue300.swiftUIColor,
-                            WalkieCommonAsset.blue200.swiftUIColor
-                        ],
-                        eggEffectImage: nil
-                    )
-                    self.homeStatsState = .loaded(homeState)
-                    print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
-                } else {
-                    self.updateLeftStep()
-                    print("🏃 홈 뷰모델 걸음 수 업데이트 완료 🏃")
+                DispatchQueue.main.async {
+                    if isHatch {
+                        let homeState = HomeStatsState(
+                            hasEgg: false,
+                            eggImage: .eggEmpty,
+                            eggGradientColors: [
+                                WalkieCommonAsset.blue300.swiftUIColor,
+                                WalkieCommonAsset.blue200.swiftUIColor
+                            ],
+                            eggEffectImage: nil
+                        )
+                        self.homeStatsState = .loaded(homeState)
+                        print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
+                    } else {
+                        self.updateLeftStep()
+                        print("🏃 홈 뷰모델 걸음 수 업데이트 완료 🏃")
+                    }
                 }
             }
             .store(in: &cancellables)
