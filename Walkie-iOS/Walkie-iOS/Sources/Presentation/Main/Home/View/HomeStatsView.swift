@@ -14,11 +14,13 @@ struct HomeStatsView: View {
     
     let homeStatsState: HomeViewModel.HomeStatsState
     let stepState: HomeViewModel.StepState
+    let leftStepState: HomeViewModel.LeftStepState
     let width: CGFloat
     
     @State var showWarning: Bool = false
     @State var warningTypes: [WarningType] = []
     @Environment(\.safeScreenHeight) private var safeScreenHeight
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         
@@ -105,7 +107,7 @@ struct HomeStatsView: View {
                                 .font(.B2)
                                 .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                             
-                            Text("\(stepState.leftStep)걸음")
+                            Text("\(leftStepState.leftStep)걸음")
                                 .font(.B2)
                                 .foregroundColor(.white)
                         }
@@ -124,7 +126,9 @@ struct HomeStatsView: View {
                         .frame(width: eggWidth, height: eggHeight)
                         .overlay(alignment: .bottom) {
                             if !showWarning {
-                                NavigationLink(destination: DIContainer.shared.buildEggView()) {
+                                NavigationLink(
+                                    destination: DIContainer.shared.buildEggView(appCoordinator: appCoordinator)
+                                ) {
                                     Text("알을 선택해 주세요")
                                         .font(.H5)
                                         .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)
@@ -151,7 +155,7 @@ struct HomeStatsView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 35, height: 21)
-                        .padding(.trailing, 100)
+                        .padding(.trailing, 129)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .padding(.bottom, 41)

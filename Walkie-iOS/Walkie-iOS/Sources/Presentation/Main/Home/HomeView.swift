@@ -36,14 +36,18 @@ struct HomeView: View {
                             switch (
                                 viewModel.homeStatsState,
                                 viewModel.stepState,
-                                viewModel.homeCharacterState) {
+                                viewModel.homeCharacterState,
+                                viewModel.leftStepState) {
                             case let (
                                 .loaded(homeStatsState),
                                 .loaded(stepState),
-                                .loaded(characterState)):
+                                .loaded(characterState),
+                                .loaded(leftStepState)
+                            ):
                                 HomeStatsView(
                                     homeStatsState: homeStatsState,
                                     stepState: stepState,
+                                    leftStepState: leftStepState,
                                     width: width)
                                 HomeCharacterView(
                                     homeState: characterState,
@@ -58,7 +62,10 @@ struct HomeView: View {
                                             .frame(width: 120, height: 120)
                                             .padding(.trailing, 8)
                                             .onTapGesture {
-                                                Analytics.logEvent(StringLiterals.WalkieLog.mainCharacter, parameters: nil)
+                                                Analytics.logEvent(
+                                                    StringLiterals.WalkieLog.mainCharacter,
+                                                    parameters: nil
+                                                )
                                             }
                                     }
                                 )
@@ -68,11 +75,12 @@ struct HomeView: View {
                         }
                         .padding(.top, 8)
                     }
-                    
                     switch viewModel.homeHistoryViewState {
-                    case .loaded(let homeHistoryState):
-                        HomeHistoryView(homeState: homeHistoryState)
-                            .padding(.top, 18)
+                    case let .loaded(homeHistoryState):
+                        HomeHistoryView(
+                            homeState: homeHistoryState,
+                            appCoordinator: appCoordinator
+                        ).padding(.top, 18)
                     default:
                         HomeHistorySkeletonView()
                     }
@@ -90,6 +98,9 @@ struct HomeView: View {
                     handlePermissionBS()
                 }
             }
+        }
+        .onDisappear {
+            viewModel.action(.homeWillDisappear)
         }
         .onChange(of: viewModel.state) { _, newState in
             if !AppSession.shared.hasEnteredHomeView {

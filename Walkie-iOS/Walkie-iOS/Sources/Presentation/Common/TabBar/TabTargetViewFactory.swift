@@ -10,10 +10,10 @@ import SwiftUI
 struct TabTargetViewFactory {
     
     @ViewBuilder
-    func makeTargetView(for tab: TabBarItem) -> some View {
+    func makeTargetView(for tab: TabBarItem, appCoordinator: AppCoordinator) -> some View {
         switch tab {
         case .home:
-            DIContainer.shared.buildHomeView()
+            DIContainer.shared.buildHomeView(appCoordinator: appCoordinator)
         case .map:
             DIContainer.shared.buildMapView()
         case .mypage:

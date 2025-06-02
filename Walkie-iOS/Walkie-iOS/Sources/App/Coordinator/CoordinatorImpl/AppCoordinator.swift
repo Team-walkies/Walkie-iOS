@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKAuth
 import Foundation
 import Combine
+import BackgroundTasks
 import Observation
 
 extension Notification.Name {
@@ -35,22 +36,15 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
-    
     var loginInfo: LoginUserInfo = LoginUserInfo()
+    
+    var stepCoordinator: StepCoordinator?
     private var cancellables: Set<AnyCancellable> = []
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
         startSplash()
-        
-        // StepManager의 부화 이벤트 구독
-        StepManager.shared.hatchEventSubject
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                self?.presentFullScreenCover(AppFullScreenCover.hatchEgg, onDismiss: nil)
-            }
-            .store(in: &cancellables)
-        
+        initializeStepCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
             .receive(on: DispatchQueue.main)
@@ -58,6 +52,10 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 self?.changeToSplash()
             }
             .store(in: &cancellables)
+    }
+    
+    private func initializeStepCoordinator() {
+        self.stepCoordinator = StepCoordinator(diContainer: diContainer, appCoordinator: self)
     }
     
     @ViewBuilder
@@ -83,13 +81,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .complete:
             diContainer.buildSignupView()
         case .egg:
-            diContainer.buildEggView()
+            diContainer.buildEggView(appCoordinator: self)
         case .character:
             diContainer.buildCharacterView()
-        case .review: 
+        case .review:
             diContainer.buildReviewView()
-        case .setting(let item):
-            buildSetting(item)
+        case let .setting(item, viewModel):
+            buildSetting(item, viewModel: viewModel)
         case .service(let item):
             buildService(item)
         case .feedback:
@@ -150,14 +148,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     @ViewBuilder
-    private func buildSetting(_ item: MypageSettingSectionItem) -> some View {
-        let vm = diContainer.makeMypageMainViewModel()
+    private func buildSetting(_ item: MypageSettingSectionItem, viewModel: MypageMainViewModel) -> some View {
         switch item {
         case .myInfo:
-            MypageMyInformationView(viewModel: vm)
+            MypageMyInformationView(viewModel: viewModel)
                 .toolbar(.hidden, for: .tabBar)
         case .pushNotification:
-            MypagePushNotificationView(viewModel: vm)
+            MypagePushNotificationView(viewModel: viewModel)
                 .toolbar(.hidden, for: .tabBar)
         }
     }
@@ -229,5 +226,31 @@ final class AppCoordinator: Coordinator, ObservableObject {
             ),
             onDismiss: nil
         )
+    }
+    
+    private func startStepUpdates() {
+        stepCoordinator?.startStepUpdates()
+    }
+    
+    private func stopStepUpdates() {
+        stepCoordinator?.stopStepUpdates()
+    }
+    
+    func handleStepRefresh(task: BGAppRefreshTask) {
+        stepCoordinator?.handleStepRefresh(task: task)
+    }
+    
+    func executeForegroundActions() {
+        // 포그라운드 실시간 걸음 수 추적 시작
+        self.startStepUpdates()
+        // 백그라운드 스케줄링 모두 취소
+        BGTaskManager.shared.cancelAll()
+    }
+    
+    func executeBackgroundActions() {
+        // 포그라운드 실시간 걸음 수 추적 종료
+        self.stopStepUpdates()
+        // 백그라운드 작업 스케줄링
+        BGTaskManager.shared.scheduleAppRefresh(.step)
     }
 }

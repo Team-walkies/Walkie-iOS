@@ -16,22 +16,16 @@ final class DefaultUpdateEggStepUseCase: BaseEggUseCase, UpdateEggStepUseCase {
     ) {
         eggRepository.patchEggStep(egg: egg, step: step, willHatch: willHatch)
             .sink(
-                receiveCompletion: { completion in
-                    switch completion {
+                receiveCompletion: { closure in
+                    switch closure {
                     case .finished:
-                        print("걸음 수 업데이트 성공!")
-                        if willHatch {
-                            // 초기화
-                            UserManager.shared.setStepCountGoal(.max)
-                            NotificationManager.shared.notified = false
-                        }
+                        print("🏃 서버로 걸음 수 업데이트 : \(step) 걸음🏃")
+                        completion() // 완료 핸들러
                     case .failure(let error):
                         print("걸음 수 업데이트 오류: \(error)")
                     }
                 },
-                receiveValue: { _ in
-                    
-                }
+                receiveValue: { _ in }
             )
             .store(in: &cancellables)
     }
