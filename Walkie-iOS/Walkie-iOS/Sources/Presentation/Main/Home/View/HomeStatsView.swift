@@ -108,7 +108,7 @@ struct HomeStatsView: View {
                                     .font(.B2)
                                     .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                                 
-                                Text("\(stepState.leftStep)걸음")
+                                Text("\(leftStepState.leftStep)걸음")
                                     .font(.B2)
                                     .foregroundColor(.white)
                             }
