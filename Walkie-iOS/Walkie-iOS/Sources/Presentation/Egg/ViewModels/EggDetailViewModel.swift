@@ -66,7 +66,7 @@ final class EggDetailViewModel: ViewModelable {
                         )
                     )
                     self.eggViewModel.fetchEggListData()
-                    self.appCoordinator.startStepUpdates() // 다시 재개
+                    self.appCoordinator.executeForegroundActions() // 다시 재개
                     ToastManager.shared.showToast("같이 걷는 알을 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"

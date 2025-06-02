@@ -62,34 +62,17 @@ struct WalkieIOSApp: App {
                 case .active:
                     if
                         appCoordinator.currentScene != .splash
-                            || appCoordinator.currentScene != .login
-                            || appCoordinator.currentScene != .complete
-                            || appCoordinator.currentScene != .tabBar // 탭바의 경우 onAppear에서 호출합니다
+                            && appCoordinator.currentScene != .login
+                            && appCoordinator.currentScene != .complete
                     {
-                        executeForegroundActions()
+                        appCoordinator.executeForegroundActions()
                     }
                 case .background:
-                    executeBackgroundActions()
+                    appCoordinator.executeBackgroundActions()
                 default:
                     break
                 }
             }
         }
-    }
-}
-
-extension WalkieIOSApp {
-    func executeForegroundActions() {
-        // 포그라운드 실시간 걸음 수 추적 시작
-        appCoordinator.startStepUpdates()
-        // 백그라운드 스케줄링 모두 취소
-        BGTaskManager.shared.cancelAll()
-    }
-    
-    func executeBackgroundActions() {
-        // 포그라운드 실시간 걸음 수 추적 종료
-        appCoordinator.stopStepUpdates()
-        // 백그라운드 작업 스케줄링
-        BGTaskManager.shared.scheduleAppRefresh(.step)
     }
 }

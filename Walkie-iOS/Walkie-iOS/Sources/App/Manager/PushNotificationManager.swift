@@ -122,7 +122,7 @@ enum NotificationLiterals {
     var body: String {
         switch self {
         case .eggHatch:
-            return "어서 가서 꺠워주세요"
+            return "어서 가서 깨워주세요"
         }
     }
 }

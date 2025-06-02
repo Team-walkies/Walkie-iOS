@@ -406,6 +406,7 @@ private extension HomeViewModel {
                     print("🏃 홈 뷰모델 걸음 수 업데이트 에러: \(error.localizedDescription) 🏃")
                 }
             } receiveValue: { [weak self] isHatch in
+                guard let self else { return }
                 if isHatch {
                     let homeState = HomeStatsState(
                         hasEgg: false,
@@ -416,10 +417,10 @@ private extension HomeViewModel {
                         ],
                         eggEffectImage: nil
                     )
-                    self?.homeStatsState = .loaded(homeState)
+                    self.homeStatsState = .loaded(homeState)
                     print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
                 } else {
-                    self?.updateLeftStep()
+                    self.updateLeftStep()
                     print("🏃 홈 뷰모델 걸음 수 업데이트 완료 🏃")
                 }
             }

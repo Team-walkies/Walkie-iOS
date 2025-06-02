@@ -86,9 +86,6 @@ struct TabBarView: View {
                     WalkieCommonAsset.gray50.swiftUIColor
                         .frame(height: geometry.safeAreaInsets.bottom)
                 }
-                .onAppear {
-                    appCoordinator.startStepUpdates()
-                }
             }
             .edgesIgnoringSafeArea(.bottom)
         }
