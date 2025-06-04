@@ -62,6 +62,12 @@ extension DIContainer {
 
 extension DIContainer {
     
+    func makeSplashViewModel(
+        appCoordinator: AppCoordinator
+    ) -> SplashViewModel {
+        return SplashViewModel(appCoordinator: appCoordinator)
+    }
+    
     func makeHomeViewModel(appCoordinator: AppCoordinator) -> HomeViewModel {
         return HomeViewModel(
             getEggPlayUseCase: resolveGetEggPlayUseCase(),
@@ -178,6 +184,16 @@ extension DIContainer {
 }
 
 extension DIContainer {
+    
+    func buildSplashView(
+        appCoordinator: AppCoordinator
+    ) -> SplashView {
+        return SplashView(
+            splashViewModel: self.makeSplashViewModel(
+                appCoordinator: appCoordinator
+            )
+        )
+    }
     
     // MARK: - Main Views
     func buildTabBarView() -> TabBarView {

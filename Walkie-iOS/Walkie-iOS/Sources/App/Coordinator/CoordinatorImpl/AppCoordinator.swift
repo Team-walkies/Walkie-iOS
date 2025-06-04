@@ -43,7 +43,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     init(diContainer: DIContainer) {
         self.diContainer = diContainer
-        startSplash()
         initializeStepCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
@@ -62,7 +61,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     func buildScene(_ scene: AppScene) -> some View {
         switch scene {
         case .splash:
-            SplashView()
+            diContainer.buildSplashView(appCoordinator: self)
         case .nickname:
             diContainer.buildNicknameView()
         case .login:
@@ -114,14 +113,17 @@ final class AppCoordinator: Coordinator, ObservableObject {
             let cancelAction,
             let checkAction,
             let checkTitle,
-            let cancelTitle
+            let cancelTitle,
+            let tapDismiss
         ):
             ZStack {
                 Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
                     .ignoresSafeArea()
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.25)) {
-                            self.dismissFullScreenCover()
+                            if tapDismiss {
+                                self.dismissFullScreenCover()
+                            }
                         }
                     }
                 Modal(
@@ -134,7 +136,9 @@ final class AppCoordinator: Coordinator, ObservableObject {
                         cancelAction()
                     },
                     checkButtonAction: {
-                        self.dismissFullScreenCover()
+                        if tapDismiss {
+                            self.dismissFullScreenCover()
+                        }
                         checkAction()
                     },
                     checkButtonTitle: checkTitle,
@@ -191,7 +195,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
     }
     
-    private func startSplash() {
+    func startSplash() {
         currentScene = .splash
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.updateCurrentScene()
@@ -211,7 +215,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
         cancelButtonAction: @escaping () -> Void,
         checkButtonAction: @escaping () -> Void,
         checkButtonTitle: String = "확인",
-        cancelButtonTitle: String = "취소"
+        cancelButtonTitle: String = "취소",
+        tapDismiss: Bool = true
     ) {
         presentFullScreenCover(
             AppFullScreenCover.alert(
@@ -222,7 +227,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 cancelAction: cancelButtonAction,
                 checkAction: checkButtonAction,
                 checkTitle: checkButtonTitle,
-                cancelTitle: cancelButtonTitle
+                cancelTitle: cancelButtonTitle,
+                tapDismiss: tapDismiss
             ),
             onDismiss: nil
         )
