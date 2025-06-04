@@ -30,6 +30,10 @@ extension View {
     ) -> some View {
         modifier(HapticOnTapModifier(style: style))
     }
+    
+    func walkieTouchEffect() -> some View {
+        self.buttonStyle(WalkieTouchEffect())
+    }
 }
 
 // MARK: - AlignmentModifier

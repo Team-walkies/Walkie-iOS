@@ -58,7 +58,7 @@ struct TabBarView: View {
                                     }
                                 )
                                 .frame(maxWidth: .infinity)
-                                .buttonStyle(WalkieTouchEffect())
+                                .walkieTouchEffect()
                             }
                         }
                         .frame(height: 52)
