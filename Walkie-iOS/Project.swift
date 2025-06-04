@@ -1,6 +1,6 @@
 import ProjectDescription
 
-let walkieVersion: String = "1.0.3"
+let walkieVersion: String = "1.0.4"
 let plistVersion: Plist.Value = .string(walkieVersion)
 let settingVersion: SettingValue = .string(walkieVersion)
 
