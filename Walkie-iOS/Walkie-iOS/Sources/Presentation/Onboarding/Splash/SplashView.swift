@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SplashView: View {
+    
+    @StateObject var splashViewModel: SplashViewModel
         
     var body: some View {
         ZStack {
@@ -17,5 +19,8 @@ struct SplashView: View {
                 .frame(width: 200, height: 200)
         }
         .edgesIgnoringSafeArea(.all)
+        .onAppear {
+            splashViewModel.action(.fetchVersion)
+        }
     }
 }

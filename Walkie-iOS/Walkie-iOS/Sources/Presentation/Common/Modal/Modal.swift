@@ -44,6 +44,7 @@ struct Modal: View {
                 .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 4)
+                .multilineTextAlignment(.center)
             
             Text(content)
                 .font(.B2)

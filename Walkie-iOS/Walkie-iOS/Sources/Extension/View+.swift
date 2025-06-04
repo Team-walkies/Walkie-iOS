@@ -24,6 +24,16 @@ extension View {
     func popGestureEnabled(_ enabled: Bool) -> some View {
         background(PopGestureConfigurator(enabled: enabled))
     }
+    
+    func applyHaptic(
+        _ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium
+    ) -> some View {
+        modifier(HapticOnTapModifier(style: style))
+    }
+    
+    func walkieTouchEffect() -> some View {
+        self.buttonStyle(WalkieTouchEffect())
+    }
 }
 
 // MARK: - AlignmentModifier
@@ -135,5 +145,19 @@ extension View {
         } else {
             self.skeletonGray200()
         }
+    }
+}
+
+// Haptic
+
+struct HapticOnTapModifier: ViewModifier {
+    
+    let style: UIImpactFeedbackGenerator.FeedbackStyle
+    
+    func body(content: Content) -> some View {
+        content
+            .onTapGesture {
+                HapticManager.shared.impact(style: style)
+            }
     }
 }

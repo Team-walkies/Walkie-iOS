@@ -58,6 +58,7 @@ struct TabBarView: View {
                                     }
                                 )
                                 .frame(maxWidth: .infinity)
+                                .walkieTouchEffect()
                             }
                         }
                         .frame(height: 52)

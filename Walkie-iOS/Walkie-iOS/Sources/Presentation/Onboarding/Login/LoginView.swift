@@ -114,7 +114,9 @@ struct LoginView: View {
                                 cancelAction: {},
                                 checkAction: {},
                                 checkTitle: "확인",
-                                cancelTitle: ""),
+                                cancelTitle: "",
+                                tapDismiss: true
+                            ),
                         onDismiss: {
                             loginViewModel.state = .loading
                         }

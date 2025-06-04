@@ -13,6 +13,10 @@ enum URLConstant {
     
     static let baseURL = Config.baseURL
     
+    // MARK: - AppStore URL
+    
+    static let appStoreURL = "itms-apps://itunes.apple.com/app/id6742345668"
+    
     // MARK: - URL Path
     
     // auth
