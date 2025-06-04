@@ -84,6 +84,7 @@ let project = Project(
                 .external(name: "FirebaseCore"),
                 .external(name: "FirebaseMessaging"),
                 .external(name: "FirebaseAnalytics"),
+                .external(name: "FirebaseRemoteConfig"),
                 .external(name: "Moya"),
                 .external(name: "CombineMoya"),
                 .external(name: "KakaoSDKAuth"),
