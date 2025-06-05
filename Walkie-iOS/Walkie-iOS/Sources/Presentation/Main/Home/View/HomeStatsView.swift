@@ -96,29 +96,26 @@ struct HomeStatsView: View {
                 Spacer()
                 
                 if homeStatsState.hasEgg {
-                    if !showWarning {
-                        ZStack {
-                            Image(.imgSpeechbubble)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 136, height: 45)
-                            
-                            HStack(spacing: 0) {
-                                Text("부화까지 ")
-                                    .font(.B2)
-                                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
-                                
-                                Text("\(leftStepState.leftStep)걸음")
-                                    .font(.B2)
-                                    .foregroundColor(.white)
-                            }
-                            .padding(.top, -8)
-                        }
-                        .padding(.bottom, -17)
+                    ZStack {
+                        Image(.imgSpeechbubble)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 136, height: 45)
                         
+                        HStack(spacing: 0) {
+                            Text("부화까지 ")
+                                .font(.B2)
+                                .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            
+                            Text("\(leftStepState.leftStep)걸음")
+                                .font(.B2)
+                                .foregroundColor(.white)
+                        }
+                        .padding(.top, -8)
                     }
+                    .padding(.bottom, -17)
                     
-                    Image(showWarning ? .eggEmpty : homeStatsState.eggImage)
+                    Image(homeStatsState.eggImage)
                         .resizable()
                         .scaledToFill()
                         .frame(width: eggWidth, height: eggHeight)
