@@ -12,6 +12,7 @@ class BaseMemberUseCase {
     // MARK: - Dependency
     
     let memberRepository: MemberRepository
+    let stepStatusStore: StepStatusStore
     
     // MARK: - Properties
     
@@ -19,7 +20,8 @@ class BaseMemberUseCase {
     
     // MARK: - Life Cycle
     
-    init(memberRepository: MemberRepository) {
+    init(memberRepository: MemberRepository, stepStatusStore: StepStatusStore) {
         self.memberRepository = memberRepository
+        self.stepStatusStore = stepStatusStore
     }
 }

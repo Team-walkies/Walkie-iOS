@@ -438,6 +438,20 @@ private extension HomeViewModel {
     
     func updateLeftStep() {
         let leftStep = stepStatusStore.getNeedStep() - stepStatusStore.getNowStep()
-        self.leftStepState = .loaded(LeftStepState(leftStep: leftStep))
+        if leftStep > 10000 {
+            let homeState = HomeStatsState(
+                hasEgg: false,
+                eggImage: .eggEmpty,
+                eggGradientColors: [
+                    WalkieCommonAsset.blue300.swiftUIColor,
+                    WalkieCommonAsset.blue200.swiftUIColor
+                ],
+                eggEffectImage: nil
+            )
+            self.homeStatsState = .loaded(homeState)
+            self.leftStepState = .loaded(LeftStepState(leftStep: 0))
+        } else {
+            self.leftStepState = .loaded(LeftStepState(leftStep: leftStep))
+        }
     }
 }

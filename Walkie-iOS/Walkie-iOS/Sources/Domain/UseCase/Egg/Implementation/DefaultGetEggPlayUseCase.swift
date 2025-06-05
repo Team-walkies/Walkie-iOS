@@ -10,8 +10,13 @@ import Combine
 final class DefaultGetEggPlayUseCase: BaseMemberUseCase, GetEggPlayUseCase {
     
     func execute() -> AnyPublisher<EggEntity, NetworkError> {
-        memberRepository.getEggPlaying()
+        let data = memberRepository.getEggPlaying()
             .mapToNetworkError()
+        return data
+            .handleEvents(receiveOutput: { entity in
+                print("알 걸음 수 초기화 완료")
+                self.stepStatusStore.setNeedStep(entity.needStep)
+            })
             .eraseToAnyPublisher()
     }
 }
