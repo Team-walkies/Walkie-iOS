@@ -227,6 +227,7 @@ final class HomeViewModel: ViewModelable {
                         eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
                     self.homeStatsState = .loaded(homeStatsState)
+                    self.leftStepState = .loaded(LeftStepState(leftStep: eggEntity.needStep - eggEntity.nowStep))
                 }, receiveFailure: { _, error in
                     if let netErr = error {
                         switch netErr {

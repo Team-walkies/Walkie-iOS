@@ -40,7 +40,7 @@ final class DefaultStepStatusStore: StepStatusStore {
     
     func getNeedStep() -> Int {
         guard let needStep else {
-            self.setNowStep(.max)
+            self.setNeedStep(.max)
             return .max
         }
         return needStep
