@@ -1,5 +1,9 @@
 import ProjectDescription
 
+let walkieVersion: String = "1.0.4"
+let plistVersion: Plist.Value = .string(walkieVersion)
+let settingVersion: SettingValue = .string(walkieVersion)
+
 let project = Project(
     name: "Walkie-iOS",
     options: .options(
@@ -15,7 +19,7 @@ let project = Project(
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleDisplayName": "Walkie",
-                    "CFBundleShortVersionString": "1.0.3",
+                    "CFBundleShortVersionString": plistVersion,
                     "UILaunchScreen": [
                         "UIColorName": "",
                         "UIImageName": "",
@@ -95,7 +99,7 @@ let project = Project(
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
-                    "MARKETING_VERSION": "1.0.3",
+                    "MARKETING_VERSION": settingVersion,
                     "OTHER_LDFLAGS": "-ObjC"
                 ],
                 configurations: [
@@ -111,7 +115,7 @@ let project = Project(
             bundleId: "com.walkie.ios.walkiewidget",
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "$(PRODUCT_NAME)",
-                "CFBundleShortVersionString": "1.0.3",
+                "CFBundleShortVersionString": plistVersion,
                 "NSExtension": [
                     "NSExtensionPointIdentifier": "com.apple.widgetkit-extension"
                 ],
@@ -131,7 +135,7 @@ let project = Project(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "TARGETED_DEVICE_FAMILY": "1",
-                    "MARKETING_VERSION": "1.0.3"
+                    "MARKETING_VERSION": settingVersion
                 ],
                 configurations: []
             )
