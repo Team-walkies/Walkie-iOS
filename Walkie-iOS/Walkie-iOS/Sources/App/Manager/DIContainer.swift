@@ -42,7 +42,7 @@ extension DIContainer {
     }
     
     func resolveGetEggPlayUseCase() -> GetEggPlayUseCase {
-        return DefaultGetEggPlayUseCase(memberRepository: memberRepo)
+        return DefaultGetEggPlayUseCase(memberRepository: memberRepo, stepStatusStore: stepStatusStore)
     }
     
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
@@ -72,7 +72,8 @@ extension DIContainer {
         return HomeViewModel(
             getEggPlayUseCase: resolveGetEggPlayUseCase(),
             getCharacterPlayUseCase: DefaultGetWalkingCharacterUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             ),
             getEggCountUseCase: DefaultGetEggCountUseCase(
                 eggRepository: eggRepo, stepStatusStore: stepStatusStore
@@ -81,7 +82,8 @@ extension DIContainer {
                 characterRepository: characterRepo
             ),
             getRecordedSpotUseCase: DefaultRecordedSpotUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             ),
             appCoordinator: appCoordinator,
             stepStatusStore: stepStatusStore
@@ -91,7 +93,8 @@ extension DIContainer {
     func makeMapViewModel() -> MapViewModel {
         return MapViewModel(
             getCharacterPlayUseCase: DefaultGetCharacterPlayUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }
@@ -110,13 +113,16 @@ extension DIContainer {
                 memberRepository: memberRepo
             ),
             patchProfileUseCase: DefaultPatchProfileUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             ),
             getProfileUseCase: DefaultGetProfileUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             ),
             withdrawUseCase: DefaultWithdrawUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }
@@ -145,7 +151,8 @@ extension DIContainer {
                 characterRepository: characterRepo
             ),
             patchWalkingCharacterUseCase: DefaultPatchWalkingCharacterUseCase(
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }

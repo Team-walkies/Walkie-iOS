@@ -31,11 +31,19 @@ final class DefaultStepStatusStore: StepStatusStore {
     
     // MARK: - Implement
     func getNowStep() -> Int {
-        return nowStep ?? 0
+        guard let nowStep else {
+            self.setNowStep(0)
+            return 0
+        }
+        return nowStep
     }
     
     func getNeedStep() -> Int {
-        return needStep ?? .max
+        guard let needStep else {
+            self.setNowStep(.max)
+            return .max
+        }
+        return needStep
     }
     
     func getLastUpdateTime() -> Date {
