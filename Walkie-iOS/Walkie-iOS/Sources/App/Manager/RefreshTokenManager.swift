@@ -28,12 +28,23 @@ final class RefreshTokenManager {
         let pub = service
             .reissue(refreshToken: token)
             .mapError { $0 as? MoyaError ?? .underlying($0, nil) }
-            .handleEvents(receiveOutput: { dto in
-                try? TokenKeychainManager.shared.saveAccessToken(dto.accessToken)
-                try? TokenKeychainManager.shared.saveRefreshToken(dto.refreshToken)
-            }, receiveCompletion: { _ in
-                self.lock.lock(); self.refreshPublisher = nil; self.lock.unlock()
-            })
+            .handleEvents(
+                receiveOutput: { dto in
+                    try? TokenKeychainManager.shared.saveAccessToken(dto.accessToken)
+                    try? TokenKeychainManager.shared.saveRefreshToken(dto.refreshToken)
+                },
+                receiveCompletion: { completion in
+                    if case .failure = completion { // 재발급 실패
+                        NotificationCenter.default.post(
+                            name: .reissueFailed,
+                            object: nil
+                        )
+                    }
+                    self.lock.lock()
+                    self.refreshPublisher = nil
+                    self.lock.unlock()
+                }
+            )
             .share()
             .eraseToAnyPublisher()
         
