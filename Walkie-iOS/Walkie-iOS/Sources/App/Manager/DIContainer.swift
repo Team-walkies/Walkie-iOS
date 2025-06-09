@@ -65,7 +65,13 @@ extension DIContainer {
     func makeSplashViewModel(
         appCoordinator: AppCoordinator
     ) -> SplashViewModel {
-        return SplashViewModel(appCoordinator: appCoordinator)
+        return SplashViewModel(
+            appCoordinator: appCoordinator,
+            getProfileUseCase: DefaultGetProfileUseCase(
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
+            )
+        )
     }
     
     func makeHomeViewModel(appCoordinator: AppCoordinator) -> HomeViewModel {

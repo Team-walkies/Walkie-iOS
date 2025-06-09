@@ -15,6 +15,7 @@ final class SplashViewModel: NSObject, ViewModelable {
     private let settings = RemoteConfigSettings()
     private var cancellables = Set<AnyCancellable>()
     let appCoordinator: AppCoordinator
+    private let getProfileUseCase: GetProfileUseCase
     
     enum Action {
         case fetchVersion
@@ -29,9 +30,11 @@ final class SplashViewModel: NSObject, ViewModelable {
     @Published var state: SplashViewState = .loading
     
     init(
-        appCoordinator: AppCoordinator
+        appCoordinator: AppCoordinator,
+        getProfileUseCase: GetProfileUseCase
     ) {
         self.appCoordinator = appCoordinator
+        self.getProfileUseCase = getProfileUseCase
         super.init()
         
         settings.minimumFetchInterval = 0
@@ -76,7 +79,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                     tapDismiss: false
                 )
             } else {
-                appCoordinator.startSplash()
+                getProfile()
             }
         } catch {
             self.state = .error
@@ -103,5 +106,18 @@ final class SplashViewModel: NSObject, ViewModelable {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
+    }
+    
+    private func getProfile() {
+        getProfileUseCase.execute()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, _ in
+                    self.appCoordinator.startSplash()
+                }, receiveFailure: { _, error  in
+                    print(String(describing: error?.localizedDescription))
+                }
+            )
+            .store(in: &cancellables)
     }
 }
