@@ -88,7 +88,8 @@ struct TabBarView: View {
                 }
             }
             .edgesIgnoringSafeArea(.bottom)
-        }.onAppear {
+        }
+        .onAppear {
             appCoordinator.executeForegroundActions()
         }
     }
