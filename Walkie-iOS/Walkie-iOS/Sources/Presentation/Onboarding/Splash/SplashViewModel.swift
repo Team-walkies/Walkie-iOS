@@ -79,7 +79,11 @@ final class SplashViewModel: NSObject, ViewModelable {
                     tapDismiss: false
                 )
             } else {
-                getProfile()
+                if TokenKeychainManager.shared.hasToken() {
+                    getProfile()
+                } else {
+                    appCoordinator.startSplash()
+                }
             }
         } catch {
             self.state = .error
@@ -115,7 +119,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                 receiveValue: { _, _ in
                     self.appCoordinator.startSplash()
                 }, receiveFailure: { _, error  in
-                    print(String(describing: error?.localizedDescription))
+                    self.appCoordinator.startSplash()
                 }
             )
             .store(in: &cancellables)
