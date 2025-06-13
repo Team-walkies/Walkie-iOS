@@ -81,10 +81,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
             diContainer.buildSignupView()
         case .egg:
             diContainer.buildEggView(appCoordinator: self)
+                .popGestureEnabled(true)
         case .character:
             diContainer.buildCharacterView()
+                .popGestureEnabled(true)
         case .review:
             diContainer.buildReviewView()
+                .popGestureEnabled(true)
         case let .setting(item, viewModel):
             buildSetting(item, viewModel: viewModel)
         case .service(let item):
