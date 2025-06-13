@@ -116,17 +116,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
             let cancelAction,
             let checkAction,
             let checkTitle,
-            let cancelTitle,
-            let tapDismiss
+            let cancelTitle
         ):
             ZStack {
                 Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
                     .ignoresSafeArea()
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.25)) {
-                            if tapDismiss {
-                                self.dismissFullScreenCover()
-                            }
+                            self.dismissFullScreenCover()
                         }
                     }
                 Modal(
@@ -139,9 +136,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                         cancelAction()
                     },
                     checkButtonAction: {
-                        if tapDismiss {
-                            self.dismissFullScreenCover()
-                        }
+                        self.dismissFullScreenCover()
                         checkAction()
                     },
                     checkButtonTitle: checkTitle,
@@ -218,8 +213,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         cancelButtonAction: @escaping () -> Void,
         checkButtonAction: @escaping () -> Void,
         checkButtonTitle: String = "확인",
-        cancelButtonTitle: String = "취소",
-        tapDismiss: Bool = true
+        cancelButtonTitle: String = "취소"
     ) {
         presentFullScreenCover(
             AppFullScreenCover.alert(
@@ -230,8 +224,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 cancelAction: cancelButtonAction,
                 checkAction: checkButtonAction,
                 checkTitle: checkButtonTitle,
-                cancelTitle: cancelButtonTitle,
-                tapDismiss: tapDismiss
+                cancelTitle: cancelButtonTitle
             ),
             onDismiss: nil
         )

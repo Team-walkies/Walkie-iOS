@@ -71,15 +71,14 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
         cancelAction: () -> Void,
         checkAction: () -> Void,
         checkTitle: String,
-        cancelTitle: String,
-        tapDismiss: Bool
+        cancelTitle: String
     )
     
     var id: String {
         switch self {
         case .hatchEgg:
             return "hatchEgg"
-        case .alert(let title, _, _, _, _, _, _, _, _):
+        case .alert(let title, _, _, _, _, _, _, _):
             return "alert_\(title)"
         }
     }

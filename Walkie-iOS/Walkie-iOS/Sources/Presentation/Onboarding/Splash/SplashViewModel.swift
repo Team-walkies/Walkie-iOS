@@ -66,18 +66,17 @@ final class SplashViewModel: NSObject, ViewModelable {
                 lowerThan: remoteVersion
             )
             if needsUpdate {
-                appCoordinator.buildAlert(
-                    title: "워키를 안전한 버전으로\n업데이트 해주세요.",
-                    content: "여러 사용성과 안전성을 업데이트 했어요.",
-                    style: .primary,
-                    button: .onebutton,
-                    cancelButtonAction: {},
-                    checkButtonAction: {
-                        self.openAppStore()
-                    },
-                    checkButtonTitle: "업데이트",
-                    tapDismiss: false
-                )
+//                appCoordinator.buildAlert(
+//                    title: "워키를 안전한 버전으로\n업데이트 해주세요.",
+//                    content: "여러 사용성과 안전성을 업데이트 했어요.",
+//                    style: .primary,
+//                    button: .onebutton,
+//                    cancelButtonAction: {},
+//                    checkButtonAction: {
+//                        self.openAppStore()
+//                    },
+//                    checkButtonTitle: "업데이트"
+//                )
             } else {
                 if TokenKeychainManager.shared.hasToken() {
                     getProfile()
@@ -104,13 +103,13 @@ final class SplashViewModel: NSObject, ViewModelable {
         return false
     }
     
-    private func openAppStore() {
-        guard let url = URL(string: URLConstant.appStoreURL) else { return }
-        
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        }
-    }
+//    func openAppStore() {
+//        guard let url = URL(string: URLConstant.appStoreURL) else { return }
+//        
+//        if UIApplication.shared.canOpenURL(url) {
+//            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+//        }
+//    }
     
     private func getProfile() {
         getProfileUseCase.execute()
