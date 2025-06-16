@@ -13,6 +13,7 @@ struct OnboardingCompleteView: View {
     
     @State var tapStart: Bool = false
     @EnvironmentObject private var appCoordinator: AppCoordinator
+    @Environment(\.safeScreenHeight) private var safeScreenHeight
     
     @State private var showCompleteImage = false
     @State private var showTitle = false
@@ -27,10 +28,11 @@ struct OnboardingCompleteView: View {
                 alignment: .center,
                 spacing: 24
             ) {
+                let imgSize = (safeScreenHeight - 58) * 0.4
                 Image(.imgGift)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 280, height: 280)
+                    .frame(width: imgSize, height: imgSize)
                     .opacity(showCompleteImage ? 1 : 0)
                 
                 VStack(
