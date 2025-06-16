@@ -30,7 +30,7 @@ struct UpdateBSView: View {
             }
             
             HStack(
-                spacing: 8
+                spacing: 0
             ) {
                 CTAButton(
                     title: "앱을 종료할게요",
@@ -55,6 +55,7 @@ struct UpdateBSView: View {
                     }
                 )
             }
+            .padding(.horizontal, 8)
         }
     }
     
@@ -65,8 +66,4 @@ struct UpdateBSView: View {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
-}
-
-#Preview {
-    UpdateBSView()
 }

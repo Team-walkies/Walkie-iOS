@@ -22,5 +22,12 @@ struct SplashView: View {
         .onAppear {
             splashViewModel.action(.fetchVersion)
         }
+        .permissionBottomSheet(
+            isPresented: $splashViewModel.showUpdateNeed,
+            height: 198,
+            content: {
+                UpdateBSView()
+            }
+        )
     }
 }

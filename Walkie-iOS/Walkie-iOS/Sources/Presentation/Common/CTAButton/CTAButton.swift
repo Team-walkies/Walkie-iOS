@@ -81,7 +81,7 @@ struct CTAButton: View {
             }
         )
         .disabled(size == .modal ? false : !isEnabled)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, size == .modal ? 8 : 16)
     }
 }
 
