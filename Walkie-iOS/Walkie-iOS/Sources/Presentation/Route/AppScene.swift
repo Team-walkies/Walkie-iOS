@@ -60,13 +60,13 @@ enum AppSheet: AppRoute {
             return height
         }
     }
-
+    
     @ViewBuilder
     var view: some View {
-      switch self {
-      case .homeAlarm(_, let view):
-          view
-      }
+        switch self {
+        case .homeAlarm(_, let view):
+            view
+        }
     }
 }
 

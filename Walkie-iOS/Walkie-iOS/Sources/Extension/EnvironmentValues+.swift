@@ -33,6 +33,18 @@ private struct SafeScreenHeightKey: EnvironmentKey {
     }()
 }
 
+private struct SafeAreaBottomKey: EnvironmentKey {
+    static let defaultValue: CGFloat = {
+        let window = UIApplication.shared
+            .connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first?
+            .windows
+            .first { $0.isKeyWindow }
+        return window?.safeAreaInsets.bottom ?? 0
+    }()
+}
+
 extension EnvironmentValues {
     var screenWidth: CGFloat {
         self[ScreenWidthKey.self]
@@ -48,5 +60,9 @@ extension EnvironmentValues {
     
     var safeScreenHeight: CGFloat {
         self[SafeScreenHeightKey.self]
+    }
+    
+    var safeAreaBottom: CGFloat {
+        self[SafeAreaBottomKey.self]
     }
 }

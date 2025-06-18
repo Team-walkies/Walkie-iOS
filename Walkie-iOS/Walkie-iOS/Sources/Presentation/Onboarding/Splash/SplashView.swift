@@ -10,6 +10,7 @@ import SwiftUI
 struct SplashView: View {
     
     @StateObject var splashViewModel: SplashViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
         
     var body: some View {
         ZStack {
@@ -22,12 +23,14 @@ struct SplashView: View {
         .onAppear {
             splashViewModel.action(.fetchVersion)
         }
-        .permissionBottomSheet(
-            isPresented: $splashViewModel.showUpdateNeed,
-            height: 198,
-            content: {
-                UpdateBSView()
+        .onChange(of: splashViewModel.showUpdateNeed) { _, new in
+            guard new else { return }
+            withAnimation {
+                appCoordinator.buildBottomSheet(height: 198) {
+                    UpdateBSView()
+                        .background(Color.white)
+                }
             }
-        )
+        }
     }
 }

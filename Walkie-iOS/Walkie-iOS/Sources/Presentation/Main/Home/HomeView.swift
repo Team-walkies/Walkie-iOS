@@ -14,6 +14,7 @@ struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.screenHeight) var screenHeight
+    @Environment(\.safeAreaBottom) private var bottomInset
     @State var navigateAlarmList: Bool = false
     
     @State private var showLocationBS: Bool = false
@@ -151,24 +152,6 @@ struct HomeView: View {
                 )
             }
         }
-        .permissionBottomSheet(
-            isPresented: $showBS,
-            height: (showLocationBS && showMotionBS) ? 342 : (showAlarmBS ? 369 : 266)) {
-                if showLocationBS || showMotionBS {
-                    HomeAuthBSView(
-                        viewModel: viewModel,
-                        isPresented: $showBS,
-                        showLocation: showLocationBS,
-                        showMotion: showMotionBS
-                    )
-                } else if showAlarmBS {
-                    HomeAlarmBSView(isPresented: $showBS)
-                }
-            }
-            .navigationDestination(isPresented: $navigateAlarmList) {
-                DIContainer.shared.buildAlarmListView()
-                    .navigationBarBackButtonHidden()
-            }
     }
     
     private func handlePermissionBS() {
@@ -178,5 +161,35 @@ struct HomeView: View {
         showLocationBS = !state.isLocationChecked.isAuthorized
         showMotionBS = !state.isMotionChecked.isAuthorized
         showAlarmBS = !state.isAlarmChecked.isAuthorized
+        
+        let needsLocation = !state.isLocationChecked.isAuthorized
+        let needsMotion   = !state.isMotionChecked.isAuthorized
+        let needsAlarm    = !state.isAlarmChecked.isAuthorized
+        
+        let isPresented = Binding<Bool>(
+            get: { appCoordinator.sheet != nil },
+            set: { new in
+                if !new { appCoordinator.dismissSheet() }
+            }
+        )
+        
+        if needsLocation || needsMotion {
+            let height = needsLocation && needsMotion ? 342 : 266
+            appCoordinator.buildBottomSheet(height: CGFloat(height)) {
+                HomeAuthBSView(
+                    viewModel: viewModel,
+                    isPresented: isPresented,
+                    showLocation: needsLocation,
+                    showMotion: needsMotion
+                )
+                .padding(.bottom, bottomInset)
+            }
+        } else if needsAlarm {
+            appCoordinator.buildBottomSheet(height: 369) {
+                HomeAlarmBSView(isPresented: isPresented)
+            }
+        } else {
+            appCoordinator.dismissSheet()
+        }
     }
 }
