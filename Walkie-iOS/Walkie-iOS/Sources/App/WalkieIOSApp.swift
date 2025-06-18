@@ -44,6 +44,17 @@ struct WalkieIOSApp: App {
                             }
                         )
                         .transaction { $0.disablesAnimations = true }
+                        .permissionBottomSheet(
+                            isPresented: Binding(
+                                get: { appCoordinator.sheet != nil },
+                                set: {
+                                    if !$0 { appCoordinator.dismissSheet() }
+                                }
+                            ),
+                            height: appCoordinator.appSheet?.height ?? 0
+                        ) {
+                            appCoordinator.appSheet?.view
+                        }
                     ToastContainer()
                         .ignoresSafeArea(.all, edges: .bottom)
                         .frame(alignment: .bottom)

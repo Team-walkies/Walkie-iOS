@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum AppScene: AppRoute {
     
@@ -38,18 +39,12 @@ enum AppScene: AppRoute {
 
 enum AppSheet: AppRoute {
     
-    case eggDetail
-    case authBottomSheet
-    case homeAlarmBottomSheet
+    case homeAlarm(height: CGFloat, content: AnyView)
     
     public var id: String {
         switch self {
-        case .eggDetail:
-            return "eggDetail"
-        case .authBottomSheet:
-            return "authBottomSheet"
-        case .homeAlarmBottomSheet:
-            return "homeAlarmBottomSheet"
+        case .homeAlarm:
+            return "homeAlarm"
         }
     }
     
@@ -58,6 +53,20 @@ enum AppSheet: AppRoute {
     }
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
+    }
+    var height: CGFloat {
+        switch self {
+        case .homeAlarm(let height, _):
+            return height
+        }
+    }
+
+    @ViewBuilder
+    var view: some View {
+      switch self {
+      case .homeAlarm(_, let view):
+          view
+      }
     }
 }
 

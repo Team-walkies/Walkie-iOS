@@ -101,6 +101,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     @ViewBuilder
     func buildSheet(_ sheet: AppSheet) -> some View {
+        
     }
     
     @ViewBuilder
@@ -227,6 +228,18 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 cancelTitle: cancelButtonTitle
             ),
             onDismiss: nil
+        )
+    }
+    
+    func buildBottomSheet<Content: View>(
+        height: CGFloat,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
+        presentSheet(
+            AppSheet.homeAlarm(
+                height: height,
+                content: AnyView(content())
+            )
         )
     }
     
