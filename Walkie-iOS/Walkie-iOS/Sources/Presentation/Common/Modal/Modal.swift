@@ -65,7 +65,9 @@ struct Modal: View {
                         checkButtonAction()
                     }
             case .twobutton:
-                HStack(spacing: -24) {
+                HStack(
+                    spacing: -8
+                ) {
                     CTAButton(
                         title: cancelButtonTitle,
                         style: .modal,

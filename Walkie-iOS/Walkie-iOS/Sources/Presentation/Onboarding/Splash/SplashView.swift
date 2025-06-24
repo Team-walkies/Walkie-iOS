@@ -10,6 +10,7 @@ import SwiftUI
 struct SplashView: View {
     
     @StateObject var splashViewModel: SplashViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
         
     var body: some View {
         ZStack {
@@ -21,6 +22,15 @@ struct SplashView: View {
         .edgesIgnoringSafeArea(.all)
         .onAppear {
             splashViewModel.action(.fetchVersion)
+        }
+        .onChange(of: splashViewModel.showUpdateNeed) { _, new in
+            guard new else { return }
+            withAnimation {
+                appCoordinator.buildBottomSheet(height: 198) {
+                    UpdateBSView()
+                        .background(Color.white)
+                }
+            }
         }
     }
 }

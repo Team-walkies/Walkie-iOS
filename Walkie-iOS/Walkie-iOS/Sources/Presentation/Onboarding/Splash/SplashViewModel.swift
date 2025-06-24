@@ -16,6 +16,7 @@ final class SplashViewModel: NSObject, ViewModelable {
     private var cancellables = Set<AnyCancellable>()
     let appCoordinator: AppCoordinator
     private let getProfileUseCase: GetProfileUseCase
+    var showUpdateNeed: Bool = false
     
     enum Action {
         case fetchVersion
@@ -66,18 +67,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                 lowerThan: remoteVersion
             )
             if needsUpdate {
-                appCoordinator.buildAlert(
-                    title: "워키를 안전한 버전으로\n업데이트 해주세요.",
-                    content: "여러 사용성과 안전성을 업데이트 했어요.",
-                    style: .primary,
-                    button: .onebutton,
-                    cancelButtonAction: {},
-                    checkButtonAction: {
-                        self.openAppStore()
-                    },
-                    checkButtonTitle: "업데이트",
-                    tapDismiss: false
-                )
+                showUpdateNeed = true
             } else {
                 if TokenKeychainManager.shared.hasToken() {
                     getProfile()
@@ -102,14 +92,6 @@ final class SplashViewModel: NSObject, ViewModelable {
             if nums1[i] > nums2[i] { return false }
         }
         return false
-    }
-    
-    private func openAppStore() {
-        guard let url = URL(string: URLConstant.appStoreURL) else { return }
-        
-        if UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
-        }
     }
     
     private func getProfile() {
