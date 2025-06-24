@@ -35,9 +35,7 @@ struct CharacterView: View {
                                         : WalkieCommonAsset.gray300.swiftUIColor)
                                     .padding(4)
                                     .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.01)) {
-                                            viewModel.action(.willSelectCategory(.jellyfish))
-                                        }
+                                        viewModel.action(.willSelectCategory(.jellyfish))
                                     }
                                 Text(CharacterType.dino.rawValue)
                                     .font(.H3)
@@ -47,9 +45,7 @@ struct CharacterView: View {
                                         : WalkieCommonAsset.gray300.swiftUIColor)
                                     .padding(4)
                                     .onTapGesture {
-                                        withAnimation(.smooth(duration: 0.01)) {
-                                            viewModel.action(.willSelectCategory(.dino))
-                                        }
+                                        viewModel.action(.willSelectCategory(.dino))
                                     }
                             }.padding(.bottom, 4)
                         }
@@ -167,8 +163,10 @@ private struct CharacterListView: View {
         .scrollPosition(id: $viewModel.showingCharacterType)
         .scrollTargetBehavior(.paging)
         .scrollIndicators(.never)
+        .animation(.easeInOut(duration: 0.25), value: viewModel.showingCharacterType)
     }
 }
+
 private struct CharacterTypeView: View {
     let type: CharacterType
     let viewModel: CharacterViewModel
@@ -190,36 +188,73 @@ private struct CharacterTypeView: View {
             .font(.B2)
             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
             .padding(.bottom, 20)
-            LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                switch viewModel.state {
-                case .loaded(let state):
-                    if type == .jellyfish {
-                        ForEach(JellyfishType.allCases, id: \.self) { jellyfish in
-                            JellyfishItemView(
-                                jellyfish: jellyfish,
-                                state: state,
-                                viewModel: viewModel,
-                                isPresentingBottomSheet: $isPresentingBottomSheet
-                            )
-                        }
-                    } else {
-                        ForEach(DinoType.allCases, id: \.self) { dino in
-                            DinoItemView(
-                                dino: dino,
-                                state: state,
-                                viewModel: viewModel,
-                                isPresentingBottomSheet: $isPresentingBottomSheet
-                            )
+            switch viewModel.state {
+            case .loaded(let state):
+                if type == .jellyfish {
+                    let jellyfishTypes = Array(JellyfishType.allCases)
+                    let chunked = stride(from: 0, to: jellyfishTypes.count, by: 2).map {
+                        Array(jellyfishTypes[$0..<min($0 + 2, jellyfishTypes.count)])
+                    }
+                    VStack(spacing: 11) {
+                        ForEach(chunked.indices, id: \.self) { rowIndex in
+                            HStack(spacing: 11) {
+                                ForEach(chunked[rowIndex], id: \.self) { jellyfish in
+                                    JellyfishItemView(
+                                        jellyfish: jellyfish,
+                                        state: state,
+                                        viewModel: viewModel,
+                                        isPresentingBottomSheet: $isPresentingBottomSheet
+                                    )
+                                    .frame(width: (screenWidth - 16*2 - 11)/2)
+                                }
+                                if chunked[rowIndex].count == 1 {
+                                    Spacer()
+                                        .frame(width: (screenWidth - 16*2 - 11)/2)
+                                }
+                            }
                         }
                     }
-                default:
-                    if type == .jellyfish {
-                        ForEach(JellyfishType.allCases, id: \.self) { _ in
-                            CharacterItemSkeletonView()
+                } else {
+                    let dinoTypes = Array(DinoType.allCases)
+                    let chunked = stride(from: 0, to: dinoTypes.count, by: 2).map {
+                        Array(dinoTypes[$0..<min($0 + 2, dinoTypes.count)])
+                    }
+                    VStack(spacing: 11) {
+                        ForEach(chunked.indices, id: \.self) { rowIndex in
+                            HStack(spacing: 11) {
+                                ForEach(chunked[rowIndex], id: \.self) { dino in
+                                    DinoItemView(
+                                        dino: dino,
+                                        state: state,
+                                        viewModel: viewModel,
+                                        isPresentingBottomSheet: $isPresentingBottomSheet
+                                    )
+                                    .frame(width: (screenWidth - 16*2 - 11)/2)
+                                }
+                                if chunked[rowIndex].count == 1 {
+                                    Spacer()
+                                        .frame(width: (screenWidth - 16*2 - 11)/2)
+                                }
+                            }
                         }
-                    } else {
-                        ForEach(DinoType.allCases, id: \.self) { _ in
-                            CharacterItemSkeletonView()
+                    }
+                }
+            default:
+                let items = Array(0..<10)
+                let chunked = stride(from: 0, to: items.count, by: 2).map {
+                    Array(items[$0..<min($0 + 2, items.count)])
+                }
+                VStack(spacing: 11) {
+                    ForEach(chunked.indices, id: \.self) { rowIndex in
+                        HStack(spacing: 11) {
+                            ForEach(chunked[rowIndex], id: \.self) { _ in
+                                CharacterItemSkeletonView()
+                                    .frame(width: (screenWidth - 16*2 - 11)/2)
+                            }
+                            if chunked[rowIndex].count == 1 {
+                                Spacer()
+                                    .frame(width: (screenWidth - 16*2 - 11)/2)
+                            }
                         }
                     }
                 }
@@ -229,8 +264,8 @@ private struct CharacterTypeView: View {
         .frame(width: screenWidth)
         .ignoresSafeArea()
     }
+    
 }
-
 private struct JellyfishItemView: View {
     let jellyfish: JellyfishType
     let state: CharacterViewModel.CharacterListState
