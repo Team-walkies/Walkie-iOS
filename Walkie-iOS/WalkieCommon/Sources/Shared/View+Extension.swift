@@ -17,7 +17,19 @@ public extension View {
             .lineSpacing(fontSpacing * 2)
     }
     
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner = .allCorners) -> some View {
+        let topLeading = corners.contains(.topLeft) ? radius : 0
+        let topTrailing = corners.contains(.topRight) ? radius : 0
+        let bottomLeading = corners.contains(.bottomLeft) ? radius : 0
+        let bottomTrailing = corners.contains(.bottomRight) ? radius : 0
+        
+        return clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: topLeading,
+                bottomLeadingRadius: bottomLeading,
+                bottomTrailingRadius: bottomTrailing,
+                topTrailingRadius: topTrailing
+            )
+        )
     }
 }
