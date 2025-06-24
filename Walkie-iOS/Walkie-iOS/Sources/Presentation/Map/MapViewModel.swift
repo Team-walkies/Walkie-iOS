@@ -32,7 +32,7 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
     private var timer: Timer?
     private var activity: Activity<WalkieWidgetAttributes>?
     
-    private let locationManager = LocationManager()
+    private let locationManager = LocationManager.shared
     private var totalDistance: CLLocationDistance?
     private var destinationCoord: CLLocationCoordinate2D?
     private var placeName: String = ""
