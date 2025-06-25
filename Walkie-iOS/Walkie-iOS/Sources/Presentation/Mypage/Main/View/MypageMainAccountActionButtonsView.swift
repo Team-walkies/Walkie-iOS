@@ -41,7 +41,9 @@ struct MypageMainAccountActionButtonsView: View {
                 .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
             
             Button(action: {
-                appCoordinator.push(AppScene.withdraw)
+                if case let .loaded(state) = viewModel.state {
+                    appCoordinator.push(AppScene.withdraw(nickname: state.nickname))
+                }
             }, label: {
                 Text("탈퇴하기")
                     .font(.B2)
@@ -49,12 +51,5 @@ struct MypageMainAccountActionButtonsView: View {
             })
         }
         .frame(alignment: .center)
-        .onAppear {
-            viewModel.goToRoot = { success in
-                if success {
-                    appCoordinator.changeToSplash()
-                }
-            }
-        }
     }
 }

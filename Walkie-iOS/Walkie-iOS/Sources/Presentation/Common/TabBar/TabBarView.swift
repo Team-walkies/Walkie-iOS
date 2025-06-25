@@ -22,7 +22,7 @@ struct TabBarView: View {
                     DIContainer.shared.buildHomeView(appCoordinator: appCoordinator)
                         .environmentObject(appCoordinator)
                 case .mypage:
-                    DIContainer.shared.buildMypageView()
+                    DIContainer.shared.buildMypageView(appCoordinator: appCoordinator)
                         .environmentObject(appCoordinator)
                 case .map:
                     EmptyView()

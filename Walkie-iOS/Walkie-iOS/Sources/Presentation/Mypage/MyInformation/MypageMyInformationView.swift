@@ -11,7 +11,7 @@ import WalkieCommon
 
 struct MypageMyInformationView: View {
     
-    @ObservedObject var viewModel: MypageMainViewModel
+    @StateObject var viewModel: MypageMyInformationViewModel
     @Environment(\.screenWidth) private var screenWidth
     
     var body: some View {
@@ -27,21 +27,12 @@ struct MypageMyInformationView: View {
                         .font(.H4)
                         .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                         .padding(.bottom, 12)
-                    switch viewModel.state {
-                    case .loaded(let state):
-                        SwitchOptionItemView(
-                            title: "프로필 공개",
-                            subtitle: "내 후기가 다른 사람에게 공개돼요",
-                            isOn: state.isPublic,
-                            toggle: { viewModel.action(.toggleMyInformationIsPublic) }
-                        )
-                    default:
-                        SkeletonRect(
-                            width: screenWidth - 32,
-                            height: 60,
-                            cornerRadius: 12
-                        )
-                    }
+                    SwitchOptionItemView(
+                        title: "프로필 공개",
+                        subtitle: "내 후기가 다른 사람에게 공개돼요",
+                        isOn: viewModel.state.isPublic,
+                        toggle: { viewModel.action(.togglePublicSetting) }
+                    )
                 }
                 .padding(.top, 12)
                 .padding(.horizontal, 16)
