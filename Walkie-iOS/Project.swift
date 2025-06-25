@@ -10,6 +10,24 @@ let project = Project(
         defaultKnownRegions: ["ko"],
         developmentRegion: "ko"
     ),
+    packages: [
+        .remote(
+            url: "https://github.com/Moya/Moya.git",
+            requirement: .upToNextMajor(from: "15.0.0")
+        ),
+        .remote(
+            url: "https://github.com/firebase/firebase-ios-sdk",
+            requirement: .upToNextMajor(from: "11.8.1")
+        ),
+        .remote(
+            url: "https://github.com/airbnb/lottie-spm.git",
+            requirement: .upToNextMajor(from: "4.5.1")
+        ),
+        .remote(
+            url: "https://github.com/kakao/kakao-ios-sdk",
+            requirement: .upToNextMajor(from: "2.24.1")
+        ),
+    ],
     targets: [
         .target(
             name: "Walkie-iOS",
@@ -84,23 +102,23 @@ let project = Project(
                 )
             ],
             dependencies: [
-                .external(name: "Lottie"),
-                .external(name: "FirebaseCore"),
-                .external(name: "FirebaseMessaging"),
-                .external(name: "FirebaseAnalytics"),
-                .external(name: "FirebaseRemoteConfig"),
-                .external(name: "Moya"),
-                .external(name: "CombineMoya"),
-                .external(name: "KakaoSDKAuth"),
-                .external(name: "KakaoSDKUser"),
-                .target(name: "WalkieWidget"),
-                .target(name: "WalkieCommon")
+                .sdk(name: "WebKit", type: .framework),
+                .package(product: "Moya"),
+                .package(product: "CombineMoya"),
+                .package(product: "Alamofire"),
+                .package(product: "FirebaseAnalytics"),
+                .package(product: "FirebaseMessaging"),
+                .package(product: "FirebaseRemoteConfig"),
+                .package(product: "Lottie"),
+                .package(product: "KakaoSDKAuth"),
+                .package(product: "KakaoSDKUser")
             ],
             settings: .settings(
                 base: [
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "MARKETING_VERSION": settingVersion,
-                    "OTHER_LDFLAGS": "-ObjC"
+                    "OTHER_LDFLAGS": "-ObjC",
+                    "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES": "YES",
                 ],
                 configurations: [
                     .debug(name: "Debug", xcconfig: "Config/WalkieConfig.xcconfig"),
