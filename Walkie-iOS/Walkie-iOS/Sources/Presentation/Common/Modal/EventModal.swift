@@ -1,15 +1,17 @@
 //
-//  Modal.swift
+//  EventModal.swift
 //  Walkie-iOS
 //
-//  Created by ahra on 2/10/25.
+//  Created by 고아라 on 6/25/25.
 //
 
 import SwiftUI
 
 import WalkieCommon
 
-struct Modal: View {
+struct EventModal: View {
+    
+    @Environment(\.screenHeight) var screenHeight
     
     // MARK: - Properties
     
@@ -19,31 +21,37 @@ struct Modal: View {
     let button: ModalButtonType
     let cancelButtonAction: () -> Void
     let checkButtonAction: () -> Void
-    var checkButtonTitle: String = "확인"
-    var cancelButtonTitle: String = "취소"
+    var checkButtonTitle: String = "보러가기"
+    var cancelButtonTitle: String = "닫기"
     
     // MARK: - Body
     
     var body: some View {
         VStack(
             alignment: .center,
-            spacing: 0
+            spacing: 20
         ) {
-            Text(title)
-                .font(.H4)
-                .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 4)
-                .multilineTextAlignment(.center)
-            
-            Text(content)
-                .font(.B2)
-                .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 20)   
-                .multilineTextAlignment(
-                    content.contains("백그라운드 동작") ? .leading : .center
-                )
+            VStack(
+                alignment: .center,
+                spacing: 4
+            ) {
+                let imgHeight = screenHeight * 0.25
+                let imgWidth = imgHeight * 1.18
+                Image(.imgGiftEgg)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: imgWidth, height: imgHeight)
+                
+                Text(title)
+                    .font(.H4)
+                    .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
+                    .multilineTextAlignment(.center)
+                
+                Text(content)
+                    .font(.B2)
+                    .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
+                    .multilineTextAlignment(.center)
+            }
             
             switch button {
             case .onebutton:
@@ -73,10 +81,11 @@ struct Modal: View {
                             checkButtonAction()
                     }
                 }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 16)
             }
         }
-        .padding(.vertical, 16)
         .background(.white)
-        .cornerRadius(20, corners: .allCorners)
+        .cornerRadius(24, corners: .allCorners)
     }
 }
