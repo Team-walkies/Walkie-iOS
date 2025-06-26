@@ -16,13 +16,28 @@ struct EventModal: View {
     // MARK: - Properties
     
     let title: String
-    let content: String
     let style: ModalStyleType
     let button: ModalButtonType
     let cancelButtonAction: () -> Void
     let checkButtonAction: () -> Void
     var checkButtonTitle: String = "보러가기"
     var cancelButtonTitle: String = "닫기"
+    let deadline: String
+    
+    private var dDay: Int {
+        guard let deadlineDate = Date.stringToDate(string: deadline) else {
+            return 0
+        }
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let startOfDeadline = calendar.startOfDay(for: deadlineDate)
+        let comps = calendar.dateComponents(
+            [.day],
+            from: startOfToday,
+            to: startOfDeadline
+        )
+        return max(comps.day ?? 0, 0)
+    }
     
     // MARK: - Body
     
@@ -47,10 +62,20 @@ struct EventModal: View {
                     .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .multilineTextAlignment(.center)
                 
-                Text(content)
-                    .font(.B2)
-                    .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
-                    .multilineTextAlignment(.center)
+                HStack(
+                    spacing: 4
+                ) {
+                    Text("이벤트 종료까지")
+                        .font(.B2)
+                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
+                    
+                    Text("D-\(dDay)")
+                        .font(.H6)
+                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
+                        .padding(.horizontal, 8)
+                        .background(WalkieCommonAsset.blue50.swiftUIColor)
+                        .cornerRadius(4, corners: .allCorners)
+                }
             }
             
             switch button {
