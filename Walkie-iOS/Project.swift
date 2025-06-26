@@ -111,7 +111,9 @@ let project = Project(
                 .package(product: "FirebaseRemoteConfig"),
                 .package(product: "Lottie"),
                 .package(product: "KakaoSDKAuth"),
-                .package(product: "KakaoSDKUser")
+                .package(product: "KakaoSDKUser"),
+                .target(name: "WalkieWidget"),
+                .target(name: "WalkieCommon")
             ],
             settings: .settings(
                 base: [

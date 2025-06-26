@@ -76,6 +76,7 @@ struct EventModal: View {
                         .background(WalkieCommonAsset.blue50.swiftUIColor)
                         .cornerRadius(4, corners: .allCorners)
                 }
+                .padding(.vertical, 4)
             }
             
             switch button {
