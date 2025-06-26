@@ -83,16 +83,10 @@ final class NotificationManager {
     }
     
     /// 앱 푸시알림 권한 확인
-    func checkNotificationPermission(completion: @escaping (Bool) -> Void) {
+    func checkNotificationPermission(completion: @escaping (UNAuthorizationStatus) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             DispatchQueue.main.async {
-                switch settings.authorizationStatus {
-                case .authorized:
-                    completion(true)
-                default:
-                    self.notifyEggHatch = false
-                    completion(false)
-                }
+                completion(settings.authorizationStatus)
             }
         }
     }
