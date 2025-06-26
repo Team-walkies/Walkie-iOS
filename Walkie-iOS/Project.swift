@@ -27,6 +27,10 @@ let project = Project(
             url: "https://github.com/kakao/kakao-ios-sdk",
             requirement: .upToNextMajor(from: "2.24.1")
         ),
+        .remote(
+            url: "https://github.com/onevcat/Kingfisher",
+            requirement: .upToNextMajor(from: "8.3.3")
+        )
     ],
     targets: [
         .target(
@@ -112,6 +116,7 @@ let project = Project(
                 .package(product: "Lottie"),
                 .package(product: "KakaoSDKAuth"),
                 .package(product: "KakaoSDKUser"),
+                .package(product: "Kingfisher"),
                 .target(name: "WalkieWidget"),
                 .target(name: "WalkieCommon")
             ],
