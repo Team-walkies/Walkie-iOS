@@ -70,7 +70,7 @@ final class CharacterViewModel: ViewModelable {
             fetchCharactersListData()
         case .willSelectCategory(let category):
             self.showingCharacterType = category
-        case .willSelectJellyfish(let jellyfish, let characterState):
+        case .willSelectJellyfish(_, let characterState):
             self.characterDetailViewModel = .init(
                 characterViewModel: self,
                 characterInfo: CharacterDetailViewModel.CharacterInfo(
@@ -80,7 +80,7 @@ final class CharacterViewModel: ViewModelable {
                 getCharactersDetailUseCase: self.getCharactersDetailUseCase,
                 patchWalkingCharacterUseCase: self.patchWalkingCharacterUseCase
             )
-        case .willSelectDino(let dino, let characterState):
+        case .willSelectDino(_, let characterState):
             self.characterDetailViewModel = .init(
                 characterViewModel: self,
                 characterInfo: CharacterDetailViewModel.CharacterInfo(

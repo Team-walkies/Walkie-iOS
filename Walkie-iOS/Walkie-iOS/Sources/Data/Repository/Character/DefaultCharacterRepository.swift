@@ -39,7 +39,9 @@ extension DefaultCharacterRepository: CharacterRepository {
                     rank: EggType.from(number: dto.rank),
                     obtainEntity: dto.obtainedDetails.map { detail in
                         CharacterObtainEntity(
-                            obtainedPosition: detail.obtainedPosition,
+                            obtainedPosition: detail.obtainedPosition.isEmpty
+                            ? "탄생의 바다"
+                            : detail.obtainedPosition,
                             obtainedDate: detail.obtainedDate
                         )
                     }

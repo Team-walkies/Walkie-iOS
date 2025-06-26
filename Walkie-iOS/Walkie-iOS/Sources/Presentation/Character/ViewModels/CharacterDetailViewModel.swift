@@ -29,7 +29,7 @@ final class CharacterDetailViewModel: ViewModelable {
     struct CharacterDetailState {
         let characterId: Int
         let characterName: String
-        let characterImage: ImageResource
+        let characterImage: String
         let characterDescription: String
         let characterRank: EggType
         let characterCount: Int
@@ -83,7 +83,7 @@ final class CharacterDetailViewModel: ViewModelable {
                     let state = CharacterDetailState(
                         characterId: self.characterInfo.characterId,
                         characterName: details.name,
-                        characterImage: .imgJellyfish0,
+                        characterImage: details.img,
                         characterDescription: details.description,
                         characterRank: details.rank,
                         characterCount: details.count,

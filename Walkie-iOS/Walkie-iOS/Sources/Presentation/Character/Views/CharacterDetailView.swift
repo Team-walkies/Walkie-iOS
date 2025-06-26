@@ -8,6 +8,8 @@
 import SwiftUI
 import WalkieCommon
 
+import Kingfisher
+
 struct CharacterDetailView: View {
     
     @ObservedObject var viewModel: CharacterDetailViewModel
@@ -15,17 +17,26 @@ struct CharacterDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack(
+            alignment: .bottom
+        ) {
             switch viewModel.state {
             case .loaded(let state):
                 ScrollView {
                     VStack(
                         spacing: 0
                     ) {
-                        Image(state.characterImage)
-                            .resizable()
-                            .frame(width: 180, height: 180)
-                            .padding(.bottom, 12)
+                        if let imgURL = URL(string: state.characterImage) {
+                            KFImage.url(imgURL)
+                                .loadDiskFileSynchronously(true)
+                                .cacheMemoryOnly()
+                                .frame(
+                                    width: 180,
+                                    height: 180
+                                )
+                                .scaledToFit()
+                                .padding(.bottom, 12)
+                        }
                         
                         Text(state.characterName)
                             .font(.H3)
@@ -119,12 +130,7 @@ struct CharacterDetailView: View {
                 )
                 .padding(.bottom, 38)
             default:
-                SkeletonRect(
-                    width: screenWidth - 32,
-                    height: 36,
-                    cornerRadius: 8
-                )
-                .padding(.bottom, 8)
+                CharacterDetailSkeletonView()
             }
         }
         .onAppear {
