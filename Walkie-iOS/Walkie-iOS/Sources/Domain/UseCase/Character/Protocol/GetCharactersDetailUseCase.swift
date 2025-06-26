@@ -8,5 +8,5 @@
 import Combine
 
 protocol GetCharactersDetailUseCase {
-    func getCharactersObtainedDetail(characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError>
+    func getCharactersObtainedDetail(characterId: CLong) -> AnyPublisher<CharacterDetailEntity, NetworkError>
 }

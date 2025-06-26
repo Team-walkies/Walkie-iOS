@@ -25,16 +25,27 @@ final class DefaultCharacterRepository {
 }
 
 extension DefaultCharacterRepository: CharacterRepository {
-    func getCharactersDetail(characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError> {
-        return characterService.getCharactersDetail(characterId: characterId)
+    func getCharactersDetail(
+        characterId: Int
+    ) -> AnyPublisher<CharacterDetailEntity, NetworkError> {
+        return characterService
+            .getCharactersDetail(characterId: characterId)
             .map { dto in
-                dto.obtainedDetails.map { detail in
-                    CharacterDetailEntity(
-                        obtainedPosition: detail.obtainedPosition,
-                        obtainedDate: detail.obtainedDate
-                    )
-                }
-            }.mapToNetworkError()
+                CharacterDetailEntity(
+                    img: dto.characterImageUrl,
+                    name: dto.characterName,
+                    description: dto.characterDescription,
+                    count: dto.characterCount,
+                    rank: EggType.from(number: dto.rank),
+                    obtainEntity: dto.obtainedDetails.map { detail in
+                        CharacterObtainEntity(
+                            obtainedPosition: detail.obtainedPosition,
+                            obtainedDate: detail.obtainedDate
+                        )
+                    }
+                )
+            }
+            .mapToNetworkError()
     }
     
     func getCharactersList(type: CharacterType) -> AnyPublisher<[CharacterEntity], NetworkError> {

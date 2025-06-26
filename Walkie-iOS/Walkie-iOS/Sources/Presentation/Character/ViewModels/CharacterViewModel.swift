@@ -73,28 +73,20 @@ final class CharacterViewModel: ViewModelable {
         case .willSelectJellyfish(let jellyfish, let characterState):
             self.characterDetailViewModel = .init(
                 characterViewModel: self,
-                detailState: CharacterDetailViewModel.CharacterDetailState(
+                characterInfo: CharacterDetailViewModel.CharacterInfo(
                     characterId: characterState.characterId,
-                    characterName: jellyfish.rawValue,
-                    characterImage: jellyfish.getCharacterImage(),
-                    characterDescription: StringLiterals.Characters.getJellyfishDescription(type: jellyfish),
-                    characterRank: jellyfish.getCharacterRank(),
-                    characterCount: characterState.count,
-                    isWalking: characterState.isWalking),
+                    isWalking: characterState.isWalking
+                ),
                 getCharactersDetailUseCase: self.getCharactersDetailUseCase,
                 patchWalkingCharacterUseCase: self.patchWalkingCharacterUseCase
             )
         case .willSelectDino(let dino, let characterState):
             self.characterDetailViewModel = .init(
                 characterViewModel: self,
-                detailState: CharacterDetailViewModel.CharacterDetailState(
+                characterInfo: CharacterDetailViewModel.CharacterInfo(
                     characterId: characterState.characterId,
-                    characterName: dino.rawValue,
-                    characterImage: dino.getCharacterImage(),
-                    characterDescription: StringLiterals.Characters.getDinoDescription(type: dino),
-                    characterRank: dino.getCharacterRank(),
-                    characterCount: characterState.count,
-                    isWalking: characterState.isWalking),
+                    isWalking: characterState.isWalking
+                ),
                 getCharactersDetailUseCase: self.getCharactersDetailUseCase,
                 patchWalkingCharacterUseCase: self.patchWalkingCharacterUseCase
             )
