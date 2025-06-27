@@ -12,15 +12,19 @@ struct MypageMainSettingSectionView: View {
     @ObservedObject var viewModel: MypageMainViewModel
     
     var body: some View {
-        MypageMainSectionView(title: MypageItem.setting.title) {
-            ForEach([
-                MypageSettingSectionItem.myInfo,
-                MypageSettingSectionItem.pushNotification
-            ], id: \.title) { item in
-                MypageMainItemView(
-                    viewModel: viewModel,
-                    item: item
-                )
+        if case let .loaded(state) = viewModel.state {
+            MypageMainSectionView(title: MypageItem.setting.title) {
+                ForEach([
+                    MypageSettingSectionItem.myInfo(isPublic: state.isPublic),
+                    MypageSettingSectionItem.pushNotification(
+                        notifyEggHatches: NotificationManager.shared.getNotificationMode()
+                    )
+                ], id: \.title) { item in
+                    MypageMainItemView(
+                        viewModel: viewModel,
+                        item: item
+                    )
+                }
             }
         }
     }

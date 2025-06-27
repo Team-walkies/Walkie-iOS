@@ -22,7 +22,7 @@ struct MypageMainItemView<Item: MypageSectionItem>: View {
             Button {
                 switch item {
                 case let setting as MypageSettingSectionItem:
-                    coordinator.push(AppScene.setting(item: setting, viewModel: viewModel))
+                    coordinator.push(AppScene.setting(item: setting))
                 case let service as MypageServiceSectionItem:
                     coordinator.push(AppScene.service(item: service))
                 default:

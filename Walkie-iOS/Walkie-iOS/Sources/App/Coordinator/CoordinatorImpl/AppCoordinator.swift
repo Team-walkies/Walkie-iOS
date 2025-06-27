@@ -88,14 +88,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .review:
             diContainer.buildReviewView()
                 .popGestureEnabled(true)
-        case let .setting(item, viewModel):
-            buildSetting(item, viewModel: viewModel)
+        case let .setting(item):
+            buildSetting(item)
         case .service(let item):
             buildService(item)
         case .feedback:
             buildFeedback()
-        case .withdraw:
-            diContainer.buildWithdrawView()
+        case let .withdraw(nickname):
+            diContainer.buildWithdrawView(appCoordinator: self, nickname: nickname)
         }
     }
     
@@ -151,12 +151,20 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     @ViewBuilder
-    private func buildSetting(_ item: MypageSettingSectionItem, viewModel: MypageMainViewModel) -> some View {
+    private func buildSetting(_ item: MypageSettingSectionItem) -> some View {
         switch item {
-        case .myInfo:
+        case let .myInfo(isPublic):
+            let viewModel = diContainer.makeMypageMyInformationViewModel(
+                appCoordinator: self,
+                isPublic: isPublic
+            )
             MypageMyInformationView(viewModel: viewModel)
                 .toolbar(.hidden, for: .tabBar)
-        case .pushNotification:
+        case let .pushNotification(notifyEggHatches):
+            let viewModel = MypagePushNotificationViewModel(
+                appCoordinator: self,
+                notifyEggHatches: notifyEggHatches
+            )
             MypagePushNotificationView(viewModel: viewModel)
                 .toolbar(.hidden, for: .tabBar)
         }

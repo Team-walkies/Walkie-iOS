@@ -112,24 +112,28 @@ extension DIContainer {
         )
     }
     
-    func makeMypageMainViewModel() -> MypageMainViewModel {
+    func makeMypageMainViewModel(appCoordinator: AppCoordinator) -> MypageMainViewModel {
         return MypageMainViewModel(
+            appCoordinator: appCoordinator,
             logoutUseCase: DefaultLogoutUserUseCase(
                 authRepository: authRepo,
                 memberRepository: memberRepo
             ),
+            getProfileUseCase: DefaultGetProfileUseCase(
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
+            )
+        )
+    }
+    
+    func makeMypageMyInformationViewModel(appCoordinator: AppCoordinator, isPublic: Bool) -> MypageMyInformationViewModel {
+        return MypageMyInformationViewModel(
+            appCoordinator: appCoordinator,
             patchProfileUseCase: DefaultPatchProfileUseCase(
                 memberRepository: memberRepo,
                 stepStatusStore: stepStatusStore
             ),
-            getProfileUseCase: DefaultGetProfileUseCase(
-                memberRepository: memberRepo,
-                stepStatusStore: stepStatusStore
-            ),
-            withdrawUseCase: DefaultWithdrawUseCase(
-                memberRepository: memberRepo,
-                stepStatusStore: stepStatusStore
-            )
+            isPublic: isPublic
         )
     }
     
@@ -225,9 +229,9 @@ extension DIContainer {
         )
     }
     
-    func buildMypageView() -> MypageMainView {
+    func buildMypageView(appCoordinator: AppCoordinator) -> MypageMainView {
         return MypageMainView(
-            viewModel: self.makeMypageMainViewModel()
+            viewModel: self.makeMypageMainViewModel(appCoordinator: appCoordinator)
         )
     }
     
@@ -258,9 +262,16 @@ extension DIContainer {
         )
     }
     
-    func buildWithdrawView() -> MypageWithdrawView {
+    func buildWithdrawView(appCoordinator: AppCoordinator, nickname: String) -> MypageWithdrawView {
         return MypageWithdrawView(
-            viewModel: self.makeMypageMainViewModel()
+            viewModel: MypageWithdrawViewModel(
+                appCoordinator: appCoordinator,
+                withdrawUseCase: DefaultWithdrawUseCase(
+                    memberRepository: self.memberRepo,
+                    stepStatusStore: self.stepStatusStore
+                ),
+                nickname: nickname
+            )
         )
     }
     

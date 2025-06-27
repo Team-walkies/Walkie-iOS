@@ -133,6 +133,11 @@ extension View {
             self.skeletonGray200()
         }
     }
+    
+    func innerBorder(color: Color, lineWidth: CGFloat, padding: CGFloat, cornerRadius: CGFloat) -> some View {
+        self.modifier(InnerBorder(color: color, lineWidth: lineWidth, padding: padding, cornerRadius: cornerRadius))
+    }
+    
 }
 
 // Haptic
@@ -146,5 +151,22 @@ struct HapticOnTapModifier: ViewModifier {
             .onTapGesture {
                 HapticManager.shared.impact(style: style)
             }
+    }
+}
+
+// 안쪽 테두리를 위한 ViewModifier
+struct InnerBorder: ViewModifier {
+    let color: Color
+    let lineWidth: CGFloat
+    let padding: CGFloat
+    let cornerRadius: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(color, lineWidth: lineWidth)
+                    .padding(padding)
+            )
     }
 }
