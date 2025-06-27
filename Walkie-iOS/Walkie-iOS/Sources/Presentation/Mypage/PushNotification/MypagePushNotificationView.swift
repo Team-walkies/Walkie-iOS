@@ -49,7 +49,7 @@ private struct PushNotificationOffAlertView: View {
     
     var body: some View {
         HStack(alignment: .center, spacing: 4) {
-            Image(.icDanger)
+            Image(.icDangerGray)
                 .resizable()
                 .frame(width: 18, height: 18)
             Text("기기 알림이 꺼져있어요")
