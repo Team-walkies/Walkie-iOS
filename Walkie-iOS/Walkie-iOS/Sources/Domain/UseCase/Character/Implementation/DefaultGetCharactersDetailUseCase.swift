@@ -8,8 +8,12 @@
 import Combine
 
 final class DefaultGetCharactersDetailUseCase: BaseCharactersUseCase, GetCharactersDetailUseCase {
-    func getCharactersObtainedDetail(characterId: CLong) -> AnyPublisher<[CharacterDetailEntity], NetworkError> {
-        characterRepository.getCharactersDetail(characterId: characterId)
+    
+    func getCharactersObtainedDetail(
+        characterId: Int
+    ) -> AnyPublisher<CharacterDetailEntity, NetworkError> {
+        characterRepository
+            .getCharactersDetail(characterId: characterId)
             .mapToNetworkError()
     }
 }

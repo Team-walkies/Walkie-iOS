@@ -42,7 +42,10 @@ enum JellyfishType: String, CaseIterable {
         }
     }
     
-    static func mapCharacterType(rank: Int, characterClass: Int) throws -> JellyfishType {
+    static func mapCharacterType(
+        rank: Int,
+        characterClass: Int
+    ) throws -> JellyfishType {
         switch rank {
         case 0:
             switch characterClass {

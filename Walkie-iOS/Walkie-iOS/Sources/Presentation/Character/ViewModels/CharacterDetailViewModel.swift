@@ -17,18 +17,24 @@ final class CharacterDetailViewModel: ViewModelable {
     
     enum CharacterDetailViewState {
         case loading
-        case loaded(obtainedState: [ObtainedState])
+        case loaded(CharacterDetailState)
         case error(String)
+    }
+    
+    struct CharacterInfo {
+        let characterId: Int
+        let isWalking: Bool
     }
     
     struct CharacterDetailState {
         let characterId: Int
         let characterName: String
-        let characterImage: ImageResource
+        let characterImage: String
         let characterDescription: String
         let characterRank: EggType
         let characterCount: Int
-        let isWalking: Bool
+        var isWalking: Bool
+        let obtainedState: [ObtainedState]
     }
     
     struct ObtainedState: Identifiable {
@@ -43,16 +49,16 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     @Published var state: CharacterDetailViewState = .loading
-    @Published var detailState: CharacterDetailState
-    @Published var obtainedState: [ObtainedState]?
+    @Published var characterInfo: CharacterInfo
     
     init(
         characterViewModel: CharacterViewModel,
-        detailState: CharacterDetailState,
+        characterInfo: CharacterInfo,
         getCharactersDetailUseCase: GetCharactersDetailUseCase,
-        patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase) {    
+        patchWalkingCharacterUseCase: PatchWalkingCharacterUseCase
+    ) {
         self.characterViewModel = characterViewModel
-        self.detailState = detailState
+        self.characterInfo = characterInfo
         self.getCharactersDetailUseCase = getCharactersDetailUseCase
         self.patchWalkingCharacterUseCase = patchWalkingCharacterUseCase
     }
@@ -67,50 +73,58 @@ final class CharacterDetailViewModel: ViewModelable {
     }
     
     private func fetchCharacterDetailData() {
-        getCharactersDetailUseCase.getCharactersObtainedDetail(characterId: detailState.characterId)
+        getCharactersDetailUseCase
+            .getCharactersObtainedDetail(
+                characterId: characterInfo.characterId
+            )
             .walkieSink(
                 with: self,
                 receiveValue: { _, details in
-                    self.obtainedState = details.map { detail in
-                        ObtainedState(
-                            obtainedDate: self.convertDateFormat(
-                                from: detail.obtainedDate
-                            ) ?? "날짜 변환 오류",
-                            obtainedPosition: detail.obtainedPosition)
-                    }
-                    self.state = .loaded(
-                        obtainedState: self.obtainedState ?? []
+                    let state = CharacterDetailState(
+                        characterId: self.characterInfo.characterId,
+                        characterName: details.name,
+                        characterImage: details.img,
+                        characterDescription: details.description,
+                        characterRank: details.rank,
+                        characterCount: details.count,
+                        isWalking: self.characterInfo.isWalking,
+                        obtainedState: details.obtainEntity.map { detail in
+                            ObtainedState(
+                                obtainedDate: self.convertDateFormat(
+                                    from: detail.obtainedDate
+                                ) ?? "날짜 변환 오류",
+                                obtainedPosition: detail.obtainedPosition)
+                        }
                     )
+                    self.state = .loaded(state)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
                 }
-            ).store(in: &cancellables)
+            )
+            .store(in: &cancellables)
     }
     
     private func patchCharacterWalking() {
-        patchWalkingCharacterUseCase.patchCharacterWalking(characterId: detailState.characterId)
+        patchWalkingCharacterUseCase
+            .patchCharacterWalking(
+                characterId: characterInfo.characterId
+            )
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
-                    self.detailState = CharacterDetailState(
-                        characterId: self.detailState.characterId,
-                        characterName: self.detailState.characterName,
-                        characterImage: self.detailState.characterImage,
-                        characterDescription: self.detailState.characterDescription,
-                        characterRank: self.detailState.characterRank,
-                        characterCount: self.detailState.characterCount,
-                        isWalking: true)
-                    self.state = .loaded(
-                        obtainedState: self.obtainedState ?? []
-                    )
+                    if case .loaded(var detail) = self.state {
+                        detail.isWalking = true
+                        self.state = .loaded(detail)
+                    }
                     self.characterViewModel.action(.fetchData)
                     ToastManager.shared.showToast("같이 걷는 캐릭터를 바꿨어요", icon: .icCheckBlue)
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.state = .error(errorMessage)
                 }
-            ).store(in: &cancellables)
+            )
+            .store(in: &cancellables)
     }
 }
 
