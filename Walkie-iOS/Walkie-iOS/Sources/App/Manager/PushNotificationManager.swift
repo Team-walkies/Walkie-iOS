@@ -11,10 +11,6 @@ final class NotificationManager {
     @UserDefaultsWrapper<Bool>(key: "notifyEggHatch") private var notifyEggHatch
     @UserDefaultsWrapper<Bool>(key: "notified") var notified
     
-    init() {
-        requestAuthorization()
-    }
-    
     func getNotificationMode() -> Bool {
         guard let notifyEggHatch else {
             checkNotificationPermission { _ in

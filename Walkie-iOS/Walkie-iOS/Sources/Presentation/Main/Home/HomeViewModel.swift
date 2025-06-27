@@ -176,15 +176,26 @@ final class HomeViewModel: ViewModelable {
             return .authorized
         }()
         
-        let permissionState = HomePermissionState(
-            isLocationChecked: locationState,
-            isMotionChecked: motionState,
-            isAlarmChecked: .authorized // todo - binding
-        )
-        state = .loaded(permissionState)
-        
-        if !isLocationNotDetermined() && !isMotionNotDetermined() {
-            getHomeAPI()
+        /// 비동기 클로저로 반환
+        /// 내부적으로 UNUserNotificationCenter.current().getNotificationSettings의 비동기 클로저를 사용합니다
+        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
+            guard let self = self else { return }
+            
+            let alarmState = switch notificationState {
+            case .denied: PermissionState.denied
+            case .authorized: PermissionState.authorized
+            default: PermissionState.notDetermined
+            }
+            
+            let permissionState = HomePermissionState(
+                isLocationChecked: locationState,
+                isMotionChecked: motionState,
+                isAlarmChecked: alarmState
+            )
+            
+            DispatchQueue.main.async {
+                self.state = .loaded(permissionState)
+            }
         }
     }
     
@@ -203,6 +214,29 @@ final class HomeViewModel: ViewModelable {
         if locationDenied || motionDenied {
             shouldShowDeniedAlert = true
             return
+        }
+        
+        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
+            guard let self = self else { return }
+            
+            let alarmState = switch notificationState {
+            case .denied: PermissionState.denied
+            case .authorized: PermissionState.authorized
+            default: PermissionState.notDetermined
+            }
+            
+            let permissionState = HomePermissionState(
+                isLocationChecked: locationNotDetermined ? .notDetermined : locationDenied ? .denied : .authorized,
+                isMotionChecked: motionNotDetermined ? .notDetermined : motionDenied ? .denied : .authorized,
+                isAlarmChecked: alarmState
+            )
+            
+            DispatchQueue.main.async {
+                self.state = .loaded(permissionState)
+                if !locationNotDetermined && !motionNotDetermined && alarmState != .notDetermined {
+                    self.getHomeAPI()
+                }
+            }
         }
     }
     

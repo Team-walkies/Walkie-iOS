@@ -15,7 +15,7 @@ struct HomeAlarmBSView: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 0) {
             VStack(alignment: .center, spacing: 4) {
                 Text("걸음 수가 채워지면\n알 부화 소식을 알려드릴게요!")
                     .font(.H4)
@@ -26,6 +26,8 @@ struct HomeAlarmBSView: View {
                     .font(.B2)
                     .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
             }
+            .padding(.top, 24)
+            .padding(.bottom, 20)
             
             Image(.imgAlarmBs)
                 .resizable()
@@ -33,6 +35,7 @@ struct HomeAlarmBSView: View {
                 .frame(height: 143)
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 16)
+                .padding(.bottom, 20)
             
             HStack(spacing: 8) {
                 Button(action: {
@@ -47,7 +50,8 @@ struct HomeAlarmBSView: View {
                 .cornerRadius(12, corners: .allCorners)
                 
                 Button(action: {
-                    print("alarm tapped")
+                    NotificationManager.shared.requestAuthorization()
+                    isPresented = false
                 }, label: {
                     Text("알림받기")
                         .font(.B1)
@@ -58,8 +62,8 @@ struct HomeAlarmBSView: View {
                 .cornerRadius(12, corners: .allCorners)
             }
             .padding(.horizontal, 16)
+            Spacer(minLength: 0)
         }
-        .padding(.top, 24)
         .background(.white)
     }
 }
