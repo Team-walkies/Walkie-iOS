@@ -7,6 +7,7 @@ import FirebaseCore
 struct WalkieIOSApp: App {
     
     @Environment(\.scenePhase) private var scenePhase
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
     init() {
@@ -14,7 +15,6 @@ struct WalkieIOSApp: App {
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
         initiateBackgroundTask()
-        FirebaseApp.configure()
     }
 
     var body: some Scene {
