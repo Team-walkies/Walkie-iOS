@@ -10,7 +10,12 @@ import Combine
 final class DefaultLogoutUserUseCase: BaseUserUseCase, LogoutUserUseCase {
     
     func postLogout() -> AnyPublisher<Void, NetworkError> {
-        authRepository.logout()
+        let data = authRepository.logout()
             .mapToNetworkError()
+        return data
+            .handleEvents(receiveOutput: { _ in
+                self.stepStatusStore.resetStepStatus()
+            })
+            .eraseToAnyPublisher()
     }
 }
