@@ -15,6 +15,7 @@ final class DefaultLogoutUserUseCase: BaseUserUseCase, LogoutUserUseCase {
         return data
             .handleEvents(receiveOutput: { _ in
                 self.stepStatusStore.resetStepStatus()
+                try? TokenKeychainManager.shared.removeTokens()
             })
             .eraseToAnyPublisher()
     }
