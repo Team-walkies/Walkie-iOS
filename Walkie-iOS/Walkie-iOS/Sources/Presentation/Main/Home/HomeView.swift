@@ -104,10 +104,26 @@ struct HomeView: View {
             viewModel.action(.homeWillDisappear)
         }
         .onChange(of: viewModel.state) { _, newState in
+            print("😇😇😇😇")
+            print(newState)
+            print(AppSession.shared.hasEnteredHomeView)
             if !AppSession.shared.hasEnteredHomeView {
                 switch newState {
                 case .loaded:
                     handlePermissionBS()
+                default:
+                    showBS = false
+                }
+            }
+        }
+        .onChange(of: viewModel.homeAlarmState) { _, newState in
+            print("😇😇😇😇")
+            print(newState)
+            print(AppSession.shared.hasEnteredHomeView)
+            if !AppSession.shared.hasEnteredHomeView {
+                switch newState {
+                case .loaded:
+                    handleAlarmBS()
                 default:
                     showBS = false
                 }
@@ -141,12 +157,17 @@ struct HomeView: View {
                     content: content,
                     style: .primary,
                     button: .twobutton,
-                    cancelButtonAction: {},
+                    cancelButtonAction: {
+                        print("😇😇cancelButtonAction😇😇")
+                        viewModel.action(.homeAlarmCheck)
+                    },
                     checkButtonAction: {
                         if let url = URL(string: UIApplication.openSettingsURLString)
                             , UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
+                        print("😇😇checkButtonAction😇😇")
+                        viewModel.action(.homeAlarmCheck)
                     },
                     checkButtonTitle: "허용하기"
                 )
@@ -160,11 +181,11 @@ struct HomeView: View {
         showBS = !(state.isLocationChecked.isAuthorized && state.isMotionChecked.isAuthorized)
         showLocationBS = !state.isLocationChecked.isAuthorized
         showMotionBS = !state.isMotionChecked.isAuthorized
-        showAlarmBS = !state.isAlarmChecked.isAuthorized
+//        showAlarmBS = !state.isAlarmChecked.isAuthorized
         
         let needsLocation = !state.isLocationChecked.isAuthorized
         let needsMotion   = !state.isMotionChecked.isAuthorized
-        let needsAlarm    = !state.isAlarmChecked.isAuthorized
+//        let needsAlarm    = !state.isAlarmChecked.isAuthorized
         
         let isPresented = Binding<Bool>(
             get: { appCoordinator.sheet != nil },
@@ -184,12 +205,35 @@ struct HomeView: View {
                 )
                 .padding(.bottom, bottomInset)
             }
-        } else if needsAlarm {
-            appCoordinator.buildBottomSheet(height: 369) {
-                HomeAlarmBSView(isPresented: isPresented)
-            }
         } else {
             appCoordinator.dismissSheet()
+        }
+//        else if needsAlarm {
+//            appCoordinator.buildBottomSheet(height: 369) {
+//                HomeAlarmBSView(isPresented: isPresented)
+//            }
+//        }
+        
+    }
+    
+    private func handleAlarmBS() {
+        guard case .loaded(let state) = viewModel.homeAlarmState else { return }
+        
+        showAlarmBS = !state.isAlarmChecked.isAuthorized
+        let needsAlarm = !state.isAlarmChecked.isAuthorized
+        
+        let isPresented = Binding<Bool>(
+            get: { appCoordinator.sheet != nil },
+            set: { new in
+                if !new { appCoordinator.dismissSheet() }
+            }
+        )
+        
+        if needsAlarm {
+            appCoordinator.buildBottomSheet(height: 369) {
+                HomeAlarmBSView(isPresented: isPresented)
+                    .padding(.bottom, bottomInset)
+            }
         }
     }
 }

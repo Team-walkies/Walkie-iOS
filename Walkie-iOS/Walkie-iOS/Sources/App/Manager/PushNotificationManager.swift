@@ -87,6 +87,22 @@ final class NotificationManager {
         }
     }
     
+    func isNotificationNotDetermined(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                completion(settings.authorizationStatus == .notDetermined)
+            }
+        }
+    }
+    
+    func isNotificationDenied(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                completion(settings.authorizationStatus == .denied)
+            }
+        }
+    }
+    
     /// 설정창 리디렉션
     func openSettings() {
         if let url = URL(string: UIApplication.openSettingsURLString) {

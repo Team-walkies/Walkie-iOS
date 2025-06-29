@@ -30,6 +30,7 @@ final class HomeViewModel: ViewModelable {
         case homeWillAppear
         case homeWillDisappear
         case homeAuthAllowTapped
+        case homeAlarmCheck
         case homeAlarmAllowTapped
     }
     
@@ -71,12 +72,18 @@ final class HomeViewModel: ViewModelable {
     struct HomePermissionState: Equatable {
         let isLocationChecked: PermissionState
         let isMotionChecked: PermissionState
-        let isAlarmChecked: PermissionState
         
         static func == (lhs: HomePermissionState, rhs: HomePermissionState) -> Bool {
             return lhs.isLocationChecked == rhs.isLocationChecked &&
-            lhs.isMotionChecked == rhs.isMotionChecked &&
-            lhs.isAlarmChecked == rhs.isAlarmChecked
+            lhs.isMotionChecked == rhs.isMotionChecked
+        }
+    }
+    
+    struct HomeAlarmState: Equatable {
+        let isAlarmChecked: PermissionState
+        
+        static func == (lhs: HomeAlarmState, rhs: HomeAlarmState) -> Bool {
+            return lhs.isAlarmChecked == rhs.isAlarmChecked
         }
     }
     
@@ -85,6 +92,12 @@ final class HomeViewModel: ViewModelable {
     enum HomeViewState: Equatable {
         case loading
         case loaded(HomePermissionState)
+        case error
+    }
+    
+    enum HomeViewAlarmState: Equatable {
+        case loading
+        case loaded(HomeAlarmState)
         case error
     }
     
@@ -119,6 +132,7 @@ final class HomeViewModel: ViewModelable {
     }
     
     @Published var state: HomeViewState = .loading
+    @Published var homeAlarmState: HomeViewAlarmState = .loading
     @Published var homeStatsState: HomeStatsViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
@@ -159,6 +173,8 @@ final class HomeViewModel: ViewModelable {
             stopStepUpdates()
         case .homeAuthAllowTapped:
             showPermission()
+        case .homeAlarmCheck:
+            checkAlarm()
         default:
             break
         }
@@ -176,26 +192,14 @@ final class HomeViewModel: ViewModelable {
             return .authorized
         }()
         
-        /// 비동기 클로저로 반환
-        /// 내부적으로 UNUserNotificationCenter.current().getNotificationSettings의 비동기 클로저를 사용합니다
-        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
-            guard let self = self else { return }
-            
-            let alarmState = switch notificationState {
-            case .denied: PermissionState.denied
-            case .authorized: PermissionState.authorized
-            default: PermissionState.notDetermined
-            }
-            
-            let permissionState = HomePermissionState(
-                isLocationChecked: locationState,
-                isMotionChecked: motionState,
-                isAlarmChecked: alarmState
-            )
-            
-            DispatchQueue.main.async {
-                self.state = .loaded(permissionState)
-            }
+        let permissionState = HomePermissionState(
+            isLocationChecked: locationState,
+            isMotionChecked: motionState
+        )
+        state = .loaded(permissionState)
+        
+        if !isLocationNotDetermined() && !isMotionNotDetermined() {
+            getHomeAPI()
         }
     }
     
@@ -215,27 +219,24 @@ final class HomeViewModel: ViewModelable {
             shouldShowDeniedAlert = true
             return
         }
-        
+    }
+    
+    func checkAlarm() {
         NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
             guard let self = self else { return }
             
-            let alarmState = switch notificationState {
+            let notification = switch notificationState {
             case .denied: PermissionState.denied
             case .authorized: PermissionState.authorized
             default: PermissionState.notDetermined
             }
             
-            let permissionState = HomePermissionState(
-                isLocationChecked: locationNotDetermined ? .notDetermined : locationDenied ? .denied : .authorized,
-                isMotionChecked: motionNotDetermined ? .notDetermined : motionDenied ? .denied : .authorized,
-                isAlarmChecked: alarmState
+            let alarmState = HomeAlarmState(
+                isAlarmChecked: notification
             )
             
             DispatchQueue.main.async {
-                self.state = .loaded(permissionState)
-                if !locationNotDetermined && !motionNotDetermined && alarmState != .notDetermined {
-                    self.getHomeAPI()
-                }
+                self.homeAlarmState = .loaded(alarmState)
             }
         }
     }
@@ -353,24 +354,24 @@ private extension HomeViewModel {
         return status == .notDetermined
     }
     
-    func isLocationAuthorized() -> Bool {
-        let status = CLLocationManager().authorizationStatus
-        return status == .authorizedAlways || status == .authorizedWhenInUse
-    }
+//    func isLocationAuthorized() -> Bool {
+//        let status = CLLocationManager().authorizationStatus
+//        return status == .authorizedAlways || status == .authorizedWhenInUse
+//    }
     
     func isLocationAlwaysAuthorized() -> Bool {
         let status = CLLocationManager().authorizationStatus
         return status == .authorizedAlways
     }
     
-    func isMotionAuthorized() -> Bool {
-        guard CMMotionActivityManager.isActivityAvailable() else {
-            return false
-        }
-        
-        let status = CMMotionActivityManager.authorizationStatus()
-        return status == .authorized
-    }
+//    func isMotionAuthorized() -> Bool {
+//        guard CMMotionActivityManager.isActivityAvailable() else {
+//            return false
+//        }
+//        
+//        let status = CMMotionActivityManager.authorizationStatus()
+//        return status == .authorized
+//    }
     
     func isLocationDenied() -> Bool {
         let status = CLLocationManager().authorizationStatus
