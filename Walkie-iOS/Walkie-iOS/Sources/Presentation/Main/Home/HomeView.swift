@@ -104,9 +104,6 @@ struct HomeView: View {
             viewModel.action(.homeWillDisappear)
         }
         .onChange(of: viewModel.state) { _, newState in
-            print("😇😇😇😇")
-            print(newState)
-            print(AppSession.shared.hasEnteredHomeView)
             if !AppSession.shared.hasEnteredHomeView {
                 switch newState {
                 case .loaded:
@@ -117,10 +114,7 @@ struct HomeView: View {
             }
         }
         .onChange(of: viewModel.homeAlarmState) { _, newState in
-            print("😇😇😇😇")
-            print(newState)
-            print(AppSession.shared.hasEnteredHomeView)
-            if !AppSession.shared.hasEnteredHomeView {
+            if !AppSession.shared.hasEnteredHomeView || showAlarmBS {
                 switch newState {
                 case .loaded:
                     handleAlarmBS()
@@ -181,7 +175,7 @@ struct HomeView: View {
         showBS = !(state.isLocationChecked.isAuthorized && state.isMotionChecked.isAuthorized)
         showLocationBS = !state.isLocationChecked.isAuthorized
         showMotionBS = !state.isMotionChecked.isAuthorized
-//        showAlarmBS = !state.isAlarmChecked.isAuthorized
+        showAlarmBS = !state.isAlarmChecked.isAuthorized
         
         let needsLocation = !state.isLocationChecked.isAuthorized
         let needsMotion   = !state.isMotionChecked.isAuthorized
@@ -217,10 +211,10 @@ struct HomeView: View {
     }
     
     private func handleAlarmBS() {
-        guard case .loaded(let state) = viewModel.homeAlarmState else { return }
-        
-        showAlarmBS = !state.isAlarmChecked.isAuthorized
-        let needsAlarm = !state.isAlarmChecked.isAuthorized
+//        guard case .loaded(let state) = viewModel.homeAlarmState else { return }
+//        
+//        showAlarmBS = !state.isAlarmChecked.isAuthorized
+//        let needsAlarm = !state.isAlarmChecked.isAuthorized
         
         let isPresented = Binding<Bool>(
             get: { appCoordinator.sheet != nil },
@@ -229,7 +223,7 @@ struct HomeView: View {
             }
         )
         
-        if needsAlarm {
+        if showAlarmBS {
             appCoordinator.buildBottomSheet(height: 369) {
                 HomeAlarmBSView(isPresented: isPresented)
                     .padding(.bottom, bottomInset)

@@ -72,10 +72,12 @@ final class HomeViewModel: ViewModelable {
     struct HomePermissionState: Equatable {
         let isLocationChecked: PermissionState
         let isMotionChecked: PermissionState
+        let isAlarmChecked: PermissionState
         
         static func == (lhs: HomePermissionState, rhs: HomePermissionState) -> Bool {
             return lhs.isLocationChecked == rhs.isLocationChecked &&
-            lhs.isMotionChecked == rhs.isMotionChecked
+            lhs.isMotionChecked == rhs.isMotionChecked &&
+            lhs.isAlarmChecked == rhs.isAlarmChecked
         }
     }
     
@@ -192,11 +194,25 @@ final class HomeViewModel: ViewModelable {
             return .authorized
         }()
         
-        let permissionState = HomePermissionState(
-            isLocationChecked: locationState,
-            isMotionChecked: motionState
-        )
-        state = .loaded(permissionState)
+        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
+            guard let self = self else { return }
+            
+            let notification = switch notificationState {
+            case .denied: PermissionState.denied
+            case .authorized: PermissionState.authorized
+            default: PermissionState.notDetermined
+            }
+            
+            let permissionState = HomePermissionState(
+                isLocationChecked: locationState,
+                isMotionChecked: motionState,
+                isAlarmChecked: notification
+            )
+            
+            DispatchQueue.main.async {
+                self.state = .loaded(permissionState)
+            }
+        }
         
         if !isLocationNotDetermined() && !isMotionNotDetermined() {
             getHomeAPI()
