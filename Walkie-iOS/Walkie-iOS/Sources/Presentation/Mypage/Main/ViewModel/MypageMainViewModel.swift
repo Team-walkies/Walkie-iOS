@@ -38,7 +38,7 @@ final class MypageMainViewModel: ViewModelable {
     init(
         appCoordinator: AppCoordinator,
         logoutUseCase: LogoutUserUseCase,
-        getProfileUseCase: GetProfileUseCase,
+        getProfileUseCase: GetProfileUseCase
     ) {
         self.appCoordinator = appCoordinator
         self.logoutUseCase = logoutUseCase
