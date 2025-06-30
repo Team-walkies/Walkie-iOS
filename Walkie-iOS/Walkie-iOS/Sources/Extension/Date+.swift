@@ -128,4 +128,23 @@ extension Date {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         return dateFormatter.string(from: self)
     }
+    
+    static func stringToDate(string: String, format: String = "yyyy-MM-dd") -> Date? {
+        return Self.formatter(for: format).date(from: string)
+    }
+    
+    /// 포맷별 DateFormatter 캐시
+    private static var _formatters: [String: DateFormatter] = [:]
+    
+    private static func formatter(for format: String) -> DateFormatter {
+        if let existing = _formatters[format] {
+            return existing
+        }
+        let df = DateFormatter()
+        df.dateFormat = format
+        df.locale = Locale(identifier: "ko_KR")
+        df.timeZone = TimeZone.current
+        _formatters[format] = df
+        return df
+    }
 }

@@ -167,6 +167,25 @@ struct HomeView: View {
                 )
             }
         }
+        .onChange(of: viewModel.eventEggState) { _, newState in
+            switch newState {
+            case .loaded(let eventEggState):
+                if eventEggState.showEventEgg {
+                    appCoordinator.buildEventAlert(
+                        title: "알 1개를 선물받았어요!",
+                        style: .primary,
+                        button: .twobutton,
+                        cancelButtonAction: { },
+                        checkButtonAction: {
+                            appCoordinator.push(AppScene.egg)
+                        },
+                        dDay: eventEggState.dDay
+                    )
+                }
+            default:
+                break
+            }
+        }
     }
     
     private func handlePermissionBS() {

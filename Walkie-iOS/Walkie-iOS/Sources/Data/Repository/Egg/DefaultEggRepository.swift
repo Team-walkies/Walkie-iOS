@@ -102,4 +102,15 @@ extension DefaultEggRepository: EggRepository {
             }
             .mapToNetworkError()
     }
+    
+    func getEventEgg() -> AnyPublisher<EventEggEntity, NetworkError> {
+        return eggService.getEventEgg()
+            .map { dto in
+                return EventEggEntity(
+                    canReceive: dto.receivedToday,
+                    dDay: dto.remainingDays
+                )
+            }
+            .mapToNetworkError()
+    }
 }

@@ -11,12 +11,11 @@ import FirebaseRemoteConfig
 
 final class SplashViewModel: NSObject, ViewModelable {
     
-    private let remoteConfig = RemoteConfig.remoteConfig()
-    private let settings = RemoteConfigSettings()
     private var cancellables = Set<AnyCancellable>()
     let appCoordinator: AppCoordinator
     private let getProfileUseCase: GetProfileUseCase
-    var showUpdateNeed: Bool = false
+    private let remoteConfigManager: RemoteConfigManaging
+    @Published var showUpdateNeed: Bool = false
     
     enum Action {
         case fetchVersion
@@ -32,19 +31,15 @@ final class SplashViewModel: NSObject, ViewModelable {
     
     init(
         appCoordinator: AppCoordinator,
-        getProfileUseCase: GetProfileUseCase
+        getProfileUseCase: GetProfileUseCase,
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared
     ) {
         self.appCoordinator = appCoordinator
         self.getProfileUseCase = getProfileUseCase
+        self.remoteConfigManager = remoteConfigManager
         super.init()
         
-        settings.minimumFetchInterval = 0
-        remoteConfig.configSettings = settings
-        remoteConfig.addOnConfigUpdateListener { [weak self] _, error in
-            if error == nil {
-                Task { await self?.activateRemoteConfig() }
-            }
-        }
+        self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
     func action(_ action: Action) {
@@ -56,18 +51,22 @@ final class SplashViewModel: NSObject, ViewModelable {
     
     private func activateRemoteConfig() async {
         do {
-            try await remoteConfig.fetch()
-            try await remoteConfig.activate()
+            try await remoteConfigManager.fetchAndActivate()
             
-            let remoteVersion = remoteConfig["iOS_MIN_APP_VERSION"].stringValue
-            let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+            let remoteVersion = remoteConfigManager
+                .stringValue(for: .iOSMinAppVersion)
+            let currentVersion = Bundle.main
+                .infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
             
             let needsUpdate = isVersion(
                 currentVersion,
                 lowerThan: remoteVersion
             )
+            UserManager.shared.setLastVisitedDate(Date())
             if needsUpdate {
-                showUpdateNeed = true
+                await MainActor.run {
+                    showUpdateNeed = true
+                }
             } else {
                 if TokenKeychainManager.shared.hasToken() {
                     getProfile()
@@ -76,7 +75,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                 }
             }
         } catch {
-            self.state = .error
+            state = .error
         }
     }
     

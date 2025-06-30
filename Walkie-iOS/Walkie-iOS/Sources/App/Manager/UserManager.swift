@@ -14,6 +14,7 @@ final class UserManager {
     // MARK: - Properties
     @UserDefaultsWrapper<String>(key: "nickname") private(set) var nickname
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
+    @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     
     private init() {}
 }
@@ -23,7 +24,7 @@ extension UserManager {
     var hasUserToken: Bool { return TokenKeychainManager.shared.hasToken() }
     var getUserNickname: String { return self.nickname ?? "" }
     var getStartExploreDate: Date? { return self.startExploreDate }
-    
+    var getLastVisitedDate: Date? { return self.lastVisitedDate }
 }
 
 extension UserManager {
@@ -34,6 +35,10 @@ extension UserManager {
     
     func setStartExploreDate(_ date: Date) {
         self.startExploreDate = date
+    }
+    
+    func setLastVisitedDate(_ date: Date) {
+        self.lastVisitedDate = date
     }
     
     func clearExploreDate() {

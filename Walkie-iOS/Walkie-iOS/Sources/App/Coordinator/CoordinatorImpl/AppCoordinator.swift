@@ -147,6 +147,44 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 .opacity(appFullScreenCover != nil ? 1.0 : 0.0)
             }
             .animation(.easeInOut(duration: 0.25), value: appFullScreenCover != nil)
+        case .eventAlert(
+            let title,
+            let style,
+            let button,
+            let cancelButtonAction,
+            let checkButtonAction,
+            let checkButtonTitle,
+            let cancelButtonTitle,
+            let dDay
+        ):
+            ZStack {
+                Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            self.dismissFullScreenCover()
+                        }
+                    }
+                EventModal(
+                    title: title,
+                    style: style,
+                    button: button,
+                    cancelButtonAction: {
+                        self.dismissFullScreenCover()
+                        checkButtonAction()
+                    },
+                    checkButtonAction: {
+                        self.dismissFullScreenCover()
+                        checkButtonAction()
+                    },
+                    checkButtonTitle: checkButtonTitle,
+                    cancelButtonTitle: cancelButtonTitle,
+                    dDay: dDay
+                )
+                .padding(.horizontal, 40)
+                .opacity(appFullScreenCover != nil ? 1.0 : 0.0)
+            }
+            .animation(.easeInOut(duration: 0.25), value: appFullScreenCover != nil)
         }
     }
     
@@ -234,6 +272,31 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 checkAction: checkButtonAction,
                 checkTitle: checkButtonTitle,
                 cancelTitle: cancelButtonTitle
+            ),
+            onDismiss: nil
+        )
+    }
+    
+    func buildEventAlert(
+        title: String,
+        style: ModalStyleType,
+        button: ModalButtonType,
+        cancelButtonAction: @escaping () -> Void,
+        checkButtonAction: @escaping () -> Void,
+        checkButtonTitle: String = "보러가기",
+        cancelButtonTitle: String = "닫기",
+        dDay: Int
+    ) {
+        presentFullScreenCover(
+            AppFullScreenCover.eventAlert(
+                title: title,
+                style: style,
+                button: button,
+                cancelAction: cancelButtonAction,
+                checkAction: checkButtonAction,
+                checkTitle: checkButtonTitle,
+                cancelTitle: cancelButtonTitle,
+                dDay: dDay
             ),
             onDismiss: nil
         )

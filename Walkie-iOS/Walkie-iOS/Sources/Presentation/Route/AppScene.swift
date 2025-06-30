@@ -82,6 +82,16 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
         checkTitle: String,
         cancelTitle: String
     )
+    case eventAlert(
+        title: String,
+        style: ModalStyleType,
+        button: ModalButtonType,
+        cancelAction: () -> Void,
+        checkAction: () -> Void,
+        checkTitle: String,
+        cancelTitle: String,
+        dDay: Int
+    )
     
     var id: String {
         switch self {
@@ -89,6 +99,8 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
             return "hatchEgg"
         case .alert(let title, _, _, _, _, _, _, _):
             return "alert_\(title)"
+        case .eventAlert:
+            return "eventAlert"
         }
     }
     
