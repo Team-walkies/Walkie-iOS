@@ -17,7 +17,7 @@ struct TabTargetViewFactory {
         case .map:
             DIContainer.shared.buildMapView()
         case .mypage:
-            DIContainer.shared.buildMypageView()
+            DIContainer.shared.buildMypageView(appCoordinator: appCoordinator)
         }
     }
 }

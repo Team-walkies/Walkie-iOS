@@ -28,8 +28,8 @@ enum MypageItem {
 }
 
 enum MypageSettingSectionItem: MypageSectionItem {
-    case myInfo
-    case pushNotification
+    case myInfo(isPublic: Bool)
+    case pushNotification(notifyEggHatches: Bool)
     
     var title: String {
         switch self {

@@ -7,6 +7,7 @@ import FirebaseCore
 struct WalkieIOSApp: App {
     
     @Environment(\.scenePhase) private var scenePhase
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
     init() {
@@ -18,8 +19,6 @@ struct WalkieIOSApp: App {
         BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
             appCoordinator.handleStepRefresh(task: task)
         }
-        
-        FirebaseApp.configure()
     }
 
     var body: some Scene {

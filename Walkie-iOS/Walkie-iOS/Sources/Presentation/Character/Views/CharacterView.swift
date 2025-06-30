@@ -35,9 +35,7 @@ struct CharacterView: View {
                                         : WalkieCommonAsset.gray300.swiftUIColor)
                                     .padding(4)
                                     .onTapGesture {
-                                        withAnimation(.easeInOut(duration: 0.01)) {
-                                            viewModel.action(.willSelectCategory(.jellyfish))
-                                        }
+                                        viewModel.action(.willSelectCategory(.jellyfish))
                                     }
                                 Text(CharacterType.dino.rawValue)
                                     .font(.H3)
@@ -47,9 +45,7 @@ struct CharacterView: View {
                                         : WalkieCommonAsset.gray300.swiftUIColor)
                                     .padding(4)
                                     .onTapGesture {
-                                        withAnimation(.smooth(duration: 0.01)) {
-                                            viewModel.action(.willSelectCategory(.dino))
-                                        }
+                                        viewModel.action(.willSelectCategory(.dino))
                                     }
                             }.padding(.bottom, 4)
                         }
@@ -167,18 +163,14 @@ private struct CharacterListView: View {
         .scrollPosition(id: $viewModel.showingCharacterType)
         .scrollTargetBehavior(.paging)
         .scrollIndicators(.never)
+        .animation(.easeInOut(duration: 0.25), value: viewModel.showingCharacterType)
     }
 }
+
 private struct CharacterTypeView: View {
     let type: CharacterType
-    let viewModel: CharacterViewModel
+    @ObservedObject var viewModel: CharacterViewModel
     @Binding var isPresentingBottomSheet: Bool
-    
-    let gridColumns = [
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-    
     @Environment(\.screenWidth) var screenWidth
     
     var body: some View {
@@ -186,48 +178,85 @@ private struct CharacterTypeView: View {
             Text(
                 type == .jellyfish
                 ? StringLiterals.CharacterView.jellyfishIntroductionText
-                : StringLiterals.CharacterView.dinoIntroductionText)
+                : StringLiterals.CharacterView.dinoIntroductionText
+            )
             .font(.B2)
             .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
             .padding(.bottom, 20)
-            LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
-                switch viewModel.state {
-                case .loaded(let state):
-                    if type == .jellyfish {
-                        ForEach(JellyfishType.allCases, id: \.self) { jellyfish in
+            
+            switch viewModel.state {
+            case let .loaded(state):
+                characterGrid(state: state)
+            default:
+                skeletonGrid()
+            }
+        }
+        .padding(.horizontal, 16)
+        .frame(width: screenWidth)
+        .ignoresSafeArea()
+    }
+    
+    @ViewBuilder
+    private func characterGrid(state: CharacterViewModel.CharacterListState) -> some View {
+        let characters: [AnyHashable] = type == .jellyfish
+        ? Array(JellyfishType.allCases)
+        : Array(DinoType.allCases)
+        
+        let chunked = stride(from: 0, to: characters.count, by: 2).map {
+            Array(characters[$0..<min($0 + 2, characters.count)])
+        }
+        
+        VStack(spacing: 11) {
+            ForEach(chunked.indices, id: \.self) { rowIndex in
+                HStack(spacing: 11) {
+                    ForEach(chunked[rowIndex], id: \.self) { character in
+                        if let jellyfish = character as? JellyfishType {
                             JellyfishItemView(
                                 jellyfish: jellyfish,
                                 state: state,
                                 viewModel: viewModel,
                                 isPresentingBottomSheet: $isPresentingBottomSheet
                             )
-                        }
-                    } else {
-                        ForEach(DinoType.allCases, id: \.self) { dino in
+                            .frame(width: (screenWidth - 16*2 - 11)/2)
+                        } else if let dino = character as? DinoType {
                             DinoItemView(
                                 dino: dino,
                                 state: state,
                                 viewModel: viewModel,
                                 isPresentingBottomSheet: $isPresentingBottomSheet
                             )
+                            .frame(width: (screenWidth - 16*2 - 11)/2)
                         }
                     }
-                default:
-                    if type == .jellyfish {
-                        ForEach(JellyfishType.allCases, id: \.self) { _ in
-                            CharacterItemSkeletonView()
-                        }
-                    } else {
-                        ForEach(DinoType.allCases, id: \.self) { _ in
-                            CharacterItemSkeletonView()
-                        }
+                    if chunked[rowIndex].count == 1 {
+                        Spacer()
+                            .frame(width: (screenWidth - 16*2 - 11)/2)
                     }
                 }
             }
         }
-        .padding(.horizontal, 16)
-        .frame(width: screenWidth)
-        .ignoresSafeArea()
+    }
+    
+    @ViewBuilder
+    private func skeletonGrid() -> some View {
+        let items = Array(0..<10)
+        let chunked = stride(from: 0, to: items.count, by: 2).map {
+            Array(items[$0..<min($0 + 2, items.count)])
+        }
+        VStack(spacing: 11) {
+            ForEach(chunked.indices, id: \.self) { rowIndex in
+                HStack(spacing: 11) {
+                    ForEach(chunked[rowIndex], id: \.self) { _ in
+                        CharacterItemSkeletonView()
+                            .frame(width: (screenWidth - 16*2 - 11)/2)
+                    }
+                    if chunked[rowIndex].count == 1 {
+                        Spacer()
+                            .frame(width: (screenWidth - 16*2 - 11)/2)
+                    }
+                }
+            }
+        }
     }
 }
 
