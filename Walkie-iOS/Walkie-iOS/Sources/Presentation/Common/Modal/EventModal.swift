@@ -22,22 +22,7 @@ struct EventModal: View {
     let checkButtonAction: () -> Void
     var checkButtonTitle: String = "보러가기"
     var cancelButtonTitle: String = "닫기"
-    let deadline: String
-    
-    private var dDay: Int {
-        guard let deadlineDate = Date.stringToDate(string: deadline) else {
-            return 0
-        }
-        let calendar = Calendar.current
-        let startOfToday = calendar.startOfDay(for: Date())
-        let startOfDeadline = calendar.startOfDay(for: deadlineDate)
-        let comps = calendar.dateComponents(
-            [.day],
-            from: startOfToday,
-            to: startOfDeadline
-        )
-        return max(comps.day ?? 0, 0)
-    }
+    let dDay: Int
     
     // MARK: - Body
     
