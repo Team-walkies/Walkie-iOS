@@ -20,13 +20,18 @@ struct WalkieIOSApp: App {
             appCoordinator.handleStepRefresh(task: task)
         }
     }
-
+    
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $appCoordinator.path) {
-                ZStack {
+            ZStack {
+                NavigationStack(path: $appCoordinator.path) {
                     appCoordinator.buildScene(appCoordinator.currentScene)
                         .environmentObject(appCoordinator)
+                        .navigationDestination(for: AppScene.self) { scene in
+                            appCoordinator.buildScene(scene)
+                                .environmentObject(appCoordinator)
+                                .navigationBarBackButtonHidden()
+                        }
                         .fullScreenCover(
                             item: $appCoordinator.appFullScreenCover,
                             onDismiss: {
@@ -54,26 +59,20 @@ struct WalkieIOSApp: App {
                         ) {
                             appCoordinator.appSheet?.view
                         }
-                    ToastContainer()
-                        .ignoresSafeArea(.all, edges: .bottom)
-                        .frame(alignment: .bottom)
-                        .zIndex(.infinity)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .navigationDestination(for: AppScene.self) { scene in
-                    appCoordinator.buildScene(scene)
-                        .environmentObject(appCoordinator)
-                        .navigationBarBackButtonHidden()
-                }
+                ToastContainer()
+                    .ignoresSafeArea(.all, edges: .bottom)
+                    .frame(alignment: .bottom)
+                    .zIndex(.infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onChange(of: scenePhase) { _, newValue in
-                switch newValue {
-                case .background:
-                    appCoordinator.executeBackgroundActions()
-                default:
-                    break
-                }
+        }
+        .onChange(of: scenePhase) { _, newValue in
+            switch newValue {
+            case .background:
+                appCoordinator.executeBackgroundActions()
+            default:
+                break
             }
         }
     }
