@@ -76,7 +76,7 @@ final class MypageMainViewModel: ViewModelable {
         logoutUseCase.postLogout().walkieSink(
             with: self,
             receiveValue: { _, _ in
-                self.appCoordinator.popToRoot()
+                self.appCoordinator.changeToSplash()
             }, receiveFailure: { _, error  in
                 let errorMessage = error?.description ?? "An unknown error occurred"
                 self.state = .error(errorMessage)

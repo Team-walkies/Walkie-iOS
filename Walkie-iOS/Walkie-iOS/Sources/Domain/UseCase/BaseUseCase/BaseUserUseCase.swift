@@ -13,6 +13,7 @@ class BaseUserUseCase {
     
     let authRepository: AuthRepository
     let memberRepository: MemberRepository
+    let stepStatusStore: StepStatusStore
     
     // MARK: - Properties
     
@@ -20,8 +21,9 @@ class BaseUserUseCase {
     
     // MARK: - Life Cycle
     
-    init(authRepository: AuthRepository, memberRepository: MemberRepository) {
+    init(authRepository: AuthRepository, memberRepository: MemberRepository, stepStatusStore: StepStatusStore) {
         self.authRepository = authRepository
         self.memberRepository = memberRepository
+        self.stepStatusStore = stepStatusStore
     }
 }
