@@ -113,14 +113,15 @@ struct HomeView: View {
                 }
             }
         }
-        .onChange(of: viewModel.homeAlarmState) { _, newState in
-            if !AppSession.shared.hasEnteredHomeView || showAlarmBS {
-                switch newState {
-                case .loaded:
+        .onChange(of: viewModel.homeAlarmState) { _, _ in
+            guard case .loaded(let state) = viewModel.homeAlarmState else { return }
+            showAlarmBS = !state.isAlarmChecked.isAuthorized
+            if !state.isAlarmChecked.isAuthorized || showAlarmBS {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     handleAlarmBS()
-                default:
-                    showBS = false
                 }
+            } else {
+                showAlarmBS = false
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
@@ -152,7 +153,6 @@ struct HomeView: View {
                     style: .primary,
                     button: .twobutton,
                     cancelButtonAction: {
-                        print("😇😇cancelButtonAction😇😇")
                         viewModel.action(.homeAlarmCheck)
                     },
                     checkButtonAction: {
@@ -160,7 +160,6 @@ struct HomeView: View {
                             , UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
-                        print("😇😇checkButtonAction😇😇")
                         viewModel.action(.homeAlarmCheck)
                     },
                     checkButtonTitle: "허용하기"
@@ -198,7 +197,6 @@ struct HomeView: View {
         
         let needsLocation = !state.isLocationChecked.isAuthorized
         let needsMotion   = !state.isMotionChecked.isAuthorized
-//        let needsAlarm    = !state.isAlarmChecked.isAuthorized
         
         let isPresented = Binding<Bool>(
             get: { appCoordinator.sheet != nil },
@@ -221,20 +219,9 @@ struct HomeView: View {
         } else {
             appCoordinator.dismissSheet()
         }
-//        else if needsAlarm {
-//            appCoordinator.buildBottomSheet(height: 369) {
-//                HomeAlarmBSView(isPresented: isPresented)
-//            }
-//        }
-        
     }
     
     private func handleAlarmBS() {
-//        guard case .loaded(let state) = viewModel.homeAlarmState else { return }
-//        
-//        showAlarmBS = !state.isAlarmChecked.isAuthorized
-//        let needsAlarm = !state.isAlarmChecked.isAuthorized
-        
         let isPresented = Binding<Bool>(
             get: { appCoordinator.sheet != nil },
             set: { new in

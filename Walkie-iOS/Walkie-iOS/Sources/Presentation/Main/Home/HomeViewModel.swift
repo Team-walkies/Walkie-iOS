@@ -235,7 +235,19 @@ final class HomeViewModel: ViewModelable {
             )
             
             DispatchQueue.main.async {
-                self.state = .loaded(permissionState)
+                if locationState == .authorized && motionState == .authorized { // 위치모션 허용됨
+                    switch notification {
+                    case .authorized: // 알림도 허용됨
+                        self.state = .loaded(permissionState)
+                    default: // 알림은 허용안됨
+                        let alarmState = HomeAlarmState(
+                            isAlarmChecked: notification
+                        )
+                        self.homeAlarmState = .loaded(alarmState)
+                    }
+                } else { // 위치모션 허용안됨
+                    self.state = .loaded(permissionState)
+                }
             }
         }
         
@@ -378,6 +390,25 @@ final class HomeViewModel: ViewModelable {
             .store(in: &cancellables)
     }
     
+    func getEventEgg() {
+        getEventEggUseCase.getEventEgg()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, eventEggEntity in
+                    let eventState = HomeEventState(
+                        showEventEgg: eventEggEntity.canReceive,
+                        dDay: eventEggEntity.dDay
+                    )
+                    self.eventEggState = .loaded(eventState)
+                }, receiveFailure: { _, _ in
+                }
+            )
+            .store(in: &cancellables)
+    }
+}
+
+private extension HomeViewModel {
+    
     func activateRemoteConfig() async {
         do {
             try await remoteConfigManager.fetchAndActivate()
@@ -406,22 +437,6 @@ final class HomeViewModel: ViewModelable {
             state = .error
         }
     }
-    
-    func getEventEgg() {
-        getEventEggUseCase.getEventEgg()
-            .walkieSink(
-                with: self,
-                receiveValue: { _, eventEggEntity in
-                    let eventState = HomeEventState(
-                        showEventEgg: eventEggEntity.canReceive,
-                        dDay: eventEggEntity.dDay
-                    )
-                    self.eventEggState = .loaded(eventState)
-                }, receiveFailure: { _, _ in
-                }
-            )
-            .store(in: &cancellables)
-    }
 }
 
 private extension HomeViewModel {
@@ -440,24 +455,10 @@ private extension HomeViewModel {
         return status == .notDetermined
     }
     
-//    func isLocationAuthorized() -> Bool {
-//        let status = CLLocationManager().authorizationStatus
-//        return status == .authorizedAlways || status == .authorizedWhenInUse
-//    }
-    
     func isLocationAlwaysAuthorized() -> Bool {
         let status = CLLocationManager().authorizationStatus
         return status == .authorizedAlways
     }
-    
-//    func isMotionAuthorized() -> Bool {
-//        guard CMMotionActivityManager.isActivityAvailable() else {
-//            return false
-//        }
-//        
-//        let status = CMMotionActivityManager.authorizationStatus()
-//        return status == .authorized
-//    }
     
     func isLocationDenied() -> Bool {
         let status = CLLocationManager().authorizationStatus

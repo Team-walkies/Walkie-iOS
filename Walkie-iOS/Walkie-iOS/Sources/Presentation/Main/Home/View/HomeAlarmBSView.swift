@@ -55,7 +55,7 @@ struct HomeAlarmBSView: View {
                 .cornerRadius(12, corners: .allCorners)
                 
                 Button(action: {
-                    NotificationManager.shared.requestAuthorization()
+                    openSettings()
                     isPresented = false
                 }, label: {
                     Text("알림받기")
@@ -71,5 +71,16 @@ struct HomeAlarmBSView: View {
         }
         .padding(.top, 24)
         .background(.white)
+    }
+    
+    private func openSettings() {
+        NotificationManager.shared.checkNotificationPermission { permission in
+            switch permission {
+            case .notDetermined:
+                NotificationManager.shared.requestAuthorization()
+            default:
+                NotificationManager.shared.openSettings()
+            }
+        }
     }
 }
