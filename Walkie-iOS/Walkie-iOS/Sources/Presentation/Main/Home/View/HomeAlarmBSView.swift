@@ -48,6 +48,7 @@ struct HomeAlarmBSView: View {
                     Text("나중에")
                         .font(.B1)
                         .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
+                        .frame(maxWidth: .infinity)
                 })
                 .frame(width: (screenWidth - 40) / 2, height: 54)
                 .background(WalkieCommonAsset.gray100.swiftUIColor)
@@ -60,6 +61,7 @@ struct HomeAlarmBSView: View {
                     Text("알림받기")
                         .font(.B1)
                         .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
                 })
                 .frame(width: (screenWidth - 40) / 2, height: 54)
                 .background(WalkieCommonAsset.blue300.swiftUIColor)
@@ -67,7 +69,7 @@ struct HomeAlarmBSView: View {
             }
             .padding(.horizontal, 16)
         }
-        .background(.white)
         .padding(.top, 24)
+        .background(.white)
     }
 }

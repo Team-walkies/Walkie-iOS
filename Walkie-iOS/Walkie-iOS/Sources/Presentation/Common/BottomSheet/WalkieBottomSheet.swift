@@ -16,25 +16,22 @@ struct WalkieBottomSheet<SheetContent: View>: ViewModifier {
         ZStack {
             base
             
-            if isPresented {
-                Color.black.opacity(0.6)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-            }
-            
-            if isPresented {
-                VStack {
-                    Spacer()
-                    self.content()
-                        .frame(height: height)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.white)
-                        .cornerRadius(24, corners: [.topLeft, .topRight])
-                }
-                .ignoresSafeArea(edges: .bottom)
-                .transition(.move(edge: .bottom))
+            Color.black
+                .opacity(isPresented ? 0.6 : 0)
+                .ignoresSafeArea()
                 .zIndex(1)
+            
+            VStack {
+                Spacer()
+                content()
+                    .frame(height: height)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.white)
+                    .cornerRadius(24, corners: [.topLeft, .topRight])
             }
+            .ignoresSafeArea(edges: .bottom)
+            .offset(y: isPresented ? 0 : height)
+            .zIndex(2)
         }
         .animation(.easeInOut(duration: 0.25), value: isPresented)
     }
