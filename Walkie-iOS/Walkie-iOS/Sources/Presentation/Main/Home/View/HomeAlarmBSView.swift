@@ -11,6 +11,7 @@ import WalkieCommon
 
 struct HomeAlarmBSView: View {
     
+    @ObservedObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
     @Binding var isPresented: Bool
     
@@ -44,6 +45,7 @@ struct HomeAlarmBSView: View {
             ) {
                 Button(action: {
                     isPresented = false
+                    viewModel.action(.showEventModal)
                 }, label: {
                     Text("나중에")
                         .font(.B1)
@@ -57,6 +59,7 @@ struct HomeAlarmBSView: View {
                 Button(action: {
                     openSettings()
                     isPresented = false
+                    viewModel.action(.showEventModal)
                 }, label: {
                     Text("알림받기")
                         .font(.B1)

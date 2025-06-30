@@ -171,7 +171,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     button: button,
                     cancelButtonAction: {
                         self.dismissFullScreenCover()
-                        checkButtonAction()
+                        cancelButtonAction()
                     },
                     checkButtonAction: {
                         self.dismissFullScreenCover()

@@ -32,7 +32,7 @@ final class HomeViewModel: ViewModelable {
         case homeWillDisappear
         case homeAuthAllowTapped
         case homeAlarmCheck
-        case homeAlarmAllowTapped
+        case showEventModal
     }
     
     // states
@@ -202,8 +202,8 @@ final class HomeViewModel: ViewModelable {
             showPermission()
         case .homeAlarmCheck:
             checkAlarm()
-        default:
-            break
+        case .showEventModal:
+            Task { await activateRemoteConfig() }
         }
     }
     
@@ -416,10 +416,15 @@ private extension HomeViewModel {
             let eggEventEnabled = remoteConfigManager
                 .boolValue(for: .eggEventEnabled)
             
-            if eggEventEnabled {
+            if eggEventEnabled { // event 기간
                 let now = Date()
                 let calendar = Calendar.current
-                guard let lastDate = UserManager.shared.getLastVisitedDate else { return }
+                let oneDayAgo = calendar.date(
+                    byAdding: .day, value: -1, to: now
+                ) ?? now
+                
+                let lastDate = UserManager.shared.getLastVisitedDate
+                ?? oneDayAgo
                 
                 let daysDiff = calendar.dateComponents(
                     [.day],
@@ -427,11 +432,13 @@ private extension HomeViewModel {
                     to: calendar.startOfDay(for: now)
                 ).day ?? 0
                 
-                if daysDiff >= 1 {
+                if daysDiff >= 1 { // 하루가 지났음 -> api 호출
                     await MainActor.run {
                         getEventEgg()
                     }
+                    
                 }
+                UserManager.shared.setLastVisitedDate(now)
             }
         } catch {
             state = .error

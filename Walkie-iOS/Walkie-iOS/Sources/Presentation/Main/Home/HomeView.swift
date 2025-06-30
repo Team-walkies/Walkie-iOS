@@ -122,6 +122,7 @@ struct HomeView: View {
                 }
             } else {
                 showAlarmBS = false
+                viewModel.action(.showEventModal)
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
@@ -218,6 +219,9 @@ struct HomeView: View {
             }
         } else {
             appCoordinator.dismissSheet()
+            if !showAlarmBS { // 알림 허용이 됨 -> 이벤트여부 체크
+                viewModel.action(.showEventModal)
+            }
         }
     }
     
@@ -231,8 +235,11 @@ struct HomeView: View {
         
         if showAlarmBS {
             appCoordinator.buildBottomSheet(height: 369) {
-                HomeAlarmBSView(isPresented: isPresented)
-                    .padding(.bottom, bottomInset)
+                HomeAlarmBSView(
+                    viewModel: viewModel,
+                    isPresented: isPresented
+                )
+                .padding(.bottom, bottomInset)
             }
         }
     }
