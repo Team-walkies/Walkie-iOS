@@ -62,6 +62,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                 currentVersion,
                 lowerThan: remoteVersion
             )
+            UserManager.shared.setLastVisitedDate(Date())
             if needsUpdate {
                 await MainActor.run {
                     showUpdateNeed = true

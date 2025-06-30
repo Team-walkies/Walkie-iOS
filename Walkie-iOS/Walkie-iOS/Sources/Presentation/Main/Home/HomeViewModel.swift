@@ -21,6 +21,7 @@ final class HomeViewModel: ViewModelable {
     private let getEggCountUseCase: GetEggCountUseCase
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
+    private let getEventEggUseCase: GetEventEggUseCase
     
     private var isUpdatingSteps = false
     
@@ -80,6 +81,16 @@ final class HomeViewModel: ViewModelable {
         }
     }
     
+    struct HomeEventState: Equatable {
+        let showEventEgg: Bool
+        let dDay: Int
+        
+        static func == (lhs: HomeEventState, rhs: HomeEventState) -> Bool {
+            return lhs.showEventEgg == rhs.showEventEgg &&
+            lhs.dDay == rhs.dDay
+        }
+    }
+    
     // view states
     
     enum HomeViewState: Equatable {
@@ -118,18 +129,26 @@ final class HomeViewModel: ViewModelable {
         case error(String)
     }
     
+    enum EventEggViewState: Equatable {
+        case loading
+        case loaded(HomeEventState)
+        case error(String)
+    }
+    
     @Published var state: HomeViewState = .loading
     @Published var homeStatsState: HomeStatsViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
     @Published var leftStepState: LeftStepViewState = .loading
+    @Published var eventEggState: EventEggViewState = .loading
     @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
     private let locationManager = LocationManager.shared
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
+    private let remoteConfigManager: RemoteConfigManaging
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -138,7 +157,9 @@ final class HomeViewModel: ViewModelable {
         getCharactersCountUseCase: GetCharactersCountUseCase,
         getRecordedSpotUseCase: RecordedSpotUseCase,
         appCoordinator: AppCoordinator,
-        stepStatusStore: StepStatusStore
+        stepStatusStore: StepStatusStore,
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared,
+        getEventEggUseCase: GetEventEggUseCase
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
@@ -147,6 +168,10 @@ final class HomeViewModel: ViewModelable {
         self.getRecordedSpotUseCase = getRecordedSpotUseCase
         self.appCoordinator = appCoordinator
         self.stepStatusStore = stepStatusStore
+        self.remoteConfigManager = remoteConfigManager
+        self.getEventEggUseCase = getEventEggUseCase
+        
+        self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
     func action(_ action: Action) {
@@ -297,6 +322,51 @@ final class HomeViewModel: ViewModelable {
                 }, receiveFailure: { _, error in
                     let errorMessage = error?.description ?? "An unknown error occurred"
                     self.homeHistoryViewState = .error(errorMessage)
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func activateRemoteConfig() async {
+        do {
+            try await remoteConfigManager.fetchAndActivate()
+            
+            let eggEventEnabled = remoteConfigManager
+                .boolValue(for: .eggEventEnabled)
+            
+            if eggEventEnabled {
+                let now = Date()
+                let calendar = Calendar.current
+                guard let lastDate = UserManager.shared.getLastVisitedDate else { return }
+                
+                let daysDiff = calendar.dateComponents(
+                    [.day],
+                    from: calendar.startOfDay(for: lastDate),
+                    to: calendar.startOfDay(for: now)
+                ).day ?? 0
+                
+                if daysDiff >= 1 {
+                    await MainActor.run {
+                        getEventEgg()
+                    }
+                }
+            }
+        } catch {
+            state = .error
+        }
+    }
+    
+    func getEventEgg() {
+        getEventEggUseCase.getEventEgg()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, eventEggEntity in
+                    let eventState = HomeEventState(
+                        showEventEgg: eventEggEntity.canReceive,
+                        dDay: eventEggEntity.dDay
+                    )
+                    self.eventEggState = .loaded(eventState)
+                }, receiveFailure: { _, _ in
                 }
             )
             .store(in: &cancellables)
