@@ -248,11 +248,11 @@ final class HomeViewModel: ViewModelable {
                 } else { // 위치모션 허용안됨
                     self.state = .loaded(permissionState)
                 }
+                
+                if !self.isLocationNotDetermined() && !self.isMotionNotDetermined() {
+                    self.getHomeAPI()
+                }
             }
-        }
-        
-        if !isLocationNotDetermined() && !isMotionNotDetermined() {
-            getHomeAPI()
         }
     }
     
@@ -399,7 +399,9 @@ final class HomeViewModel: ViewModelable {
                         showEventEgg: eventEggEntity.canReceive,
                         dDay: eventEggEntity.dDay
                     )
-                    self.eventEggState = .loaded(eventState)
+                    Task { @MainActor in
+                        self.eventEggState = .loaded(eventState)
+                    }
                 }, receiveFailure: { _, _ in
                 }
             )
@@ -433,10 +435,7 @@ private extension HomeViewModel {
                 ).day ?? 0
                 
                 if daysDiff >= 1 { // 하루가 지났음 -> api 호출
-                    await MainActor.run {
-                        getEventEgg()
-                    }
-                    
+                    getEventEgg()
                 }
                 UserManager.shared.setLastVisitedDate(now)
             }
