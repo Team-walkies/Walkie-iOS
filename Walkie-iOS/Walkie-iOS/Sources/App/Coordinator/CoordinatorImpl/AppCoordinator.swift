@@ -327,16 +327,20 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     func executeForegroundActions() {
-        // 포그라운드 실시간 걸음 수 추적 시작
-        self.startStepUpdates()
-        // 백그라운드 스케줄링 모두 취소
-        BGTaskManager.shared.cancelAll()
+        if UserManager.shared.hasUserToken {
+            // 포그라운드 실시간 걸음 수 추적 시작
+            self.startStepUpdates()
+            // 백그라운드 스케줄링 모두 취소
+            BGTaskManager.shared.cancelAll()
+        }
     }
     
     func executeBackgroundActions() {
-        // 포그라운드 실시간 걸음 수 추적 종료
-        self.stopStepUpdates()
-        // 백그라운드 작업 스케줄링
-        BGTaskManager.shared.scheduleAppRefresh(.step)
+        if UserManager.shared.hasUserToken {
+            // 포그라운드 실시간 걸음 수 추적 종료
+            self.stopStepUpdates()
+            // 백그라운드 작업 스케줄링
+            BGTaskManager.shared.scheduleAppRefresh(.step)
+        }
     }
 }

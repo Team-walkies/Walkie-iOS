@@ -121,7 +121,8 @@ extension DIContainer {
             appCoordinator: appCoordinator,
             logoutUseCase: DefaultLogoutUserUseCase(
                 authRepository: authRepo,
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             ),
             getProfileUseCase: DefaultGetProfileUseCase(
                 memberRepository: memberRepo,
@@ -175,7 +176,8 @@ extension DIContainer {
         return LoginViewModel(
             loginUseCase: DefaultLoginUseCase(
                 authRepository: authRepo,
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }
@@ -184,7 +186,8 @@ extension DIContainer {
         return SignupViewModel(
             signupUseCase: DefaultSignupUseCase(
                 authRepository: authRepo,
-                memberRepository: memberRepo
+                memberRepository: memberRepo,
+                stepStatusStore: stepStatusStore
             )
         )
     }
