@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var showMotionBS: Bool = false
     @State private var showAlarmBS: Bool = false
     @State private var showBS: Bool = false
+    @State private var hasShownAlarmBSOnce: Bool = false
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
@@ -116,13 +117,11 @@ struct HomeView: View {
         .onChange(of: viewModel.homeAlarmState) { _, _ in
             guard case .loaded(let state) = viewModel.homeAlarmState else { return }
             showAlarmBS = !state.isAlarmChecked.isAuthorized
-            if !state.isAlarmChecked.isAuthorized || showAlarmBS {
+            if showAlarmBS && !AppSession.shared.hasShowAlarm {
+                AppSession.shared.hasShowAlarm = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     handleAlarmBS()
                 }
-            } else {
-                showAlarmBS = false
-                viewModel.action(.showEventModal)
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
