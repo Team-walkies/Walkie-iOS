@@ -63,4 +63,13 @@ extension DefaultEggService: EggService {
             )
             .mapWalkieResponse(EggCountDto.self)
     }
+    
+    func getEventEgg() -> AnyPublisher<GetEventEggDto, Error> {
+        eggProvider
+            .requestPublisher(
+                .getEventEgg,
+                reissueService: reissueService
+            )
+            .mapWalkieResponse(GetEventEggDto.self)
+    }
 }

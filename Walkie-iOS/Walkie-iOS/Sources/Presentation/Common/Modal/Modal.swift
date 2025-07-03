@@ -9,16 +9,6 @@ import SwiftUI
 
 import WalkieCommon
 
-enum ModalStyleType {
-    case primary
-    case error
-}
-
-enum ModalButtonType {
-    case onebutton
-    case twobutton
-}
-
 struct Modal: View {
     
     // MARK: - Properties
@@ -88,44 +78,5 @@ struct Modal: View {
         .padding(.vertical, 16)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
-    }
-}
-
-// MARK: - Preview
-
-#Preview {
-    ZStack {
-        WalkieCommonAsset.gray100.swiftUIColor
-        
-        VStack {
-            Modal(
-                title: "제목",
-                content: "내용입니다",
-                style: .primary,
-                button: .onebutton,
-                cancelButtonAction: {},
-                checkButtonAction: {print("확인눌럿음")})
-            Modal(
-                title: "제목",
-                content: "내용입니다",
-                style: .error,
-                button: .onebutton,
-                cancelButtonAction: {},
-                checkButtonAction: {print("확인눌럿음")})
-            Modal(
-                title: "제목",
-                content: "내용입니다",
-                style: .primary,
-                button: .twobutton,
-                cancelButtonAction: {print("취소눌럿음")},
-                checkButtonAction: { print("확인눌럿음") })
-            Modal(
-                title: "제목",
-                content: "내용입니다",
-                style: .error,
-                button: .twobutton,
-                cancelButtonAction: { print("취소눌럿음")},
-                checkButtonAction: { print("확인눌럿음") })
-        }
     }
 }

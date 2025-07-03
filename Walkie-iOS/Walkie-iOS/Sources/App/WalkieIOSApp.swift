@@ -14,11 +14,7 @@ struct WalkieIOSApp: App {
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
-        
-        // 백그라운드 작업 등록
-        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
-            appCoordinator.handleStepRefresh(task: task)
-        }
+        initiateBackgroundTask()
     }
     
     var body: some Scene {
@@ -74,6 +70,13 @@ struct WalkieIOSApp: App {
             default:
                 break
             }
+        }
+    }
+    
+    private func initiateBackgroundTask() {
+        // 백그라운드 작업 등록
+        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
+            appCoordinator.handleStepRefresh(task: task)
         }
     }
 }

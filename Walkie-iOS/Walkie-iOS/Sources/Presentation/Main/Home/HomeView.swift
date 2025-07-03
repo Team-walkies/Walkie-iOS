@@ -113,6 +113,18 @@ struct HomeView: View {
                 }
             }
         }
+        .onChange(of: viewModel.homeAlarmState) { _, _ in
+            guard case .loaded(let state) = viewModel.homeAlarmState else { return }
+            showAlarmBS = !state.isAlarmChecked.isAuthorized
+            if !state.isAlarmChecked.isAuthorized || showAlarmBS {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    handleAlarmBS()
+                }
+            } else {
+                showAlarmBS = false
+                viewModel.action(.showEventModal)
+            }
+        }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
             if viewModel.shouldShowDeniedAlert {
                 var title: String {
@@ -141,15 +153,37 @@ struct HomeView: View {
                     content: content,
                     style: .primary,
                     button: .twobutton,
-                    cancelButtonAction: {},
+                    cancelButtonAction: {
+                        viewModel.action(.homeAlarmCheck)
+                    },
                     checkButtonAction: {
                         if let url = URL(string: UIApplication.openSettingsURLString)
                             , UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                         }
+                        viewModel.action(.homeAlarmCheck)
                     },
                     checkButtonTitle: "허용하기"
                 )
+            }
+        }
+        .onChange(of: viewModel.eventEggState) { _, newState in
+            switch newState {
+            case .loaded(let eventEggState):
+                if eventEggState.showEventEgg {
+                    appCoordinator.buildEventAlert(
+                        title: "알 1개를 선물받았어요!",
+                        style: .primary,
+                        button: .twobutton,
+                        cancelButtonAction: { },
+                        checkButtonAction: {
+                            appCoordinator.push(AppScene.egg)
+                        },
+                        dDay: eventEggState.dDay
+                    )
+                }
+            default:
+                break
             }
         }
     }
@@ -164,7 +198,6 @@ struct HomeView: View {
         
         let needsLocation = !state.isLocationChecked.isAuthorized
         let needsMotion   = !state.isMotionChecked.isAuthorized
-        let needsAlarm    = !state.isAlarmChecked.isAuthorized
         
         let isPresented = Binding<Bool>(
             get: { appCoordinator.sheet != nil },
@@ -184,12 +217,30 @@ struct HomeView: View {
                 )
                 .padding(.bottom, bottomInset)
             }
-        } else if needsAlarm {
-            appCoordinator.buildBottomSheet(height: 369) {
-                HomeAlarmBSView(isPresented: isPresented)
-            }
         } else {
             appCoordinator.dismissSheet()
+            if !showAlarmBS { // 알림 허용이 됨 -> 이벤트여부 체크
+                viewModel.action(.showEventModal)
+            }
+        }
+    }
+    
+    private func handleAlarmBS() {
+        let isPresented = Binding<Bool>(
+            get: { appCoordinator.sheet != nil },
+            set: { new in
+                if !new { appCoordinator.dismissSheet() }
+            }
+        )
+        
+        if showAlarmBS {
+            appCoordinator.buildBottomSheet(height: 369) {
+                HomeAlarmBSView(
+                    viewModel: viewModel,
+                    isPresented: isPresented
+                )
+                .padding(.bottom, bottomInset)
+            }
         }
     }
 }

@@ -92,7 +92,11 @@ extension DIContainer {
                 stepStatusStore: stepStatusStore
             ),
             appCoordinator: appCoordinator,
-            stepStatusStore: stepStatusStore
+            stepStatusStore: stepStatusStore,
+            getEventEggUseCase: DefaultGetEventEggUseCase(
+                eggRepository: eggRepo,
+                stepStatusStore: stepStatusStore
+            )
         )
     }
     

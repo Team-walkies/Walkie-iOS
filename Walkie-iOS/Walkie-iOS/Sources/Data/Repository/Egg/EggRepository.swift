@@ -12,4 +12,5 @@ protocol EggRepository {
     func getEggDetail(eggId: Int) -> AnyPublisher<EggDetailEntity, NetworkError>
     func patchEggStep(egg: EggEntity, step: Int, willHatch: Bool) -> AnyPublisher<Void, NetworkError>
     func getEggsCount() -> AnyPublisher<Int, NetworkError>
+    func getEventEgg() -> AnyPublisher<EventEggEntity, NetworkError>
 }

@@ -48,6 +48,7 @@ enum URLConstant {
     static let eggsStep = "/eggs/steps"
     static let eggsCount = "/eggs/count"
     static func eggsDetail(eggId: Int) -> String { return "/eggs/\(eggId)" }
+    static let eventsDailyEgg = "/events/daily-egg"
     
     // reviews
     static let reviewsSpots = "/reviews/spots"

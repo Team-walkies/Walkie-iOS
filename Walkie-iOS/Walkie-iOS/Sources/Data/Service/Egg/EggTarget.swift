@@ -51,4 +51,9 @@ extension EggTarget {
         method: .get,
         task: .requestPlain
     )
+    static let getEventEgg = EggTarget(
+        path: URLConstant.eventsDailyEgg,
+        method: .get,
+        task: .requestPlain
+    )
 }

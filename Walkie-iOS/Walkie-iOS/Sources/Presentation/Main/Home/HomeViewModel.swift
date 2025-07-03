@@ -21,6 +21,7 @@ final class HomeViewModel: ViewModelable {
     private let getEggCountUseCase: GetEggCountUseCase
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
+    private let getEventEggUseCase: GetEventEggUseCase
     
     private var isUpdatingSteps = false
     
@@ -30,7 +31,8 @@ final class HomeViewModel: ViewModelable {
         case homeWillAppear
         case homeWillDisappear
         case homeAuthAllowTapped
-        case homeAlarmAllowTapped
+        case homeAlarmCheck
+        case showEventModal
     }
     
     // states
@@ -80,11 +82,35 @@ final class HomeViewModel: ViewModelable {
         }
     }
     
+    struct HomeAlarmState: Equatable {
+        let isAlarmChecked: PermissionState
+        
+        static func == (lhs: HomeAlarmState, rhs: HomeAlarmState) -> Bool {
+            return lhs.isAlarmChecked == rhs.isAlarmChecked
+        }
+    }
+    
+    struct HomeEventState: Equatable {
+        let showEventEgg: Bool
+        let dDay: Int
+        
+        static func == (lhs: HomeEventState, rhs: HomeEventState) -> Bool {
+            return lhs.showEventEgg == rhs.showEventEgg &&
+            lhs.dDay == rhs.dDay
+        }
+    }
+    
     // view states
     
     enum HomeViewState: Equatable {
         case loading
         case loaded(HomePermissionState)
+        case error
+    }
+    
+    enum HomeViewAlarmState: Equatable {
+        case loading
+        case loaded(HomeAlarmState)
         case error
     }
     
@@ -118,18 +144,27 @@ final class HomeViewModel: ViewModelable {
         case error(String)
     }
     
+    enum EventEggViewState: Equatable {
+        case loading
+        case loaded(HomeEventState)
+        case error(String)
+    }
+    
     @Published var state: HomeViewState = .loading
+    @Published var homeAlarmState: HomeViewAlarmState = .loading
     @Published var homeStatsState: HomeStatsViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
     @Published var leftStepState: LeftStepViewState = .loading
+    @Published var eventEggState: EventEggViewState = .loading
     @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
     private let locationManager = LocationManager.shared
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
+    private let remoteConfigManager: RemoteConfigManaging
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -138,7 +173,9 @@ final class HomeViewModel: ViewModelable {
         getCharactersCountUseCase: GetCharactersCountUseCase,
         getRecordedSpotUseCase: RecordedSpotUseCase,
         appCoordinator: AppCoordinator,
-        stepStatusStore: StepStatusStore
+        stepStatusStore: StepStatusStore,
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared,
+        getEventEggUseCase: GetEventEggUseCase
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
@@ -147,6 +184,10 @@ final class HomeViewModel: ViewModelable {
         self.getRecordedSpotUseCase = getRecordedSpotUseCase
         self.appCoordinator = appCoordinator
         self.stepStatusStore = stepStatusStore
+        self.remoteConfigManager = remoteConfigManager
+        self.getEventEggUseCase = getEventEggUseCase
+        
+        self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
     func action(_ action: Action) {
@@ -159,8 +200,10 @@ final class HomeViewModel: ViewModelable {
             stopStepUpdates()
         case .homeAuthAllowTapped:
             showPermission()
-        default:
-            break
+        case .homeAlarmCheck:
+            checkAlarm()
+        case .showEventModal:
+            Task { await activateRemoteConfig() }
         }
     }
     
@@ -176,15 +219,40 @@ final class HomeViewModel: ViewModelable {
             return .authorized
         }()
         
-        let permissionState = HomePermissionState(
-            isLocationChecked: locationState,
-            isMotionChecked: motionState,
-            isAlarmChecked: .authorized // todo - binding
-        )
-        state = .loaded(permissionState)
-        
-        if !isLocationNotDetermined() && !isMotionNotDetermined() {
-            getHomeAPI()
+        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
+            guard let self = self else { return }
+            
+            let notification = switch notificationState {
+            case .denied: PermissionState.denied
+            case .authorized: PermissionState.authorized
+            default: PermissionState.notDetermined
+            }
+            
+            let permissionState = HomePermissionState(
+                isLocationChecked: locationState,
+                isMotionChecked: motionState,
+                isAlarmChecked: notification
+            )
+            
+            DispatchQueue.main.async {
+                if locationState == .authorized && motionState == .authorized { // 위치모션 허용됨
+                    switch notification {
+                    case .authorized: // 알림도 허용됨
+                        self.state = .loaded(permissionState)
+                    default: // 알림은 허용안됨
+                        let alarmState = HomeAlarmState(
+                            isAlarmChecked: notification
+                        )
+                        self.homeAlarmState = .loaded(alarmState)
+                    }
+                } else { // 위치모션 허용안됨
+                    self.state = .loaded(permissionState)
+                }
+                
+                if !self.isLocationNotDetermined() && !self.isMotionNotDetermined() {
+                    self.getHomeAPI()
+                }
+            }
         }
     }
     
@@ -203,6 +271,26 @@ final class HomeViewModel: ViewModelable {
         if locationDenied || motionDenied {
             shouldShowDeniedAlert = true
             return
+        }
+    }
+    
+    func checkAlarm() {
+        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
+            guard let self = self else { return }
+            
+            let notification = switch notificationState {
+            case .denied: PermissionState.denied
+            case .authorized: PermissionState.authorized
+            default: PermissionState.notDetermined
+            }
+            
+            let alarmState = HomeAlarmState(
+                isAlarmChecked: notification
+            )
+            
+            DispatchQueue.main.async {
+                self.homeAlarmState = .loaded(alarmState)
+            }
         }
     }
     
@@ -301,6 +389,60 @@ final class HomeViewModel: ViewModelable {
             )
             .store(in: &cancellables)
     }
+    
+    func getEventEgg() {
+        getEventEggUseCase.getEventEgg()
+            .walkieSink(
+                with: self,
+                receiveValue: { _, eventEggEntity in
+                    let eventState = HomeEventState(
+                        showEventEgg: eventEggEntity.canReceive,
+                        dDay: eventEggEntity.dDay
+                    )
+                    Task { @MainActor in
+                        self.eventEggState = .loaded(eventState)
+                    }
+                }, receiveFailure: { _, _ in
+                }
+            )
+            .store(in: &cancellables)
+    }
+}
+
+private extension HomeViewModel {
+    
+    func activateRemoteConfig() async {
+        do {
+            try await remoteConfigManager.fetchAndActivate()
+            
+            let eggEventEnabled = remoteConfigManager
+                .boolValue(for: .eggEventEnabled)
+            
+            if eggEventEnabled { // event 기간
+                let now = Date()
+                let calendar = Calendar.current
+                let oneDayAgo = calendar.date(
+                    byAdding: .day, value: -1, to: now
+                ) ?? now
+                
+                let lastDate = UserManager.shared.getLastVisitedDate
+                ?? oneDayAgo
+                
+                let daysDiff = calendar.dateComponents(
+                    [.day],
+                    from: calendar.startOfDay(for: lastDate),
+                    to: calendar.startOfDay(for: now)
+                ).day ?? 0
+                
+                if daysDiff >= 1 { // 하루가 지났음 -> api 호출
+                    getEventEgg()
+                }
+                UserManager.shared.setLastVisitedDate(now)
+            }
+        } catch {
+            state = .error
+        }
+    }
 }
 
 private extension HomeViewModel {
@@ -319,23 +461,9 @@ private extension HomeViewModel {
         return status == .notDetermined
     }
     
-    func isLocationAuthorized() -> Bool {
-        let status = CLLocationManager().authorizationStatus
-        return status == .authorizedAlways || status == .authorizedWhenInUse
-    }
-    
     func isLocationAlwaysAuthorized() -> Bool {
         let status = CLLocationManager().authorizationStatus
         return status == .authorizedAlways
-    }
-    
-    func isMotionAuthorized() -> Bool {
-        guard CMMotionActivityManager.isActivityAvailable() else {
-            return false
-        }
-        
-        let status = CMMotionActivityManager.authorizationStatus()
-        return status == .authorized
     }
     
     func isLocationDenied() -> Bool {

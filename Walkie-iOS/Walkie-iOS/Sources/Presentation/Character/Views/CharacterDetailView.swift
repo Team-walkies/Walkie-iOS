@@ -30,11 +30,12 @@ struct CharacterDetailView: View {
                             KFImage.url(imgURL)
                                 .loadDiskFileSynchronously(true)
                                 .cacheMemoryOnly()
+                                .resizable()
+                                .scaledToFit()
                                 .frame(
                                     width: 180,
                                     height: 180
                                 )
-                                .scaledToFit()
                                 .padding(.bottom, 12)
                         }
                         
