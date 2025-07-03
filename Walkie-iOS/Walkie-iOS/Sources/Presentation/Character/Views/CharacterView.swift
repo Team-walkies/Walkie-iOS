@@ -65,7 +65,7 @@ struct CharacterView: View {
             }
             .bottomSheet(
                 isPresented: $isPresentingBottomSheet,
-                height: screenHeight-94
+                height: screenHeight > 710 ? 712 : screenHeight - 94
             ) {
                 CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
                     .padding(.top, 28)
