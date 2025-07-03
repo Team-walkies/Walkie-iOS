@@ -44,7 +44,7 @@ struct WalkieIOSApp: App {
                             }
                         )
                         .transaction { $0.disablesAnimations = true }
-                        .permissionBottomSheet(
+                        .bottomSheet(
                             isPresented: Binding(
                                 get: { appCoordinator.sheet != nil },
                                 set: {
@@ -54,6 +54,7 @@ struct WalkieIOSApp: App {
                             height: appCoordinator.appSheet?.height ?? 0
                         ) {
                             appCoordinator.appSheet?.view
+                                .interactiveDismissDisabled(true)
                         }
                 }
                 ToastContainer()

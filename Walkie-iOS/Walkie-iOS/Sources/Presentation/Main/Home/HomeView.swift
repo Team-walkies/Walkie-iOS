@@ -214,7 +214,6 @@ struct HomeView: View {
                     showLocation: needsLocation,
                     showMotion: needsMotion
                 )
-                .padding(.bottom, bottomInset)
             }
         } else {
             appCoordinator.dismissSheet()
@@ -238,7 +237,6 @@ struct HomeView: View {
                     viewModel: viewModel,
                     isPresented: isPresented
                 )
-                .padding(.bottom, bottomInset)
             }
         }
     }
