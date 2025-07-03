@@ -131,7 +131,10 @@ extension DIContainer {
         )
     }
     
-    func makeMypageMyInformationViewModel(appCoordinator: AppCoordinator, isPublic: Bool) -> MypageMyInformationViewModel {
+    func makeMypageMyInformationViewModel(
+        appCoordinator: AppCoordinator,
+        isPublic: Bool
+    ) -> MypageMyInformationViewModel {
         return MypageMyInformationViewModel(
             appCoordinator: appCoordinator,
             patchProfileUseCase: DefaultPatchProfileUseCase(

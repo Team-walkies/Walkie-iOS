@@ -22,7 +22,7 @@ struct EggDetailView: View {
         ) {
             switch viewModel.state {
             case .loaded(let eggState):
-                VStack (
+                VStack(
                     alignment: .center,
                     spacing: 4
                 ) {
