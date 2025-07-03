@@ -20,7 +20,6 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-        locationManager.startUpdatingLocation()
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.distanceFilter = 10
@@ -46,7 +45,7 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
         didUpdateLocations locations: [CLLocation]
     ) {
         guard let loc = locations.last else { return }
-        if loc.horizontalAccuracy <= 20 {
+        if loc.horizontalAccuracy <= 50 {
             currentLocation = loc
         }
     }
@@ -60,5 +59,12 @@ final class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObje
     
     func getCurrentLocation() -> CLLocation? {
         return locationManager.location
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            manager.startUpdatingLocation()
+        }
     }
 }

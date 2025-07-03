@@ -56,6 +56,13 @@ final class MapViewModel: ViewModelable, WebMessageHandling {
     ) {
         state = .loading
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
+        locationCancellable = locationManager.$currentLocation
+            .compactMap { $0 }
+            .sink { [weak self] newLoc in
+                guard let self = self else { return }
+                print("🫨 위치 업데이트:", newLoc)
+                self.updateActivity(with: newLoc)
+            }
     }
     
     func action(_ action: Action) {
@@ -258,15 +265,6 @@ private extension MapViewModel {
                 self.startDynamicIsland(info: state)
             }
         }
-        
-        locationCancellable = self.locationManager.$currentLocation
-            .compactMap { $0 }
-            .dropFirst()
-            .sink { [weak self] newLoc in
-                print("🫨🫨🫨🫨")
-                print(newLoc)
-                self?.updateActivity(with: newLoc)
-            }
     }
     
     func updateActivity(with userLoc: CLLocation) {
