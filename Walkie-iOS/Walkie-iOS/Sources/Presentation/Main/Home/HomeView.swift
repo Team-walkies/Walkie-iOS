@@ -207,14 +207,18 @@ struct HomeView: View {
         
         if needsLocation || needsMotion {
             let height = needsLocation && needsMotion ? 342 : 266
-            appCoordinator.buildBottomSheet(height: CGFloat(height)) {
-                HomeAuthBSView(
-                    viewModel: viewModel,
-                    isPresented: isPresented,
-                    showLocation: needsLocation,
-                    showMotion: needsMotion
-                )
-            }
+            appCoordinator.buildBottomSheet(
+                height: CGFloat(height),
+                content: {
+                    HomeAuthBSView(
+                        viewModel: viewModel,
+                        isPresented: isPresented,
+                        showLocation: needsLocation,
+                        showMotion: needsMotion
+                    )
+                },
+                disableInteractive: true
+            )
         } else {
             appCoordinator.dismissSheet()
             if !showAlarmBS { // 알림 허용이 됨 -> 이벤트여부 체크
@@ -232,12 +236,16 @@ struct HomeView: View {
         )
         
         if showAlarmBS {
-            appCoordinator.buildBottomSheet(height: 369) {
-                HomeAlarmBSView(
-                    viewModel: viewModel,
-                    isPresented: isPresented
-                )
-            }
+            appCoordinator.buildBottomSheet(
+                height: 369,
+                content: {
+                    HomeAlarmBSView(
+                        viewModel: viewModel,
+                        isPresented: isPresented
+                    )
+                },
+                disableInteractive: true
+            )
         }
     }
 }

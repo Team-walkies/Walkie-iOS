@@ -15,9 +15,8 @@ struct EggView: View {
         GridItem(.flexible())
     ]
     
+    @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject var viewModel: EggViewModel
-    @State var isPresentingGuideView: Bool = false
-    @State var isPresentingBottomSheet: Bool = false
     
     var body: some View {
         ZStack {
@@ -29,10 +28,15 @@ struct EggView: View {
                     rightButtonEnabled: true,
                     rightButtonShowsEnabledColor: false,
                     rightButtonAction: {
-                        isPresentingGuideView = true
-                    })
+                        appCoordinator.push(AppScene.eggGuide)
+                    }
+                )
+                
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 0
+                    ) {
                         switch self.viewModel.state {
                         case .loaded(let state):
                             HStack(alignment: .center, spacing: 8) {
@@ -43,19 +47,33 @@ struct EggView: View {
                                     .font(.H2)
                                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                                 Spacer()
-                            }.padding(.bottom, 4)
+                            }
+                            .padding(.bottom, 4)
                             
                             if state.eggsCount > 0 {
                                 Text("같이 걷고 싶은 알을 선택해 주세요")
                                     .font(.B2)
                                     .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                                     .padding(.bottom, 20)
-                                LazyVGrid(columns: gridColumns, alignment: .center, spacing: 11) {
+                                
+                                LazyVGrid(
+                                    columns: gridColumns,
+                                    alignment: .center,
+                                    spacing: 11
+                                ) {
                                     ForEach(state.eggs, id: \.eggId) { egg in
                                         EggItemView(state: egg)
                                             .onTapGesture {
                                                 viewModel.action(.didTapEggDetail(egg))
-                                                isPresentingBottomSheet = true
+                                                appCoordinator.buildBottomSheet(
+                                                    height: 516,
+                                                    content: {
+                                                        EggDetailView(
+                                                            eggViewModel: viewModel,
+                                                            viewModel: viewModel.eggDetailViewModel!
+                                                        )
+                                                    }
+                                                )
                                             }
                                     }
                                 }
@@ -93,13 +111,6 @@ struct EggView: View {
                 }
                 .scrollIndicators(.never)
             }
-        }
-        .navigationDestination(isPresented: $isPresentingGuideView) {
-            EggGuideView()
-                .navigationBarBackButtonHidden()
-        }
-        .bottomSheet(isPresented: $isPresentingBottomSheet, height: 516) {
-            EggDetailView(eggViewModel: viewModel, viewModel: viewModel.eggDetailViewModel!)
         }
         .navigationBarBackButtonHidden()
     }

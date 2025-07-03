@@ -12,7 +12,7 @@ enum AppScene: AppRoute {
     
     case splash, nickname, complete, login, tabBar
     case map
-    case egg, character, review
+    case egg, eggGuide, character, review
     case feedback, withdraw(nickname: String)
     case setting(item: MypageSettingSectionItem)
     case service(item: MypageServiceSectionItem)
@@ -39,12 +39,12 @@ enum AppScene: AppRoute {
 
 enum AppSheet: AppRoute {
     
-    case homeAlarm(height: CGFloat, content: AnyView)
+    case bottomSheet(height: CGFloat, content: AnyView)
     
     public var id: String {
         switch self {
-        case .homeAlarm:
-            return "homeAlarm"
+        case .bottomSheet:
+            return "bottomSheet"
         }
     }
     
@@ -56,7 +56,7 @@ enum AppSheet: AppRoute {
     }
     var height: CGFloat {
         switch self {
-        case .homeAlarm(let height, _):
+        case .bottomSheet(let height, _):
             return height
         }
     }
@@ -64,7 +64,7 @@ enum AppSheet: AppRoute {
     @ViewBuilder
     var view: some View {
         switch self {
-        case .homeAlarm(_, let view):
+        case .bottomSheet(_, let view):
             view
         }
     }

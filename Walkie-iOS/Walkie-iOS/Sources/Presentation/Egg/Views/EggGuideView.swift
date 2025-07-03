@@ -48,7 +48,9 @@ struct EggGuideView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 16)
-        }.scrollIndicators(.never)
+        }
+        .scrollIndicators(.never)
+        .navigationBarBackButtonHidden()
     }
 }
 
@@ -129,8 +131,4 @@ private struct CharacterProbabilityView: View {
                 .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
         }
     }
-}
-
-#Preview {
-    EggGuideView()
 }

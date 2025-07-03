@@ -54,7 +54,6 @@ struct WalkieIOSApp: App {
                             height: appCoordinator.appSheet?.height ?? 0
                         ) {
                             appCoordinator.appSheet?.view
-                                .interactiveDismissDisabled(true)
                         }
                 }
                 ToastContainer()
