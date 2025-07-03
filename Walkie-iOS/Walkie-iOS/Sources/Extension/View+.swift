@@ -98,20 +98,6 @@ extension View {
         }
     }
     
-//    func permissionBottomSheet<Content: View>(
-//        isPresented: Binding<Bool>,
-//        height: CGFloat,
-//        @ViewBuilder content: @escaping () -> Content
-//    ) -> some View {
-//        self.modifier(
-//            WalkieBottomSheet(
-//                isPresented: isPresented,
-//                height: height,
-//                content: content
-//            )
-//        )
-//    }
-    
     func shimmer(isGray100: Bool) -> some View {
         modifier(ShimmerModifier(isGray100: isGray100))
     }
