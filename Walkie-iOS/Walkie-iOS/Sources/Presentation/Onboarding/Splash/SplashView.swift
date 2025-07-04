@@ -26,10 +26,14 @@ struct SplashView: View {
         .onChange(of: splashViewModel.showUpdateNeed) { _, new in
             guard new else { return }
             withAnimation {
-                appCoordinator.buildBottomSheet(height: 198) {
-                    UpdateBSView()
-                        .background(Color.white)
-                }
+                appCoordinator.buildBottomSheet(
+                    height: 198,
+                    content: {
+                        UpdateBSView()
+                            .background(Color.white)
+                    },
+                    disableInteractive: true
+                )
             }
         }
     }

@@ -44,7 +44,7 @@ struct WalkieIOSApp: App {
                             }
                         )
                         .transaction { $0.disablesAnimations = true }
-                        .permissionBottomSheet(
+                        .bottomSheet(
                             isPresented: Binding(
                                 get: { appCoordinator.sheet != nil },
                                 set: {

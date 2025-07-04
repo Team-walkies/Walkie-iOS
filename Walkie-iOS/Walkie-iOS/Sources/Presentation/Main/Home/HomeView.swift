@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var showMotionBS: Bool = false
     @State private var showAlarmBS: Bool = false
     @State private var showBS: Bool = false
+    @State private var hasShownAlarmBSOnce: Bool = false
     
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
@@ -116,13 +117,11 @@ struct HomeView: View {
         .onChange(of: viewModel.homeAlarmState) { _, _ in
             guard case .loaded(let state) = viewModel.homeAlarmState else { return }
             showAlarmBS = !state.isAlarmChecked.isAuthorized
-            if !state.isAlarmChecked.isAuthorized || showAlarmBS {
+            if showAlarmBS && !AppSession.shared.hasShowAlarm {
+                AppSession.shared.hasShowAlarm = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     handleAlarmBS()
                 }
-            } else {
-                showAlarmBS = false
-                viewModel.action(.showEventModal)
             }
         }
         .onChange(of: viewModel.shouldShowDeniedAlert) {
@@ -208,15 +207,18 @@ struct HomeView: View {
         
         if needsLocation || needsMotion {
             let height = needsLocation && needsMotion ? 342 : 266
-            appCoordinator.buildBottomSheet(height: CGFloat(height)) {
-                HomeAuthBSView(
-                    viewModel: viewModel,
-                    isPresented: isPresented,
-                    showLocation: needsLocation,
-                    showMotion: needsMotion
-                )
-                .padding(.bottom, bottomInset)
-            }
+            appCoordinator.buildBottomSheet(
+                height: CGFloat(height),
+                content: {
+                    HomeAuthBSView(
+                        viewModel: viewModel,
+                        isPresented: isPresented,
+                        showLocation: needsLocation,
+                        showMotion: needsMotion
+                    )
+                },
+                disableInteractive: true
+            )
         } else {
             appCoordinator.dismissSheet()
             if !showAlarmBS { // 알림 허용이 됨 -> 이벤트여부 체크
@@ -234,13 +236,16 @@ struct HomeView: View {
         )
         
         if showAlarmBS {
-            appCoordinator.buildBottomSheet(height: 369) {
-                HomeAlarmBSView(
-                    viewModel: viewModel,
-                    isPresented: isPresented
-                )
-                .padding(.bottom, bottomInset)
-            }
+            appCoordinator.buildBottomSheet(
+                height: 369,
+                content: {
+                    HomeAlarmBSView(
+                        viewModel: viewModel,
+                        isPresented: isPresented
+                    )
+                },
+                disableInteractive: true
+            )
         }
     }
 }

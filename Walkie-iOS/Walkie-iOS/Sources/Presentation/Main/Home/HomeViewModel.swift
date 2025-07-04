@@ -489,7 +489,18 @@ private extension HomeViewModel {
 private extension HomeViewModel {
 
     func startStepUpdates() {
-        guard CMPedometer.isStepCountingAvailable() else { return }
+        guard CMPedometer.isStepCountingAvailable() else {
+            DispatchQueue.main.async {
+                self.stepState = .loaded(
+                    StepState(
+                        todayStep: 0,
+                        todayDistance: 0,
+                        locationAlwaysAuthorized: false
+                    )
+                )
+            }
+            return
+        }
         
         let now = Date()
         let startOfDay = Calendar.current.startOfDay(for: now)

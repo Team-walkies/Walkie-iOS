@@ -90,27 +90,12 @@ extension View {
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
         .sheet(isPresented: isPresented) {
             content()
-                .cornerRadius(24, corners: [.topLeft, .topRight])
                 .ignoresSafeArea(.all)
-                .presentationDetents([.height(height-34)]) // Safe Area 고려
+                .presentationDetents([.height(height)])
                 .presentationBackgroundInteraction(.disabled)
                 .presentationDragIndicator(.visible)
-                .presentationBackground(.clear)
+                .presentationCornerRadius(24)
         }
-    }
-    
-    func permissionBottomSheet<Content: View>(
-        isPresented: Binding<Bool>,
-        height: CGFloat,
-        @ViewBuilder content: @escaping () -> Content
-    ) -> some View {
-        self.modifier(
-            WalkieBottomSheet(
-                isPresented: isPresented,
-                height: height,
-                content: content
-            )
-        )
     }
     
     func shimmer(isGray100: Bool) -> some View {

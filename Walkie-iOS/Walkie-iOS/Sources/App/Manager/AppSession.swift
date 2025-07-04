@@ -9,4 +9,5 @@ final class AppSession {
     static let shared = AppSession()
     
     var hasEnteredHomeView = false
+    var hasShowAlarm = false
 }

@@ -9,10 +9,9 @@ import SwiftUI
 import WalkieCommon
 
 struct CharacterView: View {
-    @Environment(\.screenHeight) var screenHeight
     
     @StateObject var viewModel: CharacterViewModel
-    @State var isPresentingBottomSheet: Bool = false
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -52,9 +51,9 @@ struct CharacterView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
                         CharacterListView(
-                            viewModel: viewModel,
-                            isPresentingBottomSheet: $isPresentingBottomSheet
+                            viewModel: viewModel
                         )
+                        .environment(appCoordinator)
                         .ignoresSafeArea()
                         .padding(.bottom, 48)
                     }
@@ -63,14 +62,6 @@ struct CharacterView: View {
                     }
                 }.scrollIndicators(.never)
             }
-            .bottomSheet(
-                isPresented: $isPresentingBottomSheet,
-                height: screenHeight-94
-            ) {
-                CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
-                    .padding(.top, 28)
-                    .background(.white)
-            }
         }
         .navigationBarBackButtonHidden()
     }
@@ -78,6 +69,7 @@ struct CharacterView: View {
 
 private struct CharacterItemView: View {
     @Environment(\.screenWidth) var screenWidth
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     let characterImage: ImageResource
     let characterName: String
@@ -86,17 +78,15 @@ private struct CharacterItemView: View {
     let count: Int
     let isWalking: Bool
     
-    let emptyJellyfishImage = ImageResource(name: "img_empty_jellyfish", bundle: .main)
-    let emptyDinoImage = ImageResource(name: "img_empty_dino", bundle: .main)
-    
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             Image(
                 count != 0
                 ? characterImage
                 : characterType == .jellyfish
-                ? emptyJellyfishImage
-                : emptyDinoImage)
+                ? .imgEmptyJellyfish
+                : .imgEmptyDino
+            )
             .resizable()
             .frame(width: 120, height: 120)
             Text(count == 0 ? "미획득" : characterName)
@@ -146,7 +136,7 @@ private struct CharacterItemView: View {
 
 private struct CharacterListView: View {
     @ObservedObject var viewModel: CharacterViewModel
-    @Binding var isPresentingBottomSheet: Bool
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         ScrollView(.horizontal) {
@@ -154,9 +144,9 @@ private struct CharacterListView: View {
                 ForEach(CharacterType.allCases, id: \.self) { type in
                     CharacterTypeView(
                         type: type,
-                        viewModel: viewModel,
-                        isPresentingBottomSheet: $isPresentingBottomSheet
+                        viewModel: viewModel
                     )
+                    .environment(appCoordinator)
                 }
             }.scrollTargetLayout()
         }
@@ -170,8 +160,8 @@ private struct CharacterListView: View {
 private struct CharacterTypeView: View {
     let type: CharacterType
     @ObservedObject var viewModel: CharacterViewModel
-    @Binding var isPresentingBottomSheet: Bool
     @Environment(\.screenWidth) var screenWidth
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -214,17 +204,17 @@ private struct CharacterTypeView: View {
                             JellyfishItemView(
                                 jellyfish: jellyfish,
                                 state: state,
-                                viewModel: viewModel,
-                                isPresentingBottomSheet: $isPresentingBottomSheet
+                                viewModel: viewModel
                             )
+                            .environment(appCoordinator)
                             .frame(width: (screenWidth - 16*2 - 11)/2)
                         } else if let dino = character as? DinoType {
                             DinoItemView(
                                 dino: dino,
                                 state: state,
-                                viewModel: viewModel,
-                                isPresentingBottomSheet: $isPresentingBottomSheet
+                                viewModel: viewModel
                             )
+                            .environment(appCoordinator)
                             .frame(width: (screenWidth - 16*2 - 11)/2)
                         }
                     }
@@ -264,7 +254,8 @@ private struct JellyfishItemView: View {
     let jellyfish: JellyfishType
     let state: CharacterViewModel.CharacterListState
     let viewModel: CharacterViewModel
-    @Binding var isPresentingBottomSheet: Bool
+    @EnvironmentObject var appCoordinator: AppCoordinator
+    @Environment(\.screenHeight) var screenHeight
     
     var body: some View {
         if let jellyfishState = state.jellyfishState[jellyfish] {
@@ -277,10 +268,17 @@ private struct JellyfishItemView: View {
             )
             .onTapGesture {
                 if jellyfishState.count == 0 { return }
-                isPresentingBottomSheet = true
                 viewModel.action(.willSelectJellyfish(
                     type: jellyfish,
                     state: jellyfishState)
+                )
+                appCoordinator.buildBottomSheet(
+                    height: screenHeight > 710 ? 712 : screenHeight - 94,
+                    content: {
+                        CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
+                            .padding(.top, 28)
+                            .background(.white)
+                    }
                 )
             }
         }
@@ -291,7 +289,8 @@ private struct DinoItemView: View {
     let dino: DinoType
     let state: CharacterViewModel.CharacterListState
     let viewModel: CharacterViewModel
-    @Binding var isPresentingBottomSheet: Bool
+    @EnvironmentObject var appCoordinator: AppCoordinator
+    @Environment(\.screenHeight) var screenHeight
     
     var body: some View {
         if let dinoState = state.dinoState[dino] {
@@ -304,10 +303,17 @@ private struct DinoItemView: View {
             )
             .onTapGesture {
                 if dinoState.count == 0 { return }
-                isPresentingBottomSheet = true
                 viewModel.action(.willSelectDino(
                     type: dino,
                     state: dinoState)
+                )
+                appCoordinator.buildBottomSheet(
+                    height: screenHeight > 710 ? 712 : screenHeight - 94,
+                    content: {
+                        CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
+                            .padding(.top, 28)
+                            .background(.white)
+                    }
                 )
             }
         }

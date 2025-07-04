@@ -82,6 +82,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
         case .egg:
             diContainer.buildEggView(appCoordinator: self)
                 .popGestureEnabled(true)
+        case .eggGuide:
+            EggGuideView()
         case .character:
             diContainer.buildCharacterView()
                 .popGestureEnabled(true)
@@ -304,12 +306,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     func buildBottomSheet<Content: View>(
         height: CGFloat,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content,
+        disableInteractive: Bool = false
     ) {
         presentSheet(
-            AppSheet.homeAlarm(
+            AppSheet.bottomSheet(
                 height: height,
-                content: AnyView(content())
+                content: AnyView(
+                    content()
+                        .interactiveDismissDisabled(disableInteractive)
+                )
             )
         )
     }

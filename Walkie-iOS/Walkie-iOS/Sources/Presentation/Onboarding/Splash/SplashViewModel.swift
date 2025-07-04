@@ -98,7 +98,7 @@ final class SplashViewModel: NSObject, ViewModelable {
                 with: self,
                 receiveValue: { _, _ in
                     self.appCoordinator.startSplash()
-                }, receiveFailure: { _, error  in
+                }, receiveFailure: { _, _  in
                     self.appCoordinator.startSplash()
                 }
             )
