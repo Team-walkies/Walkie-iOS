@@ -9,5 +9,6 @@ import Combine
 
 protocol PermissionUseCase {
     func execute() -> AnyPublisher<HomePermissionState, Never>
-    func requestAllIfNeeded() -> AnyPublisher<HomePermissionState, Never>
+    func requestLocationAndMotion() -> AnyPublisher<(PermissionState, PermissionState), Never>
+    func requestNotification() -> AnyPublisher<PermissionState, Never>
 }

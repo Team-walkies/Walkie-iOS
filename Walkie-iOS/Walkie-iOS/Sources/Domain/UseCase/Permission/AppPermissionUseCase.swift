@@ -43,39 +43,35 @@ extension AppPermissionUseCase {
             .eraseToAnyPublisher()
     }
     
-    func requestAllIfNeeded() -> AnyPublisher<HomePermissionState, Never> {
-        let locRequest = locationUC.check()
-            .flatMap { status -> AnyPublisher<PermissionState, Never> in
+    func requestLocationAndMotion() -> AnyPublisher<(PermissionState, PermissionState), Never> {
+        let loc = locationUC.check()
+            .flatMap { status in
                 status == .notDetermined
                 ? self.locationUC.requestIfNeeded()
                 : Just(status).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         
-        let motionRequest = motionUC.check()
-            .flatMap { status -> AnyPublisher<PermissionState, Never> in
+        let mot = motionUC.check()
+            .flatMap { status in
                 status == .notDetermined
                 ? self.motionUC.requestIfNeeded()
                 : Just(status).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
         
-        let notifRequest = notificationUC.check()
-            .flatMap { status -> AnyPublisher<PermissionState, Never> in
-                status == .notDetermined
-                ? self.notificationUC.requestIfNeeded()
-                : Just(status).eraseToAnyPublisher()
+        return loc
+            .flatMap { locStatus in
+                mot.map { motStatus in (locStatus, motStatus) }
             }
             .eraseToAnyPublisher()
-        
-        return Publishers
-            .CombineLatest3(locRequest, motionRequest, notifRequest)
-            .map { loc, motion, alarm in
-                HomePermissionState(
-                    isLocationChecked: loc,
-                    isMotionChecked: motion,
-                    isAlarmChecked: alarm
-                )
+    }
+    
+    func requestNotification() -> AnyPublisher<PermissionState, Never> {
+        notificationUC.check()
+            .flatMap { $0 == .notDetermined
+                ? self.notificationUC.requestIfNeeded()
+                : Just($0).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

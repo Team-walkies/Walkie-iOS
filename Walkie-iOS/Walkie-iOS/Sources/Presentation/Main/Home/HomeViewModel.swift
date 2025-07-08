@@ -33,7 +33,8 @@ final class HomeViewModel: ViewModelable {
         case homeWillDisappear
         case homeAuthAllowTapped
         case homeAlarmCheck
-        case showEventModal
+        case homeAlarmAllowTapped
+        case checkEventModal
     }
     
     // states
@@ -150,7 +151,6 @@ final class HomeViewModel: ViewModelable {
     @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
-    private let locationManager = LocationManager.shared
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
     private let remoteConfigManager: RemoteConfigManaging
@@ -192,7 +192,9 @@ final class HomeViewModel: ViewModelable {
             requestPermission()
         case .homeAlarmCheck:
             checkAlarm()
-        case .showEventModal:
+        case .homeAlarmAllowTapped:
+            requestAlarmPermission()
+        case .checkEventModal:
             Task { await activateRemoteConfig() }
         }
     }
@@ -202,7 +204,8 @@ final class HomeViewModel: ViewModelable {
 private extension HomeViewModel {
     
     func checkPermission() {
-        permissionUseCase.execute()
+        permissionUseCase
+            .execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] perm in
                 self?.handlePermissionState(perm)
@@ -211,29 +214,58 @@ private extension HomeViewModel {
     }
     
     func requestPermission() {
-        (permissionUseCase as? AppPermissionUseCase)?
-            .requestAllIfNeeded()
+        permissionUseCase
+            .execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] perm in
                 guard let self else { return }
-                if perm.isLocationChecked == .denied ||
-                    perm.isMotionChecked   == .denied {
+                let loc = perm.isLocationChecked
+                let mot = perm.isMotionChecked
+                if loc == .notDetermined || mot == .notDetermined {
+                    permissionUseCase
+                        .requestLocationAndMotion()
+                        .receive(on: DispatchQueue.main)
+                        .sink { _ in
+                            self.checkAlarm()
+                            self.getHomeAPI()
+                        }
+                        .store(in: &cancellables)
+                } else if loc != .authorized || mot != .authorized {
                     self.shouldShowDeniedAlert = true
-                } else {
-                    self.handlePermissionState(perm)
                 }
             }
             .store(in: &cancellables)
     }
     
     func checkAlarm() {
-        permissionUseCase.execute()
+        permissionUseCase
+            .execute()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] perm in
                 guard let self else { return }
                 self.homeAlarmState = .loaded(
                     HomeAlarmState(isAlarmChecked: perm.isAlarmChecked)
                 )
+            }
+            .store(in: &cancellables)
+    }
+    
+    func requestAlarmPermission() {
+        permissionUseCase
+            .execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] perm in
+                guard let self else { return }
+                let alarm = perm.isAlarmChecked
+                if alarm == .notDetermined {
+                    permissionUseCase
+                        .requestNotification()
+                        .receive(on: DispatchQueue.main)
+                        .sink { _ in
+                            Task { await self.activateRemoteConfig() }
+                        }
+                        .store(in: &cancellables)
+                }
             }
             .store(in: &cancellables)
     }
