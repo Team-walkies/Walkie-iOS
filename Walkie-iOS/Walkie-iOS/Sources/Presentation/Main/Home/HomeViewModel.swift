@@ -265,6 +265,8 @@ private extension HomeViewModel {
                             Task { await self.activateRemoteConfig() }
                         }
                         .store(in: &cancellables)
+                } else {
+                    Task { await self.activateRemoteConfig() }
                 }
             }
             .store(in: &cancellables)
