@@ -309,6 +309,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         @ViewBuilder content: @escaping () -> Content,
         disableInteractive: Bool = false
     ) {
+        guard sheet == nil else { return }
         presentSheet(
             AppSheet.bottomSheet(
                 height: height,

@@ -126,14 +126,14 @@ struct HomeStatsView: View {
                         .frame(width: eggWidth, height: eggHeight)
                         .overlay(alignment: .bottom) {
                             if !showWarning {
-                                NavigationLink(
-                                    destination: DIContainer.shared.buildEggView(appCoordinator: appCoordinator)
-                                ) {
+                                Button(action: {
+                                    appCoordinator.push(AppScene.egg)
+                                }, label: {
                                     Text("알을 선택해 주세요")
                                         .font(.H5)
                                         .foregroundColor(WalkieCommonAsset.blue50.swiftUIColor)
                                         .underline()
-                                }
+                                })
                                 .frame(height: 24)
                                 .padding(.bottom, emptyButtonInset)
                             }
