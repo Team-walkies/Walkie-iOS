@@ -8,7 +8,7 @@
 import SwiftUI
 import WalkieCommon
 
-struct CircularProgressBar: View {
+struct CircleProgressView: View {
     
     var type: CircleProgressType
     var targetStep: Int
