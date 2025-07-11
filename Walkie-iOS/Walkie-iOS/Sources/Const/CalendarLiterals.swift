@@ -9,7 +9,7 @@ import Foundation
 
 enum TimePeriod {
     case past
-    case present
+    case today
     case future
 }
 

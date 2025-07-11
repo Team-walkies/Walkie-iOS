@@ -11,7 +11,7 @@ import WalkieCommon
 struct ReviewView: View {
     
     @StateObject var viewModel: ReviewViewModel
-    @StateObject var calendarViewModel: CalendarViewModel
+    @StateObject var calendarViewModel: SpotCalendarViewModel
     @State private var selectedReview: ReviewItemId?
     @State private var showReviewEdit: Bool = false
     @State private var showReviewDelete: Bool = false
@@ -25,7 +25,7 @@ struct ReviewView: View {
                 NavigationBar(
                     showBackButton: true
                 )
-                CalendarView(viewModel: calendarViewModel)
+                SpotCalendarView(viewModel: calendarViewModel)
                 ScrollView {
                     switch viewModel.state {
                     case .loaded(let reviewState):
@@ -92,11 +92,13 @@ struct ReviewView: View {
         .onAppear {
             viewModel.action(
                 .loadReviewList(
-                    startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
+                    endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                     completion: { result in
                         if result {
-                            calendarViewModel.action(.didTapTodayButton)
+                            calendarViewModel.action(.selectDate(Date()))
+                            calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
+                            viewModel.action(.showReviewList(dateString: Date().convertToDateString()))
                         }
                     }
                 )
@@ -112,11 +114,12 @@ struct ReviewView: View {
                 viewModel.state = .loading
                 viewModel.action(
                     .loadReviewList(
-                        startDate: calendarViewModel.firstDay.convertToDateString(),
-                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
+                        endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                         completion: { result in
                             if result {
                                 viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                                calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
                         }
                     )
@@ -126,18 +129,20 @@ struct ReviewView: View {
         .onChange(of: calendarViewModel.state.selectedDate) { _, newDate in
             viewModel.action(
                 .loadReviewList(
-                    startDate: calendarViewModel.firstDay.convertToDateString(),
-                    endDate: calendarViewModel.lastDay.convertToDateString(),
+                    startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
+                    endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                     completion: { result in
                         if result {
-                            calendarViewModel.action(.willSelectDate(newDate))
+                            calendarViewModel.action(.selectDate(newDate))
+                            calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
+                            viewModel.action(.showReviewList(dateString: newDate.convertToDateString()))
                         }
                     }
                 )
             )
         }
         .navigationBarBackButtonHidden()
-        .bottomSheet(isPresented: $calendarViewModel.showPicker, height: 436) {
+        .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
             DatePickerView(
                 viewModel: DatePickerViewModel(
                     calendarViewModel: calendarViewModel,
@@ -162,11 +167,12 @@ struct ReviewView: View {
                 viewModel.state = .loading
                 viewModel.action(
                     .loadReviewList(
-                        startDate: calendarViewModel.firstDay.convertToDateString(),
-                        endDate: calendarViewModel.lastDay.convertToDateString(),
+                        startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
+                        endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                         completion: { result in
                             if result {
                                 viewModel.showReviewList(dateString: viewModel.selectedDate.convertToDateString())
+                                calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
                         }
                     )
