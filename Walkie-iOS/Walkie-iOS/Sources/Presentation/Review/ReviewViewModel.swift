@@ -100,7 +100,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
         return URLRequest(url: url)
     }
     
-    func getReviewList(startDate: String, endDate: String, completion: @escaping (Bool) -> Void) {
+    private func getReviewList(startDate: String, endDate: String, completion: @escaping (Bool) -> Void) {
         let date = ReviewsCalendarDate(startDate: startDate, endDate: endDate)
         self.reviewUseCase
             .getReviewList(date: date)
@@ -119,7 +119,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
             .store(in: &cancellables)
     }
     
-    func showReviewList(dateString: String) {
+    private func showReviewList(dateString: String) {
         DispatchQueue.main.async {
             self.state = .loaded(
                 self.loadedReviewList.filter { review in
@@ -129,7 +129,7 @@ final class ReviewViewModel: ViewModelable, WebMessageHandling {
         }
     }
     
-    func delReview(reviewId: Int) {
+    private func delReview(reviewId: Int) {
         if reviewId < 0 { return }
         
         delReviewUseCase.deleteReview(reviewId: reviewId)
