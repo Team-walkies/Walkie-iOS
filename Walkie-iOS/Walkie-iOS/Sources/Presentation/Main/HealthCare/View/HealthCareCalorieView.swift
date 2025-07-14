@@ -9,7 +9,7 @@ import SwiftUI
 import WalkieCommon
 import Kingfisher
 
-struct CalorieView: View {
+struct HealthCareCalorieView: View {
     
     var caloriesName: String
     var caloriesDescription: String

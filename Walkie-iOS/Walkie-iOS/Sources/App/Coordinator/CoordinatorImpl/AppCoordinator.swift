@@ -73,6 +73,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
                         }
                     }
                 }
+        case .healthcare:
+            diContainer.buildHealthcareView()
         case .map:
             diContainer.buildMapView()
         case .tabBar:
