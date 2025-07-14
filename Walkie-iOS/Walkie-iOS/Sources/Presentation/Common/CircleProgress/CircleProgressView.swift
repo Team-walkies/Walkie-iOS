@@ -13,6 +13,7 @@ struct CircleProgressView: View {
     var type: CircleProgressType
     var targetStep: Int
     var nowStep: Int
+    var isToday: Bool = false
     
     private var progress: Double {
         guard targetStep > 0 else { return 0 }
@@ -69,16 +70,20 @@ struct CircleProgressView: View {
                                 .font(.B1)
                                 .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                             
-                            Image(.icChevronDown)
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            if isToday {
+                                Image(.icChevronDown)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            }
                         }
                     }
                     .onTapGesture {
-                        print("show targetStep bottomsheet")
+                        if isToday {
+                            print("show targetStep bottomsheet")
+                        }
                     }
                     
                     Text(nowStep.formatted())
