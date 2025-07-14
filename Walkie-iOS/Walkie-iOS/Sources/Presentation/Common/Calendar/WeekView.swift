@@ -60,44 +60,20 @@ struct WeekView: View {
         )
     }
     
-    private func configuration(for date: Date, isSelected: Bool) -> (height: CGFloat, textColor: Color, backgroundColor: Color) {
-        switch config {
-        case .spotReview:
-            let height: CGFloat = 58
-            let textColor: Color
-            let backgroundColor: Color
-            
-            switch date.getDayViewTime() {
-            case .past:
-                textColor = isSelected ? .white : WalkieCommonAsset.gray700.swiftUIColor
-                backgroundColor = isSelected ? WalkieCommonAsset.gray600.swiftUIColor : .white
-            case .today:
-                textColor = isSelected ? .white : WalkieCommonAsset.blue300.swiftUIColor
-                backgroundColor = isSelected ? WalkieCommonAsset.blue300.swiftUIColor : .white
-            case .future:
-                textColor = WalkieCommonAsset.gray300.swiftUIColor
-                backgroundColor = .white
-            }
-            return (height, textColor, backgroundColor)
-            
-        case .healthCare:
-            let height: CGFloat = 50
-            let textColor: Color
-            let backgroundColor: Color
-            
-            switch date.getDayViewTime() {
-            case .past:
-                textColor = WalkieCommonAsset.gray700.swiftUIColor
-                backgroundColor = isSelected ? WalkieCommonAsset.gray100.swiftUIColor : .white
-            case .today:
-                textColor = WalkieCommonAsset.blue400.swiftUIColor
-                backgroundColor = isSelected ? WalkieCommonAsset.blue30.swiftUIColor : .white
-            case .future:
-                textColor = WalkieCommonAsset.gray300.swiftUIColor
-                backgroundColor = .white
-            }
-            return (height, textColor, backgroundColor)
-        }
+    private func configuration(
+        for date: Date,
+        isSelected: Bool
+    ) -> (
+        height: CGFloat,
+        textColor: Color,
+        backgroundColor: Color
+    ) {
+        let timePeriod = date.getDayViewTime()
+        let height = config.getHeight()
+        let textColor = config.getTextColor(isSelected: isSelected, timePeriod: timePeriod)
+        let backgroundColor = config.getBackgroundColor(isSelected: isSelected, timePeriod: timePeriod)
+        
+        return (height, textColor, backgroundColor)
     }
     
     private func hasDot(for date: Date) -> Bool {
@@ -114,5 +90,60 @@ extension WeekView {
     enum WeekViewConfig {
         case spotReview(hasSpotOn: [Date])
         case healthCare(stepData: [Date: (nowStep: Int, targetStep: Int)])
+        
+        func getTextColor(isSelected: Bool, timePeriod: TimePeriod) -> Color {
+            switch self {
+            case .spotReview:
+                switch timePeriod {
+                case .past:
+                    return isSelected ? .white : WalkieCommonAsset.gray700.swiftUIColor
+                case .today:
+                    return isSelected ? .white : WalkieCommonAsset.blue300.swiftUIColor
+                case .future:
+                    return WalkieCommonAsset.gray300.swiftUIColor
+                }
+            case .healthCare:
+                switch timePeriod {
+                case .past:
+                    return WalkieCommonAsset.gray700.swiftUIColor
+                case .today:
+                    return WalkieCommonAsset.blue400.swiftUIColor
+                case .future:
+                    return WalkieCommonAsset.gray300.swiftUIColor
+                }
+            }
+        }
+        
+        func getBackgroundColor(isSelected: Bool, timePeriod: TimePeriod) -> Color {
+            switch self {
+            case .spotReview:
+                switch timePeriod {
+                case .past:
+                    return isSelected ? WalkieCommonAsset.gray600.swiftUIColor : .white
+                case .today:
+                    return isSelected ? WalkieCommonAsset.blue300.swiftUIColor : .white
+                case .future:
+                    return .white
+                }
+            case .healthCare:
+                switch timePeriod {
+                case .past:
+                    return isSelected ? WalkieCommonAsset.gray100.swiftUIColor : .white
+                case .today:
+                    return isSelected ? WalkieCommonAsset.blue30.swiftUIColor : .white
+                case .future:
+                    return .white
+                }
+            }
+        }
+        
+        func getHeight() -> CGFloat {
+            switch self {
+            case .spotReview:
+                return 58
+            case .healthCare:
+                return 50
+            }
+        }
     }
 }
