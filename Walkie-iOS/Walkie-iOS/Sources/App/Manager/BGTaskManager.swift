@@ -14,12 +14,12 @@ final class BGTaskManager {
     public init() {}
     
     // 백그라운드 작업 등록
-    func registerBackgroundTasks(_ task: WalkieBackgroundTask, action: @escaping (BGAppRefreshTask) -> Void) {
-        Task {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: task.rawValue, using: nil) { task in
-                guard let refreshTask = task as? BGAppRefreshTask else { return }
-                print("⏳ 백그라운드 테스크 작업 시작 : \(task) ⏳")
-                action(refreshTask)
+    func registerBackgroundTasks(_ task: WalkieBackgroundTask, action: @escaping (BGAppRefreshTask) async -> Void) {
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: task.rawValue, using: nil) { task in
+            guard let refreshTask = task as? BGAppRefreshTask else { return }
+            print("⏳ 백그라운드 테스크 작업 시작 : \(task) ⏳")
+            Task {
+                await action(refreshTask)
             }
         }
     }
