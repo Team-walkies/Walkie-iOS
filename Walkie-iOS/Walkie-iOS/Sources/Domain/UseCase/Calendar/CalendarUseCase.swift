@@ -8,7 +8,5 @@
 import Foundation
 
 protocol CalendarUseCase {
-    func setCalendarRange(baseDate: Date) -> (startDate: Date, endDate: Date)
-    func setCalendarEventData(eventDates: [String], dayViewState: inout [DayViewState])
-    func setCalendarDayViewState(baseDate: Date, selectedDate: Date) -> [DayViewState]
+    func generateWeeks(baseDate: Date) -> (pastWeek: [Date], presentWeek: [Date], futureWeek: [Date])
 }

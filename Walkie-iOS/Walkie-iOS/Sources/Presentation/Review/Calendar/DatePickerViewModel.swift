@@ -24,11 +24,11 @@ final class DatePickerViewModel: ViewModelable {
         let nextMonthAvailable: Bool
     }
     
-    @ObservedObject var calendarViewModel: CalendarViewModel
+    @ObservedObject var calendarViewModel: SpotCalendarViewModel
     @Published var state: State
     private let calendar = Calendar.current
     
-    init(calendarViewModel: CalendarViewModel, selectedDate: Date) {
+    init(calendarViewModel: SpotCalendarViewModel, selectedDate: Date) {
         self.calendarViewModel = calendarViewModel
         let generatedDays = Date.generateDaysCount(in: selectedDate)
         self.state = State(
@@ -113,7 +113,8 @@ final class DatePickerViewModel: ViewModelable {
     }
     
     private func handleSelectButton() {
-        calendarViewModel.action(.willSelectDate(state.selectedDate))
+        calendarViewModel.action(.selectDate(self.state.selectedDate))
+        self.calendarViewModel.action(.willCloseDatePikcer)
     }
     
     // MARK: - Helper

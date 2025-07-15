@@ -8,77 +8,40 @@
 import Foundation
 
 final class DefaultCalendarUseCase: CalendarUseCase {
-    private let calendar = Calendar.current
-    
-    // 캘린더 범위 설정 (전주의 일요일 ~ 다음주의 토요일)
-    func setCalendarRange(baseDate: Date) -> (startDate: Date, endDate: Date) {
+    func generateWeeks(baseDate: Date) -> (pastWeek: [Date], presentWeek: [Date], futureWeek: [Date]) {
         let calendar = Calendar.current
-        let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: baseDate)
+        // 기준 날짜의 자정(00:00)으로 설정
+        let startOfDay = calendar.startOfDay(for: baseDate)
         
-        guard let startOfWeek = calendar.date(from: components) else {
-            let today = Date()
-            let fallbackStartOfWeek = calendar.date(
-                from: calendar.dateComponents(
-                    [.yearForWeekOfYear, .weekOfYear],
-                    from: today
-                )
-            ) ?? today
-            let previousWeekStart = calendar.date(
-                byAdding: .day,
-                value: -7,
-                to: fallbackStartOfWeek
-            ) ?? fallbackStartOfWeek
-            let nextWeekEnd = calendar.date(
-                byAdding: .day,
-                value: 13,
-                to: fallbackStartOfWeek
-            ) ?? fallbackStartOfWeek
-            return (startDate: previousWeekStart, endDate: nextWeekEnd)
+        // 현재 주의 일요일 찾기
+        let components = calendar.dateComponents([.weekday], from: startOfDay)
+        let weekday = components.weekday ?? 1 // 1: 일요일, 2: 월요일, ..., 7: 토요일
+        let daysToSubtractForSunday = weekday - 1
+        guard let currentSunday = calendar.date(byAdding: .day, value: -daysToSubtractForSunday, to: startOfDay) else {
+            return ([], [], [])
         }
         
-        let previousWeekStart = calendar.date(
-            byAdding: .day,
-            value: -7,
-            to: startOfWeek
-        ) ?? startOfWeek
-        let nextWeekEnd = calendar.date(
-            byAdding: .day,
-            value: 13,
-            to: startOfWeek
-        ) ?? startOfWeek
-        return (startDate: previousWeekStart, endDate: nextWeekEnd)
-    }
-    
-    // 이벤트 데이터 설정 (리뷰 날짜 목록 기반)
-    func setCalendarEventData(eventDates: [String], dayViewState: inout [DayViewState]) {
-        for i in 0..<dayViewState.count {
-            dayViewState[i].hasSpot = eventDates.contains(convertToDateString(dayViewState[i].date))
+        // 과거 주, 현재 주, 미래 주의 시작 날짜(일요일)
+        guard let pastSunday = calendar.date(byAdding: .day, value: -7, to: currentSunday),
+              let futureSunday = calendar.date(byAdding: .day, value: 7, to: currentSunday) else {
+            return ([], [], [])
         }
-    }
-    
-    // 주 단위 DayViewState 생성
-    func setCalendarDayViewState(baseDate: Date, selectedDate: Date) -> [DayViewState] {
-        var days: [DayViewState] = []
-        let selectedDayOfWeek = calendar.component(.weekday, from: selectedDate)
         
-        for i in 0..<7 {
-            if let date = calendar.date(byAdding: .day, value: i, to: baseDate) {
-                let isSelected = calendar.component(.weekday, from: date) == selectedDayOfWeek
-                days.append(DayViewState(
-                    date: date,
-                    isSelected: isSelected,
-                    time: date.getDayViewTime(),
-                    hasSpot: false
-                ))
+        // 각 주의 날짜 배열 생성 (일요일부터 토요일까지, 총 7일)
+        var pastWeek: [Date] = []
+        var presentWeek: [Date] = []
+        var futureWeek: [Date] = []
+        
+        for day in 0..<7 {
+            if let pastDay = calendar.date(byAdding: .day, value: day, to: pastSunday),
+               let presentDay = calendar.date(byAdding: .day, value: day, to: currentSunday),
+               let futureDay = calendar.date(byAdding: .day, value: day, to: futureSunday) {
+                pastWeek.append(pastDay)
+                presentWeek.append(presentDay)
+                futureWeek.append(futureDay)
             }
         }
         
-        return days
-    }
-    
-    private func convertToDateString(_ date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: date)
+        return (pastWeek, presentWeek, futureWeek)
     }
 }

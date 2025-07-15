@@ -147,8 +147,8 @@ extension DIContainer {
         )
     }
     
-    func makeCalendarViewModel(using reviewVM: ReviewViewModel) -> CalendarViewModel {
-        return CalendarViewModel(reviewViewModel: reviewVM)
+    func makeSpotCalendarViewModel() -> SpotCalendarViewModel {
+        return SpotCalendarViewModel(calendarUseCase: DefaultCalendarUseCase())
     }
     
     func makeEggViewModel(appCoordinator: AppCoordinator) -> EggViewModel {
@@ -255,7 +255,7 @@ extension DIContainer {
     
     func buildReviewView() -> ReviewView {
         let reviewVM = makeReviewViewModel()
-        let calendarVM = makeCalendarViewModel(using: reviewVM)
+        let calendarVM = makeSpotCalendarViewModel()
         return ReviewView(
             viewModel: reviewVM,
             calendarViewModel: calendarVM

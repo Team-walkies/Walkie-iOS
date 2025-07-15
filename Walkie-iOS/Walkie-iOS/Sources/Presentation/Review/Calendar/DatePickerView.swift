@@ -74,7 +74,7 @@ struct DatePickerView: View {
                                 Text("\(day)")
                                     .font(.B2)
                                     .foregroundStyle(
-                                        newDate.getDayViewTime() != DayViewTime.future
+                                        newDate.getDayViewTime() != .future
                                         ? Calendar.current.isDate(
                                             state.selectedDate,
                                             equalTo: state.selectedMonth, toGranularity: .month
@@ -114,7 +114,7 @@ struct DatePickerView: View {
                 size: .large,
                 isEnabled: true,
                 buttonAction: {
-                    viewModel.calendarViewModel.action(.willSelectDate(state.selectedDate))
+                    viewModel.action(.didTapSelectButton)
                     Analytics.logEvent(StringLiterals.WalkieLog.spotCalendarMove, parameters: nil)
                 }
             ).padding(.bottom, 38) 
