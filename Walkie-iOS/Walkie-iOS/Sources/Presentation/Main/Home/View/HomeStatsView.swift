@@ -43,6 +43,9 @@ struct HomeStatsView: View {
                 endPoint: .bottom
             )
             .cornerRadius(20, corners: .allCorners)
+            .onTapGesture {
+                appCoordinator.push(AppScene.healthcare)
+            }
             
             ZStack(alignment: .bottom) {
                 if let eggEffect = homeStatsState.eggEffectImage {

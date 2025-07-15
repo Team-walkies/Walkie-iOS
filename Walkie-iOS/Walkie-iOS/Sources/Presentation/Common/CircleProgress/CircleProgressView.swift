@@ -11,12 +11,14 @@ import WalkieCommon
 struct CircleProgressView: View {
     
     var type: CircleProgressType
-    var targetStep: Int
+    @State var targetStep: TargetStep
     var nowStep: Int
+    var isToday: Bool = false
+    
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     private var progress: Double {
-        guard targetStep > 0 else { return 0 }
-        return min(Double(nowStep) / Double(targetStep), 1.0)
+        return min(Double(nowStep) / Double(targetStep.rawValue), 1.0)
     }
     
     var body: some View {
@@ -65,20 +67,29 @@ struct CircleProgressView: View {
                         HStack(
                             spacing: 0
                         ) {
-                            Text(targetStep.formatted())
+                            Text(targetStep.title)
                                 .font(.B1)
                                 .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                             
-                            Image(.icChevronDown)
-                                .renderingMode(.template)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 20, height: 20)
-                                .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            if isToday {
+                                Image(.icChevronDown)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
+                            }
                         }
                     }
                     .onTapGesture {
-                        print("show targetStep bottomsheet")
+                        if isToday {
+                            appCoordinator.buildBottomSheet(
+                                height: 396,
+                                content: {
+                                    TargetStepBSView(targetStep: $targetStep)
+                                }
+                            )
+                        }
                     }
                     
                     Text(nowStep.formatted())

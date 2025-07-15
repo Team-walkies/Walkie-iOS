@@ -11,6 +11,7 @@ import SwiftUI
 enum AppScene: AppRoute {
     
     case splash, nickname, complete, login, tabBar
+    case healthcare
     case map
     case egg, eggGuide, character, review
     case feedback, withdraw(nickname: String)

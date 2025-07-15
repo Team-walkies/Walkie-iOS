@@ -210,6 +210,10 @@ extension DIContainer {
     func makeAlarmListViewModel() -> AlarmListViewModel {
         return AlarmListViewModel()
     }
+    
+    func makeHealthCareViewModel() -> HealthCareViewModel {
+        return HealthCareViewModel()
+    }
 }
 
 extension DIContainer {
@@ -284,6 +288,12 @@ extension DIContainer {
                 ),
                 nickname: nickname
             )
+        )
+    }
+    
+    func buildHealthcareView() -> HealthCareView {
+        return HealthCareView(
+            viewModel: self.makeHealthCareViewModel()
         )
     }
     
