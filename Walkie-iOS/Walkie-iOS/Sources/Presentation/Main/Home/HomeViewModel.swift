@@ -22,6 +22,7 @@ final class HomeViewModel: ViewModelable {
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
     private let getEventEggUseCase: GetEventEggUseCase
+    private let permissionUseCase: PermissionUseCase
     
     private var isUpdatingSteps = false
     
@@ -32,7 +33,8 @@ final class HomeViewModel: ViewModelable {
         case homeWillDisappear
         case homeAuthAllowTapped
         case homeAlarmCheck
-        case showEventModal
+        case homeAlarmAllowTapped
+        case checkEventModal
     }
     
     // states
@@ -68,18 +70,6 @@ final class HomeViewModel: ViewModelable {
     
     struct LeftStepState {
         let leftStep: Int
-    }
-    
-    struct HomePermissionState: Equatable {
-        let isLocationChecked: PermissionState
-        let isMotionChecked: PermissionState
-        let isAlarmChecked: PermissionState
-        
-        static func == (lhs: HomePermissionState, rhs: HomePermissionState) -> Bool {
-            return lhs.isLocationChecked == rhs.isLocationChecked &&
-            lhs.isMotionChecked == rhs.isMotionChecked &&
-            lhs.isAlarmChecked == rhs.isAlarmChecked
-        }
     }
     
     struct HomeAlarmState: Equatable {
@@ -161,7 +151,6 @@ final class HomeViewModel: ViewModelable {
     @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
-    private let locationManager = LocationManager.shared
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
     private let remoteConfigManager: RemoteConfigManaging
@@ -175,7 +164,8 @@ final class HomeViewModel: ViewModelable {
         appCoordinator: AppCoordinator,
         stepStatusStore: StepStatusStore,
         remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared,
-        getEventEggUseCase: GetEventEggUseCase
+        getEventEggUseCase: GetEventEggUseCase,
+        permissionUseCase: PermissionUseCase
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
@@ -186,7 +176,7 @@ final class HomeViewModel: ViewModelable {
         self.stepStatusStore = stepStatusStore
         self.remoteConfigManager = remoteConfigManager
         self.getEventEggUseCase = getEventEggUseCase
-        
+        self.permissionUseCase = permissionUseCase
         self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
@@ -199,100 +189,114 @@ final class HomeViewModel: ViewModelable {
         case .homeWillDisappear:
             stopStepUpdates()
         case .homeAuthAllowTapped:
-            showPermission()
+            requestPermission()
         case .homeAlarmCheck:
             checkAlarm()
-        case .showEventModal:
+        case .homeAlarmAllowTapped:
+            requestAlarmPermission()
+        case .checkEventModal:
             Task { await activateRemoteConfig() }
         }
     }
+}
+
+// permission
+private extension HomeViewModel {
     
     func checkPermission() {
-        let locationState: PermissionState = {
-            if isLocationNotDetermined() { return .notDetermined }
-            if isLocationDenied() { return .denied }
-            return .authorized
-        }()
-        let motionState: PermissionState = {
-            if isMotionNotDetermined() { return .notDetermined }
-            if isMotionDenied() { return .denied }
-            return .authorized
-        }()
-        
-        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
-            guard let self = self else { return }
-            
-            let notification = switch notificationState {
-            case .denied: PermissionState.denied
-            case .authorized: PermissionState.authorized
-            default: PermissionState.notDetermined
+        permissionUseCase
+            .execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] perm in
+                self?.handlePermissionState(perm)
             }
-            
-            let permissionState = HomePermissionState(
-                isLocationChecked: locationState,
-                isMotionChecked: motionState,
-                isAlarmChecked: notification
-            )
-            
-            DispatchQueue.main.async {
-                if locationState == .authorized && motionState == .authorized { // 위치모션 허용됨
-                    switch notification {
-                    case .authorized: // 알림도 허용됨
-                        self.state = .loaded(permissionState)
-                    default: // 알림은 허용안됨
-                        let alarmState = HomeAlarmState(
-                            isAlarmChecked: notification
-                        )
-                        self.homeAlarmState = .loaded(alarmState)
-                    }
-                } else { // 위치모션 허용안됨
-                    self.state = .loaded(permissionState)
-                }
-                
-                if !self.isLocationNotDetermined() && !self.isMotionNotDetermined() {
-                    self.getHomeAPI()
-                }
-            }
-        }
+            .store(in: &cancellables)
     }
     
-    func showPermission() {
-        let locationNotDetermined = isLocationNotDetermined()
-        let motionNotDetermined = isMotionNotDetermined()
-        let locationDenied = isLocationDenied()
-        let motionDenied = isMotionDenied()
-        
-        if locationNotDetermined || motionNotDetermined {
-            locationManager.requestLocation()
-            requestMotion()
-            return
-        }
-        
-        if locationDenied || motionDenied {
-            shouldShowDeniedAlert = true
-            return
-        }
+    func requestPermission() {
+        permissionUseCase
+            .execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] perm in
+                guard let self else { return }
+                let loc = perm.isLocationChecked
+                let mot = perm.isMotionChecked
+                if loc == .notDetermined || mot == .notDetermined {
+                    permissionUseCase
+                        .requestLocationAndMotion()
+                        .receive(on: DispatchQueue.main)
+                        .sink { _ in
+                            self.checkAlarm()
+                            self.getHomeAPI()
+                        }
+                        .store(in: &cancellables)
+                } else if loc != .authorized || mot != .authorized {
+                    self.shouldShowDeniedAlert = true
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func checkAlarm() {
-        NotificationManager.shared.checkNotificationPermission { [weak self] notificationState in
-            guard let self = self else { return }
-            
-            let notification = switch notificationState {
-            case .denied: PermissionState.denied
-            case .authorized: PermissionState.authorized
-            default: PermissionState.notDetermined
+        permissionUseCase
+            .execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] perm in
+                guard let self else { return }
+                self.homeAlarmState = .loaded(
+                    HomeAlarmState(isAlarmChecked: perm.isAlarmChecked)
+                )
             }
-            
-            let alarmState = HomeAlarmState(
-                isAlarmChecked: notification
-            )
-            
-            DispatchQueue.main.async {
-                self.homeAlarmState = .loaded(alarmState)
+            .store(in: &cancellables)
+    }
+    
+    func requestAlarmPermission() {
+        permissionUseCase
+            .execute()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] perm in
+                guard let self else { return }
+                let alarm = perm.isAlarmChecked
+                if alarm == .notDetermined {
+                    permissionUseCase
+                        .requestNotification()
+                        .receive(on: DispatchQueue.main)
+                        .sink { _ in
+                            Task { await self.activateRemoteConfig() }
+                        }
+                        .store(in: &cancellables)
+                } else {
+                    Task { await self.activateRemoteConfig() }
+                }
             }
+            .store(in: &cancellables)
+    }
+    
+    func handlePermissionState(
+        _ perm: HomePermissionState
+    ) {
+        if perm.isLocationChecked == .authorized &&
+            perm.isMotionChecked == .authorized {
+            if perm.isAlarmChecked == .authorized {
+                state = .loaded(perm)
+            } else {
+                homeAlarmState = .loaded(
+                    HomeAlarmState(isAlarmChecked: perm.isAlarmChecked)
+                )
+            }
+        } else {
+            state = .loaded(perm)
+        }
+        
+        if perm.isLocationChecked != .notDetermined &&
+            perm.isMotionChecked != .notDetermined {
+            getHomeAPI()
         }
     }
+}
+
+// api
+private extension HomeViewModel {
     
     func getHomeAPI() {
         fetchHomeStats()
@@ -447,47 +451,6 @@ private extension HomeViewModel {
 
 private extension HomeViewModel {
     
-    func isLocationNotDetermined() -> Bool {
-        let status = CLLocationManager().authorizationStatus
-        return status == .notDetermined
-    }
-    
-    func isMotionNotDetermined() -> Bool {
-        guard CMMotionActivityManager.isActivityAvailable() else {
-            return false
-        }
-        
-        let status = CMMotionActivityManager.authorizationStatus()
-        return status == .notDetermined
-    }
-    
-    func isLocationAlwaysAuthorized() -> Bool {
-        let status = CLLocationManager().authorizationStatus
-        return status == .authorizedAlways
-    }
-    
-    func isLocationDenied() -> Bool {
-        let status = CLLocationManager().authorizationStatus
-        return status == .denied || status == .restricted
-    }
-    
-    func isMotionDenied() -> Bool {
-        guard CMMotionActivityManager.isActivityAvailable() else {
-            return false
-        }
-        
-        let status = CMMotionActivityManager.authorizationStatus()
-        return status == .denied || status == .restricted
-    }
-    
-    func requestMotion() {
-        CMMotionActivityManager().startActivityUpdates(to: .main) { _ in }
-        getHomeAPI()
-    }
-}
-
-private extension HomeViewModel {
-
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else {
             DispatchQueue.main.async {
@@ -529,7 +492,12 @@ private extension HomeViewModel {
             }
         }
     }
-
+    
+    func isLocationAlwaysAuthorized() -> Bool {
+        let status = CLLocationManager().authorizationStatus
+        return status == .authorizedAlways
+    }
+    
     func updateStepData(step: Int, distance: Double) {
         self.stepState = .loaded(
             StepState(

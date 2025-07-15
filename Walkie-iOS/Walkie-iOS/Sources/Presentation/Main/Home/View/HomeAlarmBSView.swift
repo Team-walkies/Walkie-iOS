@@ -45,7 +45,7 @@ struct HomeAlarmBSView: View {
             ) {
                 Button(action: {
                     isPresented = false
-                    viewModel.action(.showEventModal)
+                    viewModel.action(.homeAlarmAllowTapped)
                 }, label: {
                     Text("나중에")
                         .font(.B1)
@@ -59,7 +59,7 @@ struct HomeAlarmBSView: View {
                 Button(action: {
                     openSettings()
                     isPresented = false
-                    viewModel.action(.showEventModal)
+                    viewModel.action(.homeAlarmAllowTapped)
                 }, label: {
                     Text("알림받기")
                         .font(.B1)
