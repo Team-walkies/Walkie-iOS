@@ -58,16 +58,16 @@ struct HealthCareView: View {
                 calendarViewModel.selectDate(Date())
                 viewModel.action(.viewWillAppear)
             }
-            .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
-                DatePickerView(
-                    viewModel: DatePickerViewModel(
-                        delegate: calendarViewModel,
-                        selectedDate: calendarViewModel.state.selectedDate)
-                )
-            }
             .background(WalkieCommonAsset.gray50.swiftUIColor)
         }
         .scrollIndicators(.never)
+        .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
+            DatePickerView(
+                viewModel: DatePickerViewModel(
+                    delegate: calendarViewModel,
+                    selectedDate: calendarViewModel.state.selectedDate)
+            )
+        }
     }
 }
 
