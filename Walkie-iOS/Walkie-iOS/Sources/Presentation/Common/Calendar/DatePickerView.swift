@@ -104,7 +104,6 @@ struct DatePickerView: View {
                         )
                     }
                 }
-                
             }
             .padding(.horizontal, 12)
             Spacer()
@@ -117,7 +116,7 @@ struct DatePickerView: View {
                     viewModel.action(.didTapSelectButton)
                     Analytics.logEvent(StringLiterals.WalkieLog.spotCalendarMove, parameters: nil)
                 }
-            ).padding(.bottom, 38) 
+            ).padding(.bottom, 38)
         }
         .onAppear {
             viewModel.action(.willAppear)

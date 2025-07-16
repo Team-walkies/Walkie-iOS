@@ -118,7 +118,9 @@ struct ReviewView: View {
                         endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                         completion: { result in
                             if result {
-                                viewModel.action(.showReviewList(dateString: viewModel.selectedDate.convertToDateString()))
+                                viewModel.action(.showReviewList(
+                                    dateString: viewModel.selectedDate.convertToDateString())
+                                )
                                 calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
                         }
@@ -145,7 +147,7 @@ struct ReviewView: View {
         .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
             DatePickerView(
                 viewModel: DatePickerViewModel(
-                    calendarViewModel: calendarViewModel,
+                    delegate: calendarViewModel,
                     selectedDate: calendarViewModel.state.selectedDate)
             )
         }

@@ -292,8 +292,12 @@ extension DIContainer {
     }
     
     func buildHealthcareView() -> HealthCareView {
+        let calendarViewModel = HealthCareCalendarViewModel(
+            calendarUseCase: DefaultCalendarUseCase()
+        )
         return HealthCareView(
-            viewModel: self.makeHealthCareViewModel()
+            viewModel: self.makeHealthCareViewModel(),
+            calendarViewModel: calendarViewModel
         )
     }
     

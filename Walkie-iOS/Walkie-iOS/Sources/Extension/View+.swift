@@ -90,11 +90,11 @@ extension View {
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
         .sheet(isPresented: isPresented) {
             content()
+                .presentationCornerRadius(24)
                 .ignoresSafeArea(.all)
                 .presentationDetents([.height(height)])
                 .presentationBackgroundInteraction(.disabled)
                 .presentationDragIndicator(.visible)
-                .presentationCornerRadius(24)
         }
     }
     

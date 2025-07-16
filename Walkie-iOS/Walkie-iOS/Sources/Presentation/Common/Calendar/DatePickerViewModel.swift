@@ -24,12 +24,12 @@ final class DatePickerViewModel: ViewModelable {
         let nextMonthAvailable: Bool
     }
     
-    @ObservedObject var calendarViewModel: SpotCalendarViewModel
+    weak var delegate: DatePickerDelegate?
     @Published var state: State
     private let calendar = Calendar.current
     
-    init(calendarViewModel: SpotCalendarViewModel, selectedDate: Date) {
-        self.calendarViewModel = calendarViewModel
+    init(delegate: DatePickerDelegate?, selectedDate: Date) {
+        self.delegate = delegate
         let generatedDays = Date.generateDaysCount(in: selectedDate)
         self.state = State(
             selectedDate: selectedDate,
@@ -113,14 +113,13 @@ final class DatePickerViewModel: ViewModelable {
     }
     
     private func handleSelectButton() {
-        calendarViewModel.action(.selectDate(self.state.selectedDate))
-        self.calendarViewModel.action(.willCloseDatePikcer)
+        delegate?.selectDate(self.state.selectedDate)
+        delegate?.willCloseDatePicker()
     }
     
     // MARK: - Helper
     
     private func updateState(selectedDate: Date, selectedMonth: Date, daysInMonth: Int?, offset: Int) {
-        // 다음 달의 1일을 계산하여 nextMonthAvailable을 동적으로 설정
         let nextMonth = calendar.date(byAdding: .month, value: 1, to: selectedMonth) ?? Date()
         guard let nextMonthFirstDay = calendar.date(
             from: calendar.dateComponents(

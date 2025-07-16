@@ -18,18 +18,35 @@ struct WeekView: View {
     
     var body: some View {
         GeometryReader { geometry in
-            HStack(alignment: .center, spacing: (geometry.size.width - cellWidth * 7) / 6) {
+            HStack(alignment: .top, spacing: (geometry.size.width - cellWidth * 7) / 6) {
                 ForEach(dates, id: \.self) { date in
                     let cellConfig = cellConfiguration(for: date)
-                    DayCell(
-                        date: date,
-                        isSelected: cellConfig.isSelected,
-                        width: cellWidth,
-                        height: cellConfig.height,
-                        textColor: cellConfig.textColor,
-                        backgroundColor: cellConfig.backgroundColor,
-                        hasDot: cellConfig.hasDot
-                    )
+                    VStack(alignment: .center, spacing: 0) {
+                        DayCell(
+                            date: date,
+                            isSelected: cellConfig.isSelected,
+                            width: cellWidth,
+                            height: cellConfig.height,
+                            textColor: cellConfig.textColor,
+                            backgroundColor: cellConfig.backgroundColor,
+                            hasDot: cellConfig.hasDot
+                        )
+                        if case let .healthCare(stepData) = config {
+                            if let data = stepData[date] {
+                                CircleProgressView(
+                                    type: .inCalendar,
+                                    targetStep: TargetStep(rawValue: data.targetStep) ?? .six,
+                                    nowStep: data.nowStep
+                                )
+                            } else {
+                                CircleProgressView(
+                                    type: .inCalendar,
+                                    targetStep: .six,
+                                    nowStep: 0
+                                )
+                            }
+                        }
+                    }
                     .onTapGesture {
                         onTap(date)
                     }

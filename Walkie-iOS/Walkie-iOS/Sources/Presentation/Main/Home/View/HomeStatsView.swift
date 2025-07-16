@@ -55,6 +55,7 @@ struct HomeStatsView: View {
                         .frame(width: width, height: 343)
                 }
             }
+            .allowsHitTesting(false)
             
             VStack(spacing: 0) {
                 HStack(alignment: .bottom, spacing: 5) {
@@ -72,6 +73,7 @@ struct HomeStatsView: View {
                         .foregroundColor(.white)
                         .padding(.bottom, 5)
                 }
+                .allowsHitTesting(false)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 16)
                 .padding(.leading, 20)
@@ -94,6 +96,7 @@ struct HomeStatsView: View {
                         .padding(.bottom, 3)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .allowsHitTesting(false)
                 .padding(.leading, 20)
                 
                 Spacer()
