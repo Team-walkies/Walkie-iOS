@@ -11,10 +11,10 @@ import WalkieCommon
 
 struct HomeAuthBSView: View {
     
-    @ObservedObject var viewModel: HomeViewModel
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     let showLocation: Bool
     let showMotion: Bool
+    let onConfirm: () -> Void
     
     var body: some View {
         VStack(spacing: 20) {
@@ -44,8 +44,8 @@ struct HomeAuthBSView: View {
                 size: .large,
                 isEnabled: true,
                 buttonAction: {
-                    viewModel.action(.homeAuthAllowTapped)
-                    isPresented = false
+                    dismiss()
+                    onConfirm()
                 }
             )
         }

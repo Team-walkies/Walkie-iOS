@@ -36,7 +36,7 @@ struct HomeView: View {
                         VStack {
                             let width = screenWidth - 32
                             switch (
-                                viewModel.homeStatsState,
+                                viewModel.state,
                                 viewModel.stepState,
                                 viewModel.homeCharacterState,
                                 viewModel.leftStepState) {
@@ -96,75 +96,13 @@ struct HomeView: View {
             
             if !AppSession.shared.hasEnteredHomeView {
                 AppSession.shared.hasEnteredHomeView = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    handlePermissionBS()
+                DispatchQueue.main.async {
+                    appCoordinator.handleHomeEntry()
                 }
             }
         }
         .onDisappear {
             viewModel.action(.homeWillDisappear)
-        }
-        .onChange(of: viewModel.state) { _, newState in
-            if !AppSession.shared.hasEnteredHomeView {
-                switch newState {
-                case .loaded:
-                    handlePermissionBS()
-                default:
-                    showBS = false
-                }
-            }
-        }
-        .onChange(of: viewModel.homeAlarmState) { _, _ in
-            guard case .loaded(let state) = viewModel.homeAlarmState else { return }
-            showAlarmBS = !state.isAlarmChecked.isAuthorized
-            if showAlarmBS && !AppSession.shared.hasShowAlarm {
-                AppSession.shared.hasShowAlarm = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    handleAlarmBS()
-                }
-            }
-        }
-        .onChange(of: viewModel.shouldShowDeniedAlert) {
-            if viewModel.shouldShowDeniedAlert {
-                var title: String {
-                    if showLocationBS && showMotionBS {
-                        return "접근권한 허용"
-                    } else if showLocationBS {
-                        return "위치 권한 허용"
-                    } else if showMotionBS {
-                        return "동작 및 피트니스 권한 허용"
-                    }
-                    return ""
-                }
-                
-                var content: String {
-                    if showLocationBS && showMotionBS {
-                        return "원활한 서비스 이용을 위해 ‘위치’,\n‘동작 및 피트니스’ 권한을 모두 허용해 주세요"
-                    } else if showLocationBS {
-                        return "스팟을 탐색하기 위해 백그라운드 동작 시의\n위치 정보 접근을 허가해 주세요.\n\n1. 위치를 선택\n2. 위치 접근 허용을 ‘항상'으로 설정"
-                    } else {
-                        return "걸음수 측정을 위해 권한이 필요해요"
-                    }
-                }
-                
-                appCoordinator.buildAlert(
-                    title: title,
-                    content: content,
-                    style: .primary,
-                    button: .twobutton,
-                    cancelButtonAction: {
-                        viewModel.action(.homeAlarmCheck)
-                    },
-                    checkButtonAction: {
-                        if let url = URL(string: UIApplication.openSettingsURLString)
-                            , UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url)
-                        }
-                        viewModel.action(.homeAlarmCheck)
-                    },
-                    checkButtonTitle: "허용하기"
-                )
-            }
         }
         .onChange(of: viewModel.eventEggState) { _, newState in
             switch newState {
@@ -184,68 +122,6 @@ struct HomeView: View {
             default:
                 break
             }
-        }
-    }
-    
-    private func handlePermissionBS() {
-        guard case .loaded(let state) = viewModel.state else { return }
-        
-        showBS = !(state.isLocationChecked.isAuthorized && state.isMotionChecked.isAuthorized)
-        showLocationBS = !state.isLocationChecked.isAuthorized
-        showMotionBS = !state.isMotionChecked.isAuthorized
-        showAlarmBS = !state.isAlarmChecked.isAuthorized
-        
-        let needsLocation = !state.isLocationChecked.isAuthorized
-        let needsMotion   = !state.isMotionChecked.isAuthorized
-        
-        let isPresented = Binding<Bool>(
-            get: { appCoordinator.sheet != nil },
-            set: { new in
-                if !new { appCoordinator.dismissSheet() }
-            }
-        )
-        
-        if needsLocation || needsMotion {
-            let height = needsLocation && needsMotion ? 342 : 266
-            appCoordinator.buildBottomSheet(
-                height: CGFloat(height),
-                content: {
-                    HomeAuthBSView(
-                        viewModel: viewModel,
-                        isPresented: isPresented,
-                        showLocation: needsLocation,
-                        showMotion: needsMotion
-                    )
-                },
-                disableInteractive: true
-            )
-        } else {
-            appCoordinator.dismissSheet()
-            if !showAlarmBS { // 알림 허용이 됨 -> 이벤트여부 체크
-                viewModel.action(.checkEventModal)
-            }
-        }
-    }
-    
-    private func handleAlarmBS() {
-        let isPresented = Binding<Bool>(
-            get: { appCoordinator.sheet != nil },
-            set: { new in
-                if !new { appCoordinator.dismissSheet() }
-            }
-        )
-        
-        if showAlarmBS {
-            appCoordinator.buildBottomSheet(
-                height: 369,
-                content: {
-                    HomeAlarmBSView(
-                        viewModel: viewModel,
-                        isPresented: isPresented
-                    )
-                },
-                disableInteractive: true
-            )
         }
     }
 }

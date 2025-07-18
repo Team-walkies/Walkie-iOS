@@ -11,9 +11,8 @@ import WalkieCommon
 
 struct HomeAlarmBSView: View {
     
-    @ObservedObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         VStack(
@@ -44,8 +43,7 @@ struct HomeAlarmBSView: View {
                 spacing: 8
             ) {
                 Button(action: {
-                    isPresented = false
-                    viewModel.action(.homeAlarmAllowTapped)
+                    dismiss()
                 }, label: {
                     Text("나중에")
                         .font(.B1)
@@ -58,8 +56,7 @@ struct HomeAlarmBSView: View {
                 
                 Button(action: {
                     openSettings()
-                    isPresented = false
-                    viewModel.action(.homeAlarmAllowTapped)
+                    dismiss()
                 }, label: {
                     Text("알림받기")
                         .font(.B1)

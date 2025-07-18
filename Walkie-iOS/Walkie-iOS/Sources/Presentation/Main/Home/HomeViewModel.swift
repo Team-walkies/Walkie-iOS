@@ -22,7 +22,6 @@ final class HomeViewModel: ViewModelable {
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
     private let getEventEggUseCase: GetEventEggUseCase
-    private let permissionUseCase: PermissionUseCase
     
     private var isUpdatingSteps = false
     
@@ -31,9 +30,6 @@ final class HomeViewModel: ViewModelable {
     enum Action {
         case homeWillAppear
         case homeWillDisappear
-        case homeAuthAllowTapped
-        case homeAlarmCheck
-        case homeAlarmAllowTapped
         case checkEventModal
     }
     
@@ -72,14 +68,6 @@ final class HomeViewModel: ViewModelable {
         let leftStep: Int
     }
     
-    struct HomeAlarmState: Equatable {
-        let isAlarmChecked: PermissionState
-        
-        static func == (lhs: HomeAlarmState, rhs: HomeAlarmState) -> Bool {
-            return lhs.isAlarmChecked == rhs.isAlarmChecked
-        }
-    }
-    
     struct HomeEventState: Equatable {
         let showEventEgg: Bool
         let dDay: Int
@@ -93,18 +81,6 @@ final class HomeViewModel: ViewModelable {
     // view states
     
     enum HomeViewState: Equatable {
-        case loading
-        case loaded(HomePermissionState)
-        case error
-    }
-    
-    enum HomeViewAlarmState: Equatable {
-        case loading
-        case loaded(HomeAlarmState)
-        case error
-    }
-    
-    enum HomeStatsViewState: Equatable {
         case loading
         case loaded(HomeStatsState)
         case error(String)
@@ -141,14 +117,11 @@ final class HomeViewModel: ViewModelable {
     }
     
     @Published var state: HomeViewState = .loading
-    @Published var homeAlarmState: HomeViewAlarmState = .loading
-    @Published var homeStatsState: HomeStatsViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
     @Published var leftStepState: LeftStepViewState = .loading
     @Published var eventEggState: EventEggViewState = .loading
-    @Published var shouldShowDeniedAlert: Bool = false
     
     private let pedometer = CMPedometer()
     private let appCoordinator: AppCoordinator
@@ -176,121 +149,19 @@ final class HomeViewModel: ViewModelable {
         self.stepStatusStore = stepStatusStore
         self.remoteConfigManager = remoteConfigManager
         self.getEventEggUseCase = getEventEggUseCase
-        self.permissionUseCase = permissionUseCase
         self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
     func action(_ action: Action) {
         switch action {
         case .homeWillAppear:
-            checkPermission()
+            getHomeAPI()
             subscribeToStepUpdate()
             updateLeftStep()
         case .homeWillDisappear:
             stopStepUpdates()
-        case .homeAuthAllowTapped:
-            requestPermission()
-        case .homeAlarmCheck:
-            checkAlarm()
-        case .homeAlarmAllowTapped:
-            requestAlarmPermission()
         case .checkEventModal:
             Task { await activateRemoteConfig() }
-        }
-    }
-}
-
-// permission
-private extension HomeViewModel {
-    
-    func checkPermission() {
-        permissionUseCase
-            .execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] perm in
-                self?.handlePermissionState(perm)
-            }
-            .store(in: &cancellables)
-    }
-    
-    func requestPermission() {
-        permissionUseCase
-            .execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] perm in
-                guard let self else { return }
-                let loc = perm.isLocationChecked
-                let mot = perm.isMotionChecked
-                if loc == .notDetermined || mot == .notDetermined {
-                    permissionUseCase
-                        .requestLocationAndMotion()
-                        .receive(on: DispatchQueue.main)
-                        .sink { _ in
-                            self.checkAlarm()
-                            self.getHomeAPI()
-                        }
-                        .store(in: &cancellables)
-                } else if loc != .authorized || mot != .authorized {
-                    self.shouldShowDeniedAlert = true
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func checkAlarm() {
-        permissionUseCase
-            .execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] perm in
-                guard let self else { return }
-                self.homeAlarmState = .loaded(
-                    HomeAlarmState(isAlarmChecked: perm.isAlarmChecked)
-                )
-            }
-            .store(in: &cancellables)
-    }
-    
-    func requestAlarmPermission() {
-        permissionUseCase
-            .execute()
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] perm in
-                guard let self else { return }
-                let alarm = perm.isAlarmChecked
-                if alarm == .notDetermined {
-                    permissionUseCase
-                        .requestNotification()
-                        .receive(on: DispatchQueue.main)
-                        .sink { _ in
-                            Task { await self.activateRemoteConfig() }
-                        }
-                        .store(in: &cancellables)
-                } else {
-                    Task { await self.activateRemoteConfig() }
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
-    func handlePermissionState(
-        _ perm: HomePermissionState
-    ) {
-        if perm.isLocationChecked == .authorized &&
-            perm.isMotionChecked == .authorized {
-            if perm.isAlarmChecked == .authorized {
-                state = .loaded(perm)
-            } else {
-                homeAlarmState = .loaded(
-                    HomeAlarmState(isAlarmChecked: perm.isAlarmChecked)
-                )
-            }
-        } else {
-            state = .loaded(perm)
-        }
-        
-        if perm.isLocationChecked != .notDetermined &&
-            perm.isMotionChecked != .notDetermined {
-            getHomeAPI()
         }
     }
 }
@@ -318,7 +189,7 @@ private extension HomeViewModel {
                         eggGradientColors: eggEntity.eggType.eggBackgroundColor,
                         eggEffectImage: eggEntity.eggType.eggBackEffect ?? nil
                     )
-                    self.homeStatsState = .loaded(homeStatsState)
+                    self.state = .loaded(homeStatsState)
                     self.leftStepState = .loaded(LeftStepState(leftStep: eggEntity.needStep - eggEntity.nowStep))
                 }, receiveFailure: { _, error in
                     if let netErr = error {
@@ -333,9 +204,9 @@ private extension HomeViewModel {
                                 ],
                                 eggEffectImage: nil
                             )
-                            self.homeStatsState = .loaded(homeState)
+                            self.state = .loaded(homeState)
                         default:
-                            self.homeStatsState = .error("서버 오류")
+                            self.state = .error("서버 오류")
                         }
                     }
                 }
@@ -444,7 +315,6 @@ private extension HomeViewModel {
                 UserManager.shared.setLastVisitedDate(now)
             }
         } catch {
-            state = .error
         }
     }
 }
@@ -533,7 +403,7 @@ private extension HomeViewModel {
                             ],
                             eggEffectImage: nil
                         )
-                        self.homeStatsState = .loaded(homeState)
+                        self.state = .loaded(homeState)
                         print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
                     } else {
                         self.updateLeftStep()
@@ -556,7 +426,7 @@ private extension HomeViewModel {
                 ],
                 eggEffectImage: nil
             )
-            self.homeStatsState = .loaded(homeState)
+            self.state = .loaded(homeState)
             self.leftStepState = .loaded(LeftStepState(leftStep: 0))
         } else {
             self.leftStepState = .loaded(LeftStepState(leftStep: leftStep))
