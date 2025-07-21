@@ -13,6 +13,7 @@ struct HomeAlarmBSView: View {
     
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.dismiss) private var dismiss
+    let onConfirm: () -> Void
     
     var body: some View {
         VStack(
@@ -44,6 +45,7 @@ struct HomeAlarmBSView: View {
             ) {
                 Button(action: {
                     dismiss()
+                    onConfirm()
                 }, label: {
                     Text("나중에")
                         .font(.B1)
@@ -57,6 +59,7 @@ struct HomeAlarmBSView: View {
                 Button(action: {
                     openSettings()
                     dismiss()
+                    onConfirm()
                 }, label: {
                     Text("알림받기")
                         .font(.B1)

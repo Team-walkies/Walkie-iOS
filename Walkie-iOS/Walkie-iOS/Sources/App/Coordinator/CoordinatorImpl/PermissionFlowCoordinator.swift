@@ -80,6 +80,7 @@ final class PermissionFlowCoordinator {
     }
     
     func nextStep() {
+        currentIndex += 1
         runCurrentStep()
     }
     
@@ -126,13 +127,13 @@ final class PermissionFlowCoordinator {
         
         switch () {
         case _ where bothAuth:
-            runCurrentStep()
+            nextStep()
         case _ where anyNotDetermined:
             locationUC.requestIfNeeded()
                 .flatMap { _ in self.motionUC.requestIfNeeded() }
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in
-                    self?.runCurrentStep()
+                    self?.nextStep()
                 }
                 .store(in: &cancellables)
         case _ where anyDenied:
@@ -146,7 +147,6 @@ final class PermissionFlowCoordinator {
         default:
             break
         }
-        currentIndex += 1
     }
     
     private func handleNotify(
@@ -155,12 +155,12 @@ final class PermissionFlowCoordinator {
     ) {
         switch status {
         case .authorized:
-            runCurrentStep()
+            nextStep()
         case .notDetermined:
             notifyUC.requestIfNeeded()
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] _ in
-                    self?.runCurrentStep()
+                    self?.nextStep()
                 }
                 .store(in: &cancellables)
         case .denied:
@@ -172,6 +172,5 @@ final class PermissionFlowCoordinator {
                 { _, _, _ in }
             )
         }
-        currentIndex += 1
     }
 }

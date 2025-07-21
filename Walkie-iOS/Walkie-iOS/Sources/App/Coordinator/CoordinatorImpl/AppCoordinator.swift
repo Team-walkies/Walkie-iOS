@@ -412,7 +412,11 @@ extension AppCoordinator {
                 self.buildBottomSheet(
                     height: 369,
                     content: {
-                        HomeAlarmBSView()
+                        HomeAlarmBSView(
+                            onConfirm: {
+                                self.permissionFlow?.nextStep()
+                            }
+                        )
                     },
                     disableInteractive: true
                 )
