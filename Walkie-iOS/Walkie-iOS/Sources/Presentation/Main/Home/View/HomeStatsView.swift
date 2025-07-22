@@ -51,7 +51,7 @@ struct HomeStatsView: View {
                 if let eggEffect = homeStatsState.eggEffectImage {
                     Image(eggEffect)
                         .resizable()
-                        .scaledToFit()
+                        .scaledToFill()
                         .frame(width: width, height: 343)
                 }
             }
