@@ -13,16 +13,6 @@ struct HomeView: View {
     
     @StateObject var viewModel: HomeViewModel
     @Environment(\.screenWidth) var screenWidth
-    @Environment(\.screenHeight) var screenHeight
-    @Environment(\.safeAreaBottom) private var bottomInset
-    @State var navigateAlarmList: Bool = false
-    
-    @State private var showLocationBS: Bool = false
-    @State private var showMotionBS: Bool = false
-    @State private var showAlarmBS: Bool = false
-    @State private var showBS: Bool = false
-    @State private var hasShownAlarmBSOnce: Bool = false
-    
     @EnvironmentObject private var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -103,25 +93,6 @@ struct HomeView: View {
         }
         .onDisappear {
             viewModel.action(.homeWillDisappear)
-        }
-        .onChange(of: viewModel.eventEggState) { _, newState in
-            switch newState {
-            case .loaded(let eventEggState):
-                if eventEggState.showEventEgg {
-                    appCoordinator.buildEventAlert(
-                        title: "알 1개를 선물받았어요!",
-                        style: .primary,
-                        button: .twobutton,
-                        cancelButtonAction: { },
-                        checkButtonAction: {
-                            appCoordinator.push(AppScene.egg)
-                        },
-                        dDay: eventEggState.dDay
-                    )
-                }
-            default:
-                break
-            }
         }
     }
 }

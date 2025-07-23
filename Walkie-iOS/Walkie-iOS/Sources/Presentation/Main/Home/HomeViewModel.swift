@@ -21,16 +21,12 @@ final class HomeViewModel: ViewModelable {
     private let getEggCountUseCase: GetEggCountUseCase
     private let getCharactersCountUseCase: GetCharactersCountUseCase
     private let getRecordedSpotUseCase: RecordedSpotUseCase
-    private let getEventEggUseCase: GetEventEggUseCase
-    
-    private var isUpdatingSteps = false
     
     private var cancellables = Set<AnyCancellable>()
     
     enum Action {
         case homeWillAppear
         case homeWillDisappear
-        case checkEventModal
     }
     
     // states
@@ -68,16 +64,6 @@ final class HomeViewModel: ViewModelable {
         let leftStep: Int
     }
     
-    struct HomeEventState: Equatable {
-        let showEventEgg: Bool
-        let dDay: Int
-        
-        static func == (lhs: HomeEventState, rhs: HomeEventState) -> Bool {
-            return lhs.showEventEgg == rhs.showEventEgg &&
-            lhs.dDay == rhs.dDay
-        }
-    }
-    
     // view states
     
     enum HomeViewState: Equatable {
@@ -110,23 +96,15 @@ final class HomeViewModel: ViewModelable {
         case error(String)
     }
     
-    enum EventEggViewState: Equatable {
-        case loading
-        case loaded(HomeEventState)
-        case error(String)
-    }
-    
     @Published var state: HomeViewState = .loading
     @Published var homeCharacterState: HomeCharacterViewState = .loading
     @Published var homeHistoryViewState: HomeHistoryViewState = .loading
     @Published var stepState: StepViewState = .loading
     @Published var leftStepState: LeftStepViewState = .loading
-    @Published var eventEggState: EventEggViewState = .loading
     
     private let pedometer = CMPedometer()
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
-    private let remoteConfigManager: RemoteConfigManaging
     
     init(
         getEggPlayUseCase: GetEggPlayUseCase,
@@ -135,10 +113,7 @@ final class HomeViewModel: ViewModelable {
         getCharactersCountUseCase: GetCharactersCountUseCase,
         getRecordedSpotUseCase: RecordedSpotUseCase,
         appCoordinator: AppCoordinator,
-        stepStatusStore: StepStatusStore,
-        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared,
-        getEventEggUseCase: GetEventEggUseCase,
-        permissionUseCase: PermissionUseCase
+        stepStatusStore: StepStatusStore
     ) {
         self.getEggPlayUseCase = getEggPlayUseCase
         self.getCharacterPlayUseCase = getCharacterPlayUseCase
@@ -147,9 +122,6 @@ final class HomeViewModel: ViewModelable {
         self.getRecordedSpotUseCase = getRecordedSpotUseCase
         self.appCoordinator = appCoordinator
         self.stepStatusStore = stepStatusStore
-        self.remoteConfigManager = remoteConfigManager
-        self.getEventEggUseCase = getEventEggUseCase
-        self.remoteConfigManager.configure(minimumFetchInterval: 0)
     }
     
     func action(_ action: Action) {
@@ -160,8 +132,6 @@ final class HomeViewModel: ViewModelable {
             updateLeftStep()
         case .homeWillDisappear:
             stopStepUpdates()
-        case .checkEventModal:
-            Task { await activateRemoteConfig() }
         }
     }
 }
@@ -264,59 +234,6 @@ private extension HomeViewModel {
             )
             .store(in: &cancellables)
     }
-    
-    func getEventEgg() {
-        getEventEggUseCase.getEventEgg()
-            .walkieSink(
-                with: self,
-                receiveValue: { _, eventEggEntity in
-                    let eventState = HomeEventState(
-                        showEventEgg: eventEggEntity.canReceive,
-                        dDay: eventEggEntity.dDay
-                    )
-                    Task { @MainActor in
-                        self.eventEggState = .loaded(eventState)
-                    }
-                }, receiveFailure: { _, _ in
-                }
-            )
-            .store(in: &cancellables)
-    }
-}
-
-private extension HomeViewModel {
-    
-    func activateRemoteConfig() async {
-        do {
-            try await remoteConfigManager.fetchAndActivate()
-            
-            let eggEventEnabled = remoteConfigManager
-                .boolValue(for: .eggEventEnabled)
-            
-            if eggEventEnabled { // event 기간
-                let now = Date()
-                let calendar = Calendar.current
-                let oneDayAgo = calendar.date(
-                    byAdding: .day, value: -1, to: now
-                ) ?? now
-                
-                let lastDate = UserManager.shared.getLastVisitedDate
-                ?? oneDayAgo
-                
-                let daysDiff = calendar.dateComponents(
-                    [.day],
-                    from: calendar.startOfDay(for: lastDate),
-                    to: calendar.startOfDay(for: now)
-                ).day ?? 0
-                
-                if daysDiff >= 1 { // 하루가 지났음 -> api 호출
-                    getEventEgg()
-                }
-                UserManager.shared.setLastVisitedDate(now)
-            }
-        } catch {
-        }
-    }
 }
 
 private extension HomeViewModel {
@@ -404,10 +321,8 @@ private extension HomeViewModel {
                             eggEffectImage: nil
                         )
                         self.state = .loaded(homeState)
-                        print("🏃 알 부화 이후 홈 업데이트 완료 🏃")
                     } else {
                         self.updateLeftStep()
-                        print("🏃 홈 뷰모델 걸음 수 업데이트 완료 🏃")
                     }
                 }
             }

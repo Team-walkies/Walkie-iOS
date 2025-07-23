@@ -40,7 +40,9 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     var stepCoordinator: StepCoordinator?
     var permissionFlow: PermissionFlowCoordinator?
+    var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
+    private var onHatchDismiss: (() -> Void)?
     
     init(
         diContainer: DIContainer
@@ -63,7 +65,9 @@ final class AppCoordinator: Coordinator, ObservableObject {
             motionUC: diContainer.resolveMotionPermissionUseCase(),
             notifyUC: diContainer.resolveNotificationPermissionUseCase()
         )
-        
+        self.eventFlow = EventFlowCoordinator(
+            getEventEggUseCase: diContainer.resolveGetEventEggUseCase()
+        )
         bindPermissionFlow()
         bindHatchPublisher()
     }
@@ -367,6 +371,12 @@ final class AppCoordinator: Coordinator, ObservableObject {
 
 extension AppCoordinator {
     
+    func handleHomeEntry() {
+        stopStepUpdates()
+        permissionFlow?.start()
+        eventFlow?.checkEvent()
+    }
+    
     private func bindPermissionFlow() {
         permissionFlow?.onDenied = { [weak self] step, locOK, motOK, _, _ in
             guard let self = self else { return }
@@ -425,13 +435,14 @@ extension AppCoordinator {
         
         permissionFlow?.onAllAuthorized = {
             print("권한 체크완료")
-            self.startStepUpdates()
+            DispatchQueue.main.async {
+                self.sheet = nil
+                self.startStepUpdates()
+                self.onHatchDismiss = { [weak self] in
+                    self?.showEventEggAlert()
+                }
+            }
         }
-    }
-    
-    func handleHomeEntry() {
-        stopStepUpdates()
-        permissionFlow?.start()
     }
     
     private func bindHatchPublisher() {
@@ -441,10 +452,34 @@ extension AppCoordinator {
             .sink(
                 receiveCompletion: { _ in },
                 receiveValue: { [weak self] willHatch in
-                    guard let self = self, willHatch else { return }
-                    self.presentFullScreenCover(AppFullScreenCover.hatchEgg)
+                    guard let self = self else { return }
+                    if willHatch {
+                        self.presentFullScreenCover(
+                            AppFullScreenCover.hatchEgg,
+                            onDismiss: self.onHatchDismiss
+                        )
+                        self.onHatchDismiss = nil
+                    } else {
+                        showEventEggAlert()
+                    }
                 }
             )
             .store(in: &cancellables)
+    }
+    
+    private func showEventEggAlert() {
+        guard
+            let entity = eventFlow?.eventEggEntity,
+            entity.canReceive
+        else { return }
+        
+        buildEventAlert(
+            title: "알 1개를 선물받았어요!",
+            style: .primary,
+            button: .twobutton,
+            cancelButtonAction: { },
+            checkButtonAction: { self.push(AppScene.egg) },
+            dDay: entity.dDay
+        )
     }
 }

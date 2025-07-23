@@ -49,6 +49,10 @@ extension DIContainer {
         return DefaultGetEggPlayUseCase(memberRepository: memberRepo, stepStatusStore: stepStatusStore)
     }
     
+    func resolveGetEventEggUseCase() -> GetEventEggUseCase {
+        return DefaultGetEventEggUseCase(eggRepository: eggRepo, stepStatusStore: stepStatusStore)
+    }
+    
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
         return updateStepForegroundUseCase
     }
