@@ -29,7 +29,6 @@ final class DIContainer {
     private lazy var updateStepForegroundUseCase = DefaultUpdateStepForegroundUseCase(store: stepStatusStore)
     private lazy var updateStepBackgroundUseCase = DefaultUpdateStepBackgroundUseCase(store: stepStatusStore)
     private lazy var checkHatchConditionUseCase = DefaultCheckHatchConditionUseCase(store: stepStatusStore)
-    private lazy var permissionUseCase = DefaultPermissionUseCase.make()
     private lazy var locationPermissionUseCase = DefaultLocationPermissionUseCase()
     private lazy var motionPermissionUseCase = DefaultMotionPermissionUseCase()
     private lazy var notificationPermissionUseCase = DefaultNotificationPermissionUseCase()
@@ -112,12 +111,7 @@ extension DIContainer {
                 stepStatusStore: stepStatusStore
             ),
             appCoordinator: appCoordinator,
-            stepStatusStore: stepStatusStore,
-            getEventEggUseCase: DefaultGetEventEggUseCase(
-                eggRepository: eggRepo,
-                stepStatusStore: stepStatusStore
-            ),
-            permissionUseCase: permissionUseCase
+            stepStatusStore: stepStatusStore
         )
     }
     

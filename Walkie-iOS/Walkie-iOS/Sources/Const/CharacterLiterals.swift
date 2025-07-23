@@ -42,49 +42,38 @@ enum JellyfishType: String, CaseIterable {
         }
     }
     
+    private static let mapTable: [Int: [Int: JellyfishType]] = [
+        0: [
+            0: .defaultJellyfish,
+            1: .red,
+            2: .green,
+            3: .purple,
+            4: .pink
+        ],
+        1: [
+            0: .bunny,
+            1: .starfish
+        ],
+        2: [
+            0: .shocked,
+            1: .strawberry
+        ]
+    ]
+    
     static func mapCharacterType(
         rank: Int,
         characterClass: Int
     ) throws -> JellyfishType {
-        switch rank {
-        case 0:
-            switch characterClass {
-            case 0:
-                return .defaultJellyfish
-            case 1:
-                return .red
-            case 2:
-                return .green
-            case 3:
-                return .purple
-            case 4:
-                return .pink
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 1:
-            switch characterClass {
-            case 0:
-                return .bunny
-            case 1:
-                return .starfish
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 2:
-            switch characterClass {
-            case 0:
-                return .shocked
-            case 1:
-                return .strawberry
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 3:
+        if rank == 3 {
             return .space
-        default:
+        }
+        guard
+            let classMap = mapTable[rank],
+            let jelly    = classMap[characterClass]
+        else {
             throw NetworkError.responseDecodingError
         }
+        return jelly
     }
 }
 
@@ -118,46 +107,34 @@ enum DinoType: String, CaseIterable {
         }
     }
     
+    private static let mapTable: [Int: [Int: DinoType]] = [
+        0: [
+            0: .defaultDino,
+            1: .red,
+            2: .mint,
+            3: .purple,
+            4: .pink
+        ],
+        1: [
+            0: .reindeer,
+            1: .nessie
+        ],
+        2: [
+            0: .pancake,
+            1: .melonSoda
+        ]
+    ]
+    
     static func mapCharacterType(rank: Int, characterClass: Int) throws -> DinoType {
-        switch rank {
-        case 0:
-            switch characterClass {
-            case 0:
-                return .defaultDino
-            case 1:
-                return .red
-            case 2:
-                return .mint
-            case 3:
-                return .purple
-            case 4:
-                return .pink
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 1:
-            switch characterClass {
-            case 0:
-                return .reindeer
-            case 1:
-                return .nessie
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 2:
-            switch characterClass {
-            case 0:
-                return .pancake
-            case 1:
-                return .melonSoda
-            default:
-                throw NetworkError.responseDecodingError
-            }
-        case 3:
+        if rank == 3 {
             return .dragon
-        default:
+        }
+        guard
+            let classMap = mapTable[rank],
+            let dino     = classMap[characterClass]
+        else {
             throw NetworkError.responseDecodingError
         }
+        return dino
     }
-
 }

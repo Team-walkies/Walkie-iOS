@@ -44,7 +44,10 @@ extension DefaultMemberRepository: MemberRepository {
 
                 // EggEntity 생성
                 if type == 0 {
-                    let jellyfishType = try JellyfishType.mapCharacterType(rank: characterRank, characterClass: characterClass)
+                    let jellyfishType = try JellyfishType.mapCharacterType(
+                        rank: characterRank,
+                        characterClass: characterClass
+                    )
                     return EggEntity(
                         eggId: eggID,
                         eggType: EggType.from(number: eggRank),
