@@ -61,18 +61,5 @@ struct HealthCareView: View {
             .background(WalkieCommonAsset.gray50.swiftUIColor)
         }
         .scrollIndicators(.never)
-        .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
-            DatePickerView(
-                viewModel: DatePickerViewModel(
-                    delegate: calendarViewModel,
-                    selectedDate: calendarViewModel.state.selectedDate)
-            )
-        }
     }
-}
-
-#Preview {
-    HealthCareView(viewModel: HealthCareViewModel(), calendarViewModel: HealthCareCalendarViewModel(
-        calendarUseCase: DefaultCalendarUseCase()))
-    .environmentObject(AppCoordinator(diContainer: DIContainer.shared))
 }

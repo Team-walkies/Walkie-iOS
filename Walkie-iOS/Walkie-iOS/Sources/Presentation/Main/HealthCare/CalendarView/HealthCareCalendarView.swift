@@ -11,6 +11,7 @@ import WalkieCommon
 struct HealthCareCalendarView: View {
     
     @StateObject var viewModel: HealthCareCalendarViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -20,7 +21,14 @@ struct HealthCareCalendarView: View {
                     viewModel.action(.selectDate(Date()))
                 },
                 onTapCalendar: {
-                    viewModel.action(.willShowDatePicker)
+                    appCoordinator.buildBottomSheet(height: 436) {
+                        DatePickerView(
+                            viewModel: DatePickerViewModel(
+                                delegate: viewModel,
+                                selectedDate: viewModel.state.selectedDate
+                            )
+                        )
+                    }
                 }
             )
             .padding(.horizontal, 16)

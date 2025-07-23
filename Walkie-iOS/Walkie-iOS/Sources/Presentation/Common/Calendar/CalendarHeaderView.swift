@@ -32,15 +32,13 @@ struct CalendarHeaderView: View {
             Button(action: {
                 onTapToday()
             }, label: {
-                ZStack {
-                    Text("오늘")
-                        .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        .font(.C1)
-                }
-                .frame(width: 45, height: 32)
-                .background(WalkieCommonAsset.gray100.swiftUIColor)
-                .cornerRadius(16, corners: .allCorners)
-                .padding(.trailing, 1)
+                Text("오늘")
+                    .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
+                    .font(.C1)
+                    .frame(width: 45, height: 32)
+                    .background(WalkieCommonAsset.gray100.swiftUIColor)
+                    .cornerRadius(16, corners: .allCorners)
+                    .padding(.trailing, 1)
             })
         }
     }

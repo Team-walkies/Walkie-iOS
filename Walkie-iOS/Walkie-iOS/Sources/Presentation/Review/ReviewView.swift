@@ -144,13 +144,6 @@ struct ReviewView: View {
             )
         }
         .navigationBarBackButtonHidden()
-        .bottomSheet(isPresented: $calendarViewModel.state.showDatePicker, height: 436) {
-            DatePickerView(
-                viewModel: DatePickerViewModel(
-                    delegate: calendarViewModel,
-                    selectedDate: calendarViewModel.state.selectedDate)
-            )
-        }
         .bottomSheet(isPresented: $showReviewEdit, height: 150) {
             ReviewEditView(
                 onDeleteTap: {
@@ -187,8 +180,4 @@ struct ReviewView: View {
                 )
             })
     }
-}
-
-#Preview {
-    DIContainer.shared.buildReviewView()
 }

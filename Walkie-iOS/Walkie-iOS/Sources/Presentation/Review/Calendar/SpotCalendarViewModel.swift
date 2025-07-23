@@ -16,24 +16,24 @@ final class SpotCalendarViewModel: ViewModelable {
         var hasSpotOn: [Date]
         var selectedDate: Date
         var scrollPosition: Int?
-        var showDatePicker: Bool = false
     }
     
     enum Action {
         case selectDate(Date)
         case scrollToPast
         case scrollToFuture
-        case willShowDatePicker
-        case willCloseDatePikcer
+        case willCloseDatePicker
         case updateReviewDates([String])
     }
     
     var state: State
     
     private let calendarUseCase: CalendarUseCase
+    private let appCoordinator: AppCoordinator
     
-    init(calendarUseCase: CalendarUseCase) {
+    init(calendarUseCase: CalendarUseCase, appCoordinator: AppCoordinator) {
         self.calendarUseCase = calendarUseCase
+        self.appCoordinator = appCoordinator
         
         let today = Date()
         let (past, present, future) = calendarUseCase.generateWeeks(baseDate: today)
@@ -84,11 +84,8 @@ final class SpotCalendarViewModel: ViewModelable {
             self.state.selectedDate = newSelected
             self.state.scrollPosition = 0
             
-        case .willShowDatePicker:
-            self.state.showDatePicker = true
-        
-        case .willCloseDatePikcer:
-            self.state.showDatePicker = false
+        case .willCloseDatePicker:
+            self.appCoordinator.dismissSheet()
             
         case let .updateReviewDates(dates):
             self.state.hasSpotOn = convertStringDatesToDates(dates)
@@ -113,6 +110,6 @@ extension SpotCalendarViewModel: DatePickerDelegate {
     }
     
     func willCloseDatePicker() {
-        action(.willCloseDatePikcer)
+        action(.willCloseDatePicker)
     }
 }

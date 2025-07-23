@@ -24,17 +24,18 @@ final class HealthCareCalendarViewModel: ViewModelable {
         case selectDate(Date)
         case scrollToPast
         case scrollToFuture
-        case willShowDatePicker
-        case willCloseDatePikcer
+        case willCloseDatePicker
         case updateStepData([String: (nowStep: Int, targetStep: Int)])
     }
     
     var state: State
     
     private let calendarUseCase: CalendarUseCase
+    private let appCoordinator: AppCoordinator
     
-    init(calendarUseCase: CalendarUseCase) {
+    init(calendarUseCase: CalendarUseCase, appCoordinator: AppCoordinator) {
         self.calendarUseCase = calendarUseCase
+        self.appCoordinator = appCoordinator
         
         let today = Date()
         let (past, present, future) = calendarUseCase.generateWeeks(baseDate: today)
@@ -84,25 +85,12 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = newSelected
             self.state.scrollPosition = 0
-            
-        case .willShowDatePicker:
-            self.state.showDatePicker = true
         
-        case .willCloseDatePikcer:
-            self.state.showDatePicker = false
+        case .willCloseDatePicker:
+            self.appCoordinator.dismissSheet()
             
         case let .updateStepData(data):
             self.state.healthCareData = convertStepDataToDateKeys(data)
-        }
-    }
-    
-    private func convertStringDatesToDates(_ stringDates: [String]) -> [Date] {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone.current
-        
-        return stringDates.compactMap { dateString in
-            dateFormatter.date(from: dateString)
         }
     }
     
@@ -129,6 +117,6 @@ extension HealthCareCalendarViewModel: DatePickerDelegate {
     }
     
     func willCloseDatePicker() {
-        action(.willCloseDatePikcer)
+        action(.willCloseDatePicker)
     }
 }

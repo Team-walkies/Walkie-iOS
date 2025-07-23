@@ -11,6 +11,7 @@ import WalkieCommon
 struct SpotCalendarView: View {
     
     @StateObject var viewModel: SpotCalendarViewModel
+    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -20,7 +21,17 @@ struct SpotCalendarView: View {
                     viewModel.action(.selectDate(Date()))
                 },
                 onTapCalendar: {
-                    viewModel.action(.willShowDatePicker)
+                    appCoordinator.buildBottomSheet(
+                        height: 436,
+                        content: {
+                            DatePickerView(
+                                viewModel: DatePickerViewModel(
+                                    delegate: viewModel,
+                                    selectedDate: viewModel.state.selectedDate
+                                )
+                            )
+                        }
+                    )
                 }
             )
             .frame(height: 34)
