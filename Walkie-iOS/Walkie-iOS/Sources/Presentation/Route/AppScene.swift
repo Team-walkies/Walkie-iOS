@@ -10,7 +10,7 @@ import SwiftUI
 
 enum AppScene: AppRoute {
     
-    case splash, nickname, complete, login, tabBar
+    case splash, nickname, complete, login, tabBar, changeNickname(viewModel: MypageMyInformationViewModel)
     case healthcare
     case map
     case egg, eggGuide, character, review

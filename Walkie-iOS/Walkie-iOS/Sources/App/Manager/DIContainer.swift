@@ -148,7 +148,8 @@ extension DIContainer {
     
     func makeMypageMyInformationViewModel(
         appCoordinator: AppCoordinator,
-        isPublic: Bool
+        isPublic: Bool,
+        nickname: String
     ) -> MypageMyInformationViewModel {
         return MypageMyInformationViewModel(
             appCoordinator: appCoordinator,
@@ -156,7 +157,8 @@ extension DIContainer {
                 memberRepository: memberRepo,
                 stepStatusStore: stepStatusStore
             ),
-            isPublic: isPublic
+            isPublic: isPublic,
+            nickname: nickname
         )
     }
     
@@ -338,6 +340,12 @@ extension DIContainer {
     func buildHatchEggView() -> HatchEggView {
         return HatchEggView(
             hatchEggViewModel: self.makeHatchEggViewModel()
+        )
+    }
+    
+    func buildMypageChangeNicknameView(viewModel: MypageMyInformationViewModel) -> MypageChangeNicknameView {
+        return MypageChangeNicknameView(
+            viewModel: viewModel
         )
     }
 }

@@ -65,7 +65,7 @@ extension MemberTarget {
     static func patchUserProfile(memberNickname: String) -> MemberTarget {
         MemberTarget(
             path: URLConstant.members,
-            method: .post,
+            method: .patch,
             task: .requestJSONEncodable(["memberNickname": memberNickname])
         )
     }
