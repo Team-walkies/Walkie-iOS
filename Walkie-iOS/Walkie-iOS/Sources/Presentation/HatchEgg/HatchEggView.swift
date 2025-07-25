@@ -20,7 +20,7 @@ struct HatchEggView: View {
             Color(white: 0, opacity: 0.6)
                 .ignoresSafeArea()
                 .onTapGesture {
-                    if hatchEggViewModel.animationState.isShowingGlowEffect {
+                    if hatchEggViewModel.animationState.isDismissAllowed {
                         appCoordinator.dismissFullScreenCover()
                     }
                 }
@@ -153,6 +153,9 @@ extension HatchEggView {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
             hatchEggViewModel.action(.willShowGlowEffect)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            hatchEggViewModel.action(.allowDismiss)
         }
     }
 }
