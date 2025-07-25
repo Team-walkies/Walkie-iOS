@@ -18,6 +18,7 @@ final class MypageMyInformationViewModel: ViewModelable {
         case togglePublicSetting
         case didTapBackButton
         case didTapChangeNicknameButton
+        case willChangeNickname(String)
     }
     
     private let appCoordinator: AppCoordinator
@@ -47,11 +48,13 @@ final class MypageMyInformationViewModel: ViewModelable {
         case .didTapBackButton:
             self.appCoordinator.pop()
         case .didTapChangeNicknameButton:
-            self.appCoordinator.push(AppScene.nickname)
+            self.appCoordinator.push(AppScene.changeNickname(viewModel: self))
+        case let .willChangeNickname(nickname):
+            self.changeNickname(to: nickname)
         }
     }
     
-    func togglePublicSetting() {
+    private func togglePublicSetting() {
         patchProfileUseCase.patchProfileVisibility().walkieSink(
             with: self,
             receiveValue: { _, _ in
@@ -65,5 +68,10 @@ final class MypageMyInformationViewModel: ViewModelable {
                 return
             }
         ).store(in: &cancellables)
+    }
+    
+    private func changeNickname(to nickname: String) {
+        // TODO: API 구현 및 연결
+        UserManager.shared.setUserNickname(nickname)
     }
 }

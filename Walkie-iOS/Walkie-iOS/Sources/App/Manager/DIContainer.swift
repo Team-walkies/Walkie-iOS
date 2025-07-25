@@ -342,4 +342,10 @@ extension DIContainer {
             hatchEggViewModel: self.makeHatchEggViewModel()
         )
     }
+    
+    func buildMypageChangeNicknameView(viewModel: MypageMyInformationViewModel) -> MypageChangeNicknameView {
+        return MypageChangeNicknameView(
+            viewModel: viewModel
+        )
+    }
 }

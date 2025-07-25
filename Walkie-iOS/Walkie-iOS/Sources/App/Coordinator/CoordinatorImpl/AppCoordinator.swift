@@ -115,6 +115,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
             buildFeedback()
         case let .withdraw(nickname):
             diContainer.buildWithdrawView(appCoordinator: self, nickname: nickname)
+        case let .changeNickname(viewModel):
+            diContainer.buildMypageChangeNicknameView(viewModel: viewModel)
         }
     }
     
