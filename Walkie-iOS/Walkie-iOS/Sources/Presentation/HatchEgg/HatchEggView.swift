@@ -154,7 +154,7 @@ extension HatchEggView {
         DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
             hatchEggViewModel.action(.willShowGlowEffect)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6.0) {
             hatchEggViewModel.action(.allowDismiss)
         }
     }
