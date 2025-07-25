@@ -22,7 +22,6 @@ struct HealthCareInfoSkeletonView: View {
                 VStack(
                     spacing: 7
                 ) {
-                    
                     HStack(
                         spacing: 0
                     ) {
@@ -47,7 +46,6 @@ struct HealthCareInfoSkeletonView: View {
                     .font(.H5)
                     .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .alignTo(.leading)
-                    .padding(.top, 12)
                     .padding(.leading, 16)
                 
                 CircleProgressSkeletonView()
