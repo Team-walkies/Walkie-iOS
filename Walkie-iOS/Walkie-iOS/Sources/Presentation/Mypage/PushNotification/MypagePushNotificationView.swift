@@ -68,8 +68,8 @@ private struct PushNotificationOffAlertView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .background(WalkieCommonAsset.blue30.swiftUIColor)
         .clipShape(.rect(cornerRadius: 8))
-        .backgroundStyle(WalkieCommonAsset.blue30.swiftUIColor)
         .innerBorder(
             color: WalkieCommonAsset.blue100.swiftUIColor,
             lineWidth: 1,

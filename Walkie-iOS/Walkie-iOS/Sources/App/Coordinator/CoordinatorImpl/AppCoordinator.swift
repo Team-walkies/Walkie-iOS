@@ -74,7 +74,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     }
                 }
         case .healthcare:
-            diContainer.buildHealthcareView()
+            diContainer.buildHealthcareView(appCoordinator: self)
         case .map:
             diContainer.buildMapView()
         case .tabBar:
@@ -90,7 +90,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             diContainer.buildCharacterView()
                 .popGestureEnabled(true)
         case .review:
-            diContainer.buildReviewView()
+            diContainer.buildReviewView(appCoordinator: self)
                 .popGestureEnabled(true)
         case let .setting(item):
             buildSetting(item)

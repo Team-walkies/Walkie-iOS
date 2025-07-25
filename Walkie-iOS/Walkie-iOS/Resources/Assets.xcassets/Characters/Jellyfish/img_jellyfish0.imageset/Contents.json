@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "img_Character.png",
+      "filename" : "img_jellyfish0.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "img_Character@2x.png",
+      "filename" : "img_jellyfish0@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "img_Character@3x.png",
+      "filename" : "img_jellyfish0@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

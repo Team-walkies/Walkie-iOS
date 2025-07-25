@@ -1,21 +1,23 @@
 //
-//  SpotCalendarViewModel.swift
+//  HealthCareCalendarViewModel.swift
 //  Walkie-iOS
 //
-//  Created by 황채웅 on 7/11/25.
+//  Created by 황채웅 on 7/16/25.
 //
 
 import Foundation
 
 @Observable
-final class SpotCalendarViewModel: ViewModelable {
+final class HealthCareCalendarViewModel: ViewModelable {
+    
     struct State {
         var pastWeek: [Date]
         var presentWeek: [Date]
         var futureWeek: [Date]
-        var hasSpotOn: [Date]
+        var healthCareData: [Date: (nowStep: Int, targetStep: Int)]
         var selectedDate: Date
         var scrollPosition: Int?
+        var showDatePicker: Bool = false
     }
     
     enum Action {
@@ -23,7 +25,7 @@ final class SpotCalendarViewModel: ViewModelable {
         case scrollToPast
         case scrollToFuture
         case willCloseDatePicker
-        case updateReviewDates([String])
+        case updateStepData([String: (nowStep: Int, targetStep: Int)])
     }
     
     var state: State
@@ -42,7 +44,7 @@ final class SpotCalendarViewModel: ViewModelable {
             pastWeek: past,
             presentWeek: present,
             futureWeek: future,
-            hasSpotOn: [],
+            healthCareData: [:],
             selectedDate: today,
             scrollPosition: 0
         )
@@ -83,28 +85,33 @@ final class SpotCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = newSelected
             self.state.scrollPosition = 0
-            
+        
         case .willCloseDatePicker:
             self.appCoordinator.dismissSheet()
             
-        case let .updateReviewDates(dates):
-            self.state.hasSpotOn = convertStringDatesToDates(dates)
+        case let .updateStepData(data):
+            self.state.healthCareData = convertStepDataToDateKeys(data)
         }
     }
     
-    private func convertStringDatesToDates(_ stringDates: [String]) -> [Date] {
+    private func convertStepDataToDateKeys(_ data: [String: (nowStep: Int, targetStep: Int)]) -> [Date: (nowStep: Int, targetStep: Int)] {
+        var result: [Date: (nowStep: Int, targetStep: Int)] = [:]
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         dateFormatter.timeZone = TimeZone.current
         
-        return stringDates.compactMap { dateString in
-            dateFormatter.date(from: dateString)
+        for (dateString, stepData) in data {
+            if let date = dateFormatter.date(from: dateString) {
+                result[date] = stepData
+            }
         }
+        
+        return result
     }
 }
 
 // MARK: - DatePickerDelegate
-extension SpotCalendarViewModel: DatePickerDelegate {
+extension HealthCareCalendarViewModel: DatePickerDelegate {
     func selectDate(_ date: Date) {
         action(.selectDate(date))
     }

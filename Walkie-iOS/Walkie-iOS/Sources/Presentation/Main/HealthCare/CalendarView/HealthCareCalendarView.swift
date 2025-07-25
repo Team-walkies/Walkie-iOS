@@ -1,16 +1,16 @@
 //
-//  SpotCalendarView.swift
+//  HealthCareCalendarView.swift
 //  Walkie-iOS
 //
-//  Created by 황채웅 on 7/11/25.
+//  Created by 황채웅 on 7/15/25.
 //
 
 import SwiftUI
 import WalkieCommon
 
-struct SpotCalendarView: View {
+struct HealthCareCalendarView: View {
     
-    @StateObject var viewModel: SpotCalendarViewModel
+    @StateObject var viewModel: HealthCareCalendarViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
@@ -21,28 +21,25 @@ struct SpotCalendarView: View {
                     viewModel.action(.selectDate(Date()))
                 },
                 onTapCalendar: {
-                    appCoordinator.buildBottomSheet(
-                        height: 436,
-                        content: {
-                            DatePickerView(
-                                viewModel: DatePickerViewModel(
-                                    delegate: viewModel,
-                                    selectedDate: viewModel.state.selectedDate
-                                )
+                    appCoordinator.buildBottomSheet(height: 436) {
+                        DatePickerView(
+                            viewModel: DatePickerViewModel(
+                                delegate: viewModel,
+                                selectedDate: viewModel.state.selectedDate
                             )
-                        }
-                    )
+                        )
+                    }
                 }
             )
+            .padding(.horizontal, 16)
             .frame(height: 34)
             .padding(.bottom, 12)
-            .padding(.horizontal, 15)
-            SpotWeekScrollView(
+            HealthCareWeekScrollView(
                 pastWeek: viewModel.state.pastWeek,
                 presentWeek: viewModel.state.presentWeek,
                 futureWeek: viewModel.state.futureWeek,
                 selectedDate: viewModel.state.selectedDate,
-                hasSpotOn: viewModel.state.hasSpotOn,
+                healthCareData: viewModel.state.healthCareData,
                 onTap: { date in
                     viewModel.action(.selectDate(date))
                 },
@@ -54,12 +51,10 @@ struct SpotCalendarView: View {
                 },
                 scrollPosition: $viewModel.state.scrollPosition
             )
-            Spacer(minLength: 0)
-            Rectangle()
-                .frame(height: 4)
-                .frame(maxWidth: .infinity)
-                .foregroundStyle(WalkieCommonAsset.gray50.swiftUIColor)
+            .frame(height: 94)
+            Spacer(minLength: 12)
         }
-        .frame(height: 128)
+        .background(.white)
+        .frame(height: 152)
     }
 }

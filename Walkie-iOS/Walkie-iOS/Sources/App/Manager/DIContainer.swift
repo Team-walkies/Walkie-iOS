@@ -147,8 +147,11 @@ extension DIContainer {
         )
     }
     
-    func makeSpotCalendarViewModel() -> SpotCalendarViewModel {
-        return SpotCalendarViewModel(calendarUseCase: DefaultCalendarUseCase())
+    func makeSpotCalendarViewModel(appCoordinator: AppCoordinator) -> SpotCalendarViewModel {
+        return SpotCalendarViewModel(
+            calendarUseCase: DefaultCalendarUseCase(),
+            appCoordinator: appCoordinator
+        )
     }
     
     func makeEggViewModel(appCoordinator: AppCoordinator) -> EggViewModel {
@@ -257,9 +260,9 @@ extension DIContainer {
         )
     }
     
-    func buildReviewView() -> ReviewView {
+    func buildReviewView(appCoordinator: AppCoordinator) -> ReviewView {
         let reviewVM = makeReviewViewModel()
-        let calendarVM = makeSpotCalendarViewModel()
+        let calendarVM = makeSpotCalendarViewModel(appCoordinator: appCoordinator)
         return ReviewView(
             viewModel: reviewVM,
             calendarViewModel: calendarVM
@@ -291,9 +294,14 @@ extension DIContainer {
         )
     }
     
-    func buildHealthcareView() -> HealthCareView {
+    func buildHealthcareView(appCoordinator: AppCoordinator) -> HealthCareView {
+        let calendarViewModel = HealthCareCalendarViewModel(
+            calendarUseCase: DefaultCalendarUseCase(),
+            appCoordinator: appCoordinator
+        )
         return HealthCareView(
-            viewModel: self.makeHealthCareViewModel()
+            viewModel: self.makeHealthCareViewModel(),
+            calendarViewModel: calendarViewModel
         )
     }
     

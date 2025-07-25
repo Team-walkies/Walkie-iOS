@@ -18,9 +18,7 @@ struct AlarmListView: View {
         VStack(alignment: .center, spacing: 0) {
             NavigationBar(
                 showBackButton: true,
-                backButtonAction: {
-                    dismiss()
-                }
+                backButtonAction: {}
             )
             
             Rectangle()
