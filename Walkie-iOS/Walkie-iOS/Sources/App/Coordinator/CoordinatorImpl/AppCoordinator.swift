@@ -210,10 +210,11 @@ final class AppCoordinator: Coordinator, ObservableObject {
     @ViewBuilder
     private func buildSetting(_ item: MypageSettingSectionItem) -> some View {
         switch item {
-        case let .myInfo(isPublic):
+        case let .myInfo(isPublic, nickname):
             let viewModel = diContainer.makeMypageMyInformationViewModel(
                 appCoordinator: self,
-                isPublic: isPublic
+                isPublic: isPublic,
+                nickname: nickname
             )
             MypageMyInformationView(viewModel: viewModel)
                 .toolbar(.hidden, for: .tabBar)

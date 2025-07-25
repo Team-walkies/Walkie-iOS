@@ -11,11 +11,13 @@ final class MypageMyInformationViewModel: ViewModelable {
     
     struct State {
         var isPublic: Bool
+        var nickname: String
     }
     
     enum Action {
         case togglePublicSetting
         case didTapBackButton
+        case didTapChangeNicknameButton
     }
     
     private let appCoordinator: AppCoordinator
@@ -24,10 +26,18 @@ final class MypageMyInformationViewModel: ViewModelable {
     
     @Published var state: State
     
-    init(appCoordinator: AppCoordinator, patchProfileUseCase: PatchProfileUseCase, isPublic: Bool) {
+    init(
+        appCoordinator: AppCoordinator,
+        patchProfileUseCase: PatchProfileUseCase,
+        isPublic: Bool,
+        nickname: String
+    ) {
         self.appCoordinator = appCoordinator
         self.patchProfileUseCase = patchProfileUseCase
-        self.state = State(isPublic: isPublic)
+        self.state = State(
+            isPublic: isPublic,
+            nickname: nickname
+        )
     }
     
     func action(_ action: Action) {
@@ -36,6 +46,8 @@ final class MypageMyInformationViewModel: ViewModelable {
             self.togglePublicSetting()
         case .didTapBackButton:
             self.appCoordinator.pop()
+        case .didTapChangeNicknameButton:
+            self.appCoordinator.push(AppScene.nickname)
         }
     }
     
@@ -43,7 +55,10 @@ final class MypageMyInformationViewModel: ViewModelable {
         patchProfileUseCase.patchProfileVisibility().walkieSink(
             with: self,
             receiveValue: { _, _ in
-                self.state = .init(isPublic: !self.state.isPublic)
+                self.state = .init(
+                    isPublic: !self.state.isPublic,
+                    nickname: self.state.nickname
+                )
             }, receiveFailure: { _, error in
                 dump(#function)
                 dump(error)
