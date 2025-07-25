@@ -47,6 +47,8 @@ struct DatePickerView: View {
                     )
                 }
                 .padding(.top, 40)
+                .padding(.horizontal, 16)
+                
                 // 요일 행
                 HStack(spacing: (geometry.size.width - 20 * 7) / 6) {
                     ForEach(DayOfTheWeek.allCases, id: \.self) { day in
@@ -55,7 +57,8 @@ struct DatePickerView: View {
                             .foregroundStyle(WalkieCommonAsset.gray400.swiftUIColor)
                     }
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 28)
+                
                 // 달력
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 8) {
                     ForEach(0..<state.offset, id: \.self) { _ in
@@ -107,7 +110,10 @@ struct DatePickerView: View {
                         }
                     }
                 }
+                .padding(.horizontal, 16)
+                
                 Spacer()
+                
                 CTAButton(
                     title: "이동하기",
                     style: .primary,
@@ -120,7 +126,6 @@ struct DatePickerView: View {
                 )
                 .padding(.bottom, 38)
             }
-            .padding(.horizontal, 16)
             .onAppear {
                 viewModel.action(.willAppear)
             }
