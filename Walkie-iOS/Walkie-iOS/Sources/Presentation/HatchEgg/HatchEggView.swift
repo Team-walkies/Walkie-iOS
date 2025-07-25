@@ -30,11 +30,14 @@ struct HatchEggView: View {
                     WalkieLottieView(
                         lottie: WalkieLottie.confetti,
                         isPlaying: hatchEggViewModel.animationState.isPlayingConfetti
-                    ).frame(width: screenHeight * 0.54, height: screenHeight * 0.54)
+                    )
+                    .frame(width: screenHeight * 0.54, height: screenHeight * 0.54)
+                    .allowsHitTesting(false)
                 }
                 Image(.glowEffect)
                     .resizable()
                     .frame(width: screenHeight * 0.5, height: screenHeight * 0.5)
+                    .allowsHitTesting(false)
                     .opacity(hatchEggViewModel.animationState.isShowingGlowEffect ? 1 : 0)
                     .animation(.easeInOut(duration: 0.2), value: hatchEggViewModel.animationState.isShowingGlowEffect)
                 
@@ -68,6 +71,7 @@ struct HatchEggView: View {
                     lottie: eggLottie,
                     isPlaying: hatchEggViewModel.animationState.isPlayingEggLottie
                 )
+                .allowsHitTesting(false)
                 .frame(width: screenHeight * 0.27, height: screenHeight * 0.27)
                 .opacity(hatchEggViewModel.animationState.isShowingEggLottie ? 1 : 0)
                 .animation(.easeIn(duration: 0.3), value: !hatchEggViewModel.animationState.isShowingEggLottie)
@@ -88,6 +92,7 @@ struct HatchEggView: View {
                             value: hatchEggViewModel.animationState.isShowingEggHatchText
                         )
                 }
+                .allowsHitTesting(false)
                 .alignmentGuide(VerticalAlignment.center) { view in
                     view[.bottom] + 132
                 }
@@ -109,6 +114,7 @@ struct HatchEggView: View {
                         .font(.B2)
                         .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
                 }
+                .allowsHitTesting(false)
                 .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
                 .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
                 .alignmentGuide(VerticalAlignment.center) { view in
