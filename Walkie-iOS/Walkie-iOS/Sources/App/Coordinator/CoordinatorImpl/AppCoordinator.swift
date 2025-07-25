@@ -39,11 +39,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var loginInfo: LoginUserInfo = LoginUserInfo()
     
     var stepCoordinator: StepCoordinator?
+    var permissionFlow: PermissionFlowCoordinator?
+    var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
+    private var onHatchDismiss: (() -> Void)?
     
-    init(diContainer: DIContainer) {
+    init(
+        diContainer: DIContainer
+    ) {
         self.diContainer = diContainer
-        initializeStepCoordinator()
+        initializeCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
             .receive(on: DispatchQueue.main)
@@ -53,8 +58,18 @@ final class AppCoordinator: Coordinator, ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func initializeStepCoordinator() {
+    private func initializeCoordinator() {
         self.stepCoordinator = StepCoordinator(diContainer: diContainer, appCoordinator: self)
+        self.permissionFlow = PermissionFlowCoordinator(
+            locationUC: diContainer.resolveLocationPermissionUseCase(),
+            motionUC: diContainer.resolveMotionPermissionUseCase(),
+            notifyUC: diContainer.resolveNotificationPermissionUseCase()
+        )
+        self.eventFlow = EventFlowCoordinator(
+            getEventEggUseCase: diContainer.resolveGetEventEggUseCase()
+        )
+        bindPermissionFlow()
+        bindHatchPublisher()
     }
     
     @ViewBuilder
@@ -351,5 +366,120 @@ final class AppCoordinator: Coordinator, ObservableObject {
             // 백그라운드 작업 스케줄링
             BGTaskManager.shared.scheduleAppRefresh(.step)
         }
+    }
+}
+
+extension AppCoordinator {
+    
+    func handleHomeEntry() {
+        stopStepUpdates()
+        permissionFlow?.start()
+        eventFlow?.checkEvent()
+    }
+    
+    private func bindPermissionFlow() {
+        permissionFlow?.onDenied = { [weak self] step, locOK, motOK, _, _ in
+            guard let self = self else { return }
+            switch step {
+            case .locationMotion:
+                let title = step.alertTitle(loc: locOK, mot: motOK)
+                let content = step.alertContent(loc: locOK, mot: motOK)
+                let height = !locOK && !motOK ? 342 : 266
+                
+                self.buildBottomSheet(
+                    height: CGFloat(height),
+                    content: {
+                        HomeAuthBSView(
+                            showLocation: !locOK,
+                            showMotion: !motOK,
+                            onConfirm: {
+                                self.buildAlert(
+                                    title: title,
+                                    content: content,
+                                    style: .primary,
+                                    button: .twobutton,
+                                    cancelButtonAction: {
+                                        self.permissionFlow?.nextStep()
+                                    },
+                                    checkButtonAction: {
+                                        if let url = URL(string: UIApplication.openSettingsURLString)
+                                            , UIApplication.shared.canOpenURL(url) {
+                                            UIApplication.shared.open(url)
+                                        }
+                                        
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                            self.permissionFlow?.nextStep()
+                                        }
+                                    },
+                                    checkButtonTitle: "허용하기"
+                                )
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            case .notification:
+                self.buildBottomSheet(
+                    height: 369,
+                    content: {
+                        HomeAlarmBSView(
+                            onConfirm: {
+                                self.permissionFlow?.nextStep()
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            }
+        }
+        
+        permissionFlow?.onAllAuthorized = {
+            print("권한 체크완료")
+            DispatchQueue.main.async {
+                self.sheet = nil
+                self.startStepUpdates()
+                self.onHatchDismiss = { [weak self] in
+                    self?.showEventEggAlert()
+                }
+            }
+        }
+    }
+    
+    private func bindHatchPublisher() {
+        stepCoordinator?
+            .hatchPublisher
+            .receive(on: DispatchQueue.main)
+            .sink(
+                receiveCompletion: { _ in },
+                receiveValue: { [weak self] willHatch in
+                    guard let self = self else { return }
+                    if willHatch {
+                        self.presentFullScreenCover(
+                            AppFullScreenCover.hatchEgg,
+                            onDismiss: self.onHatchDismiss
+                        )
+                        self.onHatchDismiss = nil
+                    } else {
+                        showEventEggAlert()
+                    }
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    private func showEventEggAlert() {
+        guard
+            let entity = eventFlow?.eventEggEntity,
+            entity.canReceive
+        else { return }
+        
+        buildEventAlert(
+            title: "알 1개를 선물받았어요!",
+            style: .primary,
+            button: .twobutton,
+            cancelButtonAction: { },
+            checkButtonAction: { self.push(AppScene.egg) },
+            dDay: entity.dDay
+        )
     }
 }

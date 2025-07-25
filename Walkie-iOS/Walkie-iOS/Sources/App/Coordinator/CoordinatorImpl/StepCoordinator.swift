@@ -81,7 +81,6 @@ final class StepCoordinator {
     }
     
     func presentHatchEggScreen() {
-        appCoordinator?.presentFullScreenCover(AppFullScreenCover.hatchEgg)
         hatchSubject.send(true)
         stopStepUpdates()
     }

@@ -29,7 +29,9 @@ final class DIContainer {
     private lazy var updateStepForegroundUseCase = DefaultUpdateStepForegroundUseCase(store: stepStatusStore)
     private lazy var updateStepBackgroundUseCase = DefaultUpdateStepBackgroundUseCase(store: stepStatusStore)
     private lazy var checkHatchConditionUseCase = DefaultCheckHatchConditionUseCase(store: stepStatusStore)
-    private lazy var permissionUseCase = DefaultPermissionUseCase.make()
+    private lazy var locationPermissionUseCase = DefaultLocationPermissionUseCase()
+    private lazy var motionPermissionUseCase = DefaultMotionPermissionUseCase()
+    private lazy var notificationPermissionUseCase = DefaultNotificationPermissionUseCase()
     
     lazy var stepStatusStore = DefaultStepStatusStore()
 }
@@ -46,6 +48,10 @@ extension DIContainer {
         return DefaultGetEggPlayUseCase(memberRepository: memberRepo, stepStatusStore: stepStatusStore)
     }
     
+    func resolveGetEventEggUseCase() -> GetEventEggUseCase {
+        return DefaultGetEventEggUseCase(eggRepository: eggRepo, stepStatusStore: stepStatusStore)
+    }
+    
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
         return updateStepForegroundUseCase
     }
@@ -56,6 +62,18 @@ extension DIContainer {
     
     func resolveCheckHatchConditionUseCase() -> CheckHatchConditionUseCase {
         return checkHatchConditionUseCase
+    }
+    
+    func resolveLocationPermissionUseCase() -> LocationPermissionUseCase {
+        return locationPermissionUseCase
+    }
+    
+    func resolveMotionPermissionUseCase() -> MotionPermissionUseCase {
+        return motionPermissionUseCase
+    }
+    
+    func resolveNotificationPermissionUseCase() -> NotificationPermissionUseCase {
+        return notificationPermissionUseCase
     }
 }
 
@@ -93,12 +111,7 @@ extension DIContainer {
                 stepStatusStore: stepStatusStore
             ),
             appCoordinator: appCoordinator,
-            stepStatusStore: stepStatusStore,
-            getEventEggUseCase: DefaultGetEventEggUseCase(
-                eggRepository: eggRepo,
-                stepStatusStore: stepStatusStore
-            ),
-            permissionUseCase: permissionUseCase
+            stepStatusStore: stepStatusStore
         )
     }
     

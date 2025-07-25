@@ -22,8 +22,10 @@ final class DefaultCalendarUseCase: CalendarUseCase {
         }
         
         // 과거 주, 현재 주, 미래 주의 시작 날짜(일요일)
-        guard let pastSunday = calendar.date(byAdding: .day, value: -7, to: currentSunday),
-              let futureSunday = calendar.date(byAdding: .day, value: 7, to: currentSunday) else {
+        guard
+            let pastSunday = calendar.date(byAdding: .day, value: -7, to: currentSunday),
+            let futureSunday = calendar.date(byAdding: .day, value: 7, to: currentSunday)
+        else {
             return ([], [], [])
         }
         
@@ -33,9 +35,10 @@ final class DefaultCalendarUseCase: CalendarUseCase {
         var futureWeek: [Date] = []
         
         for day in 0..<7 {
-            if let pastDay = calendar.date(byAdding: .day, value: day, to: pastSunday),
-               let presentDay = calendar.date(byAdding: .day, value: day, to: currentSunday),
-               let futureDay = calendar.date(byAdding: .day, value: day, to: futureSunday) {
+            if
+                let pastDay = calendar.date(byAdding: .day, value: day, to: pastSunday),
+                let presentDay = calendar.date(byAdding: .day, value: day, to: currentSunday),
+                let futureDay = calendar.date(byAdding: .day, value: day, to: futureSunday) {
                 pastWeek.append(pastDay)
                 presentWeek.append(presentDay)
                 futureWeek.append(futureDay)

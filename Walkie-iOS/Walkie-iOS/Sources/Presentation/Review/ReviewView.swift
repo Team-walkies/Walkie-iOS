@@ -166,7 +166,9 @@ struct ReviewView: View {
                         endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
                         completion: { result in
                             if result {
-                                viewModel.action(.showReviewList(dateString: viewModel.selectedDate.convertToDateString()))
+                                viewModel.action(.showReviewList(
+                                    dateString: viewModel.selectedDate.convertToDateString())
+                                )
                                 calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
                         }
