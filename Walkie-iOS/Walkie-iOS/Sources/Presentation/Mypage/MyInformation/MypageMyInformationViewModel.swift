@@ -71,7 +71,20 @@ final class MypageMyInformationViewModel: ViewModelable {
     }
     
     private func changeNickname(to nickname: String) {
-        // TODO: API 구현 및 연결
-        UserManager.shared.setUserNickname(nickname)
+        patchProfileUseCase.patchProfileNickname(nickname: nickname).walkieSink(
+            with: self,
+            receiveValue: { _, _ in
+                self.state = .init(
+                    isPublic: self.state.isPublic,
+                    nickname: nickname
+                )
+                UserManager.shared.setUserNickname(nickname)
+                self.appCoordinator.pop()
+            }, receiveFailure: { _, error in
+                dump(#function)
+                dump(error)
+                return
+            }
+        ).store(in: &cancellables)
     }
 }

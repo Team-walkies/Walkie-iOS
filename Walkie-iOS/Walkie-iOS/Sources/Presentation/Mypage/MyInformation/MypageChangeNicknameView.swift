@@ -20,6 +20,7 @@ struct MypageChangeNicknameView: View {
         VStack(alignment: .leading) {
             NavigationBar(
                 rightButtonTitle: "완료",
+                showBackButton: true,
                 showRightButton: true,
                 rightButtonEnabled: isButtonEnabled,
                 rightButtonShowsEnabledColor: true,
