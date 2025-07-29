@@ -105,6 +105,7 @@ final class StepCoordinator {
                     }
                 }
             case .failure:
+                self.hatchSubject.send(false)
                 stopStepUpdates()
             }
         }

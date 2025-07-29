@@ -42,7 +42,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var permissionFlow: PermissionFlowCoordinator?
     var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
-    private var onHatchDismiss: (() -> Void)?
     
     init(
         diContainer: DIContainer
@@ -317,7 +316,9 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 cancelTitle: cancelButtonTitle,
                 dDay: dDay
             ),
-            onDismiss: nil
+            onDismiss: {
+                self.eventFlow?.clearEventEntity()
+            }
         )
     }
     
@@ -374,7 +375,6 @@ extension AppCoordinator {
     func handleHomeEntry() {
         stopStepUpdates()
         permissionFlow?.start()
-        eventFlow?.checkEvent()
     }
     
     private func bindPermissionFlow() {
@@ -438,9 +438,6 @@ extension AppCoordinator {
             DispatchQueue.main.async {
                 self.sheet = nil
                 self.startStepUpdates()
-                self.onHatchDismiss = { [weak self] in
-                    self?.showEventEggAlert()
-                }
             }
         }
     }
@@ -456,9 +453,10 @@ extension AppCoordinator {
                     if willHatch {
                         self.presentFullScreenCover(
                             AppFullScreenCover.hatchEgg,
-                            onDismiss: self.onHatchDismiss
+                            onDismiss: {
+                                self.showEventEggAlert()
+                            }
                         )
-                        self.onHatchDismiss = nil
                     } else {
                         showEventEggAlert()
                     }
@@ -468,18 +466,21 @@ extension AppCoordinator {
     }
     
     private func showEventEggAlert() {
-        guard
-            let entity = eventFlow?.eventEggEntity,
-            entity.canReceive
-        else { return }
-        
-        buildEventAlert(
-            title: "알 1개를 선물받았어요!",
-            style: .primary,
-            button: .twobutton,
-            cancelButtonAction: { },
-            checkButtonAction: { self.push(AppScene.egg) },
-            dDay: entity.dDay
-        )
+        eventFlow?.checkEvent { [weak self] in
+            guard
+                let self = self,
+                let entity = self.eventFlow?.eventEggEntity,
+                entity.canReceive
+            else { return }
+            
+            buildEventAlert(
+                title: "알 1개를 선물받았어요!",
+                style: .primary,
+                button: .twobutton,
+                cancelButtonAction: { },
+                checkButtonAction: { self.push(AppScene.egg) },
+                dDay: entity.dDay
+            )
+        }
     }
 }
