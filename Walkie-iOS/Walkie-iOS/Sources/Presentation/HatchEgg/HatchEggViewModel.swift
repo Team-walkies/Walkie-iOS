@@ -26,6 +26,7 @@ final class HatchEggViewModel: ViewModelable {
         case willShowConfettiEffectWithVibration // 3.7초
         case willShowcharacter // 3.9초
         case willShowGlowEffect // 4초
+        case allowDismiss // 5초
     }
     
     enum State {
@@ -49,6 +50,7 @@ final class HatchEggViewModel: ViewModelable {
         let isPlayingConfetti: Bool
         let isShowingCharacter: Bool
         let isShowingGlowEffect: Bool
+        let isDismissAllowed: Bool
     }
     
     @Published var state: State = .loading
@@ -60,7 +62,8 @@ final class HatchEggViewModel: ViewModelable {
         isPlayingEggLottie: false,
         isPlayingConfetti: false,
         isShowingCharacter: false,
-        isShowingGlowEffect: false
+        isShowingGlowEffect: false,
+        isDismissAllowed: false
     )
     
     init(
@@ -83,7 +86,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: false,
                 isShowingCharacter: false,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willShowEggHatchText:
             self.animationState = .init(
@@ -93,7 +97,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: false,
                 isShowingCharacter: false,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willShowEggLottie:
             self.animationState = .init(
@@ -103,7 +108,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: false,
                 isShowingCharacter: false,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willPlayEggLottie:
             self.animationState = .init(
@@ -113,7 +119,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: true,
                 isPlayingConfetti: false,
                 isShowingCharacter: false,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willShowConfettiEffectWithVibration:
             self.animationState = .init(
@@ -123,7 +130,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: true,
                 isShowingCharacter: false,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willShowcharacter:
             self.animationState = .init(
@@ -133,7 +141,8 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: true,
                 isShowingCharacter: true,
-                isShowingGlowEffect: false
+                isShowingGlowEffect: false,
+                isDismissAllowed: false
             )
         case .willShowGlowEffect:
             self.animationState = .init(
@@ -143,7 +152,19 @@ final class HatchEggViewModel: ViewModelable {
                 isPlayingEggLottie: false,
                 isPlayingConfetti: true,
                 isShowingCharacter: true,
-                isShowingGlowEffect: true
+                isShowingGlowEffect: true,
+                isDismissAllowed: false
+            )
+        case .allowDismiss:
+            self.animationState = .init(
+                isShowingWaitText: false,
+                isShowingEggHatchText: false,
+                isShowingEggLottie: false,
+                isPlayingEggLottie: false,
+                isPlayingConfetti: true,
+                isShowingCharacter: true,
+                isShowingGlowEffect: true,
+                isDismissAllowed: true
             )
         }
     }

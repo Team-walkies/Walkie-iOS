@@ -15,7 +15,10 @@ struct MypageMainSettingSectionView: View {
         if case let .loaded(state) = viewModel.state {
             MypageMainSectionView(title: MypageItem.setting.title) {
                 ForEach([
-                    MypageSettingSectionItem.myInfo(isPublic: state.isPublic),
+                    MypageSettingSectionItem.myInfo(
+                        isPublic: state.isPublic,
+                        nickname: state.nickname
+                    ),
                     MypageSettingSectionItem.pushNotification(
                         notifyEggHatches: NotificationManager.shared.getNotificationMode()
                     )
