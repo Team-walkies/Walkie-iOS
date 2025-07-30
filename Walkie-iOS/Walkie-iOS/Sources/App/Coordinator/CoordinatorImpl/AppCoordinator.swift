@@ -42,6 +42,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var permissionFlow: PermissionFlowCoordinator?
     var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
+    var selectedTab: TabBarItem = .home
     
     init(
         diContainer: DIContainer
@@ -466,6 +467,11 @@ extension AppCoordinator {
     }
     
     private func showEventEggAlert() {
+        guard
+            currentScene == .tabBar,
+            selectedTab == .home
+        else { return }
+        
         eventFlow?.checkEvent { [weak self] in
             guard
                 let self = self,
