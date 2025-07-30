@@ -91,6 +91,10 @@ struct TabBarView: View {
         }
         .onAppear {
             appCoordinator.executeForegroundActions()
+            appCoordinator.selectedTab = selectedTab
+        }
+        .onChange(of: selectedTab) { _, newTab in
+            appCoordinator.selectedTab = newTab
         }
     }
 }

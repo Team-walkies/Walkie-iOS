@@ -17,7 +17,7 @@ final class StepCoordinator {
     // MARK: - Publishers
     private let hatchSubject = PassthroughSubject<Bool, Error>()
     var hatchPublisher: AnyPublisher<Bool, Error> {
-        hatchSubject.share().eraseToAnyPublisher()
+        hatchSubject.eraseToAnyPublisher()
     }
     
     // MARK: - UseCases
@@ -62,6 +62,8 @@ final class StepCoordinator {
     
     func startStepQuery(onUpdate: @escaping () -> Void) {
         updateStepForegroundUseCase.start()
+            .map { _ in () }
+            .prepend(()) 
             .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in
@@ -105,6 +107,7 @@ final class StepCoordinator {
                     }
                 }
             case .failure:
+                self.hatchSubject.send(false)
                 stopStepUpdates()
             }
         }
