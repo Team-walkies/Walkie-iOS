@@ -11,6 +11,7 @@ import Combine
 import CoreMotion
 import CoreLocation
 import WalkieCommon
+import HealthKit
 
 final class HomeViewModel: ViewModelable {
     
@@ -57,6 +58,7 @@ final class HomeViewModel: ViewModelable {
     struct StepState {
         let todayStep: Int
         let todayDistance: Double
+        let todayCalories: Int
         let locationAlwaysAuthorized: Bool
     }
     
@@ -103,6 +105,7 @@ final class HomeViewModel: ViewModelable {
     @Published var leftStepState: LeftStepViewState = .loading
     
     private let pedometer = CMPedometer()
+    private let healthStore = HKHealthStore()
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
     
@@ -245,6 +248,7 @@ private extension HomeViewModel {
                     StepState(
                         todayStep: 0,
                         todayDistance: 0,
+                        todayCalories: 0,
                         locationAlwaysAuthorized: false
                     )
                 )
@@ -260,10 +264,11 @@ private extension HomeViewModel {
                 if let data = data, error == nil {
                     self.updateStepData(
                         step: data.numberOfSteps.intValue,
-                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0,
+                        calories: 0 // FIXME: HealthKit 권한 및 데이터 쿼리
                     )
                 } else {
-                    self.updateStepData(step: -1, distance: 0)
+                    self.updateStepData(step: -1, distance: 0, calories: 0)
                 }
             }
         }
@@ -273,7 +278,8 @@ private extension HomeViewModel {
                 DispatchQueue.main.async {
                     self.updateStepData(
                         step: data.numberOfSteps.intValue,
-                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0
+                        distance: (data.distance?.doubleValue ?? 0.0) / 1000.0,
+                        calories: 0 // FIXME: HealthKit 권한 및 데이터 쿼리
                     )
                 }
             }
@@ -285,11 +291,12 @@ private extension HomeViewModel {
         return status == .authorizedAlways
     }
     
-    func updateStepData(step: Int, distance: Double) {
+    func updateStepData(step: Int, distance: Double, calories: Int) {
         self.stepState = .loaded(
             StepState(
                 todayStep: step,
                 todayDistance: distance,
+                todayCalories: calories,
                 locationAlwaysAuthorized: isLocationAlwaysAuthorized()
             )
         )
