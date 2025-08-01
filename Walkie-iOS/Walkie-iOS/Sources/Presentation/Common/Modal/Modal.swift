@@ -14,6 +14,8 @@ struct Modal: View {
     // MARK: - Properties
     
     let title: String
+    let highlightedContent: String?
+    let highlightedColor: Color?
     let content: String
     let style: ModalStyleType
     let button: ModalButtonType
@@ -35,7 +37,12 @@ struct Modal: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 4)
                 .multilineTextAlignment(.center)
-            
+            if let highlightedContent, highlightedColor != nil{
+                Text(highlightedContent)
+                    .font(.B2)
+                    .foregroundColor(highlightedColor)
+                    .multilineTextAlignment(.center)
+            }
             Text(content)
                 .font(.B2)
                 .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)

@@ -132,6 +132,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
             diContainer.buildHatchEggView()
         case .alert(
             let title,
+            let highlightedContent,
+            let highlightedColor,
             let content,
             let style,
             let button,
@@ -150,6 +152,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     }
                 Modal(
                     title: title,
+                    highlightedContent: highlightedContent,
+                    highlightedColor: highlightedColor,
                     content: content,
                     style: style,
                     button: button,
@@ -276,6 +280,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     func buildAlert(
         title: String,
+        highlightedContent: String? = nil,
+        highlightedColor: Color? = nil,
         content: String,
         style: ModalStyleType,
         button: ModalButtonType,
@@ -287,6 +293,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
         presentFullScreenCover(
             AppFullScreenCover.alert(
                 title: title,
+                highlightedContent: highlightedContent,
+                highlightedColor: highlightedColor,
                 content: content,
                 style: style,
                 button: button,

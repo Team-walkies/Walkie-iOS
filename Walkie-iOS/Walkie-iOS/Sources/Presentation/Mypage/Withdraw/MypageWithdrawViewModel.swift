@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import WalkieCommon
 
 final class MypageWithdrawViewModel: ViewModelable {
     
@@ -34,7 +35,20 @@ final class MypageWithdrawViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .willWithdraw:
-            withdraw()
+            appCoordinator.buildAlert(
+                title: "회원 탈퇴",
+                highlightedContent: "탈퇴 시 해당 계정으로 다시 가입할 수 없어요.",
+                highlightedColor: WalkieCommonAsset.red100.swiftUIColor,
+                content: "탈퇴에 부득이한 사유가 있는 경우,\n 워키 개발팀에 문의해주세요.\n\nwalkieofficial@gmail.com",
+                style: .error,
+                button: .twobutton,
+                cancelButtonAction: {},
+                checkButtonAction: {
+                    self.withdraw()
+                },
+                checkButtonTitle: "탈퇴하기",
+                cancelButtonTitle: "뒤로가기"
+            )
         case .didTapBackButton:
             appCoordinator.pop()
         }
