@@ -75,6 +75,8 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
     case hatchEgg
     case alert(
         title: String,
+        highlightedContent: String? = nil,
+        highlightedColor: Color? = nil,
         content: String,
         style: ModalStyleType,
         button: ModalButtonType,
@@ -98,7 +100,7 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
         switch self {
         case .hatchEgg:
             return "hatchEgg"
-        case .alert(let title, _, _, _, _, _, _, _):
+        case .alert(let title, _, _, _, _, _, _, _, _, _):
             return "alert_\(title)"
         case .eventAlert:
             return "eventAlert"

@@ -74,6 +74,8 @@ struct ReviewView: View {
                     .transition(.opacity)
                 Modal(
                     title: "스팟 기록을 삭제할까요?",
+                    highlightedContent: nil,
+                    highlightedColor: nil,
                     content: "삭제된 기록은 복구할 수 없어요",
                     style: .error,
                     button: .twobutton,

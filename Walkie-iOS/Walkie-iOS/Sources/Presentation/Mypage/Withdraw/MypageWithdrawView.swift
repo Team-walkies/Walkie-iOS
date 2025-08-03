@@ -58,7 +58,10 @@ struct MypageWithdrawView: View {
                 .padding(.bottom, 32)
                 .padding(.horizontal, 16)
                 
-                CheckboxWithLabel(isChecked: $isChecked, text: "안내사항을 모두 확인했으며, 이에 동의합니다")
+                CheckboxWithLabel(
+                    isChecked: $isChecked,
+                    text: "안내사항을 모두 확인했으며, 이에 동의합니다"
+                )
                 Spacer()
                 CTAButton(
                     title: "탈퇴하기",
