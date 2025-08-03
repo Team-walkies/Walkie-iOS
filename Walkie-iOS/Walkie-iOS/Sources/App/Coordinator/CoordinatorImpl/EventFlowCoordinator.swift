@@ -24,6 +24,10 @@ final class EventFlowCoordinator: ObservableObject {
         self.remoteConfigManager = remoteConfigManager
         self.getEventEggUseCase  = getEventEggUseCase
     }
+    
+    func clearEventEntity() {
+        self.eventEggEntity = nil
+    }
 
     func checkEvent(completion: (() -> Void)? = nil) {
         Task {
@@ -51,8 +55,10 @@ final class EventFlowCoordinator: ObservableObject {
                     .walkieSink(
                         with: self,
                         receiveValue: { _, entity in
-                            self.eventEggEntity = entity.canReceive ? entity : nil
-                            UserManager.shared.setLastVisitedDate(now)
+                            self.eventEggEntity = entity
+                            if entity.canReceive {
+                                UserManager.shared.setLastVisitedDate(now)
+                            }
                             completion?()
                         },
                         receiveFailure: { _, _ in

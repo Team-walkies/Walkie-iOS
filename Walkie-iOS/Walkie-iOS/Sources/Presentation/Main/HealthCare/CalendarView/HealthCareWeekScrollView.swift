@@ -16,7 +16,7 @@ struct HealthCareWeekScrollView: View {
     
     // 헬스케어 관련
     let selectedDate: Date
-    let healthCareData: [Date : (nowStep: Int, targetStep: Int)]
+    let healthCareData: [Date: (nowStep: Int, targetStep: Int)]
     
     // 선택 시
     let onTap: (Date) -> Void

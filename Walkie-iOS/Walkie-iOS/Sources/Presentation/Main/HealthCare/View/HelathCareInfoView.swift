@@ -54,7 +54,7 @@ struct HealthCareInfoView: View {
                     }
                 }
                 
-                Text("오늘의 걸음")
+                Text("일일 걸음수")
                     .font(.H5)
                     .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .alignTo(.leading)
