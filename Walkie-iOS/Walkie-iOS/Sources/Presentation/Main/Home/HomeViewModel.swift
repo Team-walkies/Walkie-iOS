@@ -265,7 +265,7 @@ private extension HomeViewModel {
                     self.updateStepData(
                         step: data.numberOfSteps.intValue,
                         distance: (data.distance?.doubleValue ?? 0.0) / 1000.0,
-                        calories: 0 // FIXME: HealthKit 권한 및 데이터 쿼리
+                        calories: Int(data.numberOfSteps.intValue / 30)
                     )
                 } else {
                     self.updateStepData(step: -1, distance: 0, calories: 0)
@@ -279,7 +279,7 @@ private extension HomeViewModel {
                     self.updateStepData(
                         step: data.numberOfSteps.intValue,
                         distance: (data.distance?.doubleValue ?? 0.0) / 1000.0,
-                        calories: 0 // FIXME: HealthKit 권한 및 데이터 쿼리
+                        calories: Int(data.numberOfSteps.intValue / 30)
                     )
                 }
             }
