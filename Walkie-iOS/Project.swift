@@ -50,6 +50,8 @@ let project = Project(
                     "NSLocationWhenInUseUsageDescription": "내 주변 스팟을 탐색하기 위해 현재 위치를 확인합니다.",
                     "NSLocationAlwaysAndWhenInUseUsageDescription": "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.",
                     "NSLocationAlwaysUsageDescription": "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.",
+                    "NSHealthShareUsageDescription": "건강 데이터 읽기 권한 임시 메시지",
+                    "NSHealthUpdateUsageDescription": "건강 데이터 쓰기 권한 임시 메시지",
                     "BASE_URL": "$(BASE_URL)",
                     "WEB_URL": "$(WEB_URL)",
                     "KAKAO_NATIVE_APP_KEY": "$(KAKAO_NATIVE_APP_KEY)",
