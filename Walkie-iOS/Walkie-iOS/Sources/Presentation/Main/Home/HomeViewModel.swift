@@ -11,7 +11,6 @@ import Combine
 import CoreMotion
 import CoreLocation
 import WalkieCommon
-import HealthKit
 
 final class HomeViewModel: ViewModelable {
     
@@ -105,7 +104,6 @@ final class HomeViewModel: ViewModelable {
     @Published var leftStepState: LeftStepViewState = .loading
     
     private let pedometer = CMPedometer()
-    private let healthStore = HKHealthStore()
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
     
