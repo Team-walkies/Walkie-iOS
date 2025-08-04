@@ -57,43 +57,50 @@ struct HomeStatsView: View {
             }
             .allowsHitTesting(false)
             
-            VStack(spacing: 0) {
-                HStack(alignment: .bottom, spacing: 5) {
+            VStack(spacing: 4) {
+                HStack(alignment: .bottom, spacing: 0) {
                     if stepState.todayStep < 0 {
                         Text("0")
                             .font(.H1)
                             .foregroundColor(.white)
+                            .padding(.trailing, 4)
                     } else {
                         Text("\(stepState.todayStep)")
                             .font(.H1)
                             .foregroundColor(.white)
+                            .padding(.trailing, 4)
                     }
                     Text("걸음")
                         .font(.B1)
                         .foregroundColor(.white)
                         .padding(.bottom, 5)
+                    Spacer(minLength: 0)
+                    Image(.icChevronRight)
+                        .renderingMode(.template)
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                        .foregroundStyle(.white)
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 14)
+                    
                 }
                 .allowsHitTesting(false)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 16)
+                .padding(.top, 12)
                 .padding(.leading, 20)
                 
-                HStack(alignment: .bottom, spacing: 5) {
-                    HStack(spacing: 0) {
-                        let distanceStr = String(format: "%.1f", stepState.todayDistance)
-                        Text(distanceStr)
-                            .font(.H2)
-                            .foregroundColor(.white)
-                        
-                        Text("km")
-                            .font(.H2)
-                            .foregroundColor(.white)
-                    }
-                    
-                    Text("이동")
-                        .font(.B2)
+                HStack(alignment: .center, spacing: 8) {
+                    let distanceStr = String(format: "%.1f", stepState.todayDistance)
+                    Text("\(distanceStr)km")
+                        .font(.B1)
                         .foregroundColor(.white)
-                        .padding(.bottom, 3)
+                    Rectangle()
+                        .frame(width: 1, height: 16)
+                        .foregroundStyle(.white)
+                        .opacity(0.3)
+                    Text("\(stepState.todayCalories)Kcal")
+                        .font(.B1)
+                        .foregroundColor(.white)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .allowsHitTesting(false)
