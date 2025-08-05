@@ -108,6 +108,7 @@ let project = Project(
             ],
             dependencies: [
                 .sdk(name: "WebKit", type: .framework),
+                .sdk(name: "HealthKit", type: .framework),
                 .package(product: "Moya"),
                 .package(product: "CombineMoya"),
                 .package(product: "Alamofire"),

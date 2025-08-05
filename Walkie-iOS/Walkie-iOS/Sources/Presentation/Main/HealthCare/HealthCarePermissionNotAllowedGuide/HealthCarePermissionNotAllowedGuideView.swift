@@ -57,7 +57,7 @@ struct HealthCarePermissionNotAllowedGuideView: View {
         }
         .onChange(of: scenePhase, initial: false) { _, newValue in
             switch newValue {
-            case .background:
+            case .active:
                 viewModel.action(.returnFromPermissionSetting)
             default:
                 break
