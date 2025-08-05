@@ -31,6 +31,7 @@ final class HealthCarePermissionGuideViewModel: ViewModelable {
         case .returnFromPermissionSetting:
             switch HealthKitManager.shared.checkAuthorizationStatus() {
             case .authorized:
+                coordinator.pop()
                 coordinator.push(AppScene.healthcare)
             default:
                 break
