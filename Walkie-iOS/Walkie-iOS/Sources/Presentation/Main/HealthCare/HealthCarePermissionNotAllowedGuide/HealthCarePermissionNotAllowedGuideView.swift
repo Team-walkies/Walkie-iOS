@@ -25,9 +25,16 @@ struct HealthCarePermissionNotAllowedGuideView: View {
                     alignment: .center,
                     spacing: 0
                 ) {
-                    WalkieLottieView(lottie: .healthCarePermission, isPlaying: true)
-                        .frame(width: (geometry.size.height * 0.34)/0.8, height: geometry.size.height * 0.34)
-                        .padding(.bottom, 24)
+                    WalkieLottieView(
+                        lottie: .healthCarePermission,
+                        isPlaying: true,
+                        isLoop: true
+                    )
+                    .frame(
+                        width: (geometry.size.height * 0.34)/0.8,
+                        height: geometry.size.height * 0.34
+                    )
+                    .padding(.bottom, 24)
                     Text("걸음 기록을 보려면\n건강 권한을 허용해주세요")
                         .font(.B1)
                         .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)

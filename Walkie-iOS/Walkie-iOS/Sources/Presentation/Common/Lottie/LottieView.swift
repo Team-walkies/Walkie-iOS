@@ -38,13 +38,20 @@ enum WalkieLottie {
 struct WalkieLottieView: View {
     let lottie: WalkieLottie
     let isPlaying: Bool
+    var isLoop: Bool = false
 
     var body: some View {
-        LottieView(animation: .named(lottie.filename))
-            .playbackMode(isPlaying ? .playing(.fromProgress(0, toProgress: 1, loopMode: .playOnce)) : .paused)
-            .configure { lottieAnimationView in
-                lottieAnimationView.contentMode = .scaleAspectFit
-                lottieAnimationView.shouldRasterizeWhenIdle = true
-            }
+        LottieView(
+            animation: .named(lottie.filename)
+        )
+        .playbackMode(
+            isPlaying
+            ? .playing(.fromProgress(0, toProgress: 1, loopMode: isLoop ? .loop : .playOnce))
+            : .paused
+        )
+        .configure { lottieAnimationView in
+            lottieAnimationView.contentMode = .scaleAspectFit
+            lottieAnimationView.shouldRasterizeWhenIdle = true
+        }
     }
 }

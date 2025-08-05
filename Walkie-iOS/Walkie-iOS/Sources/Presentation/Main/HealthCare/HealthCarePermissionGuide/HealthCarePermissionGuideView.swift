@@ -12,7 +12,7 @@ struct HealthCarePermissionGuideView: View {
     
     @StateObject var viewModel: HealthCarePermissionGuideViewModel
     @Environment(\.scenePhase) var scenePhase
-        
+    
     var body: some View {
         GeometryReader { geometry in
             VStack(
@@ -34,8 +34,15 @@ struct HealthCarePermissionGuideView: View {
                         .font(.B2)
                         .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                         .padding(.bottom, 32)
-                    WalkieLottieView(lottie: .healthCarePermission, isPlaying: true)
-                        .frame(width: (geometry.size.height * 0.34)/0.8, height: geometry.size.height * 0.34)
+                    WalkieLottieView(
+                        lottie: .healthCarePermission,
+                        isPlaying: true,
+                        isLoop: true
+                    )
+                    .frame(
+                        width: (geometry.size.height * 0.34)/0.8,
+                        height: geometry.size.height * 0.34
+                    )
                     Spacer(minLength: 0)
                 }
                 Spacer(minLength: 0)
