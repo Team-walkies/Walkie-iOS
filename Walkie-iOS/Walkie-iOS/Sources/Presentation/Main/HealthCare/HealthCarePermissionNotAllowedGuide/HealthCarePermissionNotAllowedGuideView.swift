@@ -55,6 +55,7 @@ struct HealthCarePermissionNotAllowedGuideView: View {
                     }
                     .padding(.horizontal, 24)
                 }
+                .scrollIndicators(.never)
                 .padding(.top, 8)
                 .padding(.bottom, 40)
             }
