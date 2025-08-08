@@ -40,7 +40,7 @@ struct HealthCarePermissionGuideView: View {
                         isLoop: true
                     )
                     .frame(
-                        width: (geometry.size.height * 0.34)/0.8,
+                        width: (geometry.size.height * 0.34)*1.24,
                         height: geometry.size.height * 0.34
                     )
                     Spacer(minLength: 0)

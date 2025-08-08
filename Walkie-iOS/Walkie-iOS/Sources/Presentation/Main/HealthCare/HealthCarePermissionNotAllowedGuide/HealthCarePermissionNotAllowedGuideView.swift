@@ -14,54 +14,85 @@ struct HealthCarePermissionNotAllowedGuideView: View {
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
-        GeometryReader { geometry in
+        VStack(
+            alignment: .center,
+            spacing: 0
+        ) {
             NavigationBar(showBackButton: true)
-            VStack(
-                alignment: .center,
-                spacing: 0
-            ) {
-                Spacer(minLength: 0)
+            ScrollView(.vertical) {
                 VStack(
                     alignment: .center,
                     spacing: 0
                 ) {
-                    WalkieLottieView(
-                        lottie: .healthCarePermission,
-                        isPlaying: true,
-                        isLoop: true
-                    )
-                    .frame(
-                        width: (geometry.size.height * 0.34)/0.8,
-                        height: geometry.size.height * 0.34
-                    )
-                    .padding(.bottom, 24)
-                    Text("걸음 기록을 보려면\n건강 권한을 허용해주세요")
-                        .font(.B1)
-                        .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom, 16)
-                    CTAButton(
-                        title: "허용하기",
-                        style: .primary,
-                        size: .small,
-                        isEnabled: true,
-                        buttonAction: {
-                            viewModel.action(.permitButtonTapped)
-                        }
-                    )
-                    .frame(width: 120)
+                    Group {
+                        Text("걸음 기록을 보려면")
+                            .font(.B1)
+                            .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                        HStack(alignment: .center, spacing: 0) {
+                            Image(.iconHealthApp)
+                                .resizable()
+                                .frame(width: 22, height: 22)
+                            Text("건강 앱에서 권한을 허용해주세요")
+                                .font(.B1)
+                                .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
+                        }.padding(.bottom, 24)
+                        InstructionView(
+                            imageName: Image(.imgHealthPermission1),
+                            instructionText: "1. 건강 앱에서 '프로필'을 눌러주세요"
+                        )
+                        InstructionView(
+                            imageName: Image(.imgHealthPermission2),
+                            instructionText: "2. 스크롤을 내려 '앱'을 눌러주세요"
+                        )
+                        InstructionView(
+                            imageName: Image(.imgHealthPermission3),
+                            instructionText: "3. 'Walkie'를 눌러주세요"
+                        )
+                        InstructionView(
+                            imageName: Image(.imgHealthPermission4),
+                            instructionText: "4. '모두 켜기'를 눌러주면 끝!"
+                        )
+                    }
+                    .padding(.horizontal, 24)
                 }
-                .frame(maxWidth: .infinity)
-                Spacer(minLength: 0)
+                .padding(.top, 8)
+                .padding(.bottom, 40)
             }
-        }
-        .onChange(of: scenePhase, initial: false) { _, newValue in
-            switch newValue {
-            case .active:
-                viewModel.action(.returnFromPermissionSetting)
-            default:
-                break
+            .frame(maxWidth: .infinity)
+            .onChange(of: scenePhase, initial: false) { _, newValue in
+                switch newValue {
+                case .active:
+                    viewModel.action(.returnFromPermissionSetting)
+                default:
+                    break
+                }
             }
         }
     }
+    
+    private struct InstructionView: View {
+        let imageName: Image
+        let instructionText: String
+        
+        var body: some View {
+            VStack {
+                imageName
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 160)
+            }
+            .frame(height: 160)
+            .frame(maxWidth: .infinity)
+            .background(WalkieCommonAsset.gray50.swiftUIColor)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .padding(.bottom, 8)
+            
+            Text(instructionText)
+                .font(.B2)
+                .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 24)
+        }
+    }
+    
 }
