@@ -55,13 +55,16 @@ final class PermissionFlowCoordinator {
     private let steps = PermissionStep.allCases
     private var currentIndex: Int = 0
     
+    var onRequest: (
+        _ step: PermissionStep,
+        _ locNotDetermined: Bool,
+        _ motNotDetermined: Bool
+    ) -> Void = { _, _, _ in }
     var onDenied: (
         _ step: PermissionStep,
         _ locAllowed: Bool,
-        _ motAllowed: Bool,
-        _ showBottomSheet: (_ title: String, _ message: String, _ onOK: @escaping () -> Void) -> Void,
-        _ showAlert: (_ title: String, _ message: String, _ onOK: @escaping () -> Void) -> Void
-    ) -> Void = { _, _, _, _, _ in }
+        _ motAllowed: Bool
+    ) -> Void = { _, _, _ in }
     var onAllAuthorized: () -> Void = {}
     
     init(
@@ -82,6 +85,29 @@ final class PermissionFlowCoordinator {
     func nextStep() {
         currentIndex += 1
         runCurrentStep()
+    }
+    
+    func requestPermission(_ step: PermissionStep) {
+        switch step {
+        case .locationMotion:
+            locationUC.requestIfNeeded()
+                .append(motionUC.requestIfNeeded())
+                .receive(on: DispatchQueue.main)
+                .sink(
+                    receiveCompletion: { [weak self] _ in
+                        self?.nextStep()
+                    },
+                    receiveValue: { _ in }
+                )
+                .store(in: &self.cancellables)
+        case .notification:
+            notifyUC.requestIfNeeded()
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    self?.nextStep()
+                }
+                .store(in: &cancellables)
+        }
     }
     
     private func runCurrentStep() {
@@ -129,20 +155,16 @@ final class PermissionFlowCoordinator {
         case _ where bothAuth:
             nextStep()
         case _ where anyNotDetermined:
-            locationUC.requestIfNeeded()
-                .flatMap { _ in self.motionUC.requestIfNeeded() }
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    self?.nextStep()
-                }
-                .store(in: &cancellables)
+            onRequest(
+                step,
+                loc == .notDetermined,
+                mot == .notDetermined
+            )
         case _ where anyDenied:
             onDenied(
                 step,
                 loc == .authorized,
-                mot == .authorized,
-                { _, _, _ in },
-                { _, _, _ in }
+                mot == .authorized
             )
         default:
             break
@@ -157,19 +179,16 @@ final class PermissionFlowCoordinator {
         case .authorized:
             nextStep()
         case .notDetermined:
-            notifyUC.requestIfNeeded()
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] _ in
-                    self?.nextStep()
-                }
-                .store(in: &cancellables)
+            onRequest(
+                step,
+                true,
+                true
+            )
         case .denied:
             onDenied(
                 step,
                 true,
-                true,
-                { _, _, _ in },
-                { _, _, _ in }
+                true
             )
         }
     }

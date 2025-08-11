@@ -390,7 +390,43 @@ extension AppCoordinator {
     }
     
     private func bindPermissionFlow() {
-        permissionFlow?.onDenied = { [weak self] step, locOK, motOK, _, _ in
+        permissionFlow?.onRequest = { [weak self] step, locNotDetermined, motNotDetermined in
+            guard let self = self else { return }
+            switch step {
+            case .locationMotion:
+                let height = locNotDetermined && motNotDetermined ? 342 : 266
+                self.buildBottomSheet(
+                    height: CGFloat(height),
+                    content: {
+                        HomeAuthBSView(
+                            showLocation: locNotDetermined,
+                            showMotion: motNotDetermined,
+                            onConfirm: {
+                                self.permissionFlow?.requestPermission(.locationMotion)
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            case .notification:
+                self.buildBottomSheet(
+                    height: 369,
+                    content: {
+                        HomeAlarmBSView(
+                            onDenied: {
+                                self.permissionFlow?.nextStep()
+                            },
+                            onConfirm: {
+                                self.permissionFlow?.requestPermission(.notification)
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            }
+        }
+        
+        permissionFlow?.onDenied = { [weak self] step, locOK, motOK in
             guard let self = self else { return }
             switch step {
             case .locationMotion:
