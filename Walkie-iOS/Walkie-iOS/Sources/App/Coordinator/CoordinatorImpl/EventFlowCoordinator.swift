@@ -33,7 +33,12 @@ final class EventFlowCoordinator: ObservableObject {
         Task {
             do {
                 try await remoteConfigManager.fetchAndActivate()
-                guard remoteConfigManager.boolValue(for: .eggEventEnabled) else { return }
+                guard
+                    remoteConfigManager.boolValue(for: .eggEventEnabled)
+                else {
+                    completion?()
+                    return
+                }
 
                 let now = Date()
                 let calendar = Calendar.current
@@ -49,7 +54,12 @@ final class EventFlowCoordinator: ObservableObject {
                     to: calendar.startOfDay(for: now)
                 ).day ?? 0
                 
-                guard daysDiff >= 1 else { return }
+                guard
+                    daysDiff >= 1
+                else {
+                    completion?()
+                    return
+                }
                 
                 getEventEggUseCase.getEventEgg()
                     .walkieSink(
