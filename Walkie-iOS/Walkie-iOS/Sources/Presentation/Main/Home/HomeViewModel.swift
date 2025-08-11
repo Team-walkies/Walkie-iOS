@@ -103,7 +103,7 @@ final class HomeViewModel: ViewModelable {
     @Published var stepState: StepViewState = .loading
     @Published var leftStepState: LeftStepViewState = .loading
     
-    private let pedometer = CMPedometer()
+    private lazy var pedometer: CMPedometer = CMPedometer()
     private let appCoordinator: AppCoordinator
     private let stepStatusStore: StepStatusStore
     
