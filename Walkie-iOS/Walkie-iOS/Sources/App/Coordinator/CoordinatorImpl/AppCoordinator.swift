@@ -43,6 +43,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
     var selectedTab: TabBarItem = .home
+    let permissionsDone = CurrentValueSubject<Bool, Never>(false)
     
     init(
         diContainer: DIContainer
@@ -484,11 +485,12 @@ extension AppCoordinator {
             }
         }
         
-        permissionFlow?.onAllAuthorized = {
-            print("권한 체크완료")
+        permissionFlow?.onAllAuthorized = { [weak self] in
+            guard let self else { return }
             DispatchQueue.main.async {
                 self.sheet = nil
                 self.startStepUpdates()
+                self.permissionsDone.send(true)
             }
         }
     }

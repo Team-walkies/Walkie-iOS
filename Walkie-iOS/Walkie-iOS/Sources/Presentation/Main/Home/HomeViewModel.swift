@@ -23,6 +23,7 @@ final class HomeViewModel: ViewModelable {
     private let getRecordedSpotUseCase: RecordedSpotUseCase
     
     private var cancellables = Set<AnyCancellable>()
+    private var permissionCancellables = Set<AnyCancellable>()
     
     enum Action {
         case homeWillAppear
@@ -123,6 +124,7 @@ final class HomeViewModel: ViewModelable {
         self.getRecordedSpotUseCase = getRecordedSpotUseCase
         self.appCoordinator = appCoordinator
         self.stepStatusStore = stepStatusStore
+        bindPermissionDone()
     }
     
     func action(_ action: Action) {
@@ -144,7 +146,6 @@ private extension HomeViewModel {
         fetchHomeStats()
         fetchHomeCharacter()
         fetchHomeHistory()
-        startStepUpdates()
     }
     
     func fetchHomeStats() {
@@ -239,6 +240,16 @@ private extension HomeViewModel {
 
 private extension HomeViewModel {
     
+    func bindPermissionDone() {
+        appCoordinator.permissionsDone
+            .removeDuplicates()
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.startStepUpdates()
+            }
+            .store(in: &permissionCancellables)
+    }
+    
     func startStepUpdates() {
         guard CMPedometer.isStepCountingAvailable() else {
             DispatchQueue.main.async {
@@ -251,6 +262,18 @@ private extension HomeViewModel {
                     )
                 )
             }
+            return
+        }
+        
+        switch CMPedometer.authorizationStatus() {
+        case .authorized:
+            break
+        case .notDetermined, .denied, .restricted:
+            DispatchQueue.main.async {
+                self.updateStepData(step: -1, distance: 0, calories: 0)
+            }
+            return
+        @unknown default:
             return
         }
         
