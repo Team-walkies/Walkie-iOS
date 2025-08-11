@@ -471,6 +471,9 @@ extension AppCoordinator {
                     height: 369,
                     content: {
                         HomeAlarmBSView(
+                            onDenied: {
+                                self.permissionFlow?.nextStep()
+                            },
                             onConfirm: {
                                 self.permissionFlow?.nextStep()
                             }
