@@ -45,6 +45,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var selectedTab: TabBarItem = .home
     let permissionsDone = CurrentValueSubject<Bool, Never>(false)
     
+    let screenHeight = UIScreen.main.bounds.height
+    
     init(
         diContainer: DIContainer
     ) {
@@ -331,6 +333,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             ),
             onDismiss: {
                 self.eventFlow?.clearEventEntity()
+                self.showHealthcareInfo()
             }
         )
     }
@@ -525,11 +528,15 @@ extension AppCoordinator {
         else { return }
         
         eventFlow?.checkEvent { [weak self] in
+            guard let self = self else { return }
+            
             guard
-                let self = self,
                 let entity = self.eventFlow?.eventEggEntity,
                 entity.canReceive
-            else { return }
+            else {
+                self.showHealthcareInfo()
+                return
+            }
             
             buildEventAlert(
                 title: "알 1개를 선물받았어요!",
@@ -540,5 +547,21 @@ extension AppCoordinator {
                 dDay: entity.dDay
             )
         }
+    }
+    
+    private func showHealthcareInfo() {
+        guard
+            !UserManager.shared.getShowHealthcare
+        else { return }
+        
+        UserManager.shared.setShowHealthcare()
+        
+        buildBottomSheet(
+            height: screenHeight * 0.48 + 290,
+            content: {
+                HomeHealthcareBSView()
+                    .environment(self)
+            }
+        )
     }
 }
