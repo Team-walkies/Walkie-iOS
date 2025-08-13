@@ -46,11 +46,14 @@ final class AppCoordinator: Coordinator, ObservableObject {
     let permissionsDone = CurrentValueSubject<Bool, Never>(false)
     
     let screenHeight = UIScreen.main.bounds.height
+    private let remoteConfigManager: RemoteConfigManaging
     
     init(
-        diContainer: DIContainer
+        diContainer: DIContainer,
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared
     ) {
         self.diContainer = diContainer
+        self.remoteConfigManager = remoteConfigManager
         initializeCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
@@ -550,18 +553,22 @@ extension AppCoordinator {
     }
     
     private func showHealthcareInfo() {
-        guard
-            !UserManager.shared.getShowHealthcare
-        else { return }
-        
-        UserManager.shared.setShowHealthcare()
-        
-        buildBottomSheet(
-            height: screenHeight * 0.48 + 290,
-            content: {
-                HomeHealthcareBSView()
-                    .environment(self)
-            }
-        )
+        Task { @MainActor in
+            try await remoteConfigManager.fetchAndActivate()
+            guard
+                !UserManager.shared.getShowHealthcare,
+                remoteConfigManager.boolValue(for: .healthcareGuideVisible)
+            else { return }
+            
+            UserManager.shared.setShowHealthcare()
+            
+            buildBottomSheet(
+                height: screenHeight * 0.48 + 290,
+                content: {
+                    HomeHealthcareBSView()
+                        .environment(self)
+                }
+            )
+        }
     }
 }
