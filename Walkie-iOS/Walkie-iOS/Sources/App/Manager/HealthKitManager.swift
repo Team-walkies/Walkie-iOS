@@ -17,7 +17,7 @@ final class HealthKitManager {
     func requestHealthKitAuthorization(completion: @escaping (PermissionState) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else { return }
         
-        let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount)!
+        guard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else { return }
         
         let typesToRead: Set<HKObjectType> = [stepCountType]
         
