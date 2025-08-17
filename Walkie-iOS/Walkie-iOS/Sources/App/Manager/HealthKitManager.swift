@@ -14,34 +14,29 @@ final class HealthKitManager {
     private let healthStore = HKHealthStore()
     
     // 걸음 수 읽기 권한 요청
-    func requestHealthKitAuthorization(completion: @escaping (Bool) -> Void) {
+    func requestHealthKitAuthorization(completion: @escaping (PermissionState) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else { return }
         
         let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount)!
         
         let typesToRead: Set<HKObjectType> = [stepCountType]
-        let typesToShare: Set<HKSampleType> = []
         
         // 권한 요청
         healthStore.requestAuthorization(
-            toShare: typesToShare,
+            toShare:  [],
             read: typesToRead
         ) { (success, error) in
             if let error = error {
                 print("권한 요청 실패: \(error.localizedDescription)")
-                completion(false)
+                completion(.notDetermined)
                 return
             }
-            
-            if success {
-                print("권한 요청 성공")
-                completion(true)
-            } else {
-                print("권한이 거부되었습니다.")
-                completion(false)
+            self.checkReadAuthorizationStatus { permissionState in
+                completion(permissionState)
             }
         }
     }
+
     
     // 걸음 수 읽기 권한 상태 확인
     func checkReadAuthorizationStatus(completion: @escaping (PermissionState) -> Void) {
@@ -57,11 +52,20 @@ final class HealthKitManager {
         }
         
         // 읽기 권한 확인을 위해 간단한 쿼리 실행
-        let predicate = HKQuery.predicateForSamples(withStart: Date().addingTimeInterval(-86400), end: Date())
-        let query = HKSampleQuery(sampleType: stepCountType, predicate: predicate, limit: 1, sortDescriptors: nil) { _, samples, error in
-            if let hkError = error as? HKError, hkError.code == .errorAuthorizationDenied {
+        let predicate = HKQuery.predicateForSamples(
+            withStart: Date().addingTimeInterval(-86400*7),
+            end: Date()
+        )
+        let query = HKSampleQuery(
+            sampleType: stepCountType,
+            predicate: predicate,
+            limit: 1,
+            sortDescriptors: nil
+        ) { _, samples, error in
+            if let hkError = error as? HKError,
+                hkError.code == .errorAuthorizationDenied {
                 completion(.denied)
-            } else if samples != nil {
+            } else if samples?.count ?? 0 > 0 {
                 completion(.authorized)
             } else {
                 completion(.denied)

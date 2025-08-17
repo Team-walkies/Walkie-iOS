@@ -28,12 +28,12 @@ final class HealthCarePermissionGuideViewModel: ViewModelable {
         switch action {
         case .checkedButtonTapped:
             HealthKitManager.shared.requestHealthKitAuthorization { permission in
-                if permission {
-                    // 허용한 경우
+                dump(permission)
+                switch permission {
+                case .authorized: // 요청 - 허용
                     self.coordinator.push(AppScene.healthcare)
-                } else {
-                    // 비허용 혹은 요청 실패한 경우
-                    print("권한 요청 실패")
+                default: // 요청 - 무시 or 거부
+                    self.coordinator.pop()
                 }
             }
         }
