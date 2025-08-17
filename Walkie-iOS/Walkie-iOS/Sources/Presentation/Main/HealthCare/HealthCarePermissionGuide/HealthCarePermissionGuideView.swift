@@ -58,13 +58,5 @@ struct HealthCarePermissionGuideView: View {
                 .padding(.bottom, 4)
             }
         }
-        .onChange(of: scenePhase, initial: false) { _, newValue in
-            switch newValue {
-            case .active:
-                viewModel.action(.returnFromPermissionSetting)
-            default:
-                break
-            }
-        }
     }
 }

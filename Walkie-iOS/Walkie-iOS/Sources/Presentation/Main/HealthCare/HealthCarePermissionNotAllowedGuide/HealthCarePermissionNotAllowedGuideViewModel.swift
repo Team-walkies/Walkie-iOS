@@ -14,7 +14,6 @@ final class HealthCarePermissionNotAllowedGuideViewModel: ViewModelable {
     }
     
     enum Action {
-        case permitButtonTapped
         case returnFromPermissionSetting
     }
     
@@ -27,17 +26,18 @@ final class HealthCarePermissionNotAllowedGuideViewModel: ViewModelable {
     
     func action(_ action: Action) {
         switch action {
-        case .permitButtonTapped:
-            HealthKitManager.shared.requestHealthKitAuthorization()
         case .returnFromPermissionSetting:
-            switch HealthKitManager.shared.checkAuthorizationStatus() {
-            case .authorized:
-                coordinator.pop()
-                coordinator.push(AppScene.healthcare)
-            default:
-                break
-            }
+            HealthKitManager.shared.checkReadAuthorizationStatus(
+                completion: { permission in
+                    switch permission {
+                    case .authorized:
+                        self.coordinator.pop()
+                        self.coordinator.push(AppScene.healthcare)
+                    default:
+                        break
+                    }
+                }
+            )
         }
     }
-    
 }

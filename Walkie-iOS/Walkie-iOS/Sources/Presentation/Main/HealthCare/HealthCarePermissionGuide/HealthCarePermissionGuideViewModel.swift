@@ -14,27 +14,27 @@ final class HealthCarePermissionGuideViewModel: ViewModelable {
     
     enum Action {
         case checkedButtonTapped
-        case returnFromPermissionSetting
     }
     
     var coordinator: Coordinator
-    var state: State = State()
+    var state: State
     
     public init(coordinator: Coordinator) {
+        self.state = State()
         self.coordinator = coordinator
     }
     
     func action(_ action: Action) {
         switch action {
         case .checkedButtonTapped:
-            HealthKitManager.shared.requestHealthKitAuthorization()
-        case .returnFromPermissionSetting:
-            switch HealthKitManager.shared.checkAuthorizationStatus() {
-            case .authorized:
-                coordinator.pop()
-                coordinator.push(AppScene.healthcare)
-            default:
-                break
+            HealthKitManager.shared.requestHealthKitAuthorization { permission in
+                if permission {
+                    // 허용한 경우
+                    self.coordinator.push(AppScene.healthcare)
+                } else {
+                    // 비허용 혹은 요청 실패한 경우
+                    print("권한 요청 실패")
+                }
             }
         }
     }
