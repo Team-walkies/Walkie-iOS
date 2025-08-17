@@ -31,6 +31,7 @@ final class HealthCarePermissionViewModel: ViewModelable {
                 dump(permission)
                 switch permission {
                 case .authorized: // 요청 - 허용
+                    self.coordinator.pop()
                     self.coordinator.push(AppScene.healthcare)
                 default: // 요청 - 무시 or 거부
                     self.coordinator.pop()
