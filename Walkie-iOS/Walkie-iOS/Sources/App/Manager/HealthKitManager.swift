@@ -23,7 +23,7 @@ final class HealthKitManager {
         
         // 권한 요청
         healthStore.requestAuthorization(
-            toShare:  [],
+            toShare: [],
             read: typesToRead
         ) { (success, error) in
             if let error = error {
@@ -36,7 +36,6 @@ final class HealthKitManager {
             }
         }
     }
-
     
     // 걸음 수 읽기 권한 상태 확인
     func checkReadAuthorizationStatus(completion: @escaping (PermissionState) -> Void) {
@@ -63,7 +62,7 @@ final class HealthKitManager {
             sortDescriptors: nil
         ) { _, samples, error in
             if let hkError = error as? HKError,
-                hkError.code == .errorAuthorizationDenied {
+               hkError.code == .errorAuthorizationDenied {
                 completion(.denied)
             } else if samples?.count ?? 0 > 0 {
                 completion(.authorized)

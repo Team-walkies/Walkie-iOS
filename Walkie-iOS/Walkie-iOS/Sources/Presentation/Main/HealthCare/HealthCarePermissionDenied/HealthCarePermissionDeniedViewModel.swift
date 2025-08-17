@@ -1,5 +1,5 @@
 //
-//  HealthCarePermissionNotAllowedGuideViewModel.swift
+//  HealthCarePermissionDeniedViewModel.swift
 //  Walkie-iOS
 //
 //  Created by 황채웅 on 8/5/25.
@@ -8,7 +8,7 @@
 import Foundation
 import HealthKit
 
-final class HealthCarePermissionNotAllowedGuideViewModel: ViewModelable {
+final class HealthCarePermissionDeniedViewModel: ViewModelable {
     
     struct State {
     }

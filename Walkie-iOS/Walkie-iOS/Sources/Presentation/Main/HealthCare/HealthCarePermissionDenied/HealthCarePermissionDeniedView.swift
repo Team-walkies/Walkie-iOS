@@ -1,5 +1,5 @@
 //
-//  HealthCarePermissionNotAllowedGuideView.swift
+//  HealthCarePermissionDeniedView.swift
 //  Walkie-iOS
 //
 //  Created by 황채웅 on 8/5/25.
@@ -8,9 +8,9 @@
 import SwiftUI
 import WalkieCommon
 
-struct HealthCarePermissionNotAllowedGuideView: View {
+struct HealthCarePermissionDeniedView: View {
     
-    @StateObject var viewModel: HealthCarePermissionNotAllowedGuideViewModel
+    @StateObject var viewModel: HealthCarePermissionDeniedViewModel
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {

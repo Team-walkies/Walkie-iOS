@@ -1,5 +1,5 @@
 //
-//  HealthCarePermissionGuideView.swift
+//  HealthCarePermissionView.swift
 //  Walkie-iOS
 //
 //  Created by 황채웅 on 8/5/25.
@@ -8,9 +8,9 @@
 import SwiftUI
 import WalkieCommon
 
-struct HealthCarePermissionGuideView: View {
+struct HealthCarePermissionView: View {
     
-    @StateObject var viewModel: HealthCarePermissionGuideViewModel
+    @StateObject var viewModel: HealthCarePermissionViewModel
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
