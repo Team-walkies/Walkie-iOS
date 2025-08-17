@@ -36,22 +36,12 @@ struct HealthCarePermissionDeniedView: View {
                                 .font(.B1)
                                 .foregroundStyle(WalkieCommonAsset.gray700.swiftUIColor)
                         }.padding(.bottom, 24)
-                        InstructionView(
-                            imageName: Image(.imgHealthPermission1),
-                            instructionText: "1. 건강 앱에서 '프로필'을 눌러주세요"
-                        )
-                        InstructionView(
-                            imageName: Image(.imgHealthPermission2),
-                            instructionText: "2. 스크롤을 내려 '앱'을 눌러주세요"
-                        )
-                        InstructionView(
-                            imageName: Image(.imgHealthPermission3),
-                            instructionText: "3. 'Walkie'를 눌러주세요"
-                        )
-                        InstructionView(
-                            imageName: Image(.imgHealthPermission4),
-                            instructionText: "4. '모두 켜기'를 눌러주면 끝!"
-                        )
+                        ForEach(Instruction.allCases, id: \.self) { instruction in
+                            InstructionView(
+                                imageName: instruction.image,
+                                instructionText: instruction.text
+                            )
+                        }
                     }
                     .padding(.horizontal, 24)
                 }
@@ -67,6 +57,28 @@ struct HealthCarePermissionDeniedView: View {
                 default:
                     break
                 }
+            }
+        }
+    }
+    
+    private enum Instruction: CaseIterable {
+        case step1, step2, step3, step4
+        
+        var image: Image {
+            switch self {
+            case .step1: return Image(.imgHealthPermission1)
+            case .step2: return Image(.imgHealthPermission2)
+            case .step3: return Image(.imgHealthPermission3)
+            case .step4: return Image(.imgHealthPermission4)
+            }
+        }
+        
+        var text: String {
+            switch self {
+            case .step1: return "1. 건강 앱에서 '프로필'을 눌러주세요"
+            case .step2: return "2. 스크롤을 내려 '앱'을 눌러주세요"
+            case .step3: return "3. 'Walkie'를 눌러주세요"
+            case .step4: return "4. '모두 켜기'를 눌러주면 끝!"
             }
         }
     }
