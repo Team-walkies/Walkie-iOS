@@ -44,7 +44,16 @@ struct HomeStatsView: View {
             )
             .cornerRadius(20, corners: .allCorners)
             .onTapGesture {
-                appCoordinator.push(AppScene.healthcare)
+                HealthKitManager.shared.checkReadAuthorizationStatus { permission in
+                    switch permission {
+                    case .authorized:
+                        appCoordinator.push(AppScene.healthcare)
+                    case .notDetermined:
+                        appCoordinator.push(AppScene.healthcarePermission)
+                    case .denied:
+                        appCoordinator.push(AppScene.healthcarePermissionDenied)
+                    }
+                }
             }
             
             ZStack(alignment: .bottom) {
