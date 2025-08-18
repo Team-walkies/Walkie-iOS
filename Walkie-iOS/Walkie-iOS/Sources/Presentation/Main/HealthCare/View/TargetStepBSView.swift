@@ -86,7 +86,7 @@ struct TargetStepBSView: View {
                 size: .large,
                 isEnabled: targetStep != initialStep,
                 buttonAction: {
-                    print(targetStep.rawValue)
+                    UserManager.shared.setTargetStep(targetStep.rawValue)
                     dismiss()
                 }
             )

@@ -18,6 +18,7 @@ final class DIContainer {
     private lazy var reviewService = DefaultReviewService(reissueService: reissueService)
     private lazy var characterService = DefaultCharacterService(reissueService: reissueService)
     private lazy var authService = DefaultAuthService(reissueService: reissueService)
+    private lazy var healthService = DefaultHealthService(reissueService: reissueService)
     
     // Singleton Repositories
     private lazy var eggRepo = DefaultEggRepository(eggService: eggService)
@@ -25,6 +26,7 @@ final class DIContainer {
     private lazy var reviewRepo = DefaultReviewRepository(reviewService: reviewService)
     private lazy var characterRepo = DefaultCharacterRepository(characterService: characterService)
     private lazy var authRepo = DefaultAuthRepository(authService: authService)
+    private lazy var healthRepo = DefaultHealthRepository(healthService: healthService)
     
     private lazy var updateStepForegroundUseCase = DefaultUpdateStepForegroundUseCase(store: stepStatusStore)
     private lazy var updateStepBackgroundUseCase = DefaultUpdateStepBackgroundUseCase(store: stepStatusStore)
@@ -50,6 +52,10 @@ extension DIContainer {
     
     func resolveGetEventEggUseCase() -> GetEventEggUseCase {
         return DefaultGetEventEggUseCase(eggRepository: eggRepo, stepStatusStore: stepStatusStore)
+    }
+    
+    func resolvePutHealthUseCase() -> PutHealthUseCase {
+        return DefaultPutHealthUseCase(healthRepository: healthRepo)
     }
     
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
@@ -230,7 +236,7 @@ extension DIContainer {
     }
     
     func makeHealthCareViewModel() -> HealthCareViewModel {
-        return HealthCareViewModel()
+        return HealthCareViewModel(putHealthUseCase: resolvePutHealthUseCase())
     }
 }
 

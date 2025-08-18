@@ -6,6 +6,7 @@
 //
 
 struct HealthRequestDto: Codable {
-    let targetSteps, nowSteps, nowDistance, nowCalories: Int
+    let targetSteps, nowSteps, nowCalories: Int
+    let nowDistance: Double
     let nowDay: String
 }

@@ -41,7 +41,7 @@ extension HealthTarget {
                 ],
                 encoding: URLEncoding.queryString
             ),
-            headers: APIConstants.noTokenHeader
+            headers: APIConstants.hasTokenHeader
         )
     }
     
@@ -57,7 +57,7 @@ extension HealthTarget {
                 ],
                 encoding: URLEncoding.queryString
             ),
-            headers: APIConstants.noTokenHeader
+            headers: APIConstants.hasTokenHeader
         )
     }
     
@@ -66,7 +66,7 @@ extension HealthTarget {
             path: URLConstant.healthContinueDays,
             method: .get,
             task: .requestPlain,
-            headers: APIConstants.noTokenHeader
+            headers: APIConstants.hasTokenHeader
         )
     }
     
@@ -77,7 +77,7 @@ extension HealthTarget {
             path: URLConstant.health,
             method: .put,
             task: .requestJSONEncodable(request),
-            headers: APIConstants.noTokenHeader
+            headers: APIConstants.hasTokenHeader
         )
     }
 }
