@@ -11,7 +11,6 @@ import WalkieCommon
 struct HealthCarePermissionView: View {
     
     @StateObject var viewModel: HealthCarePermissionViewModel
-    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         GeometryReader { geometry in
