@@ -13,7 +13,7 @@ class BaseStepUseCase {
     // MARK: - Dependency
     
     let store: StepStatusStore
-    let pedometer: CMPedometer
+    lazy var pedometer: CMPedometer = CMPedometer()
     
     // MARK: - Properties
     
@@ -23,6 +23,5 @@ class BaseStepUseCase {
     
     init(store: StepStatusStore) {
         self.store = store
-        self.pedometer = CMPedometer()
     }
 }

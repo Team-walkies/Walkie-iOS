@@ -50,10 +50,10 @@ final class DefaultLocationPermissionUseCase: NSObject, LocationPermissionUseCas
 }
 
 extension DefaultLocationPermissionUseCase: CLLocationManagerDelegate {
-    func locationManager(
-        _ manager: CLLocationManager,
-        didChangeAuthorization status: CLAuthorizationStatus
+    
+    func locationManagerDidChangeAuthorization(
+        _ manager: CLLocationManager
     ) {
-        subject.send(convert(status))
+        subject.send(convert(manager.authorizationStatus))
     }
 }
