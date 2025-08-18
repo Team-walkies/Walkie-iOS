@@ -11,6 +11,7 @@ import Combine
 final class DefaultUpdateStepForegroundUseCase: BaseStepUseCase, UpdateStepForegroundUseCase {
     
     private var subject = PassthroughSubject<Int, Error>() // 퍼블리셔 선언
+    private var isUpdating = false
     
     func start() -> AnyPublisher<Int, Error> {
         // 시작 걸음 수
@@ -62,11 +63,18 @@ final class DefaultUpdateStepForegroundUseCase: BaseStepUseCase, UpdateStepForeg
             self.subject.send(data.numberOfSteps.intValue)
         }
         
+        isUpdating = true
         return subject.eraseToAnyPublisher()
     }
     
     // 종료
     func stop() {
+        guard isUpdating, CMPedometer.authorizationStatus() == .authorized else {
+            subject.send(completion: .finished)
+            subject = PassthroughSubject<Int, Error>()
+            dump("🏃포그라운드 걸음 수 업데이트 종료(호출만 됨, 실제 업데이트 없음) : \(Date())🏃")
+            return
+        }
         pedometer.stopUpdates()
         subject.send(completion: .finished)
         subject = PassthroughSubject<Int, Error>() // 새로운 Subject로 교체

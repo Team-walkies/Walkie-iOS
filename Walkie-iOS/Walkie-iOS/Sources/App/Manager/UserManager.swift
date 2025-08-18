@@ -15,6 +15,7 @@ final class UserManager {
     @UserDefaultsWrapper<String>(key: "nickname") private(set) var nickname
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
+    @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
     
     private init() {}
 }
@@ -25,6 +26,7 @@ extension UserManager {
     var getUserNickname: String { return self.nickname ?? "" }
     var getStartExploreDate: Date? { return self.startExploreDate }
     var getLastVisitedDate: Date? { return self.lastVisitedDate }
+    var getShowHealthcare: Bool { return self.showHealthcare ?? false }
 }
 
 extension UserManager {
@@ -34,15 +36,19 @@ extension UserManager {
     }
     
     func setStartExploreDate(_ date: Date) {
-        self.startExploreDate = date
+        startExploreDate = date
     }
     
     func setLastVisitedDate(_ date: Date) {
-        self.lastVisitedDate = date
+        lastVisitedDate = date
+    }
+    
+    func setShowHealthcare() {
+        showHealthcare = true
     }
     
     func clearExploreDate() {
-        self.startExploreDate = nil
+        startExploreDate = nil
     }
     
     func withdraw() {
@@ -51,6 +57,7 @@ extension UserManager {
         } catch {
 
         }
+        showHealthcare = false
         nickname = nil
     }
 }

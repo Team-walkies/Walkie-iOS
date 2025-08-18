@@ -34,7 +34,7 @@ struct HealthCarePermissionView: View {
                         .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                         .padding(.bottom, 32)
                     WalkieLottieView(
-                        lottie: .healthCarePermission,
+                        lottie: .healthkit,
                         isPlaying: true,
                         isLoop: true
                     )

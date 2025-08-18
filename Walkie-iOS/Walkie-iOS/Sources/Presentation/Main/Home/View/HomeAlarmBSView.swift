@@ -13,6 +13,7 @@ struct HomeAlarmBSView: View {
     
     @Environment(\.screenWidth) var screenWidth
     @Environment(\.dismiss) private var dismiss
+    let onDenied: () -> Void
     let onConfirm: () -> Void
     
     var body: some View {
@@ -45,7 +46,7 @@ struct HomeAlarmBSView: View {
             ) {
                 Button(action: {
                     dismiss()
-                    onConfirm()
+                    onDenied()
                 }, label: {
                     Text("나중에")
                         .font(.B1)
