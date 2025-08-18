@@ -10,6 +10,7 @@ import FirebaseRemoteConfig
 enum RemoteConfigKey: String, CaseIterable {
     case iOSMinAppVersion = "iOS_MIN_APP_VERSION"
     case eggEventEnabled = "EGG_EVENT_ENABLED"
+    case healthcareGuideVisible = "HEALTHCARE_GUIDE_BOTTOM_SHEET_VISIBLE"
 }
 
 protocol RemoteConfigManaging {

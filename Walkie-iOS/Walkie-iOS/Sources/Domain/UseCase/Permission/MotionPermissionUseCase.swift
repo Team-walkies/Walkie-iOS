@@ -26,13 +26,16 @@ final class DefaultMotionPermissionUseCase: MotionPermissionUseCase {
         guard status == .notDetermined else {
             return Just(convert(status)).eraseToAnyPublisher()
         }
-        return Future { promise in
+        
+        return Future<PermissionState, Never> { promise in
             self.manager.startActivityUpdates(to: .main) { _ in
                 self.manager.stopActivityUpdates()
                 let updated = CMMotionActivityManager.authorizationStatus()
                 promise(.success(self.convert(updated)))
             }
         }
+        .timeout(.seconds(3), scheduler: RunLoop.main)
+        .replaceError(with: .denied)
         .eraseToAnyPublisher()
     }
     

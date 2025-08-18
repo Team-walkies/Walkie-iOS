@@ -43,13 +43,17 @@ final class AppCoordinator: Coordinator, ObservableObject {
     var eventFlow: EventFlowCoordinator?
     private var cancellables: Set<AnyCancellable> = []
     var selectedTab: TabBarItem = .home
+    let permissionsDone = CurrentValueSubject<Bool, Never>(false)
     
     let screenHeight = UIScreen.main.bounds.height
+    private let remoteConfigManager: RemoteConfigManaging
     
     init(
-        diContainer: DIContainer
+        diContainer: DIContainer,
+        remoteConfigManager: RemoteConfigManaging = RemoteConfigManager.shared
     ) {
         self.diContainer = diContainer
+        self.remoteConfigManager = remoteConfigManager
         initializeCoordinator()
         NotificationCenter.default
             .publisher(for: .reissueFailed)
@@ -393,7 +397,43 @@ extension AppCoordinator {
     }
     
     private func bindPermissionFlow() {
-        permissionFlow?.onDenied = { [weak self] step, locOK, motOK, _, _ in
+        permissionFlow?.onRequest = { [weak self] step, locNotDetermined, motNotDetermined in
+            guard let self = self else { return }
+            switch step {
+            case .locationMotion:
+                let height = locNotDetermined && motNotDetermined ? 342 : 266
+                self.buildBottomSheet(
+                    height: CGFloat(height),
+                    content: {
+                        HomeAuthBSView(
+                            showLocation: locNotDetermined,
+                            showMotion: motNotDetermined,
+                            onConfirm: {
+                                self.permissionFlow?.requestPermission(.locationMotion)
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            case .notification:
+                self.buildBottomSheet(
+                    height: 369,
+                    content: {
+                        HomeAlarmBSView(
+                            onDenied: {
+                                self.permissionFlow?.nextStep()
+                            },
+                            onConfirm: {
+                                self.permissionFlow?.requestPermission(.notification)
+                            }
+                        )
+                    },
+                    disableInteractive: true
+                )
+            }
+        }
+        
+        permissionFlow?.onDenied = { [weak self] step, locOK, motOK in
             guard let self = self else { return }
             switch step {
             case .locationMotion:
@@ -438,6 +478,9 @@ extension AppCoordinator {
                     height: 369,
                     content: {
                         HomeAlarmBSView(
+                            onDenied: {
+                                self.permissionFlow?.nextStep()
+                            },
                             onConfirm: {
                                 self.permissionFlow?.nextStep()
                             }
@@ -448,11 +491,12 @@ extension AppCoordinator {
             }
         }
         
-        permissionFlow?.onAllAuthorized = {
-            print("권한 체크완료")
+        permissionFlow?.onAllAuthorized = { [weak self] in
+            guard let self else { return }
             DispatchQueue.main.async {
                 self.sheet = nil
                 self.startStepUpdates()
+                self.permissionsDone.send(true)
             }
         }
     }
@@ -509,18 +553,22 @@ extension AppCoordinator {
     }
     
     private func showHealthcareInfo() {
-        guard
-            !UserManager.shared.getShowHealthcare
-        else { return }
-        
-        UserManager.shared.setShowHealthcare()
-        
-        buildBottomSheet(
-            height: screenHeight * 0.48 + 290,
-            content: {
-                HomeHealthcareBSView()
-                    .environment(self)
-            }
-        )
+        Task { @MainActor in
+            try await remoteConfigManager.fetchAndActivate()
+            guard
+                !UserManager.shared.getShowHealthcare,
+                remoteConfigManager.boolValue(for: .healthcareGuideVisible)
+            else { return }
+            
+            UserManager.shared.setShowHealthcare()
+            
+            buildBottomSheet(
+                height: screenHeight * 0.48 + 290,
+                content: {
+                    HomeHealthcareBSView()
+                        .environment(self)
+                }
+            )
+        }
     }
 }
