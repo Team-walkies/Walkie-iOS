@@ -74,7 +74,7 @@ final class HealthKitManager {
             sampleType: stepCountType,
             predicate: predicate,
             limit: 1, // 시작 시점부터 최대 1개만 쿼리
-            sortDescriptors: nil,
+            sortDescriptors: nil
         ) { _, samples, _ in
             if samples?.count ?? 0 > 0 { // 1개가 쿼리된 경우
                 completion(.authorized)

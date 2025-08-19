@@ -1,0 +1,14 @@
+//
+//  GetHealthUseCase.swift
+//  Walkie-iOS
+//
+//  Created by 고아라 on 8/19/25.
+//
+
+import Combine
+
+protocol GetHealthUseCase {
+    func getHealth(
+        date: HealthDateDto
+    ) -> AnyPublisher<[String: HealthWeekEntity], NetworkError>
+}

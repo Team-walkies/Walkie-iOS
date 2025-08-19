@@ -21,14 +21,14 @@ final class DefaultHealthService: HealthService {
         self.reissueService = reissueService
     }
     
-    func getHealth(param: HealthDateDto) -> AnyPublisher<HealthDto, any Error> {
+    func getHealth(param: HealthDateDto) -> AnyPublisher<[HealthDto], any Error> {
         healthProvider
             .requestPublisher(
                 .health(param: param),
                 reissueService: reissueService
             )
             .filterSuccessfulStatusCodes()
-            .mapWalkieResponse(HealthDto.self)
+            .mapWalkieResponse([HealthDto].self)
     }
     
     func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, any Error> {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 @Observable
 final class HealthCareCalendarViewModel: ViewModelable {
@@ -25,16 +26,29 @@ final class HealthCareCalendarViewModel: ViewModelable {
         case scrollToPast
         case scrollToFuture
         case willCloseDatePicker
-        case updateStepData([String: (nowStep: Int, targetStep: Int)])
+        case updateStepData([String: HealthWeekEntity])
     }
     
     var state: State
     
     private let calendarUseCase: CalendarUseCase
+    private let getHealthUseCase: GetHealthUseCase
     private let appCoordinator: AppCoordinator
+    private var cancellables = Set<AnyCancellable>()
+    private var dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        dateFormatter.timeZone = TimeZone.current
+        return dateFormatter
+    }()
     
-    init(calendarUseCase: CalendarUseCase, appCoordinator: AppCoordinator) {
+    init(
+        calendarUseCase: CalendarUseCase,
+        getHealthUseCase: GetHealthUseCase,
+        appCoordinator: AppCoordinator
+    ) {
         self.calendarUseCase = calendarUseCase
+        self.getHealthUseCase = getHealthUseCase
         self.appCoordinator = appCoordinator
         
         let today = Date()
@@ -48,6 +62,8 @@ final class HealthCareCalendarViewModel: ViewModelable {
             selectedDate: today,
             scrollPosition: 0
         )
+        
+        requestVisibleWeeks()
     }
     
     func action(_ action: Action) {
@@ -65,7 +81,6 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = date
             self.state.scrollPosition = 0
-            
         case .scrollToPast:
             let newSelected = self.state.selectedDate.adding(days: -7)
             let (past, present, future) = calendarUseCase.generateWeeks(baseDate: newSelected)
@@ -75,7 +90,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = newSelected
             self.state.scrollPosition = 0
-            
+            requestVisibleWeeks()
         case .scrollToFuture:
             let newSelected = self.state.selectedDate.adding(days: 7)
             let (past, present, future) = calendarUseCase.generateWeeks(baseDate: newSelected)
@@ -85,28 +100,70 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = newSelected
             self.state.scrollPosition = 0
-        
+            requestVisibleWeeks()
         case .willCloseDatePicker:
             self.appCoordinator.dismissSheet()
             
         case let .updateStepData(data):
-            self.state.healthCareData = convertStepDataToDateKeys(data)
+            let converted = convertStepDataToDateKeys(data)
+            state.healthCareData.merge(converted, uniquingKeysWith: { _, new in new })
         }
     }
     
-    private func convertStepDataToDateKeys(_ data: [String: (nowStep: Int, targetStep: Int)]) -> [Date: (nowStep: Int, targetStep: Int)] {
+    private func convertStepDataToDateKeys(
+        _ data: [String: HealthWeekEntity]
+    ) -> [Date: (nowStep: Int, targetStep: Int)] {
         var result: [Date: (nowStep: Int, targetStep: Int)] = [:]
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone.current
+        let cal = Calendar(identifier: .gregorian)
         
-        for (dateString, stepData) in data {
-            if let date = dateFormatter.date(from: dateString) {
-                result[date] = stepData
-            }
+        for (dateString, entity) in data {
+            guard let parsed = dateFormatter.date(from: dateString) else { continue }
+            let day = cal.startOfDay(for: parsed)
+            result[day] = (nowStep: entity.nowStep, targetStep: entity.targetStep)
         }
         
         return result
+    }
+    
+    private func requestVisibleWeeks() {
+        let cal = Calendar(identifier: .gregorian)
+        let today = cal.startOfDay(for: Date())
+        
+        var weeks: [[Date]] = [state.pastWeek, state.presentWeek]
+        if state.futureWeek.first?.getDayViewTime() != .future {
+            weeks.append(state.futureWeek)
+        }
+        
+        guard
+            let start = state.presentWeek.first.map({ cal.startOfDay(for: $0) }),
+            let endRaw = state.presentWeek.last.map({ cal.startOfDay(for: $0) })
+        else { return }
+        
+        let end = min(endRaw, today)
+        guard start <= today else { return }
+        
+        let dto = HealthDateDto(
+            startDate: dateFormatter.string(from: start),
+            endDate: dateFormatter.string(from: end)
+        )
+        getHealthWeek(dto: dto)
+    }
+    
+    private func getHealthWeek(dto: HealthDateDto) {
+        getHealthUseCase
+            .getHealth(date: HealthDateDto(
+                startDate: dto.startDate,
+                endDate: dto.endDate)
+            )
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, weekData in
+                    guard let self = self else { return }
+                    dump(weekData)
+                    self.action(.updateStepData(weekData))
+                }
+            )
+            .store(in: &cancellables)
     }
 }
 

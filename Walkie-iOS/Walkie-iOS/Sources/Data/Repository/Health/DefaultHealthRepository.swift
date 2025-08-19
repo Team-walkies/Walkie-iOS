@@ -26,9 +26,18 @@ final class DefaultHealthRepository {
 
 extension DefaultHealthRepository: HealthRepository {
     
-    func getHealth(param: HealthDateDto) -> AnyPublisher<HealthDto, any Error> {
+    func getHealth(param: HealthDateDto) -> AnyPublisher<[String: HealthWeekEntity], any Error> {
         healthService
             .getHealth(param: param)
+            .map { dtos in
+                let dict = dtos.reduce(into: [String: HealthWeekEntity]()) { dic, dto in
+                    dic[dto.responseDate] = HealthWeekEntity(
+                        nowStep: dto.nowSteps,
+                        targetStep: dto.targetSteps
+                    )
+                }
+                return dict
+            }
             .eraseToAnyPublisher()
     }
     

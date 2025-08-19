@@ -58,6 +58,14 @@ extension DIContainer {
         return DefaultPutHealthUseCase(healthRepository: healthRepo)
     }
     
+    func resolveGetHealthUseCase() -> GetHealthUseCase {
+        return DefaultGetHealthUseCase(healthRepository: healthRepo)
+    }
+    
+    func resolveGetHealthContinueDayUseCase() -> GetHealthContinueDayUseCase {
+        return DefaultGetHealthContinueDayUseCase(healthRepository: healthRepo)
+    }
+    
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
         return updateStepForegroundUseCase
     }
@@ -236,7 +244,20 @@ extension DIContainer {
     }
     
     func makeHealthCareViewModel() -> HealthCareViewModel {
-        return HealthCareViewModel(putHealthUseCase: resolvePutHealthUseCase())
+        return HealthCareViewModel(
+            putHealthUseCase: resolvePutHealthUseCase(),
+            getHealthContinueDayUseCase: resolveGetHealthContinueDayUseCase()
+        )
+    }
+    
+    func makeHealthCareCalendarViewModel(
+        appCoordinator: AppCoordinator
+    ) -> HealthCareCalendarViewModel {
+        return HealthCareCalendarViewModel(
+            calendarUseCase: DefaultCalendarUseCase(),
+            getHealthUseCase: resolveGetHealthUseCase(),
+            appCoordinator: appCoordinator
+        )
     }
 }
 
@@ -316,13 +337,9 @@ extension DIContainer {
     }
     
     func buildHealthcareView(appCoordinator: AppCoordinator) -> HealthCareView {
-        let calendarViewModel = HealthCareCalendarViewModel(
-            calendarUseCase: DefaultCalendarUseCase(),
-            appCoordinator: appCoordinator
-        )
         return HealthCareView(
             viewModel: self.makeHealthCareViewModel(),
-            calendarViewModel: calendarViewModel
+            calendarViewModel: self.makeHealthCareCalendarViewModel(appCoordinator: appCoordinator)
         )
     }
     

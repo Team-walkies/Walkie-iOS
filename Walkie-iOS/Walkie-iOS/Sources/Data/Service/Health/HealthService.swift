@@ -8,7 +8,7 @@
 import Combine
 
 protocol HealthService {
-    func getHealth(param: HealthDateDto) -> AnyPublisher<HealthDto, Error>
+    func getHealth(param: HealthDateDto) -> AnyPublisher<[HealthDto], Error>
     func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, Error>
     func getHealthContinueDay() -> AnyPublisher<HealthContinueDaysDto, Error>
     func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, Error>
