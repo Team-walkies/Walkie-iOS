@@ -13,11 +13,14 @@ final class HealthCareViewModel: ViewModelable {
     
     private var cancellables = Set<AnyCancellable>()
     private let putHealthUseCase: PutHealthUseCase
+    private let getHealthContinueDayUseCase: GetHealthContinueDayUseCase
     
     init(
-        putHealthUseCase: PutHealthUseCase
+        putHealthUseCase: PutHealthUseCase,
+        getHealthContinueDayUseCase: GetHealthContinueDayUseCase
     ) {
         self.putHealthUseCase = putHealthUseCase
+        self.getHealthContinueDayUseCase = getHealthContinueDayUseCase
     }
     
     enum Action {
@@ -62,26 +65,40 @@ final class HealthCareViewModel: ViewModelable {
         switch action {
         case .viewWillAppear:
             getHealthkitStep()
-            let st = HealthCareInfoState(
-                continuousDays: 0,
-                targetSteps: .six,
-                nowSteps: 2515,
-                nowDistance: 2.3,
-                nowCalories: 340,
-                isToday: true
-            )
-            state = .loaded(st)
-            let calorieSt = HealthCareCalorieState(
-                caloriesName: "바나나 1개",
-                caloriesDescription: "슬슬 운동한 느낌 나죠?",
-                caloriesUrl: "https://truthguard.site/api/v1/file/BANANA.png"
-            )
-            calorieState = .loaded(calorieSt)
+            getHealthContinueDay()
         }
     }
 }
 
 extension HealthCareViewModel {
+    
+    func getHealthContinueDay() {
+        getHealthContinueDayUseCase
+            .getHealthContinueDay()
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, day in
+                    guard let self = self else { return }
+                    let st = HealthCareInfoState(
+                        continuousDays: day,
+                        targetSteps: TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000) ?? .six,
+                        nowSteps: 2515,
+                        nowDistance: 2.3,
+                        nowCalories: 340,
+                        isToday: true
+                    )
+                    state = .loaded(st)
+                    let calorieSt = HealthCareCalorieState(
+                        caloriesName: "바나나 1개",
+                        caloriesDescription: "슬슬 운동한 느낌 나죠?",
+                        caloriesUrl: "https://truthguard.site/api/v1/file/BANANA.png"
+                    )
+                    calorieState = .loaded(calorieSt)
+                }, receiveFailure: { _, _ in
+                }
+            )
+            .store(in: &cancellables)
+    }
     
     func getHealthkitStep() {
         let cal = Calendar.current
