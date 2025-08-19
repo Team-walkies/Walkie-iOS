@@ -70,10 +70,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         switch action {
             
         case let .selectDate(date):
-            if date.getDayViewTime() == .future {
-                return
-            }
-            
+            if date.getDayViewTime() == .future { return }
             let (past, present, future) = calendarUseCase.generateWeeks(baseDate: date)
             
             self.state.pastWeek = past
@@ -88,7 +85,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.pastWeek = past
             self.state.presentWeek = present
             self.state.futureWeek = future
-            self.state.selectedDate = newSelected
+            self.state.selectedDate = setSelectedDate(newSelected, in: present)
             self.state.scrollPosition = 0
             requestVisibleWeeks()
         case .scrollToFuture:
@@ -98,7 +95,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.pastWeek = past
             self.state.presentWeek = present
             self.state.futureWeek = future
-            self.state.selectedDate = newSelected
+            self.state.selectedDate = setSelectedDate(newSelected, in: present)
             self.state.scrollPosition = 0
             requestVisibleWeeks()
         case .willCloseDatePicker:
@@ -164,6 +161,23 @@ final class HealthCareCalendarViewModel: ViewModelable {
                 }
             )
             .store(in: &cancellables)
+    }
+    
+    private func setSelectedDate(
+        _ candidate: Date,
+        in presentWeek: [Date]
+    ) -> Date {
+        let cal = Calendar(identifier: .gregorian)
+        let today = cal.startOfDay(for: Date())
+        let cand = cal.startOfDay(for: candidate)
+        
+        let presentHasToday = presentWeek.contains { cal.isDate($0, inSameDayAs: today) }
+        guard presentHasToday else { return cand }
+        
+        if cand > today { return today }
+        
+        let candInPresent = presentWeek.contains { cal.isDate($0, inSameDayAs: cand) }
+        return candInPresent ? cand : today
     }
 }
 
