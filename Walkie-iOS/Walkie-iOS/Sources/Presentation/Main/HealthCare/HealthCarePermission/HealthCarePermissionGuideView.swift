@@ -11,7 +11,6 @@ import WalkieCommon
 struct HealthCarePermissionView: View {
     
     @StateObject var viewModel: HealthCarePermissionViewModel
-    @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
         GeometryReader { geometry in
@@ -35,7 +34,7 @@ struct HealthCarePermissionView: View {
                         .foregroundStyle(WalkieCommonAsset.gray500.swiftUIColor)
                         .padding(.bottom, 32)
                     WalkieLottieView(
-                        lottie: .healthCarePermission,
+                        lottie: .healthkit,
                         isPlaying: true,
                         isLoop: true
                     )

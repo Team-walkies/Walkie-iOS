@@ -26,7 +26,12 @@ final class HealthKitManager {
     
     // 걸음 수 읽기 권한 요청
     func requestHealthKitAuthorization(completion: @escaping (PermissionState) -> Void) {
-        guard HKHealthStore.isHealthDataAvailable() else { return }
+        guard HKHealthStore.isHealthDataAvailable() else {
+            /// HealthKit이 해당 기기에서 사용 불가한 경우
+            /// 기업 환경에서 실행되는 기기의 경우 제한이 걸려있을 수 있음
+            completion(.denied)
+            return
+        }
         
         guard
             let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount),
@@ -41,6 +46,8 @@ final class HealthKitManager {
             read: typesToRead
         ) { (_, error) in
             if let error = error {
+                /// 권한 팝업 띄우기 실패한 경우
+                /// 다음에 다시 요청 가능한 상태이므로 .notDemtermined를 반환합니다
                 print("권한 요청 실패: \(error.localizedDescription)")
                 completion(.notDetermined)
                 return
@@ -54,12 +61,6 @@ final class HealthKitManager {
     // 걸음 수 읽기 권한 상태 확인
     func checkReadAuthorizationStatus(completion: @escaping (PermissionState) -> Void) {
         guard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            completion(.denied)
-            return
-        }
-        
-        let status = healthStore.authorizationStatus(for: stepCountType)
-        if status == .notDetermined {
             completion(.notDetermined)
             return
         }
@@ -72,14 +73,10 @@ final class HealthKitManager {
         let query = HKSampleQuery(
             sampleType: stepCountType,
             predicate: predicate,
-            limit: 1,
-            sortDescriptors: nil
-        ) { _, samples, error in
-            if
-                let hkError = error as? HKError,
-                hkError.code == .errorAuthorizationDenied {
-                completion(.denied)
-            } else if samples?.count ?? 0 > 0 {
+            limit: 1, // 시작 시점부터 최대 1개만 쿼리
+            sortDescriptors: nil,
+        ) { _, samples, _ in
+            if samples?.count ?? 0 > 0 { // 1개가 쿼리된 경우
                 completion(.authorized)
             } else {
                 completion(.denied)
