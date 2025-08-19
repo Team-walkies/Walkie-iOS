@@ -348,4 +348,20 @@ extension DIContainer {
             viewModel: viewModel
         )
     }
+    
+    func buildHealthCarePermissionView(coordinator: Coordinator) -> HealthCarePermissionView {
+        return HealthCarePermissionView(
+            viewModel: HealthCarePermissionViewModel(
+                coordinator: coordinator
+            )
+        )
+    }
+    
+    func buildHealthCarePermissionDeniedView(coordinator: Coordinator) -> HealthCarePermissionDeniedView {
+        return HealthCarePermissionDeniedView(
+            viewModel: HealthCarePermissionDeniedViewModel(
+                coordinator: coordinator
+            )
+        )
+    }
 }

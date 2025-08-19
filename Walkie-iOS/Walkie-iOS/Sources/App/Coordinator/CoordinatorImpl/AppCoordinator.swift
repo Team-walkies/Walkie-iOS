@@ -123,6 +123,10 @@ final class AppCoordinator: Coordinator, ObservableObject {
             diContainer.buildWithdrawView(appCoordinator: self, nickname: nickname)
         case let .changeNickname(viewModel):
             diContainer.buildMypageChangeNicknameView(viewModel: viewModel)
+        case .healthcarePermission:
+            diContainer.buildHealthCarePermissionView(coordinator: self)
+        case .healthcarePermissionDenied:
+            diContainer.buildHealthCarePermissionDeniedView(coordinator: self)
         }
     }
     

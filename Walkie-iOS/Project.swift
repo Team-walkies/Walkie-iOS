@@ -50,6 +50,7 @@ let project = Project(
                     "NSLocationWhenInUseUsageDescription": "내 주변 스팟을 탐색하기 위해 현재 위치를 확인합니다.",
                     "NSLocationAlwaysAndWhenInUseUsageDescription": "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.",
                     "NSLocationAlwaysUsageDescription": "스팟을 탐색하기 위해 백그라운드 동작 시의 위치 정보 접근을 허가해 주세요.",
+                    "NSHealthShareUsageDescription": "Walkie는 귀하의 걸음 수 분석 및 시각화를 위해 귀하의 건강 데이터에 접근하고자 합니다.",
                     "BASE_URL": "$(BASE_URL)",
                     "WEB_URL": "$(WEB_URL)",
                     "KAKAO_NATIVE_APP_KEY": "$(KAKAO_NATIVE_APP_KEY)",
@@ -107,6 +108,7 @@ let project = Project(
             ],
             dependencies: [
                 .sdk(name: "WebKit", type: .framework),
+                .sdk(name: "HealthKit", type: .framework),
                 .package(product: "Moya"),
                 .package(product: "CombineMoya"),
                 .package(product: "Alamofire"),
