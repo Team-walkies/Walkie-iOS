@@ -6,7 +6,9 @@
 //
 
 struct HealthDetailDto: Codable {
-    let targetSteps, nowSteps, nowDistance, nowCalories: Int
+    let targetSteps, nowSteps: Int
+    let nowDistance: Double
+    let nowCalories: Int
     let caloriesName, caloriesDescription, caloriesURL: String
     
     enum CodingKeys: String, CodingKey {

@@ -14,17 +14,22 @@ final class HealthCareViewModel: ViewModelable {
     private var cancellables = Set<AnyCancellable>()
     private let putHealthUseCase: PutHealthUseCase
     private let getHealthContinueDayUseCase: GetHealthContinueDayUseCase
+    private let getHealthDetailUseCase: GetHealthDetailUseCase
+    private var continuousDay: Int = 0
     
     init(
         putHealthUseCase: PutHealthUseCase,
-        getHealthContinueDayUseCase: GetHealthContinueDayUseCase
+        getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
+        getHealthDetailUseCase: GetHealthDetailUseCase
     ) {
         self.putHealthUseCase = putHealthUseCase
         self.getHealthContinueDayUseCase = getHealthContinueDayUseCase
+        self.getHealthDetailUseCase = getHealthDetailUseCase
     }
     
     enum Action {
         case viewWillAppear
+        case selectDateChanged(dateString: String)
     }
     
     // states
@@ -66,11 +71,14 @@ final class HealthCareViewModel: ViewModelable {
         case .viewWillAppear:
             getHealthkitStep()
             getHealthContinueDay()
+        case .selectDateChanged(let dateString):
+            getHealthDetail(dateString: dateString)
         }
     }
 }
 
-extension HealthCareViewModel {
+// api
+private extension HealthCareViewModel {
     
     func getHealthContinueDay() {
         getHealthContinueDayUseCase
@@ -79,26 +87,70 @@ extension HealthCareViewModel {
                 with: self,
                 receiveValue: { [weak self] _, day in
                     guard let self = self else { return }
-                    let st = HealthCareInfoState(
-                        continuousDays: day,
-                        targetSteps: TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000) ?? .six,
-                        nowSteps: 2515,
-                        nowDistance: 2.3,
-                        nowCalories: 340,
-                        isToday: true
-                    )
-                    state = .loaded(st)
-                    let calorieSt = HealthCareCalorieState(
-                        caloriesName: "바나나 1개",
-                        caloriesDescription: "슬슬 운동한 느낌 나죠?",
-                        caloriesUrl: "https://truthguard.site/api/v1/file/BANANA.png"
-                    )
-                    calorieState = .loaded(calorieSt)
-                }, receiveFailure: { _, _ in
+                    continuousDay = day
                 }
             )
             .store(in: &cancellables)
     }
+    
+    func getHealthDetail(dateString: String) {
+        let isToday: Bool = (dateString == Date().convertToDateString())
+        
+        getHealthDetailUseCase
+            .getHealthDetail(searchDate: dateString)
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, detail in
+                    guard let self = self else { return }
+                    let st = HealthCareInfoState(
+                        continuousDays: continuousDay,
+                        targetSteps: (
+                            isToday
+                            ? TargetStep(rawValue: detail.targetSteps)
+                            : TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000)
+                        ) ?? .six,
+                        nowSteps: detail.nowSteps,
+                        nowDistance: detail.nowDistance,
+                        nowCalories: detail.nowCalories,
+                        isToday: isToday
+                    )
+                    state = .loaded(st)
+                }
+            )
+            .store(in: &cancellables)
+    }
+    
+    func putHealth(
+        _ steps: [HealthKitManager.DailySteps],
+        index: Int = 0
+    ) {
+        guard index < steps.count else { return }
+        let item = steps[index]
+        let request = HealthRequestDto(
+            targetSteps: UserManager.shared.getTargetStep ?? 6000,
+            nowSteps: item.steps,
+            nowCalories: item.steps / 30,
+            nowDistance: item.distance,
+            nowDay: item.date
+        )
+        
+        putHealthUseCase
+            .putHealth(request: request)
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, _ in
+                    guard let self = self else { return }
+                    if let next = self.nextDay(fromDayString: item.date) {
+                        UserManager.shared.setHealthkitSendDate(next)
+                    }
+                    self.putHealth(steps, index: index + 1)
+                }
+            )
+            .store(in: &cancellables)
+    }
+}
+
+private extension HealthCareViewModel {
     
     func getHealthkitStep() {
         let cal = Calendar.current
@@ -128,38 +180,7 @@ extension HealthCareViewModel {
         }
     }
     
-    private func putHealth(
-        _ steps: [HealthKitManager.DailySteps],
-        index: Int = 0
-    ) {
-        guard index < steps.count else { return }
-        let item = steps[index]
-        let request = HealthRequestDto(
-            targetSteps: UserManager.shared.getTargetStep ?? 6000,
-            nowSteps: item.steps,
-            nowCalories: item.steps / 30,
-            nowDistance: item.distance,
-            nowDay: item.date
-        )
-        
-        putHealthUseCase
-            .putHealth(request: request)
-            .walkieSink(
-                with: self,
-                receiveValue: { [weak self] _, _ in
-                    guard let self = self else { return }
-                    if let next = self.nextDay(fromDayString: item.date) {
-                        UserManager.shared.setHealthkitSendDate(next)
-                    }
-                    self.putHealth(steps, index: index + 1)
-                }, receiveFailure: { _, error in
-                    print(error?.description)
-                }
-            )
-            .store(in: &cancellables)
-    }
-    
-    private func nextDay(fromDayString day: String) -> Date? {
+    func nextDay(fromDayString day: String) -> Date? {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
         

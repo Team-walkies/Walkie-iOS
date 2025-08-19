@@ -41,9 +41,17 @@ extension DefaultHealthRepository: HealthRepository {
             .eraseToAnyPublisher()
     }
     
-    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, any Error> {
+    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailEntity, any Error> {
         healthService
             .getHealthDetail(searchDate: searchDate)
+            .map { dto in
+                return HealthDetailEntity(
+                    targetSteps: dto.targetSteps,
+                    nowSteps: dto.nowSteps,
+                    nowCalories: dto.nowCalories,
+                    nowDistance: dto.nowDistance
+                )
+            }
             .eraseToAnyPublisher()
     }
     

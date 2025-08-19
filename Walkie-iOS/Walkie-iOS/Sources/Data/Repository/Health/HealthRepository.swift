@@ -9,7 +9,7 @@ import Combine
 
 protocol HealthRepository {
     func getHealth(param: HealthDateDto) -> AnyPublisher<[String: HealthWeekEntity], Error>
-    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, Error>
+    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailEntity, Error>
     func getHealthContinueDay() -> AnyPublisher<Int, Error>
     func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, Error>
 }

@@ -60,6 +60,9 @@ struct HealthCareView: View {
                 calendarViewModel.selectDate(Date())
                 viewModel.action(.viewWillAppear)
             }
+            .onChange(of: calendarViewModel.state.selectedDate) { _, selectDate in
+                viewModel.action(.selectDateChanged(dateString: selectDate.convertToDateString()))
+            }
         }
         .scrollIndicators(.never)
     }

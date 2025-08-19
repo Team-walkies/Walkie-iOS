@@ -62,6 +62,10 @@ extension DIContainer {
         return DefaultGetHealthUseCase(healthRepository: healthRepo)
     }
     
+    func resolveGetHealthDetailUseCase() -> GetHealthDetailUseCase {
+        return DefaultGetHealthDetailUseCase(healthRepository: healthRepo)
+    }
+    
     func resolveGetHealthContinueDayUseCase() -> GetHealthContinueDayUseCase {
         return DefaultGetHealthContinueDayUseCase(healthRepository: healthRepo)
     }
@@ -246,7 +250,8 @@ extension DIContainer {
     func makeHealthCareViewModel() -> HealthCareViewModel {
         return HealthCareViewModel(
             putHealthUseCase: resolvePutHealthUseCase(),
-            getHealthContinueDayUseCase: resolveGetHealthContinueDayUseCase()
+            getHealthContinueDayUseCase: resolveGetHealthContinueDayUseCase(),
+            getHealthDetailUseCase: resolveGetHealthDetailUseCase()
         )
     }
     
