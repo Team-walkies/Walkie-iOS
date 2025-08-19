@@ -46,7 +46,7 @@ final class HealthCareViewModel: ViewModelable {
     struct HealthCareCalorieState {
         let caloriesName: String
         let caloriesDescription: String
-        let caloriesUrl: String
+        let caloriesImg: Image
     }
     
     // view states
@@ -115,6 +115,14 @@ private extension HealthCareViewModel {
                         isToday: isToday
                     )
                     state = .loaded(st)
+                    
+                    let calorieType = HealthCareCalorie.from(steps: detail.nowSteps)
+                    let calorieSt = HealthCareCalorieState(
+                        caloriesName: calorieType.calorieName,
+                        caloriesDescription: calorieType.calorieDescription,
+                        caloriesImg: calorieType.calorieImage
+                    )
+                    calorieState = .loaded(calorieSt)
                 }
             )
             .store(in: &cancellables)

@@ -42,7 +42,7 @@ struct HealthCareView: View {
                     HealthCareCalorieView(
                         caloriesName: calorieState.caloriesName,
                         caloriesDescription: calorieState.caloriesDescription,
-                        caloriesUrl: calorieState.caloriesUrl
+                        caloriesImg: calorieState.caloriesImg
                     )
                     .padding(.horizontal, 16)
                     .padding(.bottom, 50)

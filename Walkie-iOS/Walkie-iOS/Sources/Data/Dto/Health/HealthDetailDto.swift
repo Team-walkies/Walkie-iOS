@@ -9,10 +9,8 @@ struct HealthDetailDto: Codable {
     let targetSteps, nowSteps: Int
     let nowDistance: Double
     let nowCalories: Int
-    let caloriesName, caloriesDescription, caloriesURL: String
     
     enum CodingKeys: String, CodingKey {
-        case targetSteps, nowSteps, nowDistance, nowCalories, caloriesName, caloriesDescription
-        case caloriesURL = "caloriesUrl"
+        case targetSteps, nowSteps, nowDistance, nowCalories
     }
 }
