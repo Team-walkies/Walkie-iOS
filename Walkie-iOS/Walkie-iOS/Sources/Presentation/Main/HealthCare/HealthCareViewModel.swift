@@ -106,8 +106,8 @@ private extension HealthCareViewModel {
                         continuousDays: continuousDay,
                         targetSteps: (
                             isToday
-                            ? TargetStep(rawValue: detail.targetSteps)
-                            : TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000)
+                            ? TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000)
+                            : TargetStep(rawValue: detail.targetSteps)
                         ) ?? .six,
                         nowSteps: detail.nowSteps,
                         nowDistance: detail.nowDistance,

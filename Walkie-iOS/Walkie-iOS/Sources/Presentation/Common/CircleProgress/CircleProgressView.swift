@@ -11,14 +11,20 @@ import WalkieCommon
 struct CircleProgressView: View {
     
     var type: CircleProgressType
-    @State var targetStep: TargetStep
+    var targetStep: TargetStep
     var nowStep: Int
     var isToday: Bool = false
     
+    @State private var todayTargetStep: TargetStep?
     @EnvironmentObject var appCoordinator: AppCoordinator
     
+    private var effectTarget: TargetStep {
+        isToday ? (todayTargetStep ?? targetStep) : targetStep
+    }
+    
     private var progress: Double {
-        return min(Double(nowStep) / Double(targetStep.rawValue), 1.0)
+        guard effectTarget.rawValue > 0 else { return 0 }
+        return min(Double(nowStep) / Double(effectTarget.rawValue), 1.0)
     }
     
     var body: some View {
@@ -67,7 +73,7 @@ struct CircleProgressView: View {
                         HStack(
                             spacing: 0
                         ) {
-                            Text(targetStep.title)
+                            Text(effectTarget.title)
                                 .font(.B1)
                                 .foregroundColor(WalkieCommonAsset.gray400.swiftUIColor)
                             
@@ -82,13 +88,13 @@ struct CircleProgressView: View {
                         }
                     }
                     .onTapGesture {
-                        if isToday {
-                            appCoordinator.buildBottomSheet(
-                                height: 396,
-                                content: {
-                                    TargetStepBSView(targetStep: $targetStep)
-                                }
-                            )
+                        guard isToday else { return }
+                        let current = todayTargetStep ?? targetStep
+                        appCoordinator.buildBottomSheet(height: 396) {
+                            TargetStepBSView(targetStep: current) { newStep in
+                                todayTargetStep = newStep
+                                UserManager.shared.setTargetStep(newStep.rawValue)
+                            }
                         }
                     }
                     
@@ -99,5 +105,8 @@ struct CircleProgressView: View {
             }
         }
         .frame(width: type.size, height: type.size)
+        .onChange(of: targetStep) { _, _ in
+            if !isToday { todayTargetStep = nil }
+        }
     }
 }

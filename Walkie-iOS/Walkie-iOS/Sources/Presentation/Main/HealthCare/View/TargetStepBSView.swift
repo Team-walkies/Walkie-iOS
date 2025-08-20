@@ -23,13 +23,18 @@ enum TargetStep: Int, Identifiable, CaseIterable {
 
 struct TargetStepBSView: View {
     
-    @Binding var targetStep: TargetStep
-    @State private var initialStep: TargetStep
+    let changeTarget: (TargetStep) -> Void
+    let initialStep: TargetStep
+    @State private var selectedStep: TargetStep
     @Environment(\.dismiss) private var dismiss
     
-    init(targetStep: Binding<TargetStep>) {
-        self._targetStep = targetStep
-        self._initialStep = State(initialValue: targetStep.wrappedValue)
+    init(
+        targetStep: TargetStep,
+        changeTarget: @escaping (TargetStep) -> Void
+    ) {
+        self.initialStep = targetStep
+        _selectedStep = State(initialValue: targetStep)
+        self.changeTarget = changeTarget
     }
     
     var body: some View {
@@ -47,10 +52,10 @@ struct TargetStepBSView: View {
             ) {
                 ForEach(TargetStep.allCases) { goal in
                     Button {
-                        targetStep = goal
+                        selectedStep = goal
                     } label: {
                         HStack {
-                            let textColor = targetStep == goal
+                            let textColor = selectedStep == goal
                             ? WalkieCommonAsset.blue400.swiftUIColor
                             : WalkieCommonAsset.gray700.swiftUIColor
                             
@@ -60,7 +65,7 @@ struct TargetStepBSView: View {
                             
                             Spacer()
                             
-                            let btnImage: ImageResource = targetStep == goal
+                            let btnImage: ImageResource = selectedStep == goal
                             ? .btnRadioSelected
                             : .btnRadioUnselected
                             
@@ -84,9 +89,9 @@ struct TargetStepBSView: View {
                 title: "변경하기",
                 style: .primary,
                 size: .large,
-                isEnabled: targetStep != initialStep,
+                isEnabled: initialStep != selectedStep,
                 buttonAction: {
-                    UserManager.shared.setTargetStep(targetStep.rawValue)
+                    changeTarget(selectedStep)
                     dismiss()
                 }
             )
