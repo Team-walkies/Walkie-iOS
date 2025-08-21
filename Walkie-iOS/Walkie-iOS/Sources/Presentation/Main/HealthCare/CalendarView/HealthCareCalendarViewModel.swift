@@ -35,12 +35,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
     private let getHealthUseCase: GetHealthUseCase
     private let appCoordinator: AppCoordinator
     private var cancellables = Set<AnyCancellable>()
-    private var dateFormatter: DateFormatter = {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        dateFormatter.timeZone = TimeZone.current
-        return dateFormatter
-    }()
+    private let ymdKST: DateFormatter = Date.kstYMDFormatter()
     
     init(
         calendarUseCase: CalendarUseCase,
@@ -111,11 +106,10 @@ final class HealthCareCalendarViewModel: ViewModelable {
         _ data: [String: HealthWeekEntity]
     ) -> [Date: (nowStep: Int, targetStep: Int)] {
         var result: [Date: (nowStep: Int, targetStep: Int)] = [:]
-        let cal = Calendar(identifier: .gregorian)
         
         for (dateString, entity) in data {
-            guard let parsed = dateFormatter.date(from: dateString) else { continue }
-            let day = cal.startOfDay(for: parsed)
+            guard let parsed = Date.fromYMDKST(dateString) else { continue }
+            let day = parsed.kstStartOfDay
             result[day] = (nowStep: entity.nowStep, targetStep: entity.targetStep)
         }
         
@@ -123,25 +117,29 @@ final class HealthCareCalendarViewModel: ViewModelable {
     }
     
     private func requestVisibleWeeks() {
-        let cal = Calendar(identifier: .gregorian)
-        let today = cal.startOfDay(for: Date())
+        let today = Date().kstStartOfDay
+        let yesterday = today.addingKST(days: -1)
         
         var weeks: [[Date]] = [state.pastWeek, state.presentWeek]
         if state.futureWeek.first?.getDayViewTime() != .future {
             weeks.append(state.futureWeek)
         }
         
+        if state.presentWeek.contains(where: { $0.kstStartOfDay == today }) {
+            addTodayStep()
+        }
+        
         guard
-            let start = state.presentWeek.first.map({ cal.startOfDay(for: $0) }),
-            let endRaw = state.presentWeek.last.map({ cal.startOfDay(for: $0) })
+            let start = state.presentWeek.first?.kstStartOfDay,
+            let endRaw = state.presentWeek.last?.kstStartOfDay
         else { return }
         
-        let end = min(endRaw, today)
+        let end = min(endRaw, yesterday)
         guard start <= today else { return }
         
         let dto = HealthDateDto(
-            startDate: dateFormatter.string(from: start),
-            endDate: dateFormatter.string(from: end)
+            startDate: ymdKST.string(from: start),
+            endDate: ymdKST.string(from: end)
         )
         getHealthWeek(dto: dto)
     }

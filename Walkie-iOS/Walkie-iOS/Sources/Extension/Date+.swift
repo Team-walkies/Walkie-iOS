@@ -99,4 +99,52 @@ extension Date {
         dateFormatter.dateFormat = "yyyy-MM-dd"
         return dateFormatter.string(from: self)
     }
+    
+    // kst
+    static var kstTimeZone: TimeZone {
+        TimeZone(identifier: "Asia/Seoul")!
+    }
+    
+    static var kstCalendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = kstTimeZone
+        return cal
+    }
+    
+    static func kstYMDFormatter() -> DateFormatter {
+        let f = DateFormatter()
+        f.calendar = kstCalendar
+        f.timeZone = kstTimeZone
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }
+    
+    var kstStartOfDay: Date {
+        Date.kstCalendar.startOfDay(for: self)
+    }
+    
+    /// "yyyy-MM-dd"
+    var ymdKST: String {
+        Date.kstYMDFormatter().string(from: self)
+    }
+    
+    /// 오늘인지
+    var isTodayKST: Bool {
+        Date.kstCalendar.isDateInToday(self)
+    }
+    
+    /// 같은 날인지
+    func isSameDayKST(with other: Date) -> Bool {
+        Date.kstCalendar.isDate(self, inSameDayAs: other)
+    }
+    
+    /// 날짜 이동
+    func addingKST(days: Int) -> Date {
+        Date.kstCalendar.date(byAdding: .day, value: days, to: self) ?? self
+    }
+    
+    /// "yyyy-MM-dd" -> Date
+    static func fromYMDKST(_ string: String) -> Date? {
+        Date.kstYMDFormatter().date(from: string)
+    }
 }

@@ -17,25 +17,6 @@ final class HealthCareViewModel: ViewModelable {
     private let getHealthDetailUseCase: GetHealthDetailUseCase
     private var continuousDay: Int = 0
     
-    // Calendar
-    private var kstCalendar: Calendar {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
-        return cal
-    }
-    
-    private func kstFormatter() -> DateFormatter {
-        let f = DateFormatter()
-        f.calendar = kstCalendar
-        f.timeZone = kstCalendar.timeZone
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }
-    
-    private func kstStartOfDay(_ date: Date) -> Date {
-        kstCalendar.startOfDay(for: date)
-    }
-    
     init(
         putHealthUseCase: PutHealthUseCase,
         getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
@@ -138,8 +119,7 @@ private extension HealthCareViewModel {
     private func detailPublisher(
         for dateString: String
     ) -> AnyPublisher<DetailSnapshot, Error> {
-        let todayStringKST = kstFormatter().string(from: Date())
-        let isToday = (dateString == todayStringKST)
+        let isToday = (dateString == Date().ymdKST)
         
         if isToday {
             return Future<DetailSnapshot, Error> { promise in
@@ -209,17 +189,16 @@ private extension HealthCareViewModel {
 private extension HealthCareViewModel {
     
     func getHealthkitStep() {
-        let cal = kstCalendar
         let startInclusive: Date = {
             if let saved = UserManager.shared.getHealthkitSendDate {
-                return cal.startOfDay(for: saved)
+                return saved.kstStartOfDay
             } else {
-                var comp = cal.dateComponents([.year], from: Date())
+                var comp = Date.kstCalendar.dateComponents([.year], from: Date())
                 comp.month = 8; comp.day = 1
-                return cal.startOfDay(for: cal.date(from: comp) ?? Date())
+                return (Date.kstCalendar.date(from: comp) ?? Date()).kstStartOfDay
             }
         }()
-        let endExclusive = cal.startOfDay(for: Date())
+        let endExclusive = Date().kstStartOfDay
         
         guard startInclusive < endExclusive else { return }
         
@@ -237,9 +216,8 @@ private extension HealthCareViewModel {
     }
     
     func nextDay(fromDayString day: String) -> Date? {
-        let f = kstFormatter()
-        guard let date = f.date(from: day) else { return nil }
-        return kstCalendar.date(byAdding: .day, value: 1, to: kstStartOfDay(date))
+        guard let date = Date.fromYMDKST(day) else { return nil }
+        return Date.kstCalendar.date(byAdding: .day, value: 1, to: date.kstStartOfDay)
     }
     
     func applyHealthUpdate(
