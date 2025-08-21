@@ -161,20 +161,39 @@ final class HealthCareCalendarViewModel: ViewModelable {
             .store(in: &cancellables)
     }
     
+    private func addTodayStep() {
+        let today = Date().kstStartOfDay
+        let presentHasToday = state.presentWeek.contains { $0.kstStartOfDay == today }
+        
+        guard presentHasToday else { return }
+        
+        HealthKitManager.shared.getTodaySteps { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let todayData):
+                self.state.healthCareData[today] = (
+                    nowStep: todayData.steps,
+                    targetStep: UserManager.shared.getTargetStep ?? 6000
+                )
+            case .failure:
+                break
+            }
+        }
+    }
+    
     private func setSelectedDate(
         _ candidate: Date,
         in presentWeek: [Date]
     ) -> Date {
-        let cal = Calendar(identifier: .gregorian)
-        let today = cal.startOfDay(for: Date())
-        let cand = cal.startOfDay(for: candidate)
+        let today = Date().kstStartOfDay
+        let cand = candidate.kstStartOfDay
         
-        let presentHasToday = presentWeek.contains { cal.isDate($0, inSameDayAs: today) }
+        let presentHasToday = presentWeek.contains { $0.kstStartOfDay == today }
         guard presentHasToday else { return cand }
         
         if cand > today { return today }
         
-        let candInPresent = presentWeek.contains { cal.isDate($0, inSameDayAs: cand) }
+        let candInPresent = presentWeek.contains { $0.kstStartOfDay == cand }
         return candInPresent ? cand : today
     }
 }

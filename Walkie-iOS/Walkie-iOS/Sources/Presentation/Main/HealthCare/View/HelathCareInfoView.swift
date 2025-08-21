@@ -13,6 +13,15 @@ struct HealthCareInfoView: View {
     let infoState: HealthCareViewModel.HealthCareInfoState
     @EnvironmentObject var appCoordinator: AppCoordinator
     @Environment(\.screenWidth) var screenWidth
+    @AppStorage(DefaultsKey.targetStep) private var targetStepStore = 6000
+    
+    var targetStep: TargetStep {
+        if infoState.isToday {
+            return TargetStep(rawValue: targetStepStore) ?? .six
+        } else {
+            return infoState.targetSteps
+        }
+    }
     
     var body: some View {
         ZStack(
@@ -64,7 +73,7 @@ struct HealthCareInfoView: View {
                 
                 CircleProgressView(
                     type: .inMain,
-                    targetStep: infoState.targetSteps,
+                    targetStep: self.targetStep,
                     nowStep: infoState.nowSteps,
                     isToday: infoState.isToday
                 )

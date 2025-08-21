@@ -91,10 +91,7 @@ struct CircleProgressView: View {
                         guard isToday else { return }
                         let current = todayTargetStep ?? targetStep
                         appCoordinator.buildBottomSheet(height: 396) {
-                            TargetStepBSView(targetStep: current) { newStep in
-                                todayTargetStep = newStep
-                                UserManager.shared.setTargetStep(newStep.rawValue)
-                            }
+                            TargetStepBSView()
                         }
                     }
                     

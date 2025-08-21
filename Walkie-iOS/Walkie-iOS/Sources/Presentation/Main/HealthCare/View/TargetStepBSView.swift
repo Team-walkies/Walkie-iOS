@@ -23,19 +23,11 @@ enum TargetStep: Int, Identifiable, CaseIterable {
 
 struct TargetStepBSView: View {
     
-    let changeTarget: (TargetStep) -> Void
-    let initialStep: TargetStep
-    @State private var selectedStep: TargetStep
+    @State private var selectedStep: TargetStep = TargetStep(
+        rawValue: UserManager.shared.getTargetStep ?? 6000
+    ) ?? .six
     @Environment(\.dismiss) private var dismiss
-    
-    init(
-        targetStep: TargetStep,
-        changeTarget: @escaping (TargetStep) -> Void
-    ) {
-        self.initialStep = targetStep
-        _selectedStep = State(initialValue: targetStep)
-        self.changeTarget = changeTarget
-    }
+    @AppStorage(DefaultsKey.targetStep) private var targetStep = 6000
     
     var body: some View {
         VStack(
@@ -89,9 +81,9 @@ struct TargetStepBSView: View {
                 title: "변경하기",
                 style: .primary,
                 size: .large,
-                isEnabled: initialStep != selectedStep,
+                isEnabled: selectedStep.rawValue != targetStep,
                 buttonAction: {
-                    changeTarget(selectedStep)
+                    UserManager.shared.setTargetStep(selectedStep.rawValue)
                     dismiss()
                 }
             )
