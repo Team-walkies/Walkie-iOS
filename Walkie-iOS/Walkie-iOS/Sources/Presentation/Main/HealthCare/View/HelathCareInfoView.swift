@@ -18,10 +18,11 @@ struct HealthCareInfoView: View {
         ZStack(
             alignment: .topTrailing
         ) {
+            let isConsecutiveToday = infoState.continuousDays > 0 && infoState.isToday
             VStack(
                 spacing: 12
             ) {
-                if infoState.continuousDays > 0 && infoState.isToday {
+                if isConsecutiveToday {
                     VStack(
                         spacing: 7
                     ) {
@@ -58,7 +59,7 @@ struct HealthCareInfoView: View {
                     .font(.H5)
                     .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     .alignTo(.leading)
-                    .padding(.top, infoState.continuousDays > 0 ? 0 : 12)
+                    .padding(.top, isConsecutiveToday ? 0 : 12)
                     .padding(.leading, 16)
                 
                 CircleProgressView(
@@ -141,7 +142,7 @@ struct HealthCareInfoView: View {
                         .font(.C1)
                         .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
                 }
-                .padding(.top, infoState.continuousDays > 0 ? 52 : 16)
+                .padding(.top, isConsecutiveToday ? 52 : 16)
                 .padding(.trailing, 16)
             }
         }

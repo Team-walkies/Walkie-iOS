@@ -17,6 +17,25 @@ final class HealthCareViewModel: ViewModelable {
     private let getHealthDetailUseCase: GetHealthDetailUseCase
     private var continuousDay: Int = 0
     
+    // Calendar
+    private var kstCalendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+        return cal
+    }
+    
+    private func kstFormatter() -> DateFormatter {
+        let f = DateFormatter()
+        f.calendar = kstCalendar
+        f.timeZone = kstCalendar.timeZone
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }
+    
+    private func kstStartOfDay(_ date: Date) -> Date {
+        kstCalendar.startOfDay(for: date)
+    }
+    
     init(
         putHealthUseCase: PutHealthUseCase,
         getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
@@ -49,6 +68,14 @@ final class HealthCareViewModel: ViewModelable {
         let caloriesImg: Image
     }
     
+    private struct DetailSnapshot {
+        let steps: Int
+        let distance: Double
+        let calories: Int?
+        let isToday: Bool
+        let serverTarget: Int?
+    }
+    
     // view states
     
     enum HealthCareInfoViewState {
@@ -70,9 +97,8 @@ final class HealthCareViewModel: ViewModelable {
         switch action {
         case .viewWillAppear:
             getHealthkitStep()
-            getHealthContinueDay()
         case .selectDateChanged(let dateString):
-            getHealthDetail(dateString: dateString)
+            load(dateString: dateString)
         }
     }
 }
@@ -80,52 +106,74 @@ final class HealthCareViewModel: ViewModelable {
 // api
 private extension HealthCareViewModel {
     
-    func getHealthContinueDay() {
-        getHealthContinueDayUseCase
-            .getHealthContinueDay()
+    func load(dateString: String) {
+        continuousDayPublisher()
+            .zip(detailPublisher(for: dateString))
+            .receive(on: DispatchQueue.main)
             .walkieSink(
                 with: self,
-                receiveValue: { [weak self] _, day in
-                    guard let self = self else { return }
-                    continuousDay = day
+                receiveValue: { [weak self] _, zipped in
+                    guard let self else { return }
+                    let (day, detail) = zipped
+                    self.continuousDay = day
+                    self.applyHealthUpdate(
+                        steps: detail.steps,
+                        distance: detail.distance,
+                        calories: detail.calories,
+                        isToday: detail.isToday,
+                        serverTarget: detail.serverTarget
+                    )
                 }
             )
             .store(in: &cancellables)
     }
     
-    func getHealthDetail(dateString: String) {
-        let isToday: Bool = (dateString == Date().convertToDateString())
+    func continuousDayPublisher() -> AnyPublisher<Int, Error> {
+        getHealthContinueDayUseCase
+            .getHealthContinueDay()
+            .mapError { $0 as Error }
+            .eraseToAnyPublisher()
+    }
+    
+    private func detailPublisher(
+        for dateString: String
+    ) -> AnyPublisher<DetailSnapshot, Error> {
+        let todayStringKST = kstFormatter().string(from: Date())
+        let isToday = (dateString == todayStringKST)
         
-        getHealthDetailUseCase
-            .getHealthDetail(searchDate: dateString)
-            .walkieSink(
-                with: self,
-                receiveValue: { [weak self] _, detail in
-                    guard let self = self else { return }
-                    let st = HealthCareInfoState(
-                        continuousDays: continuousDay,
-                        targetSteps: (
-                            isToday
-                            ? TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000)
-                            : TargetStep(rawValue: detail.targetSteps)
-                        ) ?? .six,
-                        nowSteps: detail.nowSteps,
-                        nowDistance: detail.nowDistance,
-                        nowCalories: detail.nowCalories,
-                        isToday: isToday
-                    )
-                    state = .loaded(st)
-                    
-                    let calorieType = HealthCareCalorie.from(steps: detail.nowSteps)
-                    let calorieSt = HealthCareCalorieState(
-                        caloriesName: calorieType.calorieName,
-                        caloriesDescription: calorieType.calorieDescription,
-                        caloriesImg: calorieType.calorieImage
-                    )
-                    calorieState = .loaded(calorieSt)
+        if isToday {
+            return Future<DetailSnapshot, Error> { promise in
+                HealthKitManager.shared.getTodaySteps { result in
+                    switch result {
+                    case .success(let today):
+                        promise(.success(.init(
+                            steps: today.steps,
+                            distance: today.distance,
+                            calories: nil,
+                            isToday: true,
+                            serverTarget: nil
+                        )))
+                    case .failure(let e):
+                        promise(.failure(e))
+                    }
                 }
-            )
-            .store(in: &cancellables)
+            }
+            .eraseToAnyPublisher()
+        } else {
+            return getHealthDetailUseCase
+                .getHealthDetail(searchDate: dateString)
+                .map { detail in
+                    DetailSnapshot(
+                        steps: detail.nowSteps,
+                        distance: detail.nowDistance,
+                        calories: detail.nowCalories,
+                        isToday: false,
+                        serverTarget: detail.targetSteps
+                    )
+                }
+                .mapError { $0 as Error }
+                .eraseToAnyPublisher()
+        }
     }
     
     func putHealth(
@@ -161,7 +209,7 @@ private extension HealthCareViewModel {
 private extension HealthCareViewModel {
     
     func getHealthkitStep() {
-        let cal = Calendar.current
+        let cal = kstCalendar
         let startInclusive: Date = {
             if let saved = UserManager.shared.getHealthkitSendDate {
                 return cal.startOfDay(for: saved)
@@ -189,15 +237,48 @@ private extension HealthCareViewModel {
     }
     
     func nextDay(fromDayString day: String) -> Date? {
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
-        
-        let f = DateFormatter()
-        f.calendar = cal
-        f.timeZone = cal.timeZone
-        f.dateFormat = "yyyy-MM-dd"
-        
+        let f = kstFormatter()
         guard let date = f.date(from: day) else { return nil }
-        return cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: date))
+        return kstCalendar.date(byAdding: .day, value: 1, to: kstStartOfDay(date))
+    }
+    
+    func applyHealthUpdate(
+        steps: Int,
+        distance: Double,
+        calories: Int?,
+        isToday: Bool,
+        serverTarget: Int?
+    ) {
+        let target: TargetStep = resolveTargetStep(isToday: isToday, serverTarget: serverTarget)
+        let displayContinuousDay = (isToday && steps >= target.rawValue)
+        ? (self.continuousDay + 1)
+        : self.continuousDay
+        
+        let info = HealthCareInfoState(
+            continuousDays: displayContinuousDay,
+            targetSteps: target,
+            nowSteps: steps,
+            nowDistance: distance,
+            nowCalories: calories ?? steps / 30,
+            isToday: isToday
+        )
+        self.state = .loaded(info)
+        
+        let calType = HealthCareCalorie.from(steps: steps)
+        self.calorieState = .loaded(
+            HealthCareCalorieState(
+                caloriesName: calType.calorieName,
+                caloriesDescription: calType.calorieDescription,
+                caloriesImg: calType.calorieImage
+            )
+        )
+    }
+    
+    func resolveTargetStep(isToday: Bool, serverTarget: Int?) -> TargetStep {
+        if isToday {
+            return TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000) ?? .six
+        } else {
+            return TargetStep(rawValue: serverTarget ?? 6000) ?? .six
+        }
     }
 }

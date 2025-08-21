@@ -37,7 +37,7 @@ struct Modal: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 4)
                 .multilineTextAlignment(.center)
-            if let highlightedContent, highlightedColor != nil{
+            if let highlightedContent, highlightedColor != nil {
                 Text(highlightedContent)
                     .font(.B2)
                     .foregroundColor(highlightedColor)

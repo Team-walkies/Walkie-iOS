@@ -60,29 +60,55 @@ final class HealthKitManager {
     
     // 걸음 수 읽기 권한 상태 확인
     func checkReadAuthorizationStatus(completion: @escaping (PermissionState) -> Void) {
-        guard let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+        guard
+            let step = HKObjectType.quantityType(forIdentifier: .stepCount),
+            let dist = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
+        else {
             completion(.notDetermined)
             return
         }
         
-        // 읽기 권한 확인을 위해 간단한 쿼리 실행
-        let predicate = HKQuery.predicateForSamples(
-            withStart: Date().addingTimeInterval(-86400*7),
-            end: Date()
-        )
-        let query = HKSampleQuery(
-            sampleType: stepCountType,
-            predicate: predicate,
-            limit: 1, // 시작 시점부터 최대 1개만 쿼리
-            sortDescriptors: nil
-        ) { _, samples, _ in
-            if samples?.count ?? 0 > 0 { // 1개가 쿼리된 경우
-                completion(.authorized)
-            } else {
-                completion(.denied)
+        healthStore.getRequestStatusForAuthorization(
+            toShare: [],
+            read: [step, dist]
+        ) { status, error in
+            DispatchQueue.main.async {
+                if error != nil { completion(.notDetermined); return }
+                
+                switch status {
+                case .shouldRequest:
+                    completion(.notDetermined)   // 아직 권한 안 물어봄
+                case .unnecessary:
+                    self.probeReadAuthorization { granted in
+                        completion(granted ? .authorized : .denied)
+                    }
+                case .unknown:
+                    completion(.notDetermined)
+                @unknown default:
+                    completion(.notDetermined)
+                }
             }
         }
-        healthStore.execute(query)
+    }
+    
+    private func probeReadAuthorization(_ done: @escaping (Bool) -> Void) {
+        guard let step = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            done(false); return
+        }
+        let from = Date().addingTimeInterval(-3600)
+        let pred = HKQuery.predicateForSamples(withStart: from, end: Date())
+        let q = HKStatisticsQuery(
+            quantityType: step,
+            quantitySamplePredicate: pred,
+            options: .cumulativeSum
+        ) { _, _, error in
+            if let hkErr = error as? HKError, hkErr.code == .errorAuthorizationDenied {
+                done(false)
+            } else {
+                done(true)
+            }
+        }
+        healthStore.execute(q)
     }
     
     func getDailySteps(
@@ -195,6 +221,64 @@ final class HealthKitManager {
             
             result.sort { $0.date < $1.date }
             completion(.success(result))
+        }
+    }
+    
+    func getTodaySteps(
+        completion: @escaping (Result<DailySteps, Error>) -> Void
+    ) {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            completion(.failure(HealthkitError.healthDataUnavailable)); return
+        }
+        guard
+            let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount),
+            let distanceType = HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning)
+        else { completion(.failure(HealthkitError.typeUnavailable)); return }
+        
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "Asia/Seoul") ?? .current
+        
+        let start = cal.startOfDay(for: Date())
+        let end = Date()
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+        
+        let group = DispatchGroup()
+        var steps: Double = 0
+        var meters: Double = 0
+        var firstError: Error?
+        
+        func sum(_ qt: HKQuantityType, unit: HKUnit, storeTo: @escaping (Double) -> Void) {
+            let q = HKStatisticsQuery(
+                quantityType: qt,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, stats, error in
+                if let error = error { firstError = error }
+                let v = stats?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                storeTo(v)
+                group.leave()
+            }
+            group.enter(); healthStore.execute(q)
+        }
+        
+        sum(stepType, unit: .count()) { steps = $0 }
+        sum(distanceType, unit: .meter()) { meters = $0 }
+        
+        let dayFormatter: DateFormatter = {
+            let f = DateFormatter()
+            f.calendar = cal
+            f.timeZone = cal.timeZone
+            f.dateFormat = "yyyy-MM-dd"
+            return f
+        }()
+        
+        group.notify(queue: .main) {
+            if let e = firstError { completion(.failure(e)); return }
+            completion(.success(DailySteps(
+                date: dayFormatter.string(from: start),
+                steps: Int(steps.rounded()),
+                distance: ((meters / 1000.0) * 10).rounded() / 10.0
+            )))
         }
     }
 }
