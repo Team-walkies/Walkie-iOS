@@ -166,7 +166,7 @@ private extension HealthCareViewModel {
         guard index < steps.count else { return }
         let item = steps[index]
         let request = HealthRequestDto(
-            targetSteps: UserManager.shared.getTargetStep ?? 6000,
+            targetSteps: UserManager.shared.getTargetStep,
             nowSteps: item.steps,
             nowCalories: item.steps / 30,
             nowDistance: item.distance,
@@ -253,7 +253,7 @@ private extension HealthCareViewModel {
     
     func resolveTargetStep(isToday: Bool, serverTarget: Int?) -> TargetStep {
         if isToday {
-            return TargetStep(rawValue: UserManager.shared.getTargetStep ?? 6000) ?? .six
+            return TargetStep(rawValue: UserManager.shared.getTargetStep) ?? .six
         } else {
             return TargetStep(rawValue: serverTarget ?? 6000) ?? .six
         }

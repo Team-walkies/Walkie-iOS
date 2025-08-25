@@ -21,7 +21,7 @@ final class DefaultHealthService: HealthService {
         self.reissueService = reissueService
     }
     
-    func getHealth(param: HealthDateDto) -> AnyPublisher<[HealthDto], any Error> {
+    func getHealth(param: HealthDateDto) -> AnyPublisher<[HealthDto], Error> {
         healthProvider
             .requestPublisher(
                 .health(param: param),
@@ -31,7 +31,7 @@ final class DefaultHealthService: HealthService {
             .mapWalkieResponse([HealthDto].self)
     }
     
-    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, any Error> {
+    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, Error> {
         healthProvider
             .requestPublisher(
                 .healthDetail(searchDate: searchDate),
@@ -41,7 +41,7 @@ final class DefaultHealthService: HealthService {
             .mapWalkieResponse(HealthDetailDto.self)
     }
     
-    func getHealthContinueDay() -> AnyPublisher<HealthContinueDaysDto, any Error> {
+    func getHealthContinueDay() -> AnyPublisher<HealthContinueDaysDto, Error> {
         healthProvider
             .requestPublisher(
                 .healthContinueDays(),
@@ -51,7 +51,7 @@ final class DefaultHealthService: HealthService {
             .mapWalkieResponse(HealthContinueDaysDto.self)
     }
     
-    func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, any Error> {
+    func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, Error> {
         healthProvider
             .requestPublisher(
                 .healthUpdate(request: request),
@@ -61,7 +61,7 @@ final class DefaultHealthService: HealthService {
             .mapVoidResponse()
     }
     
-    func getHealthLastDataDays() -> AnyPublisher<HealthLastDateDto, any Error> {
+    func getHealthLastDataDays() -> AnyPublisher<HealthLastDateDto, Error> {
         healthProvider
             .requestPublisher(
                 .healthLastDataDays(),

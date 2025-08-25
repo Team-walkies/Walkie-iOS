@@ -31,9 +31,9 @@ extension UserManager {
     var getStartExploreDate: Date? { return self.startExploreDate }
     var getLastVisitedDate: Date? { return self.lastVisitedDate }
     var getShowHealthcare: Bool { return self.showHealthcare ?? false }
-    var getTargetStep: Int? {
-        let v = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
-        return v == 0 ? 6000 : v
+    var getTargetStep: Int {
+        let targetStep = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
+        return targetStep == 0 ? 6000 : targetStep
     }
 }
 

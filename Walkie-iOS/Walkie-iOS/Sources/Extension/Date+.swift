@@ -94,9 +94,11 @@ extension Date {
     }
     
     // kst
-    static var kstTimeZone: TimeZone {
-        TimeZone(identifier: "Asia/Seoul")!
-    }
+    static let kstTimeZone: TimeZone = {
+        TimeZone(identifier: "Asia/Seoul")
+        ?? TimeZone(secondsFromGMT: 9 * 3600)
+        ?? .current
+    }()
     
     static var kstCalendar: Calendar {
         var cal = Calendar(identifier: .gregorian)

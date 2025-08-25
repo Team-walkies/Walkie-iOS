@@ -26,7 +26,7 @@ final class DefaultReviewRepository {
 
 extension DefaultReviewRepository: ReviewRepository {
     
-    func getReviewList(date: ReviewsCalendarDate) -> AnyPublisher<ReviewListEntity, any Error> {
+    func getReviewList(date: ReviewsCalendarDate) -> AnyPublisher<ReviewListEntity, Error> {
         reviewService.getReviewCalendar(date: date)
             .map { dto in
                 ReviewListEntity(
@@ -55,7 +55,7 @@ extension DefaultReviewRepository: ReviewRepository {
             .eraseToAnyPublisher()
     }
     
-    func delReview(reviewId: Int) -> AnyPublisher<Void, any Error> {
+    func delReview(reviewId: Int) -> AnyPublisher<Void, Error> {
         reviewService
             .delReview(reviewId: reviewId)
             .eraseToAnyPublisher()

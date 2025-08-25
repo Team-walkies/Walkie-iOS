@@ -137,7 +137,7 @@ struct HealthCareInfoView: View {
                 .padding(.bottom, 16)
             }
             
-            let goalAchieve = infoState.nowSteps >= infoState.targetSteps.rawValue
+            let goalAchieve = infoState.nowSteps >= self.targetStep.rawValue
             if goalAchieve {
                 VStack(
                     spacing: 0
