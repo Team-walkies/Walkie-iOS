@@ -73,6 +73,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = date
             self.state.scrollPosition = 0
+            requestVisibleWeeks()
         case .scrollToPast:
             let newSelected = self.state.selectedDate.adding(days: -7)
             let (past, present, future) = calendarUseCase.generateWeeks(baseDate: newSelected)
