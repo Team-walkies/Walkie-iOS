@@ -94,13 +94,13 @@ struct ReviewView: View {
         .onAppear {
             viewModel.action(
                 .loadReviewList(
-                    startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
-                    endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
+                    startDate: calendarViewModel.state.pastWeek[0].ymdKST,
+                    endDate: calendarViewModel.state.futureWeek[6].ymdKST,
                     completion: { result in
                         if result {
                             calendarViewModel.action(.selectDate(Date()))
                             calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
-                            viewModel.action(.showReviewList(dateString: Date().convertToDateString()))
+                            viewModel.action(.showReviewList(dateString: Date().ymdKST))
                         }
                     }
                 )
@@ -116,12 +116,12 @@ struct ReviewView: View {
                 viewModel.state = .loading
                 viewModel.action(
                     .loadReviewList(
-                        startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
-                        endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
+                        startDate: calendarViewModel.state.pastWeek[0].ymdKST,
+                        endDate: calendarViewModel.state.futureWeek[6].ymdKST,
                         completion: { result in
                             if result {
                                 viewModel.action(.showReviewList(
-                                    dateString: viewModel.selectedDate.convertToDateString())
+                                    dateString: viewModel.selectedDate.ymdKST)
                                 )
                                 calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
@@ -133,13 +133,13 @@ struct ReviewView: View {
         .onChange(of: calendarViewModel.state.selectedDate) { _, newDate in
             viewModel.action(
                 .loadReviewList(
-                    startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
-                    endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
+                    startDate: calendarViewModel.state.pastWeek[0].ymdKST,
+                    endDate: calendarViewModel.state.futureWeek[6].ymdKST,
                     completion: { result in
                         if result {
                             calendarViewModel.action(.selectDate(newDate))
                             calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
-                            viewModel.action(.showReviewList(dateString: newDate.convertToDateString()))
+                            viewModel.action(.showReviewList(dateString: newDate.ymdKST))
                         }
                     }
                 )
@@ -164,12 +164,12 @@ struct ReviewView: View {
                 viewModel.state = .loading
                 viewModel.action(
                     .loadReviewList(
-                        startDate: calendarViewModel.state.pastWeek[0].convertToDateString(),
-                        endDate: calendarViewModel.state.futureWeek[6].convertToDateString(),
+                        startDate: calendarViewModel.state.pastWeek[0].ymdKST,
+                        endDate: calendarViewModel.state.futureWeek[6].ymdKST,
                         completion: { result in
                             if result {
                                 viewModel.action(.showReviewList(
-                                    dateString: viewModel.selectedDate.convertToDateString())
+                                    dateString: viewModel.selectedDate.ymdKST)
                                 )
                                 calendarViewModel.action(.updateReviewDates(viewModel.reviewDateList))
                             }
