@@ -88,23 +88,40 @@ final class HealthKitManager {
     }
     
     private func probeReadAuthorization(_ done: @escaping (Bool) -> Void) {
-        guard let step = HKObjectType.quantityType(forIdentifier: .stepCount) else {
-            done(false); return
-        }
-        let from = Date().addingTimeInterval(-3600)
-        let pred = HKQuery.predicateForSamples(withStart: from, end: Date())
-        let q = HKStatisticsQuery(
-            quantityType: step,
-            quantitySamplePredicate: pred,
-            options: .cumulativeSum
-        ) { _, _, error in
-            if let hkErr = error as? HKError, hkErr.code == .errorAuthorizationDenied {
-                done(false)
-            } else {
-                done(true)
+        Task {
+            func canRead(
+                _ id: HKQuantityTypeIdentifier,
+                treatEmptyAsDenied: Bool = true
+            ) async -> Bool {
+                guard let type = HKObjectType.quantityType(forIdentifier: id) else { return false }
+                let predicate = HKQuery.predicateForSamples(withStart: .distantPast, end: Date())
+                
+                return await withCheckedContinuation { cont in
+                    let query = HKSampleQuery(
+                        sampleType: type,
+                        predicate: predicate,
+                        limit: 1,
+                        sortDescriptors: nil
+                    ) { _, samples, error in
+                        if error != nil {
+                            cont.resume(returning: false)
+                            return
+                        }
+                        let hasData = (samples?.isEmpty == false)
+                        if treatEmptyAsDenied && !hasData {
+                            cont.resume(returning: false)
+                            return
+                        }
+                        cont.resume(returning: true)
+                    }
+                    self.healthStore.execute(query)
+                }
             }
+            
+            let stepOK = await canRead(.stepCount, treatEmptyAsDenied: true)
+            let distOK = await canRead(.distanceWalkingRunning, treatEmptyAsDenied: true)
+            await MainActor.run { done(stepOK && distOK) }
         }
-        healthStore.execute(q)
     }
     
     /// 일별 누적
