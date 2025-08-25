@@ -31,7 +31,6 @@ struct HealthCareView: View {
                 case .loaded(let infoState):
                     HealthCareInfoView(infoState: infoState)
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 8)
                         .background(WalkieCommonAsset.gray50.swiftUIColor)
                 default:
                     HealthCareInfoSkeletonView()
