@@ -59,4 +59,10 @@ enum URLConstant {
     
     // notices
     static let notices = "/notices"
+    
+    // healthcare
+    static let health = "/health"
+    static let healthDetail = "/health/detail"
+    static let healthContinueDays = "/health/continueDays"
+    static let healthLastDataDays = "/health/lastDataDays"
 }

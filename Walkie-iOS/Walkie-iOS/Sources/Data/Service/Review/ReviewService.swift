@@ -39,7 +39,7 @@ final class DefaultReviewService: ReviewService {
             .mapWalkieResponse(ReviewsCalendarDto.self)
     }
     
-    func delReview(reviewId: Int) -> AnyPublisher<Void, any Error> {
+    func delReview(reviewId: Int) -> AnyPublisher<Void, Error> {
         reviewProvider
             .requestPublisher(
                 .delReview(reviewId: reviewId),

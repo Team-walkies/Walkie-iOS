@@ -65,7 +65,16 @@ struct HomeHealthcareBSView: View {
                     isEnabled: true,
                     buttonAction: {
                         dismiss()
-                        appCoordinator.push(AppScene.healthcare)
+                        HealthKitManager.shared.checkReadAuthorizationStatus { permission in
+                            switch permission {
+                            case .authorized:
+                                appCoordinator.push(AppScene.healthcare)
+                            case .notDetermined:
+                                appCoordinator.push(AppScene.healthcarePermission)
+                            case .denied:
+                                appCoordinator.push(AppScene.healthcarePermissionDenied)
+                            }
+                        }
                     }
                 )
                 
