@@ -89,7 +89,6 @@ struct CircleProgressView: View {
                     }
                     .onTapGesture {
                         guard isToday else { return }
-                        let current = todayTargetStep ?? targetStep
                         appCoordinator.buildBottomSheet(height: 396) {
                             TargetStepBSView()
                         }
