@@ -59,7 +59,7 @@ struct WalkieIOSApp: App {
                 ToastContainer()
                     .ignoresSafeArea(.all, edges: .bottom)
                     .frame(alignment: .bottom)
-                    .zIndex(.infinity)
+                    .zIndex(3)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
