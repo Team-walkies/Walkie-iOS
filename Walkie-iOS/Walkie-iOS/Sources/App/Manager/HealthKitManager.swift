@@ -34,7 +34,10 @@ final class HealthKitManager {
         guard
             let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount),
             let distanceType  = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
-        else { return }
+        else {
+            completion(.notDetermined)
+            return
+        }
         
         let typesToRead: Set<HKObjectType> = [stepCountType, distanceType]
         

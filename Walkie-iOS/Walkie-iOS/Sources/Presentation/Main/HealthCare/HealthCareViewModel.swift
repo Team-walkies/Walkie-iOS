@@ -160,29 +160,32 @@ private extension HealthCareViewModel {
     }
     
     func putHealth(
-        _ steps: [HealthKitManager.DailySteps],
-        index: Int = 0
+        _ steps: [HealthKitManager.DailySteps]
     ) {
-        guard index < steps.count else { return }
-        let item = steps[index]
-        let request = HealthRequestDto(
-            targetSteps: UserManager.shared.getTargetStep,
-            nowSteps: item.steps,
-            nowCalories: item.steps / 30,
-            nowDistance: item.distance,
-            nowDay: item.date
-        )
+        guard !steps.isEmpty else { return }
+        var iterator = steps.makeIterator()
         
-        putHealthUseCase
-            .putHealth(request: request)
-            .walkieSink(
-                with: self,
-                receiveValue: { [weak self] _, _ in
-                    guard let self = self else { return }
-                    self.putHealth(steps, index: index + 1)
-                }
+        func uploadNext() {
+            guard let item = iterator.next() else { return }
+            let request = HealthRequestDto(
+                targetSteps: UserManager.shared.getTargetStep,
+                nowSteps: item.steps,
+                nowCalories: item.steps / 30,
+                nowDistance: item.distance,
+                nowDay: item.date
             )
-            .store(in: &cancellables)
+            putHealthUseCase
+                .putHealth(request: request)
+                .walkieSink(
+                    with: self,
+                    receiveValue: { [weak self] _, _ in
+                        guard self != nil else { return }
+                        uploadNext()
+                    }
+                )
+                .store(in: &cancellables)
+        }
+        uploadNext()
     }
 }
 
