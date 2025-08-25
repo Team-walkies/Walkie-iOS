@@ -80,4 +80,13 @@ extension HealthTarget {
             headers: APIConstants.hasTokenHeader
         )
     }
+    
+    static func healthLastDataDays() -> HealthTarget {
+        HealthTarget(
+            path: URLConstant.healthLastDataDays,
+            method: .get,
+            task: .requestPlain,
+            headers: APIConstants.hasTokenHeader
+        )
+    }
 }

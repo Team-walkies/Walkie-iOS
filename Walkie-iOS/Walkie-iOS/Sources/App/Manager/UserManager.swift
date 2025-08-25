@@ -20,7 +20,6 @@ final class UserManager {
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
-    @UserDefaultsWrapper<Date>(key: "healthkitSendDate") private(set) var healthkitSendDate
     
     private init() {}
 }
@@ -32,10 +31,9 @@ extension UserManager {
     var getStartExploreDate: Date? { return self.startExploreDate }
     var getLastVisitedDate: Date? { return self.lastVisitedDate }
     var getShowHealthcare: Bool { return self.showHealthcare ?? false }
-    var getHealthkitSendDate: Date? { return self.healthkitSendDate }
-    var getTargetStep: Int? {
-        let v = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
-        return v == 0 ? 6000 : v
+    var getTargetStep: Int {
+        let targetStep = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
+        return targetStep == 0 ? 6000 : targetStep
     }
 }
 
@@ -51,10 +49,6 @@ extension UserManager {
     
     func setLastVisitedDate(_ date: Date) {
         lastVisitedDate = date
-    }
-    
-    func setHealthkitSendDate(_ date: Date) {
-        healthkitSendDate = date
     }
     
     func setTargetStep(_ step: Int) {

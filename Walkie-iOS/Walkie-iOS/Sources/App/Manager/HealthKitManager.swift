@@ -34,7 +34,10 @@ final class HealthKitManager {
         guard
             let stepCountType = HKObjectType.quantityType(forIdentifier: .stepCount),
             let distanceType  = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
-        else { return }
+        else {
+            completion(.notDetermined)
+            return
+        }
         
         let typesToRead: Set<HKObjectType> = [stepCountType, distanceType]
         
@@ -179,7 +182,7 @@ final class HealthKitManager {
                 distance: ((distanceDay / 1000.0) * 10).rounded() / 10.0
             ))
             let next = current.addingKST(days: 1)
-            guard !Date.kstCalendar.isDate(next, inSameDayAs: current) else { break }
+            guard next > current else { break }
             current = next
         }
         

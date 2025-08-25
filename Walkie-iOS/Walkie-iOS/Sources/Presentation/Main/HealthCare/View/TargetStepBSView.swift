@@ -24,7 +24,7 @@ enum TargetStep: Int, Identifiable, CaseIterable {
 struct TargetStepBSView: View {
     
     @State private var selectedStep: TargetStep = TargetStep(
-        rawValue: UserManager.shared.getTargetStep ?? 6000
+        rawValue: UserManager.shared.getTargetStep
     ) ?? .six
     @Environment(\.dismiss) private var dismiss
     @AppStorage(DefaultsKey.targetStep) private var targetStep = 6000

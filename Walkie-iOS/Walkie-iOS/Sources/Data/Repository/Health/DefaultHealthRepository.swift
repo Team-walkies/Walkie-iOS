@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class DefaultHealthRepository {
     
@@ -26,7 +27,7 @@ final class DefaultHealthRepository {
 
 extension DefaultHealthRepository: HealthRepository {
     
-    func getHealth(param: HealthDateDto) -> AnyPublisher<[String: HealthWeekEntity], any Error> {
+    func getHealth(param: HealthDateDto) -> AnyPublisher<[String: HealthWeekEntity], Error> {
         healthService
             .getHealth(param: param)
             .map { dtos in
@@ -41,7 +42,7 @@ extension DefaultHealthRepository: HealthRepository {
             .eraseToAnyPublisher()
     }
     
-    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailEntity, any Error> {
+    func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailEntity, Error> {
         healthService
             .getHealthDetail(searchDate: searchDate)
             .map { dto in
@@ -55,7 +56,7 @@ extension DefaultHealthRepository: HealthRepository {
             .eraseToAnyPublisher()
     }
     
-    func getHealthContinueDay() -> AnyPublisher<Int, any Error> {
+    func getHealthContinueDay() -> AnyPublisher<Int, Error> {
         healthService
             .getHealthContinueDay()
             .map { dto in
@@ -64,9 +65,18 @@ extension DefaultHealthRepository: HealthRepository {
             .eraseToAnyPublisher()
     }
     
-    func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, any Error> {
+    func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, Error> {
         healthService
             .putHealth(request: request)
+            .eraseToAnyPublisher()
+    }
+    
+    func getHealthLastDataDay() -> AnyPublisher<Date, Error> {
+        healthService
+            .getHealthLastDataDays()
+            .map { dto in
+                Date.fromYMDKST(dto.lastDataDayDate) ?? Date().kstStartOfDay
+            }
             .eraseToAnyPublisher()
     }
 }
