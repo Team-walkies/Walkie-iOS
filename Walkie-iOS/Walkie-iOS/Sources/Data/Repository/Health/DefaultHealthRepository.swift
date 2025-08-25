@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 final class DefaultHealthRepository {
     
@@ -67,6 +68,15 @@ extension DefaultHealthRepository: HealthRepository {
     func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, any Error> {
         healthService
             .putHealth(request: request)
+            .eraseToAnyPublisher()
+    }
+    
+    func getHealthLastDataDay() -> AnyPublisher<Date, any Error> {
+        healthService
+            .getHealthLastDataDays()
+            .map { dto in
+                Date.fromYMDKST(dto.lastDataDayDate) ?? Date().kstStartOfDay
+            }
             .eraseToAnyPublisher()
     }
 }

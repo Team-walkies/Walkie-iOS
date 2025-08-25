@@ -15,16 +15,19 @@ final class HealthCareViewModel: ViewModelable {
     private let putHealthUseCase: PutHealthUseCase
     private let getHealthContinueDayUseCase: GetHealthContinueDayUseCase
     private let getHealthDetailUseCase: GetHealthDetailUseCase
+    private let getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase
     private var continuousDay: Int = 0
     
     init(
         putHealthUseCase: PutHealthUseCase,
         getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
-        getHealthDetailUseCase: GetHealthDetailUseCase
+        getHealthDetailUseCase: GetHealthDetailUseCase,
+        getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase
     ) {
         self.putHealthUseCase = putHealthUseCase
         self.getHealthContinueDayUseCase = getHealthContinueDayUseCase
         self.getHealthDetailUseCase = getHealthDetailUseCase
+        self.getHealthLastDataDayUseCase = getHealthLastDataDayUseCase
     }
     
     enum Action {
@@ -176,9 +179,6 @@ private extension HealthCareViewModel {
                 with: self,
                 receiveValue: { [weak self] _, _ in
                     guard let self = self else { return }
-                    if let next = self.nextDay(fromDayString: item.date) {
-                        UserManager.shared.setHealthkitSendDate(next)
-                    }
                     self.putHealth(steps, index: index + 1)
                 }
             )
@@ -189,30 +189,29 @@ private extension HealthCareViewModel {
 private extension HealthCareViewModel {
     
     func getHealthkitStep() {
-        let startInclusive: Date = {
-            if let saved = UserManager.shared.getHealthkitSendDate {
-                return saved.kstStartOfDay
-            } else {
-                var comp = Date.kstCalendar.dateComponents([.year], from: Date())
-                comp.month = 8; comp.day = 1
-                return (Date.kstCalendar.date(from: comp) ?? Date()).kstStartOfDay
-            }
-        }()
-        let endExclusive = Date().kstStartOfDay
-        
-        guard startInclusive < endExclusive else { return }
-        
-        HealthKitManager.shared.getDailySteps(from: startInclusive) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let steps):
-                dump(steps)
-                guard !steps.isEmpty else { return }
-                self.putHealth(steps)
-            case .failure(let error):
-                print("HealthKit fetch failed: \(error)")
-            }
-        }
+        getHealthLastDataDayUseCase
+            .getHealthLastDataDay()
+            .receive(on: DispatchQueue.main)
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, start in
+                    guard let self else { return }
+                    let endExclusive = Date().kstStartOfDay
+                    guard start < endExclusive else { return }
+                    
+                    HealthKitManager.shared.getDailySteps(from: start) { [weak self] result in
+                        guard let self else { return }
+                        switch result {
+                        case .success(let steps):
+                            guard !steps.isEmpty else { return }
+                            self.putHealth(steps)
+                        case .failure(let error):
+                            print("HealthKit fetch failed: \(error)")
+                        }
+                    }
+                }
+            )
+            .store(in: &cancellables)
     }
     
     func nextDay(fromDayString day: String) -> Date? {

@@ -60,4 +60,14 @@ final class DefaultHealthService: HealthService {
             .filterSuccessfulStatusCodes()
             .mapVoidResponse()
     }
+    
+    func getHealthLastDataDays() -> AnyPublisher<HealthLastDateDto, any Error> {
+        healthProvider
+            .requestPublisher(
+                .healthLastDataDays(),
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(HealthLastDateDto.self)
+    }
 }

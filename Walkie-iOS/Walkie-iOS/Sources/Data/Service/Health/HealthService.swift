@@ -12,4 +12,5 @@ protocol HealthService {
     func getHealthDetail(searchDate: String) -> AnyPublisher<HealthDetailDto, Error>
     func getHealthContinueDay() -> AnyPublisher<HealthContinueDaysDto, Error>
     func putHealth(request: HealthRequestDto) -> AnyPublisher<Void, Error>
+    func getHealthLastDataDays() -> AnyPublisher<HealthLastDateDto, Error>
 }
