@@ -70,9 +70,11 @@ struct CharacterView: View {
             isPresented: $isShowingBottomSheet,
             height: screenHeight > 710 ? 712 : screenHeight - 94,
             content: {
-                CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
-                    .padding(.top, 28)
-                    .background(.white)
+                if let characterDetailViewModel = viewModel.characterDetailViewModel {
+                    CharacterDetailView(viewModel: characterDetailViewModel)
+                        .padding(.top, 28)
+                        .background(.white)
+                }
             }
         )
         .navigationBarBackButtonHidden()
