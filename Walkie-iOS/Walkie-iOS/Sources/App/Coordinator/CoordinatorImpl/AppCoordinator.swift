@@ -163,7 +163,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
                     .opacity(isModalVisible ? 1.0 : 0.0)
                 }
             }
-            .offset(y: isModalVisible ? 0 : 20)
         }
         .ignoresSafeArea()
         .onAppear {
