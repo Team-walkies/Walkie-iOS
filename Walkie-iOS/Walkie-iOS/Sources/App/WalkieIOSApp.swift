@@ -45,8 +45,8 @@ struct WalkieIOSApp: App {
                     .frame(alignment: .bottom)
                 if let fullScreenCover = appCoordinator.appFullScreenCover {
                     appCoordinator.makeFullScreenCover(fullScreenCover)
+                        .ignoresSafeArea(.all)
                 }
-                
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }

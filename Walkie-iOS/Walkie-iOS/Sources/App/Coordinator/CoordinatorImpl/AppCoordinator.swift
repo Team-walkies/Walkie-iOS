@@ -86,89 +86,114 @@ final class AppCoordinator: Coordinator, ObservableObject {
     func buildSheet(_ sheet: AppSheet) -> some View {
         
     }
-    
     @ViewBuilder
-    func makeFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
-        ZStack {
+    private func fullScreenCoverWrapper<Content: View>(@ViewBuilder content: @escaping () -> Content) -> some View {
+        ZStack(alignment: .center) {
             Color.black
                 .opacity(isModalVisible ? 0.6 : 0.0)
                 .ignoresSafeArea()
                 .onTapGesture {
                     self.dismissFullScreenCover()
                 }
-            Group {
-                switch fullScreenCover {
-                case .hatchEgg:
-                    diContainer.buildHatchEggView()
-                        .environment(self)
-                case .alert(
-                    let title,
-                    let highlightedContent,
-                    let highlightedColor,
-                    let content,
-                    let style,
-                    let button,
-                    let cancelAction,
-                    let checkAction,
-                    let checkTitle,
-                    let cancelTitle
-                ):
-                    Modal(
-                        title: title,
-                        highlightedContent: highlightedContent,
-                        highlightedColor: highlightedColor,
-                        content: content,
-                        style: style,
-                        button: button,
-                        cancelButtonAction: {
-                            self.dismissFullScreenCover()
-                            cancelAction()
-                        },
-                        checkButtonAction: {
-                            self.dismissFullScreenCover()
-                            checkAction()
-                        },
-                        checkButtonTitle: checkTitle,
-                        cancelButtonTitle: cancelTitle
-                    )
-                    .padding(.horizontal, 40)
-                    .opacity(isModalVisible ? 1.0 : 0.0)
-                case .eventAlert(
-                    let title,
-                    let style,
-                    let button,
-                    let cancelButtonAction,
-                    let checkButtonAction,
-                    let checkButtonTitle,
-                    let cancelButtonTitle,
-                    let dDay
-                ):
-                    EventModal(
-                        title: title,
-                        style: style,
-                        button: button,
-                        cancelButtonAction: {
-                            self.dismissFullScreenCover()
-                            cancelButtonAction()
-                        },
-                        checkButtonAction: {
-                            self.dismissFullScreenCover()
-                            checkButtonAction()
-                        },
-                        checkButtonTitle: checkButtonTitle,
-                        cancelButtonTitle: cancelButtonTitle,
-                        dDay: dDay
-                    )
-                    .padding(.horizontal, 40)
-                    .opacity(isModalVisible ? 1.0 : 0.0)
-                }
-            }
+            content()
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .opacity(isModalVisible ? 1.0 : 0.0)
         }
         .ignoresSafeArea()
         .onAppear {
             withAnimation(.easeInOut(duration: 0.25)) {
                 self.isModalVisible = true
             }
+        }
+    }
+    
+    @ViewBuilder
+    func makeFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
+        switch fullScreenCover {
+        case .hatchEgg:
+            diContainer.buildHatchEggView()
+                .environment(self)
+                .ignoresSafeArea()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(isModalVisible ? 1 : 0)
+                .onAppear {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        self.isModalVisible = true
+                    }
+                }
+        case .alert(
+            let title,
+            let highlightedContent,
+            let highlightedColor,
+            let content,
+            let style,
+            let button,
+            let cancelAction,
+            let checkAction,
+            let checkTitle,
+            let cancelTitle
+        ):
+            fullScreenCoverWrapper {
+                Modal(
+                    title: title,
+                    highlightedContent: highlightedContent,
+                    highlightedColor: highlightedColor,
+                    content: content,
+                    style: style,
+                    button: button,
+                    cancelButtonAction: {
+                        self.dismissFullScreenCover()
+                        cancelAction()
+                    },
+                    checkButtonAction: {
+                        self.dismissFullScreenCover()
+                        checkAction()
+                    },
+                    checkButtonTitle: checkTitle,
+                    cancelButtonTitle: cancelTitle
+                )
+                .padding(.horizontal, 40)
+            }
+        case .eventAlert(
+            let title,
+            let style,
+            let button,
+            let cancelButtonAction,
+            let checkButtonAction,
+            let checkButtonTitle,
+            let cancelButtonTitle,
+            let dDay
+        ):
+            fullScreenCoverWrapper {
+                EventModal(
+                    title: title,
+                    style: style,
+                    button: button,
+                    cancelButtonAction: {
+                        self.dismissFullScreenCover()
+                        cancelButtonAction()
+                    },
+                    checkButtonAction: {
+                        self.dismissFullScreenCover()
+                        checkButtonAction()
+                    },
+                    checkButtonTitle: checkButtonTitle,
+                    cancelButtonTitle: cancelButtonTitle,
+                    dDay: dDay
+                )
+                .padding(.horizontal, 40)
+            }
+        }
+    }
+    
+    func dismissFullScreenCover() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isModalVisible = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.appFullScreenCover = nil
+            self.fullScreenCoverOnDismiss?()
+            self.fullScreenCoverOnDismiss = nil
         }
     }
     
@@ -305,19 +330,6 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 )
             )
         )
-    }
-    
-    func dismissFullScreenCover() {
-        withAnimation(.easeInOut(duration: 0.25)) {
-            self.isModalVisible = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            self.appFullScreenCover = nil
-            if let onDismiss = self.fullScreenCoverOnDismiss {
-                onDismiss()
-                self.fullScreenCoverOnDismiss = nil
-            }
-        }
     }
     
     private func startStepUpdates() {
