@@ -188,6 +188,10 @@ private extension HealthCareViewModel {
                     receiveValue: { [weak self] _, _ in
                         guard self != nil else { return }
                         uploadNext()
+                    },
+                    receiveFailure: { [weak self] _, _ in
+                        guard self != nil else { return }
+                        DispatchQueue.main.async { completion() }
                     }
                 )
                 .store(in: &cancellables)
@@ -198,7 +202,7 @@ private extension HealthCareViewModel {
 
 private extension HealthCareViewModel {
     
-    func getHealthkitStep(completion: (() -> Void)? = nil) {
+    func getHealthkitStep(completion: @escaping () -> Void = {}) {
         getHealthLastDataDayUseCase
             .getHealthLastDataDay()
             .receive(on: DispatchQueue.main)
@@ -208,7 +212,7 @@ private extension HealthCareViewModel {
                     guard let self else { return }
                     let endExclusive = Date().kstStartOfDay
                     guard start < endExclusive else {
-                        completion?()
+                        completion()
                         return
                     }
                     
@@ -217,17 +221,21 @@ private extension HealthCareViewModel {
                         switch result {
                         case .success(let steps):
                             guard !steps.isEmpty else {
-                                completion?()
+                                DispatchQueue.main.async { completion() }
                                 return
                             }
                             self.putHealth(steps) {
-                                DispatchQueue.main.async { completion?() }
+                                DispatchQueue.main.async { completion() }
                             }
                         case .failure(let error):
-                            DispatchQueue.main.async { completion?() }
+                            DispatchQueue.main.async { completion() }
                             print("HealthKit fetch failed: \(error)")
                         }
                     }
+                },
+                receiveFailure: { [weak self] _, _ in
+                    guard self != nil else { return }
+                    DispatchQueue.main.async { completion() }
                 }
             )
             .store(in: &cancellables)
