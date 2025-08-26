@@ -17,7 +17,7 @@ struct HatchEggView: View {
     
     var body: some View {
         ZStack(alignment: .center) {
-            Color(white: 0, opacity: 0.6)
+            Color(.clear)
                 .ignoresSafeArea()
                 .onTapGesture {
                     if hatchEggViewModel.animationState.isDismissAllowed {

@@ -29,10 +29,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
         set { sheet = newValue }
     }
     var fullScreenCover: (any AppRoute)?
-    var appFullScreenCover: AppFullScreenCover? {
-        get { fullScreenCover as? AppFullScreenCover }
-        set { fullScreenCover = newValue }
-    }
+    var appFullScreenCover: AppFullScreenCover?
     
     var sheetOnDismiss: (() -> Void)?
     var fullScreenCoverOnDismiss: (() -> Void)?
@@ -44,6 +41,8 @@ final class AppCoordinator: Coordinator, ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     var selectedTab: TabBarItem = .home
     let permissionsDone = CurrentValueSubject<Bool, Never>(false)
+    
+    var isModalVisible: Bool = false
     
     let screenHeight = UIScreen.main.bounds.height
     private let remoteConfigManager: RemoteConfigManaging
@@ -80,54 +79,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
     
     @ViewBuilder
     func buildScene(_ scene: AppScene) -> some View {
-        switch scene {
-        case .splash:
-            diContainer.buildSplashView(appCoordinator: self)
-        case .nickname:
-            diContainer.buildNicknameView()
-        case .login:
-            diContainer.buildLoginView()
-                .onOpenURL { url in
-                    if AuthApi.isKakaoTalkLoginUrl(url) {
-                        DispatchQueue.main.async {
-                            _ = AuthController.handleOpenUrl(url: url)
-                        }
-                    }
-                }
-        case .healthcare:
-            diContainer.buildHealthcareView(appCoordinator: self)
-        case .map:
-            diContainer.buildMapView()
-        case .tabBar:
-            diContainer.buildTabBarView()
-        case .complete:
-            diContainer.buildSignupView()
-        case .egg:
-            diContainer.buildEggView(appCoordinator: self)
-                .popGestureEnabled(true)
-        case .eggGuide:
-            EggGuideView()
-        case .character:
-            diContainer.buildCharacterView()
-                .popGestureEnabled(true)
-        case .review:
-            diContainer.buildReviewView(appCoordinator: self)
-                .popGestureEnabled(true)
-        case let .setting(item):
-            buildSetting(item)
-        case .service(let item):
-            buildService(item)
-        case .feedback:
-            buildFeedback()
-        case let .withdraw(nickname):
-            diContainer.buildWithdrawView(appCoordinator: self, nickname: nickname)
-        case let .changeNickname(viewModel):
-            diContainer.buildMypageChangeNicknameView(viewModel: viewModel)
-        case .healthcarePermission:
-            diContainer.buildHealthCarePermissionView(coordinator: self)
-        case .healthcarePermissionDenied:
-            diContainer.buildHealthCarePermissionDeniedView(coordinator: self)
-        }
+        makeScene(scene)
     }
     
     @ViewBuilder
@@ -136,90 +88,88 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     @ViewBuilder
-    func buildFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
-        switch fullScreenCover {
-        case .hatchEgg:
-            diContainer.buildHatchEggView()
-        case .alert(
-            let title,
-            let highlightedContent,
-            let highlightedColor,
-            let content,
-            let style,
-            let button,
-            let cancelAction,
-            let checkAction,
-            let checkTitle,
-            let cancelTitle
-        ):
-            ZStack {
-                Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.25)) {
+    func makeFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
+        ZStack {
+            Color.black
+                .opacity(isModalVisible ? 0.6 : 0.0)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    self.dismissFullScreenCover()
+                }
+            Group {
+                switch fullScreenCover {
+                case .hatchEgg:
+                    diContainer.buildHatchEggView()
+                        .environment(self)
+                case .alert(
+                    let title,
+                    let highlightedContent,
+                    let highlightedColor,
+                    let content,
+                    let style,
+                    let button,
+                    let cancelAction,
+                    let checkAction,
+                    let checkTitle,
+                    let cancelTitle
+                ):
+                    Modal(
+                        title: title,
+                        highlightedContent: highlightedContent,
+                        highlightedColor: highlightedColor,
+                        content: content,
+                        style: style,
+                        button: button,
+                        cancelButtonAction: {
                             self.dismissFullScreenCover()
-                        }
-                    }
-                Modal(
-                    title: title,
-                    highlightedContent: highlightedContent,
-                    highlightedColor: highlightedColor,
-                    content: content,
-                    style: style,
-                    button: button,
-                    cancelButtonAction: {
-                        self.dismissFullScreenCover()
-                        cancelAction()
-                    },
-                    checkButtonAction: {
-                        self.dismissFullScreenCover()
-                        checkAction()
-                    },
-                    checkButtonTitle: checkTitle,
-                    cancelButtonTitle: cancelTitle
-                )
-                .padding(.horizontal, 40)
-                .opacity(appFullScreenCover != nil ? 1.0 : 0.0)
-            }
-            .animation(.easeInOut(duration: 0.25), value: appFullScreenCover != nil)
-        case .eventAlert(
-            let title,
-            let style,
-            let button,
-            let cancelButtonAction,
-            let checkButtonAction,
-            let checkButtonTitle,
-            let cancelButtonTitle,
-            let dDay
-        ):
-            ZStack {
-                Color.black.opacity(appFullScreenCover != nil ? 0.6 : 0.0)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.25)) {
+                            cancelAction()
+                        },
+                        checkButtonAction: {
                             self.dismissFullScreenCover()
-                        }
-                    }
-                EventModal(
-                    title: title,
-                    style: style,
-                    button: button,
-                    cancelButtonAction: {
-                        self.dismissFullScreenCover()
-                        cancelButtonAction()
-                    },
-                    checkButtonAction: {
-                        self.dismissFullScreenCover()
-                        checkButtonAction()
-                    },
-                    checkButtonTitle: checkButtonTitle,
-                    cancelButtonTitle: cancelButtonTitle,
-                    dDay: dDay
-                )
-                .padding(.horizontal, 40)
-                .opacity(appFullScreenCover != nil ? 1.0 : 0.0)
+                            checkAction()
+                        },
+                        checkButtonTitle: checkTitle,
+                        cancelButtonTitle: cancelTitle
+                    )
+                    .padding(.horizontal, 40)
+                    .opacity(isModalVisible ? 1.0 : 0.0)
+                case .eventAlert(
+                    let title,
+                    let style,
+                    let button,
+                    let cancelButtonAction,
+                    let checkButtonAction,
+                    let checkButtonTitle,
+                    let cancelButtonTitle,
+                    let dDay
+                ):
+                    EventModal(
+                        title: title,
+                        style: style,
+                        button: button,
+                        cancelButtonAction: {
+                            self.dismissFullScreenCover()
+                            cancelButtonAction()
+                        },
+                        checkButtonAction: {
+                            self.dismissFullScreenCover()
+                            checkButtonAction()
+                        },
+                        checkButtonTitle: checkButtonTitle,
+                        cancelButtonTitle: cancelButtonTitle,
+                        dDay: dDay
+                    )
+                    .padding(.horizontal, 40)
+                    .opacity(isModalVisible ? 1.0 : 0.0)
+                }
             }
-            .animation(.easeInOut(duration: 0.25), value: appFullScreenCover != nil)
+            .offset(y: isModalVisible ? 0 : 20)
+        }
+        .ignoresSafeArea()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                self.isModalVisible = true
+            }
         }
     }
     
@@ -300,21 +250,19 @@ final class AppCoordinator: Coordinator, ObservableObject {
         checkButtonTitle: String = "확인",
         cancelButtonTitle: String = "취소"
     ) {
-        presentFullScreenCover(
-            AppFullScreenCover.alert(
-                title: title,
-                highlightedContent: highlightedContent,
-                highlightedColor: highlightedColor,
-                content: content,
-                style: style,
-                button: button,
-                cancelAction: cancelButtonAction,
-                checkAction: checkButtonAction,
-                checkTitle: checkButtonTitle,
-                cancelTitle: cancelButtonTitle
-            ),
-            onDismiss: nil
+        self.appFullScreenCover = AppFullScreenCover.alert(
+            title: title,
+            highlightedContent: highlightedContent,
+            highlightedColor: highlightedColor,
+            content: content,
+            style: style,
+            button: button,
+            cancelAction: cancelButtonAction,
+            checkAction: checkButtonAction,
+            checkTitle: checkButtonTitle,
+            cancelTitle: cancelButtonTitle
         )
+        self.fullScreenCoverOnDismiss = nil
     }
     
     func buildEventAlert(
@@ -327,22 +275,20 @@ final class AppCoordinator: Coordinator, ObservableObject {
         cancelButtonTitle: String = "닫기",
         dDay: Int
     ) {
-        presentFullScreenCover(
-            AppFullScreenCover.eventAlert(
-                title: title,
-                style: style,
-                button: button,
-                cancelAction: cancelButtonAction,
-                checkAction: checkButtonAction,
-                checkTitle: checkButtonTitle,
-                cancelTitle: cancelButtonTitle,
-                dDay: dDay
-            ),
-            onDismiss: {
-                self.eventFlow?.clearEventEntity()
-                self.showHealthcareInfo()
-            }
+        self.appFullScreenCover = AppFullScreenCover.eventAlert(
+            title: title,
+            style: style,
+            button: button,
+            cancelAction: cancelButtonAction,
+            checkAction: checkButtonAction,
+            checkTitle: checkButtonTitle,
+            cancelTitle: cancelButtonTitle,
+            dDay: dDay
         )
+        self.fullScreenCoverOnDismiss = {
+            self.eventFlow?.clearEventEntity()
+            self.showHealthcareInfo()
+        }
     }
     
     func buildBottomSheet<Content: View>(
@@ -360,6 +306,19 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 )
             )
         )
+    }
+    
+    func dismissFullScreenCover() {
+        withAnimation(.easeInOut(duration: 0.25)) {
+            self.isModalVisible = false
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.appFullScreenCover = nil
+            if let onDismiss = self.fullScreenCoverOnDismiss {
+                onDismiss()
+                self.fullScreenCoverOnDismiss = nil
+            }
+        }
     }
     
     private func startStepUpdates() {
@@ -514,12 +473,10 @@ extension AppCoordinator {
                 receiveValue: { [weak self] willHatch in
                     guard let self = self else { return }
                     if willHatch {
-                        self.presentFullScreenCover(
-                            AppFullScreenCover.hatchEgg,
-                            onDismiss: {
-                                self.showEventEggAlert()
-                            }
-                        )
+                        self.appFullScreenCover = AppFullScreenCover.hatchEgg
+                        self.fullScreenCoverOnDismiss = {
+                            self.showEventEggAlert()
+                        }
                     } else {
                         showEventEggAlert()
                     }
@@ -573,6 +530,60 @@ extension AppCoordinator {
                         .environment(self)
                 }
             )
+        }
+    }
+}
+
+extension AppCoordinator {
+    @ViewBuilder
+    func makeScene(_ scene: AppScene) -> some View {
+        switch scene {
+        case .splash:
+            diContainer.buildSplashView(appCoordinator: self)
+        case .nickname:
+            diContainer.buildNicknameView()
+        case .login:
+            diContainer.buildLoginView()
+                .onOpenURL { url in
+                    if AuthApi.isKakaoTalkLoginUrl(url) {
+                        DispatchQueue.main.async {
+                            _ = AuthController.handleOpenUrl(url: url)
+                        }
+                    }
+                }
+        case .healthcare:
+            diContainer.buildHealthcareView(appCoordinator: self)
+        case .map:
+            diContainer.buildMapView()
+        case .tabBar:
+            diContainer.buildTabBarView()
+        case .complete:
+            diContainer.buildSignupView()
+        case .egg:
+            diContainer.buildEggView(appCoordinator: self)
+                .popGestureEnabled(true)
+        case .eggGuide:
+            EggGuideView()
+        case .character:
+            diContainer.buildCharacterView()
+                .popGestureEnabled(true)
+        case .review:
+            diContainer.buildReviewView(appCoordinator: self)
+                .popGestureEnabled(true)
+        case let .setting(item):
+            buildSetting(item)
+        case .service(let item):
+            buildService(item)
+        case .feedback:
+            buildFeedback()
+        case let .withdraw(nickname):
+            diContainer.buildWithdrawView(appCoordinator: self, nickname: nickname)
+        case let .changeNickname(viewModel):
+            diContainer.buildMypageChangeNicknameView(viewModel: viewModel)
+        case .healthcarePermission:
+            diContainer.buildHealthCarePermissionView(coordinator: self)
+        case .healthcarePermissionDenied:
+            diContainer.buildHealthCarePermissionDeniedView(coordinator: self)
         }
     }
 }
