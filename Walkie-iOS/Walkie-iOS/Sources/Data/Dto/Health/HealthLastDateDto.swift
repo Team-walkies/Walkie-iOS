@@ -6,5 +6,5 @@
 //
 
 struct HealthLastDateDto: Codable {
-    let lastDataDayDate: String
+    let lastDataDay: String
 }

@@ -31,7 +31,7 @@ final class HealthCareViewModel: ViewModelable {
     }
     
     enum Action {
-        case viewWillAppear
+        case viewWillAppear(onDone: () -> Void)
         case selectDateChanged(dateString: String)
     }
     
@@ -79,8 +79,8 @@ final class HealthCareViewModel: ViewModelable {
     
     func action(_ action: Action) {
         switch action {
-        case .viewWillAppear:
-            getHealthkitStep()
+        case .viewWillAppear(let onDone):
+            getHealthkitStep(completion: onDone)
         case .selectDateChanged(let dateString):
             load(dateString: dateString)
         }
@@ -160,13 +160,20 @@ private extension HealthCareViewModel {
     }
     
     func putHealth(
-        _ steps: [HealthKitManager.DailySteps]
+        _ steps: [HealthKitManager.DailySteps],
+        completion: @escaping () -> Void
     ) {
-        guard !steps.isEmpty else { return }
+        guard !steps.isEmpty else {
+            DispatchQueue.main.async { completion() }
+            return
+        }
         var iterator = steps.makeIterator()
         
         func uploadNext() {
-            guard let item = iterator.next() else { return }
+            guard let item = iterator.next() else {
+                DispatchQueue.main.async { completion() }
+                return
+            }
             let request = HealthRequestDto(
                 targetSteps: UserManager.shared.getTargetStep,
                 nowSteps: item.steps,
@@ -191,7 +198,7 @@ private extension HealthCareViewModel {
 
 private extension HealthCareViewModel {
     
-    func getHealthkitStep() {
+    func getHealthkitStep(completion: (() -> Void)? = nil) {
         getHealthLastDataDayUseCase
             .getHealthLastDataDay()
             .receive(on: DispatchQueue.main)
@@ -200,15 +207,24 @@ private extension HealthCareViewModel {
                 receiveValue: { [weak self] _, start in
                     guard let self else { return }
                     let endExclusive = Date().kstStartOfDay
-                    guard start < endExclusive else { return }
+                    guard start < endExclusive else {
+                        completion?()
+                        return
+                    }
                     
                     HealthKitManager.shared.getDailySteps(from: start) { [weak self] result in
                         guard let self else { return }
                         switch result {
                         case .success(let steps):
-                            guard !steps.isEmpty else { return }
-                            self.putHealth(steps)
+                            guard !steps.isEmpty else {
+                                completion?()
+                                return
+                            }
+                            self.putHealth(steps) {
+                                DispatchQueue.main.async { completion?() }
+                            }
                         case .failure(let error):
+                            DispatchQueue.main.async { completion?() }
                             print("HealthKit fetch failed: \(error)")
                         }
                     }

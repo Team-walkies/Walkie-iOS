@@ -56,8 +56,9 @@ struct HealthCareView: View {
             .background(WalkieCommonAsset.gray50.swiftUIColor)
             .ignoresSafeArea(.all)
             .onAppear {
-                calendarViewModel.selectDate(Date())
-                viewModel.action(.viewWillAppear)
+                viewModel.action(.viewWillAppear {
+                    calendarViewModel.selectDate(Date())
+                })
             }
             .onChange(of: calendarViewModel.state.selectedDate) { _, selectDate in
                 viewModel.action(.selectDateChanged(dateString: selectDate.ymdKST))

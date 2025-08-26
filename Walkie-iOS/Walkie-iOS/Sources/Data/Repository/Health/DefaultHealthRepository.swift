@@ -75,7 +75,7 @@ extension DefaultHealthRepository: HealthRepository {
         healthService
             .getHealthLastDataDays()
             .map { dto in
-                Date.fromYMDKST(dto.lastDataDayDate) ?? Date().kstStartOfDay
+                Date.fromYMDKST(dto.lastDataDay) ?? Date().kstStartOfDay
             }
             .eraseToAnyPublisher()
     }
