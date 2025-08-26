@@ -35,13 +35,16 @@ struct TabBarView: View {
                             .fill(WalkieCommonAsset.gray50.swiftUIColor)
                             .frame(height: 52)
                             .cornerRadius(20, corners: [.topLeft, .topRight])
-                        
                         HStack {
-                            ForEach([TabBarItem.home, TabBarItem.mypage], id: \.self) { item in
+                            ForEach([TabBarItem.home, TabBarItem.map, TabBarItem.mypage], id: \.self) { item in
                                 let isSelected = selectedTab == item
                                 Button(
                                     action: {
-                                        selectedTab = item
+                                        if item == .map {
+                                            appCoordinator.push(AppScene.map)
+                                        } else {
+                                            selectedTab = item
+                                        }
                                     },
                                     label: {
                                         VStack(spacing: 0) {
@@ -61,28 +64,9 @@ struct TabBarView: View {
                                 .walkieTouchEffect()
                             }
                         }
-                        .frame(height: 52)
-                        
-                        Button(
-                            action: {
-                                appCoordinator.push(AppScene.map)
-                            },
-                            label: {
-                                ZStack {
-                                    Circle()
-                                        .fill(WalkieCommonAsset.gray50.swiftUIColor)
-                                        .frame(width: 57, height: 57)
-                                    
-                                    TabBarItem.map.selectedItem
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 53, height: 56)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                        )
-                        .offset(y: -11)
+                        .padding(.horizontal, 55)
                     }
+                    .frame(height: 52)
                     WalkieCommonAsset.gray50.swiftUIColor
                         .frame(height: geometry.safeAreaInsets.bottom)
                 }
