@@ -93,10 +93,15 @@ private extension HealthCareViewModel {
     func load(dateString: String) {
         Task { @MainActor in
             do {
-                async let day: Int = getHealthContinueDayUseCase
-                    .getHealthContinueDay()
-                    .mapError { $0 as Error }
-                    .firstOutput()
+                async let day: Int = {
+                    do {
+                        return try await getHealthContinueDayUseCase
+                            .getHealthContinueDay()
+                            .firstOutput()
+                    } catch OutputError.noOutput {
+                        return 0
+                    }
+                }()
                 
                 async let detail: DetailSnapshot = fetchDetail(for: dateString)
                 
@@ -132,17 +137,27 @@ private extension HealthCareViewModel {
                 serverTarget: nil
             )
         } else {
-            let detail = try await getHealthDetailUseCase
-                .getHealthDetail(searchDate: dateString)
-                .firstOutput()
-            
-            return DetailSnapshot(
-                steps: detail.nowSteps,
-                distance: detail.nowDistance,
-                calories: detail.nowCalories,
-                isToday: false,
-                serverTarget: detail.targetSteps
-            )
+            do {
+                let detail = try await getHealthDetailUseCase
+                    .getHealthDetail(searchDate: dateString)
+                    .firstOutput()
+                
+                return DetailSnapshot(
+                    steps: detail.nowSteps,
+                    distance: detail.nowDistance,
+                    calories: detail.nowCalories,
+                    isToday: false,
+                    serverTarget: detail.targetSteps
+                )
+            } catch {
+                return DetailSnapshot(
+                    steps: 0,
+                    distance: 0,
+                    calories: nil,
+                    isToday: false,
+                    serverTarget: nil
+                )
+            }
         }
     }
     

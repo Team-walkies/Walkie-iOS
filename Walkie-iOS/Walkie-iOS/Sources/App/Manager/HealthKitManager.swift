@@ -94,7 +94,7 @@ final class HealthKitManager {
         Task {
             func canRead(
                 _ id: HKQuantityTypeIdentifier,
-                treatEmptyAsDenied: Bool = true
+                treatEmptyAsDenied: Bool = false
             ) async -> Bool {
                 guard let type = HKObjectType.quantityType(forIdentifier: id) else { return false }
                 let predicate = HKQuery.predicateForSamples(withStart: .distantPast, end: Date())
@@ -121,8 +121,8 @@ final class HealthKitManager {
                 }
             }
             
-            let stepOK = await canRead(.stepCount, treatEmptyAsDenied: true)
-            let distOK = await canRead(.distanceWalkingRunning, treatEmptyAsDenied: true)
+            let stepOK = await canRead(.stepCount)
+            let distOK = await canRead(.distanceWalkingRunning)
             await MainActor.run { done(stepOK && distOK) }
         }
     }

@@ -96,15 +96,15 @@ extension Publisher where Output == Moya.Response {
     }
 }
 
+enum OutputError: Error {
+    case noOutput
+}
+
 extension Publisher where Failure: Error {
     
     func firstOutput() async throws -> Output {
-        try await withCheckedThrowingContinuation { cont in
-            var cancellable: AnyCancellable?
-            cancellable = self.first().sink(
-                receiveCompletion: { if case .failure(let e) = $0 { cont.resume(throwing: e) }; cancellable?.cancel() },
-                receiveValue: { cont.resume(returning: $0); cancellable?.cancel() }
-            )
-        }
+        var it = self.values.makeAsyncIterator()
+        if let v = try await it.next() { return v }
+        throw OutputError.noOutput
     }
 }
