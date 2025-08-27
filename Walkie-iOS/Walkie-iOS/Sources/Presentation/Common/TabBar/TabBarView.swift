@@ -11,8 +11,9 @@ import WalkieCommon
 struct TabBarView: View {
     
     @State private var selectedTab: TabBarItem = .home
-    
     @EnvironmentObject var appCoordinator: AppCoordinator
+    
+    private let items: [TabBarItem] = [.home, .map, .mypage]
     
     var body: some View {
         GeometryReader { geometry in
@@ -36,12 +37,23 @@ struct TabBarView: View {
                             .frame(height: 52)
                             .cornerRadius(20, corners: [.topLeft, .topRight])
                         
-                        HStack {
-                            ForEach([TabBarItem.home, TabBarItem.mypage], id: \.self) { item in
+                        HStack(
+                            spacing: 0
+                        ) {
+                            ForEach(items.indices, id: \.self) { idx in
+                                let item = items[idx]
                                 let isSelected = selectedTab == item
+                                let alignment: Alignment = idx == 0
+                                ? .leading
+                                : (idx == items.count - 1 ? .trailing : .center)
+                                
                                 Button(
                                     action: {
-                                        selectedTab = item
+                                        if item == .map {
+                                            appCoordinator.push(AppScene.map)
+                                        } else {
+                                            selectedTab = item
+                                        }
                                     },
                                     label: {
                                         VStack(spacing: 0) {
@@ -55,34 +67,18 @@ struct TabBarView: View {
                                                 .font(.C2)
                                                 .foregroundColor(color)
                                         }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
                                     }
                                 )
-                                .frame(maxWidth: .infinity)
+                                .frame(maxWidth: .infinity, alignment: alignment)
                                 .walkieTouchEffect()
                             }
                         }
-                        .frame(height: 52)
-                        
-                        Button(
-                            action: {
-                                appCoordinator.push(AppScene.map)
-                            },
-                            label: {
-                                ZStack {
-                                    Circle()
-                                        .fill(WalkieCommonAsset.gray50.swiftUIColor)
-                                        .frame(width: 57, height: 57)
-                                    
-                                    TabBarItem.map.selectedItem
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 53, height: 56)
-                                        .foregroundColor(.white)
-                                }
-                            }
-                        )
-                        .offset(y: -11)
+                        .padding(.horizontal, 55)
                     }
+                    .frame(height: 52)
+                    
                     WalkieCommonAsset.gray50.swiftUIColor
                         .frame(height: geometry.safeAreaInsets.bottom)
                 }

@@ -16,7 +16,7 @@ enum TabBarItem: CaseIterable {
     var title: String {
         switch self {
         case .home: return "홈"
-        case .map: return ""
+        case .map: return "스팟"
         case .mypage: return "마이"
         }
     }
@@ -34,7 +34,7 @@ enum TabBarItem: CaseIterable {
         case .home:
             return Image(.icHomeUnselected)
         case .map:
-            return Image(.icMap)
+            return Image(.icSpotUnselected)
         case .mypage:
             return Image(.icMyUnselected)
         }
@@ -45,7 +45,7 @@ enum TabBarItem: CaseIterable {
         case .home:
             return Image(.icHomeSelected)
         case .map:
-            return Image(.icMap)
+            return Image(.icSpotSelected)
         case .mypage:
             return Image(.icMySelected)
         }
