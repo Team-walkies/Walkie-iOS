@@ -7,26 +7,21 @@
 
 import SwiftUI
 import WalkieCommon
-import Kingfisher
 
 struct HealthCareCalorieView: View {
     
     var caloriesName: String
     var caloriesDescription: String
-    var caloriesUrl: String
+    var caloriesImg: Image
     
     var body: some View {
         HStack(
             spacing: 8
         ) {
-            if let imgURL = URL(string: caloriesUrl) {
-                KFImage.url(imgURL)
-                    .loadDiskFileSynchronously(true)
-                    .cacheMemoryOnly()
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 40, height: 40)
-            }
+            caloriesImg
+                .resizable()
+                .scaledToFit()
+                .frame(width: 40, height: 40)
             
             VStack(
                 alignment: .leading,

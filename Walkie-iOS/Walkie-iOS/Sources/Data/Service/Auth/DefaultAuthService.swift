@@ -43,7 +43,7 @@ extension DefaultAuthService: AuthService {
             .mapVoidResponse()
     }
     
-    func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, any Error> {
+    func signup(info: LoginUserInfo) -> AnyPublisher<LoginDto, Error> {
         authProvider.requestPublisher(.signup(info: info))
             .filterSuccessfulStatusCodes()
             .mapWalkieResponse(LoginDto.self)

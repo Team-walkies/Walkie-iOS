@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+enum DefaultsKey {
+    static let targetStep = "targetStep"
+}
+
 final class UserManager {
     
     static let shared = UserManager()
@@ -27,6 +31,10 @@ extension UserManager {
     var getStartExploreDate: Date? { return self.startExploreDate }
     var getLastVisitedDate: Date? { return self.lastVisitedDate }
     var getShowHealthcare: Bool { return self.showHealthcare ?? false }
+    var getTargetStep: Int {
+        let targetStep = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
+        return targetStep == 0 ? 6000 : targetStep
+    }
 }
 
 extension UserManager {
@@ -41,6 +49,10 @@ extension UserManager {
     
     func setLastVisitedDate(_ date: Date) {
         lastVisitedDate = date
+    }
+    
+    func setTargetStep(_ step: Int) {
+        UserDefaults.standard.set(step, forKey: DefaultsKey.targetStep)
     }
     
     func setShowHealthcare() {

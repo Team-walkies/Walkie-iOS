@@ -15,6 +15,7 @@ struct WeekView: View {
     let onTap: (Date) -> Void
     
     private let cellWidth: CGFloat = 44 // 셀 너비(고정)
+    @AppStorage(DefaultsKey.targetStep) private var targetStep = 6000
     
     var body: some View {
         GeometryReader { geometry in
@@ -33,9 +34,13 @@ struct WeekView: View {
                         )
                         if case let .healthCare(stepData) = config {
                             if let data = stepData[date] {
+                                let isToday = date.kstStartOfDay == Date().kstStartOfDay
+                                let targetStep = isToday
+                                ? TargetStep(rawValue: self.targetStep) ?? .six
+                                : TargetStep(rawValue: data.targetStep) ?? .six
                                 CircleProgressView(
                                     type: .inCalendar,
-                                    targetStep: TargetStep(rawValue: data.targetStep) ?? .six,
+                                    targetStep: targetStep,
                                     nowStep: data.nowStep
                                 )
                             } else {

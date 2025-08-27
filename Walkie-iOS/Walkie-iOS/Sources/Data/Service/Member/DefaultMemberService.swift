@@ -26,7 +26,7 @@ final class DefaultMemberService {
 
 extension DefaultMemberService: MemberService {
     
-    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, any Error> {
+    func getEggPlaying() -> AnyPublisher<GetEggPlayingDto, Error> {
         memberProvider
             .requestPublisher(
                 .getEggPlaying,
@@ -36,7 +36,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func patchEggPlaying(eggId: Int) -> AnyPublisher<GetEggPlayingDto, any Error> {
+    func patchEggPlaying(eggId: Int) -> AnyPublisher<GetEggPlayingDto, Error> {
         memberProvider
             .requestPublisher(
                 .patchEggPlaying(eggId: eggId),
@@ -46,7 +46,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetEggPlayingDto.self)
     }
     
-    func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, any Error> {
+    func getCharacterPlay() -> AnyPublisher<CharacterPlayDto, Error> {
         memberProvider
             .requestPublisher(
                 .getCharacterPlay,
@@ -56,7 +56,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(CharacterPlayDto.self)
     }
     
-    func patchCharacterPlay(characterId: Int) -> AnyPublisher<Void, any Error> {
+    func patchCharacterPlay(characterId: Int) -> AnyPublisher<Void, Error> {
         memberProvider
             .requestPublisher(
                 .patchCharacterPlay(characterId: characterId),
@@ -67,7 +67,7 @@ extension DefaultMemberService: MemberService {
 
     }
     
-    func getRecordedSpot() -> AnyPublisher<RecordedSpotDto, any Error> {
+    func getRecordedSpot() -> AnyPublisher<RecordedSpotDto, Error> {
         memberProvider
             .requestPublisher(
                 .getRecordedSpot,
@@ -77,7 +77,7 @@ extension DefaultMemberService: MemberService {
             .mapWithoutDto(RecordedSpotDto.self)
     }
     
-    func patchProfileVisibility() -> AnyPublisher<Void, any Error> {
+    func patchProfileVisibility() -> AnyPublisher<Void, Error> {
         memberProvider
             .requestPublisher(
                 .patchUserProfileVisibility,
@@ -87,7 +87,7 @@ extension DefaultMemberService: MemberService {
             .mapVoidResponse()
     }
     
-    func patchProfile(memberNickname: String) -> AnyPublisher<Void, any Error> {
+    func patchProfile(memberNickname: String) -> AnyPublisher<Void, Error> {
         memberProvider
             .requestPublisher(
                 .patchUserProfile(
@@ -99,7 +99,7 @@ extension DefaultMemberService: MemberService {
             .mapVoidResponse()
     }
     
-    func getProfile() -> AnyPublisher<GetProfileDto, any Error> {
+    func getProfile() -> AnyPublisher<GetProfileDto, Error> {
         memberProvider
             .requestPublisher(
                 .getUserProfile,
@@ -109,7 +109,7 @@ extension DefaultMemberService: MemberService {
             .mapWalkieResponse(GetProfileDto.self)
     }
     
-    func withdraw() -> AnyPublisher<Void, any Error> {
+    func withdraw() -> AnyPublisher<Void, Error> {
         memberProvider
             .requestPublisher(
                 .withdraw,
