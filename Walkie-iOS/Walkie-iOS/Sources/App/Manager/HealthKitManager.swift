@@ -287,7 +287,7 @@ private extension HealthKitManager {
         let predicate = HKQuery.predicateForSamples(
             withStart: start,
             end: end,
-            options: [.strictStartDate]
+            options: [.strictStartDate, .strictEndDate]
         )
         
         return try await withCheckedThrowingContinuation { cont in

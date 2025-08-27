@@ -91,71 +91,58 @@ final class HealthCareViewModel: ViewModelable {
 private extension HealthCareViewModel {
     
     func load(dateString: String) {
-        continuousDayPublisher()
-            .zip(detailPublisher(for: dateString))
-            .receive(on: DispatchQueue.main)
-            .walkieSink(
-                with: self,
-                receiveValue: { [weak self] _, zipped in
-                    guard let self else { return }
-                    let (day, detail) = zipped
-                    self.continuousDay = day
-                    self.applyHealthUpdate(
-                        steps: detail.steps,
-                        distance: detail.distance,
-                        calories: detail.calories,
-                        isToday: detail.isToday,
-                        serverTarget: detail.serverTarget
-                    )
-                }
-            )
-            .store(in: &cancellables)
+        Task { @MainActor in
+            do {
+                async let day: Int = getHealthContinueDayUseCase
+                    .getHealthContinueDay()
+                    .mapError { $0 as Error }
+                    .firstOutput()
+                
+                async let detail: DetailSnapshot = fetchDetail(for: dateString)
+                
+                let (continuous, snapshot) = try await (day, detail)
+                
+                self.continuousDay = continuous
+                self.applyHealthUpdate(
+                    steps: snapshot.steps,
+                    distance: snapshot.distance,
+                    calories: snapshot.calories,
+                    isToday: snapshot.isToday,
+                    serverTarget: snapshot.serverTarget
+                )
+            } catch {
+                self.state = .error
+                self.calorieState = .error
+            }
+        }
     }
     
-    func continuousDayPublisher() -> AnyPublisher<Int, Error> {
-        getHealthContinueDayUseCase
-            .getHealthContinueDay()
-            .mapError { $0 as Error }
-            .eraseToAnyPublisher()
-    }
-    
-    private func detailPublisher(
+    private func fetchDetail(
         for dateString: String
-    ) -> AnyPublisher<DetailSnapshot, Error> {
-        let isToday = (dateString == Date().ymdKST)
+    ) async throws -> DetailSnapshot {
+        let isToday = Date.fromYMDKST(dateString)?.isTodayKST ?? false
         
         if isToday {
-            return Future<DetailSnapshot, Error> { promise in
-                HealthKitManager.shared.getTodaySteps { result in
-                    switch result {
-                    case .success(let today):
-                        promise(.success(.init(
-                            steps: today.steps,
-                            distance: today.distance,
-                            calories: nil,
-                            isToday: true,
-                            serverTarget: nil
-                        )))
-                    case .failure(let e):
-                        promise(.failure(e))
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
+            let today = try await HealthKitManager.shared.getTodaySteps()
+            return DetailSnapshot(
+                steps: today.steps,
+                distance: today.distance,
+                calories: nil,
+                isToday: true,
+                serverTarget: nil
+            )
         } else {
-            return getHealthDetailUseCase
+            let detail = try await getHealthDetailUseCase
                 .getHealthDetail(searchDate: dateString)
-                .map { detail in
-                    DetailSnapshot(
-                        steps: detail.nowSteps,
-                        distance: detail.nowDistance,
-                        calories: detail.nowCalories,
-                        isToday: false,
-                        serverTarget: detail.targetSteps
-                    )
-                }
-                .mapError { $0 as Error }
-                .eraseToAnyPublisher()
+                .firstOutput()
+            
+            return DetailSnapshot(
+                steps: detail.nowSteps,
+                distance: detail.nowDistance,
+                calories: detail.nowCalories,
+                isToday: false,
+                serverTarget: detail.targetSteps
+            )
         }
     }
     
