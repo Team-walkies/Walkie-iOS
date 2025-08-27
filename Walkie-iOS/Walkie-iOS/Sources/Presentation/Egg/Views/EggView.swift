@@ -17,6 +17,7 @@ struct EggView: View {
     
     @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject var viewModel: EggViewModel
+    @State var isShowingBottomSheet: Bool = false
     
     var body: some View {
         ZStack {
@@ -65,15 +66,7 @@ struct EggView: View {
                                         EggItemView(state: egg)
                                             .onTapGesture {
                                                 viewModel.action(.didTapEggDetail(egg))
-                                                appCoordinator.buildBottomSheet(
-                                                    height: 516,
-                                                    content: {
-                                                        EggDetailView(
-                                                            eggViewModel: viewModel,
-                                                            viewModel: viewModel.eggDetailViewModel!
-                                                        )
-                                                    }
-                                                )
+                                                isShowingBottomSheet = true
                                             }
                                     }
                                 }
@@ -112,6 +105,18 @@ struct EggView: View {
                 .scrollIndicators(.never)
             }
         }
+        .bottomSheet(
+            isPresented: $isShowingBottomSheet,
+            height: 516,
+            content: {
+                if let eggDetailViewModel = viewModel.eggDetailViewModel {
+                    EggDetailView(
+                        eggViewModel: viewModel,
+                        viewModel: eggDetailViewModel
+                    )
+                }
+            }
+        )
         .navigationBarBackButtonHidden()
     }
 }

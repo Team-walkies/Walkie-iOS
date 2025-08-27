@@ -28,22 +28,6 @@ struct WalkieIOSApp: App {
                                 .environmentObject(appCoordinator)
                                 .navigationBarBackButtonHidden()
                         }
-                        .fullScreenCover(
-                            item: $appCoordinator.appFullScreenCover,
-                            onDismiss: {
-                                if let onDismiss = appCoordinator.fullScreenCoverOnDismiss {
-                                    onDismiss()
-                                    appCoordinator.fullScreenCoverOnDismiss = nil
-                                }
-                            },
-                            content: { fullScreenCover in
-                                appCoordinator.buildFullScreenCover(fullScreenCover)
-                                    .environmentObject(appCoordinator)
-                                    .ignoresSafeArea(.all)
-                                    .presentationBackground(.black.opacity(0))
-                            }
-                        )
-                        .transaction { $0.disablesAnimations = true }
                         .bottomSheet(
                             isPresented: Binding(
                                 get: { appCoordinator.sheet != nil },
@@ -59,7 +43,10 @@ struct WalkieIOSApp: App {
                 ToastContainer()
                     .ignoresSafeArea(.all, edges: .bottom)
                     .frame(alignment: .bottom)
-                    .zIndex(.infinity)
+                if let fullScreenCover = appCoordinator.appFullScreenCover {
+                    appCoordinator.makeFullScreenCover(fullScreenCover)
+                        .ignoresSafeArea(.all)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -74,7 +61,6 @@ struct WalkieIOSApp: App {
     }
     
     private func initiateBackgroundTask() {
-        // 백그라운드 작업 등록
         BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
             appCoordinator.handleStepRefresh(task: task)
         }

@@ -10,8 +10,10 @@ import WalkieCommon
 
 struct CharacterView: View {
     
+    @Environment(\.screenHeight) var screenHeight
     @StateObject var viewModel: CharacterViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @State var isShowingBottomSheet: Bool = false
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -51,7 +53,8 @@ struct CharacterView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
                         CharacterListView(
-                            viewModel: viewModel
+                            viewModel: viewModel,
+                            isShowingBottomSheet: $isShowingBottomSheet
                         )
                         .environment(appCoordinator)
                         .ignoresSafeArea()
@@ -63,13 +66,23 @@ struct CharacterView: View {
                 }.scrollIndicators(.never)
             }
         }
+        .bottomSheet(
+            isPresented: $isShowingBottomSheet,
+            height: screenHeight > 710 ? 712 : screenHeight - 94,
+            content: {
+                if let characterDetailViewModel = viewModel.characterDetailViewModel {
+                    CharacterDetailView(viewModel: characterDetailViewModel)
+                        .padding(.top, 28)
+                        .background(.white)
+                }
+            }
+        )
         .navigationBarBackButtonHidden()
     }
 }
 
 private struct CharacterItemView: View {
     @Environment(\.screenWidth) var screenWidth
-    @EnvironmentObject var appCoordinator: AppCoordinator
     
     let characterImage: ImageResource
     let characterName: String
@@ -137,6 +150,7 @@ private struct CharacterItemView: View {
 private struct CharacterListView: View {
     @ObservedObject var viewModel: CharacterViewModel
     @EnvironmentObject var appCoordinator: AppCoordinator
+    @Binding var isShowingBottomSheet: Bool
     
     var body: some View {
         ScrollView(.horizontal) {
@@ -144,7 +158,8 @@ private struct CharacterListView: View {
                 ForEach(CharacterType.allCases, id: \.self) { type in
                     CharacterTypeView(
                         type: type,
-                        viewModel: viewModel
+                        viewModel: viewModel,
+                        isShowingBottomSheet: $isShowingBottomSheet
                     )
                     .environment(appCoordinator)
                 }
@@ -160,8 +175,8 @@ private struct CharacterListView: View {
 private struct CharacterTypeView: View {
     let type: CharacterType
     @ObservedObject var viewModel: CharacterViewModel
+    @Binding var isShowingBottomSheet: Bool
     @Environment(\.screenWidth) var screenWidth
-    @EnvironmentObject var appCoordinator: AppCoordinator
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -204,17 +219,17 @@ private struct CharacterTypeView: View {
                             JellyfishItemView(
                                 jellyfish: jellyfish,
                                 state: state,
-                                viewModel: viewModel
+                                viewModel: viewModel,
+                                isShowingBottomSheet: $isShowingBottomSheet
                             )
-                            .environment(appCoordinator)
                             .frame(width: (screenWidth - 16*2 - 11)/2)
                         } else if let dino = character as? DinoType {
                             DinoItemView(
                                 dino: dino,
                                 state: state,
-                                viewModel: viewModel
+                                viewModel: viewModel,
+                                isShowingBottomSheet: $isShowingBottomSheet
                             )
-                            .environment(appCoordinator)
                             .frame(width: (screenWidth - 16*2 - 11)/2)
                         }
                     }
@@ -254,8 +269,7 @@ private struct JellyfishItemView: View {
     let jellyfish: JellyfishType
     let state: CharacterViewModel.CharacterListState
     let viewModel: CharacterViewModel
-    @EnvironmentObject var appCoordinator: AppCoordinator
-    @Environment(\.screenHeight) var screenHeight
+    @Binding var isShowingBottomSheet: Bool
     
     var body: some View {
         if let jellyfishState = state.jellyfishState[jellyfish] {
@@ -272,14 +286,7 @@ private struct JellyfishItemView: View {
                     type: jellyfish,
                     state: jellyfishState)
                 )
-                appCoordinator.buildBottomSheet(
-                    height: screenHeight > 710 ? 712 : screenHeight - 94,
-                    content: {
-                        CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
-                            .padding(.top, 28)
-                            .background(.white)
-                    }
-                )
+                isShowingBottomSheet = true
             }
         }
     }
@@ -289,8 +296,7 @@ private struct DinoItemView: View {
     let dino: DinoType
     let state: CharacterViewModel.CharacterListState
     let viewModel: CharacterViewModel
-    @EnvironmentObject var appCoordinator: AppCoordinator
-    @Environment(\.screenHeight) var screenHeight
+    @Binding var isShowingBottomSheet: Bool
     
     var body: some View {
         if let dinoState = state.dinoState[dino] {
@@ -307,14 +313,7 @@ private struct DinoItemView: View {
                     type: dino,
                     state: dinoState)
                 )
-                appCoordinator.buildBottomSheet(
-                    height: screenHeight > 710 ? 712 : screenHeight - 94,
-                    content: {
-                        CharacterDetailView(viewModel: viewModel.characterDetailViewModel!)
-                            .padding(.top, 28)
-                            .background(.white)
-                    }
-                )
+                isShowingBottomSheet = true
             }
         }
     }

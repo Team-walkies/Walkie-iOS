@@ -90,6 +90,7 @@ extension View {
         .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
         .sheet(isPresented: isPresented) {
             content()
+                .zIndex(2)
                 .presentationCornerRadius(24)
                 .ignoresSafeArea(.all)
                 .presentationDetents([.height(height)])
