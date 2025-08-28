@@ -73,6 +73,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             self.state.futureWeek = future
             self.state.selectedDate = date
             self.state.scrollPosition = 0
+            requestVisibleWeeks()
         case .scrollToPast:
             let newSelected = self.state.selectedDate.adding(days: -7)
             let (past, present, future) = calendarUseCase.generateWeeks(baseDate: newSelected)
@@ -147,6 +148,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
     private func getHealthWeek(dto: HealthDateDto) {
         getHealthUseCase
             .getHealth(date: dto)
+            .receive(on: DispatchQueue.main)
             .walkieSink(
                 with: self,
                 receiveValue: { [weak self] _, weekData in
@@ -165,14 +167,16 @@ final class HealthCareCalendarViewModel: ViewModelable {
         
         HealthKitManager.shared.getTodaySteps { [weak self] result in
             guard let self else { return }
-            switch result {
-            case .success(let todayData):
-                self.state.healthCareData[today] = (
-                    nowStep: todayData.steps,
-                    targetStep: UserManager.shared.getTargetStep
-                )
-            case .failure:
-                break
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let todayData):
+                    self.state.healthCareData[today] = (
+                        nowStep: todayData.steps,
+                        targetStep: UserManager.shared.getTargetStep
+                    )
+                case .failure:
+                    break
+                }
             }
         }
     }

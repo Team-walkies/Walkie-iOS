@@ -31,7 +31,7 @@ final class HealthCareViewModel: ViewModelable {
     }
     
     enum Action {
-        case viewWillAppear
+        case viewWillAppear(onDone: () -> Void)
         case selectDateChanged(dateString: String)
     }
     
@@ -79,8 +79,8 @@ final class HealthCareViewModel: ViewModelable {
     
     func action(_ action: Action) {
         switch action {
-        case .viewWillAppear:
-            getHealthkitStep()
+        case .viewWillAppear(let onDone):
+            getHealthkitStep(completion: onDone)
         case .selectDateChanged(let dateString):
             load(dateString: dateString)
         }
@@ -91,82 +91,91 @@ final class HealthCareViewModel: ViewModelable {
 private extension HealthCareViewModel {
     
     func load(dateString: String) {
-        continuousDayPublisher()
-            .zip(detailPublisher(for: dateString))
-            .receive(on: DispatchQueue.main)
-            .walkieSink(
-                with: self,
-                receiveValue: { [weak self] _, zipped in
-                    guard let self else { return }
-                    let (day, detail) = zipped
-                    self.continuousDay = day
-                    self.applyHealthUpdate(
-                        steps: detail.steps,
-                        distance: detail.distance,
-                        calories: detail.calories,
-                        isToday: detail.isToday,
-                        serverTarget: detail.serverTarget
-                    )
-                }
-            )
-            .store(in: &cancellables)
+        Task { @MainActor in
+            do {
+                async let day: Int = {
+                    do {
+                        return try await getHealthContinueDayUseCase
+                            .getHealthContinueDay()
+                            .firstOutput()
+                    } catch OutputError.noOutput {
+                        return 0
+                    }
+                }()
+                
+                async let detail: DetailSnapshot = fetchDetail(for: dateString)
+                
+                let (continuous, snapshot) = try await (day, detail)
+                
+                self.continuousDay = continuous
+                self.applyHealthUpdate(
+                    steps: snapshot.steps,
+                    distance: snapshot.distance,
+                    calories: snapshot.calories,
+                    isToday: snapshot.isToday,
+                    serverTarget: snapshot.serverTarget
+                )
+            } catch {
+                self.state = .error
+                self.calorieState = .error
+            }
+        }
     }
     
-    func continuousDayPublisher() -> AnyPublisher<Int, Error> {
-        getHealthContinueDayUseCase
-            .getHealthContinueDay()
-            .mapError { $0 as Error }
-            .eraseToAnyPublisher()
-    }
-    
-    private func detailPublisher(
+    private func fetchDetail(
         for dateString: String
-    ) -> AnyPublisher<DetailSnapshot, Error> {
-        let isToday = (dateString == Date().ymdKST)
+    ) async throws -> DetailSnapshot {
+        let isToday = Date.fromYMDKST(dateString)?.isTodayKST ?? false
         
         if isToday {
-            return Future<DetailSnapshot, Error> { promise in
-                HealthKitManager.shared.getTodaySteps { result in
-                    switch result {
-                    case .success(let today):
-                        promise(.success(.init(
-                            steps: today.steps,
-                            distance: today.distance,
-                            calories: nil,
-                            isToday: true,
-                            serverTarget: nil
-                        )))
-                    case .failure(let e):
-                        promise(.failure(e))
-                    }
-                }
-            }
-            .eraseToAnyPublisher()
+            let today = try await HealthKitManager.shared.getTodaySteps()
+            return DetailSnapshot(
+                steps: today.steps,
+                distance: today.distance,
+                calories: nil,
+                isToday: true,
+                serverTarget: nil
+            )
         } else {
-            return getHealthDetailUseCase
-                .getHealthDetail(searchDate: dateString)
-                .map { detail in
-                    DetailSnapshot(
-                        steps: detail.nowSteps,
-                        distance: detail.nowDistance,
-                        calories: detail.nowCalories,
-                        isToday: false,
-                        serverTarget: detail.targetSteps
-                    )
-                }
-                .mapError { $0 as Error }
-                .eraseToAnyPublisher()
+            do {
+                let detail = try await getHealthDetailUseCase
+                    .getHealthDetail(searchDate: dateString)
+                    .firstOutput()
+                
+                return DetailSnapshot(
+                    steps: detail.nowSteps,
+                    distance: detail.nowDistance,
+                    calories: detail.nowCalories,
+                    isToday: false,
+                    serverTarget: detail.targetSteps
+                )
+            } catch {
+                return DetailSnapshot(
+                    steps: 0,
+                    distance: 0,
+                    calories: nil,
+                    isToday: false,
+                    serverTarget: nil
+                )
+            }
         }
     }
     
     func putHealth(
-        _ steps: [HealthKitManager.DailySteps]
+        _ steps: [HealthKitManager.DailySteps],
+        completion: @escaping () -> Void
     ) {
-        guard !steps.isEmpty else { return }
+        guard !steps.isEmpty else {
+            DispatchQueue.main.async { completion() }
+            return
+        }
         var iterator = steps.makeIterator()
         
         func uploadNext() {
-            guard let item = iterator.next() else { return }
+            guard let item = iterator.next() else {
+                DispatchQueue.main.async { completion() }
+                return
+            }
             let request = HealthRequestDto(
                 targetSteps: UserManager.shared.getTargetStep,
                 nowSteps: item.steps,
@@ -181,6 +190,10 @@ private extension HealthCareViewModel {
                     receiveValue: { [weak self] _, _ in
                         guard self != nil else { return }
                         uploadNext()
+                    },
+                    receiveFailure: { [weak self] _, _ in
+                        guard self != nil else { return }
+                        DispatchQueue.main.async { completion() }
                     }
                 )
                 .store(in: &cancellables)
@@ -191,7 +204,7 @@ private extension HealthCareViewModel {
 
 private extension HealthCareViewModel {
     
-    func getHealthkitStep() {
+    func getHealthkitStep(completion: @escaping () -> Void = {}) {
         getHealthLastDataDayUseCase
             .getHealthLastDataDay()
             .receive(on: DispatchQueue.main)
@@ -200,18 +213,31 @@ private extension HealthCareViewModel {
                 receiveValue: { [weak self] _, start in
                     guard let self else { return }
                     let endExclusive = Date().kstStartOfDay
-                    guard start < endExclusive else { return }
+                    guard start < endExclusive else {
+                        completion()
+                        return
+                    }
                     
                     HealthKitManager.shared.getDailySteps(from: start) { [weak self] result in
                         guard let self else { return }
                         switch result {
                         case .success(let steps):
-                            guard !steps.isEmpty else { return }
-                            self.putHealth(steps)
+                            guard !steps.isEmpty else {
+                                DispatchQueue.main.async { completion() }
+                                return
+                            }
+                            self.putHealth(steps) {
+                                DispatchQueue.main.async { completion() }
+                            }
                         case .failure(let error):
+                            DispatchQueue.main.async { completion() }
                             print("HealthKit fetch failed: \(error)")
                         }
                     }
+                },
+                receiveFailure: { [weak self] _, _ in
+                    guard self != nil else { return }
+                    DispatchQueue.main.async { completion() }
                 }
             )
             .store(in: &cancellables)

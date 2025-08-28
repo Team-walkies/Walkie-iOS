@@ -95,3 +95,16 @@ extension Publisher where Output == Moya.Response {
             .eraseToAnyPublisher()
     }
 }
+
+enum OutputError: Error {
+    case noOutput
+}
+
+extension Publisher where Failure: Error {
+    
+    func firstOutput() async throws -> Output {
+        var it = self.values.makeAsyncIterator()
+        if let v = try await it.next() { return v }
+        throw OutputError.noOutput
+    }
+}
