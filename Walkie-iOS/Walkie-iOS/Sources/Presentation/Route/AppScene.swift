@@ -95,6 +95,7 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
         cancelTitle: String,
         dDay: Int
     )
+    case healthCareGiveEgg(type: EggType)
     
     var id: String {
         switch self {
@@ -104,6 +105,8 @@ enum AppFullScreenCover: AppRoute, Identifiable, Hashable {
             return "alert_\(title)"
         case .eventAlert:
             return "eventAlert"
+        case .healthCareGiveEgg:
+            return "healthCareGiveEgg"
         }
     }
     
