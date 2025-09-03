@@ -183,6 +183,10 @@ final class AppCoordinator: Coordinator, ObservableObject {
                 )
                 .padding(.horizontal, 40)
             }
+        case let .healthCareGiveEgg(type):
+            fullScreenCoverWrapper {
+                GiveEggView(viewModel: GiveEggViewModel(coordinator: self, eggType: type))
+            }
         }
     }
     

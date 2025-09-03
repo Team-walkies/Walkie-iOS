@@ -10,7 +10,6 @@ import WalkieCommon
 
 struct HealthCareView: View {
     
-    @EnvironmentObject var appCoordinator: AppCoordinator
     @StateObject var viewModel: HealthCareViewModel
     @StateObject var calendarViewModel: HealthCareCalendarViewModel
     
