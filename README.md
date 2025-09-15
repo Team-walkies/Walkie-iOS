@@ -1,9 +1,9 @@
 ## 🚶🏻‍♂️ Walkie - 걷기에 재미를 더하다
-<a href="apps.apple.com/kr/app/id6742345668">
-  <img src="https://img.shields.io/badge/AppStore-0D96F6.svg?style=flat-square&logo=appstore&logoColor=ffffff" width="100"/>
+<a href="https://apps.apple.com/kr/app/id6742345668">
+  <img alt="Download on the App Store" src="https://img.shields.io/badge/AppStore-0D96F6.svg?style=flat-square&logo=appstore&logoColor=ffffff" width="100"/>
 </a>
 <a href="https://zippy-cake-826.notion.site/1c2e3ac17cda8012ab68d67896864ca9">
-  <img src="https://img.shields.io/badge/Notion-212121.svg?style=flat-square&logo=notion&logoColor=ffffff" width="80"/>
+  <img alt="Notion Docs" src="https://img.shields.io/badge/Notion-212121.svg?style=flat-square&logo=notion&logoColor=ffffff" width="80"/>
 </a>
 <br>
 <img alt="walkie" src="https://github.com/user-attachments/assets/854b4ce1-a240-468f-bc43-f224c6c2f638" width="800"/>
