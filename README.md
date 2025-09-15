@@ -6,7 +6,7 @@
   <img src="https://img.shields.io/badge/Notion-212121.svg?style=flat-square&logo=notion&logoColor=ffffff" width="80"/>
 </a>
 <br>
-<img alt="walkie" src="https://github.com/user-attachments/assets/854b4ce1-a240-468f-bc43-f224c6c2f638" width="800" height="391"/>
+<img alt="walkie" src="https://github.com/user-attachments/assets/854b4ce1-a240-468f-bc43-f224c6c2f638" width="800"/>
 
 > 그냥 걷기만 해도 캐릭터가 생긴다!  
 > 지도를 따라 스팟을 탐험하고 알을 모아 캐릭터를 부화하세요. 일상이 모험이 되는 위치 기반 만보기, 워키!
@@ -17,7 +17,7 @@
 ### Clean Architecture 구조
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Presentation  │───▶│     Domain      │───▶│      Data       │
+│   Presentation  │───▶│     Domain      │◀───│      Data       │
 │   (Views/VMs)   │    │  (Entities/UC)  │    │ (Repo/Service)  │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
