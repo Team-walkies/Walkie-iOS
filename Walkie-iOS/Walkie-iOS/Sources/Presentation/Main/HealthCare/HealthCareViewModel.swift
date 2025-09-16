@@ -291,18 +291,16 @@ private extension HealthCareViewModel {
         }
     }
     
-    private func checkGoalAndGiveEgg(_ detailSnapshot: DetailSnapshot) {
-        if let target = detailSnapshot.serverTarget, target < detailSnapshot.steps {
-            Task {
-                do {
-                    // TODO:  API 호출을 통해 알 타입 전달
-                    let type: EggType = .epic // FIXME: 실제 리스폰스로 변경
-                    self.coordinator.presentFullScreenCover(
-                        AppFullScreenCover.healthCareGiveEgg(type: type)
-                    )
-                } catch {
-                    dump(error)
-                }
+    private func giveEgg(at dateString: String) {
+        Task {
+            do {
+                // TODO:  API 호출을 통해 알 타입 전달
+                let type: EggType = .epic // FIXME: 실제 리스폰스로 변경
+                self.coordinator.presentFullScreenCover(
+                    AppFullScreenCover.healthCareGiveEgg(type: type)
+                )
+            } catch {
+                dump(error)
             }
         }
     }
