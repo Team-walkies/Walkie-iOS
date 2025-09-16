@@ -108,7 +108,6 @@ private extension HealthCareViewModel {
                 
                 async let detail: DetailSnapshot = fetchDetail(for: dateString)
                 
-                try await checkGoalAndGiveEgg(detail)
                 let (continuous, snapshot) = try await (day, detail)
                 
                 self.continuousDay = continuous
