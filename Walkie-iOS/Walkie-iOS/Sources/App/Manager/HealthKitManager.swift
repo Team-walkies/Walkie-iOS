@@ -287,7 +287,7 @@ private extension HealthKitManager {
         let predicate = HKQuery.predicateForSamples(
             withStart: start,
             end: end,
-            options: [.strictStartDate, .strictEndDate]
+            options: [.strictStartDate]
         )
         
         return try await withCheckedThrowingContinuation { cont in
@@ -296,7 +296,10 @@ private extension HealthKitManager {
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
             ) { _, stats, error in
-                if let error {
+                if let error = error as? HKError, error.code == .errorNoData {
+                    cont.resume(returning: 0)
+                    return
+                } else if let error {
                     cont.resume(throwing: error)
                     return
                 }
