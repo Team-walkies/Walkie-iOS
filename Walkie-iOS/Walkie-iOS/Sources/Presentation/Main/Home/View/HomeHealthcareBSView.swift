@@ -35,11 +35,11 @@ struct HomeHealthcareBSView: View {
                     alignment: .center,
                     spacing: 4
                 ) {
-                    Text("이제 걸음 기록을 볼 수 있어요!")
+                    Text("걸음 수로 알을 얻을 수 있어요")
                         .font(.H3)
                         .foregroundColor(WalkieCommonAsset.gray700.swiftUIColor)
                     
-                    Text("원하는 목표 걸음 수를 설정하고 달성해 보세요!")
+                    Text("원하는 목표를 설정하고 달성해 보세요!")
                         .font(.B2)
                         .foregroundColor(WalkieCommonAsset.gray500.swiftUIColor)
                 }
