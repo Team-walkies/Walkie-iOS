@@ -34,7 +34,8 @@ extension DefaultHealthRepository: HealthRepository {
                 let dict = dtos.reduce(into: [String: HealthWeekEntity]()) { dic, dto in
                     dic[dto.responseDate] = HealthWeekEntity(
                         nowStep: dto.nowSteps,
-                        targetStep: dto.targetSteps
+                        targetStep: dto.targetSteps,
+                        hasEggToReceive: true // TODO: dto 변경 시 바인딩 필요
                     )
                 }
                 return dict

@@ -15,7 +15,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         var pastWeek: [Date]
         var presentWeek: [Date]
         var futureWeek: [Date]
-        var healthCareData: [Date: (nowStep: Int, targetStep: Int)]
+        var healthCareData: [Date: HealthDayEntity]
         var selectedDate: Date
         var scrollPosition: Int?
         var showDatePicker: Bool = false
@@ -53,7 +53,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             pastWeek: past,
             presentWeek: present,
             futureWeek: future,
-            healthCareData: [:],
+            healthCareData: ([:]),
             selectedDate: today,
             scrollPosition: 0
         )
@@ -105,13 +105,17 @@ final class HealthCareCalendarViewModel: ViewModelable {
     
     private func convertStepDataToDateKeys(
         _ data: [String: HealthWeekEntity]
-    ) -> [Date: (nowStep: Int, targetStep: Int)] {
-        var result: [Date: (nowStep: Int, targetStep: Int)] = [:]
+    ) -> [Date: HealthDayEntity] {
+        var result: [Date: HealthDayEntity] = [:]
         
         for (dateString, entity) in data {
             guard let parsed = Date.fromYMDKST(dateString) else { continue }
             let day = parsed.kstStartOfDay
-            result[day] = (nowStep: entity.nowStep, targetStep: entity.targetStep)
+            result[day] = HealthDayEntity(
+                nowStep: entity.nowStep,
+                targetStep: entity.targetStep,
+                hasEggToReceive: entity.hasEggToReceive
+            )
         }
         
         return result
@@ -170,15 +174,27 @@ final class HealthCareCalendarViewModel: ViewModelable {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let todayData):
-                    self.state.healthCareData[today] = (
+                    self.state.healthCareData[today] = HealthDayEntity(
                         nowStep: todayData.steps,
-                        targetStep: UserManager.shared.getTargetStep
+                        targetStep: UserManager.shared.getTargetStep,
+                        hasEggToReceive: self.setTodayState(
+                            nowStep: todayData.steps,
+                            targetStep: UserManager.shared.getTargetStep
+                        )
                     )
                 case .failure:
                     break
                 }
             }
         }
+    }
+    
+    private func setTodayState(
+        nowStep: Int,
+        targetStep: Int
+    ) -> Bool {
+        let goal = nowStep >= targetStep
+        return goal && !UserManager.shared.getReceiveTodayEgg
     }
     
     private func setSelectedDate(
