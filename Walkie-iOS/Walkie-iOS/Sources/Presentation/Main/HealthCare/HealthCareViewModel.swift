@@ -44,6 +44,7 @@ final class HealthCareViewModel: ViewModelable {
         let nowDistance: Double
         let nowCalories: Int
         let isToday: Bool
+        let eggButtonState: GetEggButtonState
     }
     
     struct HealthCareCalorieState {
@@ -259,6 +260,11 @@ private extension HealthCareViewModel {
         let displayContinuousDay = (isToday && steps >= target.rawValue)
         ? (self.continuousDay + 1)
         : self.continuousDay
+        let buttonState = resolveEggButtonState(
+            isToday: isToday,
+            isGoalAchieve: steps >= target.rawValue,
+            isAward: true // TODO: 서버에서 받아온값으로 변경하기
+        )
         
         let info = HealthCareInfoState(
             continuousDays: displayContinuousDay,
@@ -266,7 +272,8 @@ private extension HealthCareViewModel {
             nowSteps: steps,
             nowDistance: distance,
             nowCalories: calories ?? steps / 30,
-            isToday: isToday
+            isToday: isToday,
+            eggButtonState: buttonState
         )
         self.state = .loaded(info)
         
@@ -285,6 +292,20 @@ private extension HealthCareViewModel {
             return TargetStep(rawValue: UserManager.shared.getTargetStep) ?? .six
         } else {
             return TargetStep(rawValue: serverTarget ?? 6000) ?? .six
+        }
+    }
+    
+    
+    func resolveEggButtonState(
+        isToday: Bool, // 오늘,과거 여부
+        isGoalAchieve: Bool, // 달성여부
+        isAward: Bool // 서버에서 받아온 값
+    ) -> GetEggButtonState {
+        guard isGoalAchieve else { return .pending }
+        if isToday {
+            return UserManager.shared.getReceiveTodayEgg ? .received : .available
+        } else {
+            return isAward ? .received : .available
         }
     }
 }

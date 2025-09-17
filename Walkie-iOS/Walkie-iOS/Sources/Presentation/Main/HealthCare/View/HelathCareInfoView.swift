@@ -137,23 +137,22 @@ struct HealthCareInfoView: View {
                 .padding(.bottom, 16)
             }
             
-            let goalAchieve = infoState.nowSteps >= self.targetStep.rawValue
-            if goalAchieve {
-                VStack(
-                    spacing: 0
-                ) {
-                    Image(.icFirebadge)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40, height: 40)
-                    
-                    Text("달성")
-                        .font(.C1)
-                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
+            let eggButtonState = infoState.eggButtonState
+            HealthCareGetEggButtonView(
+                buttonState: eggButtonState,
+                action: {
+                    switch eggButtonState {
+                    case .available:
+                        return appCoordinator.push(AppScene.egg)
+                    case .pending:
+                        return ()
+                    case .received:
+                        return ()
+                    }
                 }
-                .padding(.top, isConsecutiveToday ? 52 : 16)
-                .padding(.trailing, 16)
-            }
+            )
+            .padding(.top, isConsecutiveToday ? 48 : 12)
+            .padding(.trailing, 16)
         }
         .frame(width: screenWidth - 32)
         .background(.white)

@@ -20,6 +20,8 @@ final class UserManager {
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
+    @UserDefaultsWrapper<Date>(key: "receiveTodayDate") private(set) var receiveTodayDate
+    @UserDefaultsWrapper<Bool>(key: "receiveTodayEgg") private(set) var receiveTodayEgg
     
     private init() {}
 }
@@ -34,6 +36,10 @@ extension UserManager {
     var getTargetStep: Int {
         let targetStep = UserDefaults.standard.integer(forKey: DefaultsKey.targetStep)
         return targetStep == 0 ? 6000 : targetStep
+    }
+    var getReceiveTodayEgg: Bool {
+        normalizeDay()
+        return receiveTodayEgg ?? false
     }
 }
 
@@ -59,6 +65,11 @@ extension UserManager {
         showHealthcare = true
     }
     
+    func setReceiveTodayEgg() {
+        receiveTodayEgg = true
+        receiveTodayDate = Date().kstStartOfDay
+    }
+    
     func clearExploreDate() {
         startExploreDate = nil
     }
@@ -71,5 +82,22 @@ extension UserManager {
         }
         showHealthcare = false
         nickname = nil
+    }
+}
+
+private extension UserManager {
+    
+    func normalizeDay() {
+        guard let savedDay = receiveTodayDate else {
+            if receiveTodayEgg == true {
+                receiveTodayEgg = false
+            }
+            return
+        }
+        
+        if !savedDay.isTodayKST {
+            receiveTodayEgg = false
+            receiveTodayDate = Date().kstStartOfDay
+        }
     }
 }
