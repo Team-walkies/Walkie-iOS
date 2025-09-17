@@ -14,6 +14,7 @@ struct HealthCareInfoView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @Environment(\.screenWidth) var screenWidth
     @AppStorage(DefaultsKey.targetStep) private var targetStepStore = 6000
+    @Binding var showTooltip: Bool
     
     var targetStep: TargetStep {
         if infoState.isToday {
@@ -145,7 +146,7 @@ struct HealthCareInfoView: View {
                     case .available:
                         return appCoordinator.push(AppScene.egg)
                     case .pending:
-                        return ()
+                        return showTooltip.toggle()
                     case .received:
                         return ()
                     }
@@ -153,6 +154,29 @@ struct HealthCareInfoView: View {
             )
             .padding(.top, isConsecutiveToday ? 48 : 12)
             .padding(.trailing, 16)
+            
+            if showTooltip {
+                VStack(
+                    alignment: .trailing,
+                    spacing: 0
+                ) {
+                    Image(.icTip)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 10, height: 8)
+                        .padding(.trailing, 18)
+                    
+                    Text("걸음 수를 채우면 알을 받아요")
+                        .font(.B2)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .background(WalkieCommonAsset.gray600.swiftUIColor)
+                        .cornerRadius(8, corners: .allCorners)
+                }
+                .padding(.top, isConsecutiveToday ? 108 : 72)
+                .padding(.trailing, 12)
+            }
         }
         .frame(width: screenWidth - 32)
         .background(.white)
