@@ -109,6 +109,7 @@ struct CTAButtonLayer: View {
         )
         .fadeAnimation(viewModel.state.animationState.showsCTAButton)
         .frame(maxHeight: .infinity, alignment: .bottom)
+        .padding(.bottom, 38)
     }
 }
 

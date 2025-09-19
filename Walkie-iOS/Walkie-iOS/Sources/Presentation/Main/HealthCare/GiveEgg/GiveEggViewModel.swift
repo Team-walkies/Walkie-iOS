@@ -55,31 +55,34 @@ final class GiveEggViewModel: ViewModelable {
     func action(_ action: Action) {
         switch action {
         case .loaded:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                self.state.animationState.showsCongratsText = true
-                self.state.animationState.showsLottie = true
-                UINotificationFeedbackGenerator().notificationOccurred(.success)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                self.state.animationState.showsGoalText = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                self.state.animationState.showsCongratsText = false
-                self.state.animationState.showsGoalText = false
-                self.state.animationState.showsGotEggText = true
-                self.state.animationState.showsLottie = false
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.state.animationState.showsWalkEggText = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
-                self.state.animationState.showsEggImage = true
-                withAnimation(.easeOut(duration: 0.3)) {
-                    self.state.animationState.eggOffsetY = 0.0
+            Task { @MainActor in
+                guard let self = self as? Self else { return }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    self.state.animationState.showsCongratsText = true
+                    self.state.animationState.showsLottie = true
+                    UINotificationFeedbackGenerator().notificationOccurred(.success)
                 }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
-                self.state.animationState.showsCTAButton = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.state.animationState.showsGoalText = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+                    self.state.animationState.showsCongratsText = false
+                    self.state.animationState.showsGoalText = false
+                    self.state.animationState.showsGotEggText = true
+                    self.state.animationState.showsLottie = false
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.state.animationState.showsWalkEggText = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+                    self.state.animationState.showsEggImage = true
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        self.state.animationState.eggOffsetY = 0.0
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.3) {
+                    self.state.animationState.showsCTAButton = true
+                }
             }
         case .didTapCTAButton:
             coordinator.dismissFullScreenCover()
