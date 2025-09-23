@@ -107,6 +107,19 @@ final class AppCoordinator: Coordinator, ObservableObject {
         }
     }
     
+    func presentFullScreenCover(
+        _ fullScreenCover: any AppRoute,
+        onDismiss: (() -> Void)? = nil
+    ) {
+        if let cover = fullScreenCover as? AppFullScreenCover {
+            self.appFullScreenCover = cover
+            self.fullScreenCoverOnDismiss = onDismiss
+        } else {
+            self.fullScreenCover = fullScreenCover
+            self.fullScreenCoverOnDismiss = onDismiss
+        }
+    }
+    
     @ViewBuilder
     func makeFullScreenCover(_ fullScreenCover: AppFullScreenCover) -> some View {
         switch fullScreenCover {

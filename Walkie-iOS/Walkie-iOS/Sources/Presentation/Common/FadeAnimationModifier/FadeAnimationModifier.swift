@@ -7,10 +7,17 @@
 
 import SwiftUI
 
+enum AnimationType {
+    case easeIn
+    case easeOut
+    case easeInOut
+    case linear
+}
+
 struct FadeAnimationModifier: ViewModifier {
     let value: Bool
     let duration: Double
-    let animationType: Animation
+    let animationType: AnimationType
     
     func body(content: Content) -> some View {
         content
@@ -26,14 +33,8 @@ struct FadeAnimationModifier: ViewModifier {
             return .easeOut(duration: duration)
         case .easeInOut:
             return .easeInOut(duration: duration)
-        default:
+        case .linear:
             return .linear(duration: duration)
         }
-    }
-}
-
-extension View {
-    func fadeAnimation(_ value: Bool, duration: Double = 0.3, animationType: Animation = .linear) -> some View {
-        modifier(FadeAnimationModifier(value: value, duration: duration, animationType: animationType))
     }
 }
