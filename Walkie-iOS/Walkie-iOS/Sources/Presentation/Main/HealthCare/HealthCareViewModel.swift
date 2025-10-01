@@ -59,6 +59,7 @@ final class HealthCareViewModel: ViewModelable {
         let calories: Int?
         let isToday: Bool
         let serverTarget: Int?
+        let isAward: Bool
     }
     
     // view states
@@ -114,7 +115,8 @@ private extension HealthCareViewModel {
                     distance: snapshot.distance,
                     calories: snapshot.calories,
                     isToday: snapshot.isToday,
-                    serverTarget: snapshot.serverTarget
+                    serverTarget: snapshot.serverTarget,
+                    isAward: snapshot.isAward
                 )
             } catch {
                 self.state = .error
@@ -135,7 +137,8 @@ private extension HealthCareViewModel {
                 distance: today.distance,
                 calories: nil,
                 isToday: true,
-                serverTarget: nil
+                serverTarget: nil,
+                isAward: false
             )
         } else {
             do {
@@ -148,7 +151,8 @@ private extension HealthCareViewModel {
                     distance: detail.nowDistance,
                     calories: detail.nowCalories,
                     isToday: false,
-                    serverTarget: detail.targetSteps
+                    serverTarget: detail.targetSteps,
+                    isAward: detail.isAward
                 )
             } catch {
                 return DetailSnapshot(
@@ -156,7 +160,8 @@ private extension HealthCareViewModel {
                     distance: 0,
                     calories: nil,
                     isToday: false,
-                    serverTarget: nil
+                    serverTarget: nil,
+                    isAward: false
                 )
             }
         }
@@ -254,7 +259,8 @@ private extension HealthCareViewModel {
         distance: Double,
         calories: Int?,
         isToday: Bool,
-        serverTarget: Int?
+        serverTarget: Int?,
+        isAward: Bool
     ) {
         let target: TargetStep = resolveTargetStep(isToday: isToday, serverTarget: serverTarget)
         let displayContinuousDay = (isToday && steps >= target.rawValue)
@@ -263,7 +269,7 @@ private extension HealthCareViewModel {
         let buttonState = resolveEggButtonState(
             isToday: isToday,
             isGoalAchieve: steps >= target.rawValue,
-            isAward: true // TODO: 서버에서 받아온값으로 변경하기
+            isAward: isAward
         )
         
         let info = HealthCareInfoState(
@@ -295,17 +301,16 @@ private extension HealthCareViewModel {
         }
     }
     
-    
     func resolveEggButtonState(
         isToday: Bool, // 오늘,과거 여부
         isGoalAchieve: Bool, // 달성여부
-        isAward: Bool // 서버에서 받아온 값
+        isAward: Bool // 서버에서 받아온 값 - 알 받을게 있는지 여부
     ) -> GetEggButtonState {
         guard isGoalAchieve else { return .pending }
         if isToday {
             return UserManager.shared.getReceiveTodayEgg ? .received : .available
         } else {
-            return isAward ? .received : .available
+            return isAward ? .available : .received
         }
     }
 }

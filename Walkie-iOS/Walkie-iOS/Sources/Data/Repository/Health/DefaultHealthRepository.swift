@@ -35,7 +35,7 @@ extension DefaultHealthRepository: HealthRepository {
                     dic[dto.responseDate] = HealthWeekEntity(
                         nowStep: dto.nowSteps,
                         targetStep: dto.targetSteps,
-                        hasEggToReceive: true // TODO: dto 변경 시 바인딩 필요
+                        hasEggToReceive: dto.nowSteps >= dto.targetSteps && dto.award
                     )
                 }
                 return dict
@@ -51,7 +51,8 @@ extension DefaultHealthRepository: HealthRepository {
                     targetSteps: dto.targetSteps,
                     nowSteps: dto.nowSteps,
                     nowCalories: dto.nowCalories,
-                    nowDistance: dto.nowDistance
+                    nowDistance: dto.nowDistance,
+                    isAward: dto.award
                 )
             }
             .eraseToAnyPublisher()
