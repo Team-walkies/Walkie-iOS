@@ -34,7 +34,12 @@ extension View {
     func walkieTouchEffect() -> some View {
         self.buttonStyle(WalkieTouchEffect())
     }
+    
+    func fadeAnimation(_ value: Bool, duration: Double = 0.3, animationType: AnimationType = .linear) -> some View {
+        modifier(FadeAnimationModifier(value: value, duration: duration, animationType: animationType))
+    }
 }
+    
 
 // MARK: - AlignmentModifier
 struct AlignmentModifier: ViewModifier {

@@ -251,8 +251,9 @@ extension DIContainer {
         return AlarmListViewModel()
     }
     
-    func makeHealthCareViewModel() -> HealthCareViewModel {
+    func makeHealthCareViewModel(appCoordinator: AppCoordinator) -> HealthCareViewModel {
         return HealthCareViewModel(
+            coordinator: appCoordinator,
             putHealthUseCase: resolvePutHealthUseCase(),
             getHealthContinueDayUseCase: resolveGetHealthContinueDayUseCase(),
             getHealthDetailUseCase: resolveGetHealthDetailUseCase(),
@@ -348,7 +349,7 @@ extension DIContainer {
     
     func buildHealthcareView(appCoordinator: AppCoordinator) -> HealthCareView {
         return HealthCareView(
-            viewModel: self.makeHealthCareViewModel(),
+            viewModel: self.makeHealthCareViewModel(appCoordinator: appCoordinator),
             calendarViewModel: self.makeHealthCareCalendarViewModel(appCoordinator: appCoordinator)
         )
     }

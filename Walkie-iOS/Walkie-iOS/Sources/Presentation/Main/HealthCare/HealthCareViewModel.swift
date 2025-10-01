@@ -19,11 +19,13 @@ final class HealthCareViewModel: ViewModelable {
     private var continuousDay: Int = 0
     
     init(
+        coordinator: Coordinator,
         putHealthUseCase: PutHealthUseCase,
         getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
         getHealthDetailUseCase: GetHealthDetailUseCase,
         getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase
     ) {
+        self.coordinator = coordinator
         self.putHealthUseCase = putHealthUseCase
         self.getHealthContinueDayUseCase = getHealthContinueDayUseCase
         self.getHealthDetailUseCase = getHealthDetailUseCase
@@ -74,6 +76,7 @@ final class HealthCareViewModel: ViewModelable {
         case error
     }
     
+    var coordinator: Coordinator
     @Published var state: HealthCareInfoViewState = .loading
     @Published var calorieState: HealthCareCalorieViewState = .loading
     
@@ -285,6 +288,20 @@ private extension HealthCareViewModel {
             return TargetStep(rawValue: UserManager.shared.getTargetStep) ?? .six
         } else {
             return TargetStep(rawValue: serverTarget ?? 6000) ?? .six
+        }
+    }
+    
+    private func giveEgg(at dateString: String) {
+        Task {
+            do {
+                // TODO:  API 호출을 통해 알 타입 전달
+                let type: EggType = .epic // FIXME: 실제 리스폰스로 변경
+                self.coordinator.presentFullScreenCover(
+                    AppFullScreenCover.healthCareGiveEgg(type: type)
+                )
+            } catch {
+                dump(error)
+            }
         }
     }
 }

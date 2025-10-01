@@ -47,8 +47,7 @@ struct HatchEggView: View {
                             height: geometry.size.height * 0.5
                         )
                         .allowsHitTesting(false)
-                        .opacity(hatchEggViewModel.animationState.isShowingGlowEffect ? 1 : 0)
-                        .animation(.easeInOut(duration: 0.2), value: hatchEggViewModel.animationState.isShowingGlowEffect)
+                        .fadeAnimation(hatchEggViewModel.animationState.isShowingGlowEffect, duration: 0.2)
                         .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                     
                     switch hatchState.characterType {
@@ -58,8 +57,7 @@ struct HatchEggView: View {
                                 width: geometry.size.height * 0.27,
                                 height: geometry.size.height * 0.27
                             )
-                            .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
-                            .animation(.easeInOut(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
+                            .fadeAnimation(hatchEggViewModel.animationState.isShowingCharacter, duration: 0.3)
                             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                     case .dino:
                         Image(hatchState.dinoType.getCharacterImage())
@@ -67,8 +65,7 @@ struct HatchEggView: View {
                                 width: geometry.size.height * 0.27,
                                 height: geometry.size.height * 0.27
                             )
-                            .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
-                            .animation(.easeInOut(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
+                            .fadeAnimation(hatchEggViewModel.animationState.isShowingCharacter, duration: 0.3)
                             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
                     }
                     
@@ -87,8 +84,7 @@ struct HatchEggView: View {
                         width: geometry.size.height * 0.27,
                         height: geometry.size.height * 0.27
                     )
-                    .opacity(hatchEggViewModel.animationState.isShowingEggLottie ? 1 : 0)
-                    .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingEggLottie)
+                    .fadeAnimation(hatchEggViewModel.animationState.isShowingEggLottie) 
                     .position(
                         x: geometry.size.width / 2,
                         y: geometry.size.height / 2
@@ -98,14 +94,12 @@ struct HatchEggView: View {
                         Text("잠깐,")
                             .font(.H2)
                             .foregroundStyle(.white)
-                            .opacity(hatchEggViewModel.animationState.isShowingWaitText ? 1 : 0)
-                            .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingWaitText)
+                            .fadeAnimation(hatchEggViewModel.animationState.isShowingWaitText) 
                         Text("알이 부화하려고 해요!")
                             .font(.H2)
                             .foregroundStyle(.white)
                             .padding(.bottom, 4)
-                            .opacity(hatchEggViewModel.animationState.isShowingEggHatchText ? 1 : 0)
-                            .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingEggHatchText)
+                            .fadeAnimation(hatchEggViewModel.animationState.isShowingEggHatchText) 
                     }
                     .allowsHitTesting(false)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -128,8 +122,7 @@ struct HatchEggView: View {
                             .foregroundStyle(WalkieCommonAsset.gray300.swiftUIColor)
                     }
                     .allowsHitTesting(false)
-                    .opacity(hatchEggViewModel.animationState.isShowingCharacter ? 1 : 0)
-                    .animation(.easeIn(duration: 0.3), value: hatchEggViewModel.animationState.isShowingCharacter)
+                    .fadeAnimation(hatchEggViewModel.animationState.isShowingCharacter)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2 - geometry.size.height * 0.27 / 2 - 8 - 92/2)
                     

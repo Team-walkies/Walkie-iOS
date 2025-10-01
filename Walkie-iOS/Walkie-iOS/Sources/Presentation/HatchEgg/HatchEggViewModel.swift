@@ -7,7 +7,7 @@
 
 import UIKit
 import Combine
-import SwiftUICore
+import SwiftUI
 
 final class HatchEggViewModel: ViewModelable {
     
