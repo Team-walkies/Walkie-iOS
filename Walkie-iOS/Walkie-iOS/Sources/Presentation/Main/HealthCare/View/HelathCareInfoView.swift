@@ -181,5 +181,11 @@ struct HealthCareInfoView: View {
         .frame(width: screenWidth - 32)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
+        .onChange(of: infoState.eggButtonState) { _, newValue in
+            guard case .pending = newValue else {
+                showTooltip = false
+                return
+            }
+        }
     }
 }
