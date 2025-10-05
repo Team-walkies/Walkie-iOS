@@ -126,6 +126,7 @@ let project = Project(
             ],
             settings: .settings(
                 base: [
+                    "IPHONEOS_DEPLOYMENT_TARGET": "18.0",
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "MARKETING_VERSION": settingVersion,
                     "OTHER_LDFLAGS": "-ObjC",
@@ -162,6 +163,7 @@ let project = Project(
             ],
             settings: .settings(
                 base: [
+                    "IPHONEOS_DEPLOYMENT_TARGET": "18.0",
                     "ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS": "YES",
                     "TARGETED_DEVICE_FAMILY": "1",
                     "MARKETING_VERSION": settingVersion
@@ -185,7 +187,12 @@ let project = Project(
                 ]
             ),
             sources: "WalkieCommon/Sources/**",
-            resources: "WalkieCommon/Resources/**"
+            resources: "WalkieCommon/Resources/**",
+            settings: .settings(
+                base: [
+                    "IPHONEOS_DEPLOYMENT_TARGET": "18.0"
+                ]
+            )
         ),
     ]
 )
