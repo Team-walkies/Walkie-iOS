@@ -64,5 +64,8 @@ struct WalkieIOSApp: App {
         BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
             appCoordinator.handleStepRefresh(task: task)
         }
+        BGTaskManager.shared.registerBackgroundTasks(.stepGoal) { [self] task in
+            appCoordinator.handleStepGoalAchieved(task: task)
+        }
     }
 }

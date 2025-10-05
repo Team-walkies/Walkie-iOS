@@ -20,6 +20,7 @@ final class UserManager {
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
+    @UserDefaultsWrapper<Date>(key: "lastNotifiedHealthCareDate") var lastNotifiedHealthCareDate
     
     private init() {}
 }
@@ -53,6 +54,7 @@ extension UserManager {
     
     func setTargetStep(_ step: Int) {
         UserDefaults.standard.set(step, forKey: DefaultsKey.targetStep)
+        self.lastNotifiedHealthCareDate = nil // 오늘 알림 여부 초기화
     }
     
     func setShowHealthcare() {

@@ -97,6 +97,10 @@ extension DIContainer {
     func resolveNotificationPermissionUseCase() -> NotificationPermissionUseCase {
         return notificationPermissionUseCase
     }
+    
+    func resolveGetTodayStepUseCase() -> GetTodayStepUseCase {
+        return DefaultGetTodayStepUseCase(store: stepStatusStore)
+    }
 }
 
 // ViewModels

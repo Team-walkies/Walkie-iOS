@@ -361,6 +361,10 @@ final class AppCoordinator: Coordinator, ObservableObject {
         stepCoordinator?.handleStepRefresh(task: task)
     }
     
+    func handleStepGoalAchieved(task: BGAppRefreshTask) {
+        stepCoordinator?.handleCheckStepGoalOnToday(task: task)
+    }
+    
     func executeForegroundActions() {
         if UserManager.shared.hasUserToken {
             // 포그라운드 실시간 걸음 수 추적 시작

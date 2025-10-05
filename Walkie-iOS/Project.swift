@@ -82,7 +82,8 @@ let project = Project(
                         "UISceneConfigurations": [:]
                     ],
                     "BGTaskSchedulerPermittedIdentifiers": [
-                        "com.walkie.ios.step"
+                        "com.walkie.ios.step",
+                        "com.walkie.ios.step-goal"
                     ],
                     "UIBackgroundModes": [
                         "fetch",

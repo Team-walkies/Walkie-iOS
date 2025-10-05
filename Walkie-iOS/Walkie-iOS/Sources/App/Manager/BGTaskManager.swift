@@ -43,4 +43,5 @@ final class BGTaskManager {
 
 enum WalkieBackgroundTask: String {
     case step = "com.walkie.ios.step"
+    case stepGoal = "com.walkie.ios.step-goal"
 }

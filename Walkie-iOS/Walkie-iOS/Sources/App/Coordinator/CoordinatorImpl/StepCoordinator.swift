@@ -27,6 +27,7 @@ final class StepCoordinator {
     private let updateEggStepUseCase: UpdateEggStepUseCase
     private let updateStepBackgroundUseCase: UpdateStepBackgroundUseCase
     private let stepStatusStore: StepStatusStore
+    private let getTodayStepUseCase: GetTodayStepUseCase
     
     // MARK: - AppCoordinator
     private weak var appCoordinator: AppCoordinator?
@@ -40,6 +41,7 @@ final class StepCoordinator {
         self.updateEggStepUseCase = diContainer.resolveUpdateEggStepUseCase()
         self.updateStepBackgroundUseCase = diContainer.resolveUpdateStepBackgroundUseCase()
         self.stepStatusStore = diContainer.stepStatusStore
+        self.getTodayStepUseCase = diContainer.resolveGetTodayStepUseCase()
     }
     
     // MARK: - Foreground 걸음 수 측정
@@ -144,6 +146,31 @@ final class StepCoordinator {
         } else {
             print("⏳ 백그라운드 걸음 수 업데이트 스케줄링 ⏳")
             BGTaskManager.shared.scheduleAppRefresh(.step)
+        }
+    }
+    
+    // MARK: - Background 오늘 목표 걸음 달성 여부 확인
+    func handleCheckStepGoalOnToday(task: BGAppRefreshTask) {
+        task.expirationHandler = {
+            print("⏳ 백그라운드 테스크 만료 ⏳")
+            task.setTaskCompleted(success: false)
+        }
+        task.setTaskCompleted(success: true)
+        BGTaskManager.shared.scheduleAppRefresh(.stepGoal)
+        
+        getTodayStepUseCase.execute { result in
+            guard case let .success(todayStep) = result else { return }
+            let target = UserManager.shared.getTargetStep
+            guard target > 0, // 목표 걸음 수 존재
+                  todayStep >= target, // 달성 여부
+                  !(UserManager.shared.lastNotifiedHealthCareDate?.isToday() ?? false) // 오늘 알림 전송 여부
+            else { return }
+            
+            NotificationManager.shared.scheduleNotification(
+                title: "오늘 목표 걸음 수에 도달했어요",
+                body: "접속하고 알을 받아보세요!"
+            )
+            UserManager.shared.lastNotifiedHealthCareDate = Date()
         }
     }
 }
