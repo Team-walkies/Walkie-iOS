@@ -9,7 +9,8 @@ import Combine
 
 final class EggViewModel: ViewModelable {
     
-    private let eggUseCase: EggUseCase
+    private let getEggListUseCase: GetEggListUseCase
+    private let patchEggPlayingUseCase: PatchEggPlayingUseCase
     private var cancellables = Set<AnyCancellable>()
     private let appCoordinator: AppCoordinator
     
@@ -39,8 +40,13 @@ final class EggViewModel: ViewModelable {
         case didTapEggDetail(EggState)
     }
     
-    init(eggUseCase: EggUseCase, appCoordinator: AppCoordinator) {
-        self.eggUseCase = eggUseCase
+    init(
+        getEggListUseCase: GetEggListUseCase,
+        patchEggPlayingUseCase: PatchEggPlayingUseCase,
+        appCoordinator: AppCoordinator
+    ) {
+        self.patchEggPlayingUseCase = patchEggPlayingUseCase
+        self.getEggListUseCase = getEggListUseCase
         self.appCoordinator = appCoordinator
     }
     
@@ -53,7 +59,7 @@ final class EggViewModel: ViewModelable {
             fetchEggListData()
         case .didTapEggDetail(let eggState):
             eggDetailViewModel = EggDetailViewModel(
-                eggUseCase: self.eggUseCase,
+                patchEggPlayingUseCase: patchEggPlayingUseCase,
                 eggState: eggState,
                 eggViewModel: self,
                 appCoordinator: appCoordinator
@@ -62,7 +68,7 @@ final class EggViewModel: ViewModelable {
     }
     
     func fetchEggListData() {
-        eggUseCase.getEggsList()
+        getEggListUseCase.execute()
             .walkieSink(
                 with: self,
                 receiveValue: { _, entity in

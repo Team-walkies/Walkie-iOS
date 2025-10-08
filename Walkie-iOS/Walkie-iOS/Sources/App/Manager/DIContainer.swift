@@ -193,8 +193,11 @@ extension DIContainer {
     
     func makeEggViewModel(appCoordinator: AppCoordinator) -> EggViewModel {
         return EggViewModel(
-            eggUseCase: DefaultEggUseCase(
+            getEggListUseCase: DefaultGetEggListUseCase(
                 eggRepository: eggRepo,
+                stepStatusStore: stepStatusStore
+            ),
+            patchEggPlayingUseCase: DefaultPatchEggPlayingUseCase(
                 memberRepository: memberRepo,
                 stepStatusStore: stepStatusStore
             ),

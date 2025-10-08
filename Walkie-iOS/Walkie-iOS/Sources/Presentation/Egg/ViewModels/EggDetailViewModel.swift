@@ -11,7 +11,7 @@ final class EggDetailViewModel: ViewModelable {
     
     let appCoordinator: AppCoordinator
     let eggState: EggViewModel.EggState
-    private let eggUseCase: EggUseCase
+    private let patchEggPlayingUseCase: PatchEggPlayingUseCase
     private let eggViewModel: EggViewModel
     private var cancellables = Set<AnyCancellable>()
     
@@ -27,12 +27,12 @@ final class EggDetailViewModel: ViewModelable {
     }
     
     init(
-        eggUseCase: EggUseCase,
+        patchEggPlayingUseCase: PatchEggPlayingUseCase,
         eggState: EggViewModel.EggState,
         eggViewModel: EggViewModel,
         appCoordinator: AppCoordinator
     ) {
-        self.eggUseCase = eggUseCase
+        self.patchEggPlayingUseCase = patchEggPlayingUseCase
         self.eggState = eggState
         self.eggViewModel = eggViewModel
         self.appCoordinator = appCoordinator
@@ -50,7 +50,7 @@ final class EggDetailViewModel: ViewModelable {
     }
     
     func patchEggWalking() {
-        eggUseCase.patchEggPlaying(eggId: eggState.eggId)
+        patchEggPlayingUseCase.execute(eggId: eggState.eggId)
             .walkieSink(
                 with: self,
                 receiveValue: { _, _ in
