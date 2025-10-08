@@ -113,4 +113,19 @@ extension DefaultEggRepository: EggRepository {
             }
             .mapToNetworkError()
     }
+    
+    // FIXME: 서버 리스폰스 수정 요청
+    func getHealthCareEggAward(latitude: Double, longitude: Double, dateString: String) -> AnyPublisher<EggType, NetworkError> {
+        return eggService.postHealthCareEggAward(
+            requestBody: PostHealthCareEggAwardRequestDto(
+                latitude: latitude,
+                longitude: longitude,
+                healthcareEggAcquiredAt: dateString
+            )
+        )
+        .map { dto in
+            return EggType.from(number: dto.rank)
+        }
+        .mapToNetworkError()
+    }
 }

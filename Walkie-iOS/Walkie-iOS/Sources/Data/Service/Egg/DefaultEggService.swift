@@ -72,4 +72,13 @@ extension DefaultEggService: EggService {
             )
             .mapWalkieResponse(GetEventEggDto.self)
     }
+    
+    func postHealthCareEggAward(requestBody: PostHealthCareEggAwardRequestDto) -> AnyPublisher<PostHealthCareEggAwardDto, Error> {
+        eggProvider
+            .requestPublisher(
+                .postHealthCareEggAward(requestBody: requestBody),
+                reissueService: reissueService
+            )
+            .mapWalkieResponse(PostHealthCareEggAwardDto.self)
+    }
 }
