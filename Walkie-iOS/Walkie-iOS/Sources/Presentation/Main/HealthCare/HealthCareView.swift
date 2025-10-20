@@ -12,6 +12,7 @@ struct HealthCareView: View {
     
     @StateObject var viewModel: HealthCareViewModel
     @StateObject var calendarViewModel: HealthCareCalendarViewModel
+    @State private var showTooltip: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -28,9 +29,12 @@ struct HealthCareView: View {
             ScrollView(.vertical) {
                 switch viewModel.state {
                 case .loaded(let infoState):
-                    HealthCareInfoView(infoState: infoState)
-                        .padding(.horizontal, 16)
-                        .background(WalkieCommonAsset.gray50.swiftUIColor)
+                    HealthCareInfoView(
+                        infoState: infoState,
+                        showTooltip: $showTooltip
+                    )
+                    .padding(.horizontal, 16)
+                    .background(WalkieCommonAsset.gray50.swiftUIColor)
                 default:
                     HealthCareInfoSkeletonView()
                 }
@@ -54,12 +58,17 @@ struct HealthCareView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(WalkieCommonAsset.gray50.swiftUIColor)
             .ignoresSafeArea(.all)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                showTooltip = false
+            }
             .onAppear {
                 viewModel.action(.viewWillAppear {
                     calendarViewModel.selectDate(Date())
                 })
             }
             .onChange(of: calendarViewModel.state.selectedDate) { _, selectDate in
+                showTooltip = false
                 viewModel.action(.selectDateChanged(dateString: selectDate.ymdKST))
             }
         }

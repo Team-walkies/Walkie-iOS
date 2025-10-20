@@ -15,7 +15,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         var pastWeek: [Date]
         var presentWeek: [Date]
         var futureWeek: [Date]
-        var healthCareData: [Date: (nowStep: Int, targetStep: Int)]
+        var healthCareData: [Date: HealthDayEntity]
         var selectedDate: Date
         var scrollPosition: Int?
         var showDatePicker: Bool = false
@@ -53,7 +53,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             pastWeek: past,
             presentWeek: present,
             futureWeek: future,
-            healthCareData: [:],
+            healthCareData: ([:]),
             selectedDate: today,
             scrollPosition: 0
         )
@@ -105,13 +105,17 @@ final class HealthCareCalendarViewModel: ViewModelable {
     
     private func convertStepDataToDateKeys(
         _ data: [String: HealthWeekEntity]
-    ) -> [Date: (nowStep: Int, targetStep: Int)] {
-        var result: [Date: (nowStep: Int, targetStep: Int)] = [:]
+    ) -> [Date: HealthDayEntity] {
+        var result: [Date: HealthDayEntity] = [:]
         
         for (dateString, entity) in data {
             guard let parsed = Date.fromYMDKST(dateString) else { continue }
             let day = parsed.kstStartOfDay
-            result[day] = (nowStep: entity.nowStep, targetStep: entity.targetStep)
+            result[day] = HealthDayEntity(
+                nowStep: entity.nowStep,
+                targetStep: entity.targetStep,
+                hasEggToReceive: entity.eggButtonState == .available
+            )
         }
         
         return result
@@ -119,7 +123,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
     
     private func requestVisibleWeeks() {
         let today = Date().kstStartOfDay
-        let yesterday = today.addingKST(days: -1)
+        var containToday: Bool = false
         
         var weeks: [[Date]] = [state.pastWeek, state.presentWeek]
         if state.futureWeek.first?.getDayViewTime() != .future {
@@ -127,7 +131,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         }
         
         if state.presentWeek.contains(where: { $0.kstStartOfDay == today }) {
-            addTodayStep()
+            containToday = true
         }
         
         guard
@@ -135,17 +139,23 @@ final class HealthCareCalendarViewModel: ViewModelable {
             let endRaw = state.presentWeek.last?.kstStartOfDay
         else { return }
         
-        let end = min(endRaw, yesterday)
+        let end = min(endRaw, today)
         guard start <= today else { return }
         
         let dto = HealthDateDto(
             startDate: ymdKST.string(from: start),
             endDate: ymdKST.string(from: end)
         )
-        getHealthWeek(dto: dto)
+        getHealthWeek(
+            dto: dto,
+            containToday: containToday
+        )
     }
     
-    private func getHealthWeek(dto: HealthDateDto) {
+    private func getHealthWeek(
+        dto: HealthDateDto,
+        containToday: Bool
+    ) {
         getHealthUseCase
             .getHealth(date: dto)
             .receive(on: DispatchQueue.main)
@@ -153,13 +163,19 @@ final class HealthCareCalendarViewModel: ViewModelable {
                 with: self,
                 receiveValue: { [weak self] _, weekData in
                     guard let self = self else { return }
+                    if containToday,
+                        let todayEntity = weekData[self.ymdKST.string(from: Date().kstStartOfDay)] {
+                        self.addTodayStep(awardState: todayEntity.eggButtonState)
+                    }
                     self.action(.updateStepData(weekData))
                 }
             )
             .store(in: &cancellables)
     }
     
-    private func addTodayStep() {
+    private func addTodayStep(
+        awardState: GetEggButtonState
+    ) {
         let today = Date().kstStartOfDay
         let presentHasToday = state.presentWeek.contains { $0.kstStartOfDay == today }
         
@@ -170,9 +186,10 @@ final class HealthCareCalendarViewModel: ViewModelable {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let todayData):
-                    self.state.healthCareData[today] = (
+                    self.state.healthCareData[today] = HealthDayEntity(
                         nowStep: todayData.steps,
-                        targetStep: UserManager.shared.getTargetStep
+                        targetStep: UserManager.shared.getTargetStep,
+                        hasEggToReceive: todayData.steps >= UserManager.shared.getTargetStep && awardState == .available
                     )
                 case .failure:
                     break

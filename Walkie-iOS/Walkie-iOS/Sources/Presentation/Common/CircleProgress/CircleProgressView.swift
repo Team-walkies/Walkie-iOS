@@ -14,6 +14,7 @@ struct CircleProgressView: View {
     var targetStep: TargetStep
     var nowStep: Int
     var isToday: Bool = false
+    var hasEggToReceive: Bool = false
     
     @State private var todayTargetStep: TargetStep?
     @EnvironmentObject var appCoordinator: AppCoordinator
@@ -49,11 +50,11 @@ struct CircleProgressView: View {
             
             switch type {
             case .inCalendar:
-                if progress >= 1 {
-                    Image(.icFire)
+                if hasEggToReceive {
+                    Image(.icEggReceive)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 18, height: 18)
+                        .frame(width: 20, height: 20)
                 }
             case .inMain:
                 VStack(

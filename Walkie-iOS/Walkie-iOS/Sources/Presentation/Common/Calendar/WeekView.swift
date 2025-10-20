@@ -41,7 +41,8 @@ struct WeekView: View {
                                 CircleProgressView(
                                     type: .inCalendar,
                                     targetStep: targetStep,
-                                    nowStep: data.nowStep
+                                    nowStep: data.nowStep,
+                                    hasEggToReceive: data.hasEggToReceive
                                 )
                             } else {
                                 CircleProgressView(
@@ -111,7 +112,7 @@ struct WeekView: View {
 extension WeekView {
     enum WeekViewConfig {
         case spotReview(hasSpotOn: [Date])
-        case healthCare(stepData: [Date: (nowStep: Int, targetStep: Int)])
+        case healthCare(stepData: [Date: HealthDayEntity])
         
         func getTextColor(isSelected: Bool, timePeriod: TimePeriod) -> Color {
             switch self {
