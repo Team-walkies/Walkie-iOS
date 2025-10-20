@@ -8,4 +8,5 @@
 struct HealthWeekEntity {
     let nowStep: Int
     let targetStep: Int
+    let eggButtonState: GetEggButtonState
 }
