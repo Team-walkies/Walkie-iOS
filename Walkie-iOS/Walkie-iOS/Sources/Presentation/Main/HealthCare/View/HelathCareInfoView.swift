@@ -24,6 +24,18 @@ struct HealthCareInfoView: View {
         }
     }
     
+    var eggButtonState: GetEggButtonState {
+        if infoState.isToday {
+            if infoState.nowSteps >= self.targetStep.rawValue {
+                return infoState.eggButtonState == .received ? .received : .available
+            } else {
+                return infoState.eggButtonState
+            }
+        } else {
+            return infoState.eggButtonState
+        }
+    }
+    
     var body: some View {
         ZStack(
             alignment: .topTrailing
@@ -138,7 +150,6 @@ struct HealthCareInfoView: View {
                 .padding(.bottom, 16)
             }
             
-            let eggButtonState = infoState.eggButtonState
             HealthCareGetEggButtonView(
                 buttonState: eggButtonState,
                 action: {
