@@ -8,5 +8,5 @@
 struct HealthDetailEntity {
     let targetSteps, nowSteps, nowCalories: Int
     let nowDistance: Double
-    let isAward: Bool
+    let eggButtonState: GetEggButtonState
 }

@@ -35,7 +35,7 @@ extension DefaultHealthRepository: HealthRepository {
                     dic[dto.responseDate] = HealthWeekEntity(
                         nowStep: dto.nowSteps,
                         targetStep: dto.targetSteps,
-                        hasEggToReceive: dto.nowSteps >= dto.targetSteps && dto.award
+                        eggButtonState: dto.award.toEggButtonState
                     )
                 }
                 return dict
@@ -52,7 +52,7 @@ extension DefaultHealthRepository: HealthRepository {
                     nowSteps: dto.nowSteps,
                     nowCalories: dto.nowCalories,
                     nowDistance: dto.nowDistance,
-                    isAward: dto.award
+                    eggButtonState: dto.award.toEggButtonState
                 )
             }
             .eraseToAnyPublisher()

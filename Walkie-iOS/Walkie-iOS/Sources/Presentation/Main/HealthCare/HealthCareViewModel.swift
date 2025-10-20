@@ -61,7 +61,7 @@ final class HealthCareViewModel: ViewModelable {
         let calories: Int?
         let isToday: Bool
         let serverTarget: Int?
-        let isAward: Bool
+        let awardState: GetEggButtonState
     }
     
     // view states
@@ -119,7 +119,7 @@ private extension HealthCareViewModel {
                     calories: snapshot.calories,
                     isToday: snapshot.isToday,
                     serverTarget: snapshot.serverTarget,
-                    isAward: snapshot.isAward
+                    awardState: snapshot.awardState
                 )
             } catch {
                 self.state = .error
@@ -132,6 +132,14 @@ private extension HealthCareViewModel {
         for dateString: String
     ) async throws -> DetailSnapshot {
         let isToday = Date.fromYMDKST(dateString)?.isTodayKST ?? false
+        let detail: HealthDetailEntity?
+        do {
+            detail = try await getHealthDetailUseCase
+                .getHealthDetail(searchDate: dateString)
+                .firstOutput()
+        } catch {
+            detail = nil
+        }
         
         if isToday {
             let today = try await HealthKitManager.shared.getTodaySteps()
@@ -141,32 +149,27 @@ private extension HealthCareViewModel {
                 calories: nil,
                 isToday: true,
                 serverTarget: nil,
-                isAward: false
+                awardState: detail?.eggButtonState ?? .pending
             )
         } else {
-            do {
-                let detail = try await getHealthDetailUseCase
-                    .getHealthDetail(searchDate: dateString)
-                    .firstOutput()
-                
-                return DetailSnapshot(
-                    steps: detail.nowSteps,
-                    distance: detail.nowDistance,
-                    calories: detail.nowCalories,
-                    isToday: false,
-                    serverTarget: detail.targetSteps,
-                    isAward: detail.isAward
-                )
-            } catch {
+            guard let detail = detail else {
                 return DetailSnapshot(
                     steps: 0,
                     distance: 0,
                     calories: nil,
                     isToday: false,
                     serverTarget: nil,
-                    isAward: false
+                    awardState: .pending
                 )
             }
+            return DetailSnapshot(
+                steps: detail.nowSteps,
+                distance: detail.nowDistance,
+                calories: detail.nowCalories,
+                isToday: false,
+                serverTarget: detail.targetSteps,
+                awardState: detail.eggButtonState
+            )
         }
     }
     
@@ -227,7 +230,7 @@ private extension HealthCareViewModel {
                         return
                     }
                     
-                    HealthKitManager.shared.getDailySteps(from: start) { [weak self] result in
+                    HealthKitManager.shared.getDailySteps(from: start.addingKST(days: 1)) { [weak self] result in
                         guard let self else { return }
                         switch result {
                         case .success(let steps):
@@ -252,18 +255,13 @@ private extension HealthCareViewModel {
             .store(in: &cancellables)
     }
     
-    func nextDay(fromDayString day: String) -> Date? {
-        guard let date = Date.fromYMDKST(day) else { return nil }
-        return Date.kstCalendar.date(byAdding: .day, value: 1, to: date.kstStartOfDay)
-    }
-    
     func applyHealthUpdate(
         steps: Int,
         distance: Double,
         calories: Int?,
         isToday: Bool,
         serverTarget: Int?,
-        isAward: Bool
+        awardState: GetEggButtonState
     ) {
         let target: TargetStep = resolveTargetStep(isToday: isToday, serverTarget: serverTarget)
         let displayContinuousDay = (isToday && steps >= target.rawValue)
@@ -272,7 +270,7 @@ private extension HealthCareViewModel {
         let buttonState = resolveEggButtonState(
             isToday: isToday,
             isGoalAchieve: steps >= target.rawValue,
-            isAward: isAward
+            awardState: awardState
         )
         
         let info = HealthCareInfoState(
@@ -307,13 +305,16 @@ private extension HealthCareViewModel {
     func resolveEggButtonState(
         isToday: Bool, // 오늘,과거 여부
         isGoalAchieve: Bool, // 달성여부
-        isAward: Bool // 서버에서 받아온 값 - 알 받을게 있는지 여부
+        awardState: GetEggButtonState // 서버에서 받아온 enum
     ) -> GetEggButtonState {
-        guard isGoalAchieve else { return .pending }
         if isToday {
-            return UserManager.shared.getReceiveTodayEgg ? .received : .available
-        } else {
-            return isAward ? .available : .received
+            if isGoalAchieve { // 오늘 목표 달성
+                return awardState == .received ? .received : .available
+            } else { // 오늘 목표 미달성
+                return awardState
+            }
+        } else { // 과거
+            return awardState
         }
     }
     

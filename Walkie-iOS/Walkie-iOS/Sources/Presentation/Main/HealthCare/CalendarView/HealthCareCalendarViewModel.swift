@@ -114,7 +114,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
             result[day] = HealthDayEntity(
                 nowStep: entity.nowStep,
                 targetStep: entity.targetStep,
-                hasEggToReceive: entity.hasEggToReceive
+                hasEggToReceive: entity.eggButtonState == .available
             )
         }
         
@@ -123,7 +123,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
     
     private func requestVisibleWeeks() {
         let today = Date().kstStartOfDay
-        let yesterday = today.addingKST(days: -1)
+        var containToday: Bool = false
         
         var weeks: [[Date]] = [state.pastWeek, state.presentWeek]
         if state.futureWeek.first?.getDayViewTime() != .future {
@@ -131,7 +131,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         }
         
         if state.presentWeek.contains(where: { $0.kstStartOfDay == today }) {
-            addTodayStep()
+            containToday = true
         }
         
         guard
@@ -139,17 +139,23 @@ final class HealthCareCalendarViewModel: ViewModelable {
             let endRaw = state.presentWeek.last?.kstStartOfDay
         else { return }
         
-        let end = min(endRaw, yesterday)
+        let end = min(endRaw, today)
         guard start <= today else { return }
         
         let dto = HealthDateDto(
             startDate: ymdKST.string(from: start),
             endDate: ymdKST.string(from: end)
         )
-        getHealthWeek(dto: dto)
+        getHealthWeek(
+            dto: dto,
+            containToday: containToday
+        )
     }
     
-    private func getHealthWeek(dto: HealthDateDto) {
+    private func getHealthWeek(
+        dto: HealthDateDto,
+        containToday: Bool
+    ) {
         getHealthUseCase
             .getHealth(date: dto)
             .receive(on: DispatchQueue.main)
@@ -157,13 +163,19 @@ final class HealthCareCalendarViewModel: ViewModelable {
                 with: self,
                 receiveValue: { [weak self] _, weekData in
                     guard let self = self else { return }
+                    if containToday,
+                        let todayEntity = weekData[self.ymdKST.string(from: Date().kstStartOfDay)] {
+                        self.addTodayStep(awardState: todayEntity.eggButtonState)
+                    }
                     self.action(.updateStepData(weekData))
                 }
             )
             .store(in: &cancellables)
     }
     
-    private func addTodayStep() {
+    private func addTodayStep(
+        awardState: GetEggButtonState
+    ) {
         let today = Date().kstStartOfDay
         let presentHasToday = state.presentWeek.contains { $0.kstStartOfDay == today }
         
@@ -177,24 +189,13 @@ final class HealthCareCalendarViewModel: ViewModelable {
                     self.state.healthCareData[today] = HealthDayEntity(
                         nowStep: todayData.steps,
                         targetStep: UserManager.shared.getTargetStep,
-                        hasEggToReceive: self.setTodayState(
-                            nowStep: todayData.steps,
-                            targetStep: UserManager.shared.getTargetStep
-                        )
+                        hasEggToReceive: todayData.steps >= UserManager.shared.getTargetStep && awardState == .available
                     )
                 case .failure:
                     break
                 }
             }
         }
-    }
-    
-    private func setTodayState(
-        nowStep: Int,
-        targetStep: Int
-    ) -> Bool {
-        let goal = nowStep >= targetStep
-        return goal && !UserManager.shared.getReceiveTodayEgg
     }
     
     private func setSelectedDate(
