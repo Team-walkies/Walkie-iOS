@@ -54,7 +54,22 @@ extension UserManager {
     
     func setTargetStep(_ step: Int) {
         UserDefaults.standard.set(step, forKey: DefaultsKey.targetStep)
-        self.lastNotifiedHealthCareDate = nil // 오늘 알림 여부 초기화
+        // 목표 걸음 수가 변경되면 오늘 알림 여부 초기화
+        // 새로운 목표에 대해 다시 알림을 받을 수 있도록 함
+        self.lastNotifiedHealthCareDate = nil
+    }
+    
+    /// 목표 걸음 달성 알림을 오늘 보냈는지 확인
+    func hasNotifiedStepGoalToday() -> Bool {
+        guard let lastNotifiedDate = lastNotifiedHealthCareDate else {
+            return false
+        }
+        return lastNotifiedDate.isToday()
+    }
+    
+    /// 목표 걸음 달성 알림 날짜 기록
+    func markStepGoalNotificationSent() {
+        lastNotifiedHealthCareDate = Date()
     }
     
     func setShowHealthcare() {

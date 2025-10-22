@@ -36,7 +36,7 @@ final class NotificationManager {
             }
     }
     
-    /// 로컬 푸시 알림 스케줄링 (즉시 또는 특정 시간)
+    /// 로컬 푸시 알림 스케줄링 (즉시 또는 특정 시간) - 부화 알림용
     func scheduleNotification(title: String, body: String) {
         /// 알림 송신 조건
         /// 1. 아직 알림을 보내지 않았음
@@ -64,6 +64,39 @@ final class NotificationManager {
                 
                 // 알림 요청 완료 플래그
                 self.notified = true
+            }
+        }
+    }
+    
+    /// 목표 걸음 달성 알림 스케줄링
+    func scheduleStepGoalNotification(title: String, body: String) {
+        // 알림 권한 확인
+        guard getNotificationMode() else {
+            print("🛎️ 목표 걸음 달성 알림 권한 없음 🛎️")
+            return
+        }
+        
+        let identifier = "step-goal-\(Date().timeIntervalSince1970)"
+        
+        // 내용
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = .default
+        content.badge = 1
+        
+        // 즉시 전송
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+        
+        // 알림 요청 생성
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        
+        // 알림 요청
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("🛎️ 목표 걸음 달성 알림 전송 실패: \(error.localizedDescription) 🛎️")
+            } else {
+                print("🛎️ 목표 걸음 달성 알림 전송 성공 🛎️")
             }
         }
     }

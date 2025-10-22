@@ -38,6 +38,7 @@ final class BGTaskManager {
     
     func cancelAll() {
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: WalkieBackgroundTask.step.rawValue)
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: WalkieBackgroundTask.stepGoal.rawValue)
     }
 }
 

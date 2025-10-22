@@ -151,26 +151,55 @@ final class StepCoordinator {
     
     // MARK: - Background 오늘 목표 걸음 달성 여부 확인
     func handleCheckStepGoalOnToday(task: BGAppRefreshTask) {
+        dump("백그라운드 테스크 시작-오늘 목표 걸음")
+        dump("목표 걸음 : \(UserManager.shared.getTargetStep)")
+        
+        // 만료 핸들러를 비동기 작업 시작 전에 설정
         task.expirationHandler = {
             print("⏳ 백그라운드 테스크 만료 ⏳")
             task.setTaskCompleted(success: false)
         }
-        task.setTaskCompleted(success: true)
-        BGTaskManager.shared.scheduleAppRefresh(.stepGoal)
         
-        getTodayStepUseCase.execute { result in
-            guard case let .success(todayStep) = result else { return }
-            let target = UserManager.shared.getTargetStep
-            guard target > 0, // 목표 걸음 수 존재
-                  todayStep >= target, // 달성 여부
-                  !(UserManager.shared.lastNotifiedHealthCareDate?.isToday() ?? false) // 오늘 알림 전송 여부
-            else { return }
+        getTodayStepUseCase.execute { [weak self] result in
+            // 비동기 작업 완료 후 다음 스케줄링
+            BGTaskManager.shared.scheduleAppRefresh(.stepGoal)
             
-            NotificationManager.shared.scheduleNotification(
-                title: "목표 걸음 수를 채웠어요!",
-                body: "지금 바로 알을 얻어보세요"
-            )
-            UserManager.shared.lastNotifiedHealthCareDate = Date()
+            switch result {
+            case .success(let todayStep):
+                self?.handleStepGoalSuccess(todayStep: todayStep, task: task)
+            case .failure(let error):
+                print("⏳ 오늘 걸음 수 조회 실패: \(error.localizedDescription) ⏳")
+                task.setTaskCompleted(success: true) // 실패해도 task 완료 처리
+            }
         }
+    }
+    
+    private func handleStepGoalSuccess(todayStep: Int, task: BGAppRefreshTask) {
+        let target = UserManager.shared.getTargetStep
+        
+        // 목표 걸음 수가 설정되지 않았거나 달성하지 못한 경우
+        guard target > 0, todayStep >= target else {
+            dump("목표 미달성 - 목표: \(target), 현재: \(todayStep)")
+            task.setTaskCompleted(success: true)
+            return
+        }
+        
+        // 오늘 이미 알림을 보낸 경우
+        if UserManager.shared.hasNotifiedStepGoalToday() {
+            dump("오늘 이미 목표 걸음 달성 알림 전송됨")
+            task.setTaskCompleted(success: true)
+            return
+        }
+        
+        // 목표 달성 알림 전송
+        dump("오늘 걸음 : \(todayStep), 목표 달성!")
+        NotificationManager.shared.scheduleStepGoalNotification(
+            title: "목표 걸음 수를 채웠어요!",
+            body: "지금 바로 알을 얻어보세요"
+        )
+        
+        // 알림 전송 날짜 기록
+        UserManager.shared.markStepGoalNotificationSent()
+        task.setTaskCompleted(success: true)
     }
 }

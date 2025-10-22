@@ -380,6 +380,7 @@ final class AppCoordinator: Coordinator, ObservableObject {
             self.stopStepUpdates()
             // 백그라운드 작업 스케줄링
             BGTaskManager.shared.scheduleAppRefresh(.step)
+            BGTaskManager.shared.scheduleAppRefresh(.stepGoal)
         }
     }
 }
