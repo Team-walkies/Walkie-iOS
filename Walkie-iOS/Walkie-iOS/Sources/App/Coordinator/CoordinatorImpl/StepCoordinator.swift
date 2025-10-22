@@ -167,8 +167,8 @@ final class StepCoordinator {
             else { return }
             
             NotificationManager.shared.scheduleNotification(
-                title: "오늘 목표 걸음 수에 도달했어요",
-                body: "접속하고 알을 받아보세요!"
+                title: "목표 걸음 수를 채웠어요!",
+                body: "지금 바로 알을 얻어보세요"
             )
             UserManager.shared.lastNotifiedHealthCareDate = Date()
         }
