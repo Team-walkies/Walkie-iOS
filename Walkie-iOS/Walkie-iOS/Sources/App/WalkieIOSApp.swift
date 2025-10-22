@@ -14,7 +14,6 @@ struct WalkieIOSApp: App {
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
-        initiateBackgroundTask()
     }
     
     var body: some Scene {
@@ -48,6 +47,14 @@ struct WalkieIOSApp: App {
                         .ignoresSafeArea(.all)
                 }
             }
+            .onAppear {
+                BGTaskManager.shared.registerBackgroundTasks(.step) { task in
+                    appCoordinator.handleStepRefresh(task: task)
+                }
+                BGTaskManager.shared.registerBackgroundTasks(.stepGoal) { task in
+                    appCoordinator.handleStepGoalAchieved(task: task)
+                }
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .onChange(of: scenePhase) { _, newValue in
@@ -57,15 +64,6 @@ struct WalkieIOSApp: App {
             default:
                 break
             }
-        }
-    }
-    
-    private func initiateBackgroundTask() {
-        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
-            appCoordinator.handleStepRefresh(task: task)
-        }
-        BGTaskManager.shared.registerBackgroundTasks(.stepGoal) { [self] task in
-            appCoordinator.handleStepGoalAchieved(task: task)
         }
     }
 }
