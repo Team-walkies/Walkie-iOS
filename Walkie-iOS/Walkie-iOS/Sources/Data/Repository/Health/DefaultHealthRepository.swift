@@ -34,7 +34,8 @@ extension DefaultHealthRepository: HealthRepository {
                 let dict = dtos.reduce(into: [String: HealthWeekEntity]()) { dic, dto in
                     dic[dto.responseDate] = HealthWeekEntity(
                         nowStep: dto.nowSteps,
-                        targetStep: dto.targetSteps
+                        targetStep: dto.targetSteps,
+                        eggButtonState: dto.award.toEggButtonState
                     )
                 }
                 return dict
@@ -50,7 +51,8 @@ extension DefaultHealthRepository: HealthRepository {
                     targetSteps: dto.targetSteps,
                     nowSteps: dto.nowSteps,
                     nowCalories: dto.nowCalories,
-                    nowDistance: dto.nowDistance
+                    nowDistance: dto.nowDistance,
+                    eggButtonState: dto.award.toEggButtonState
                 )
             }
             .eraseToAnyPublisher()

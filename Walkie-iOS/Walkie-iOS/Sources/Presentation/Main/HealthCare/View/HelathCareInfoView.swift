@@ -14,6 +14,7 @@ struct HealthCareInfoView: View {
     @EnvironmentObject var appCoordinator: AppCoordinator
     @Environment(\.screenWidth) var screenWidth
     @AppStorage(DefaultsKey.targetStep) private var targetStepStore = 6000
+    @Binding var showTooltip: Bool
     
     var targetStep: TargetStep {
         if infoState.isToday {
@@ -137,26 +138,54 @@ struct HealthCareInfoView: View {
                 .padding(.bottom, 16)
             }
             
-            let goalAchieve = infoState.nowSteps >= self.targetStep.rawValue
-            if goalAchieve {
+            let eggButtonState = infoState.eggButtonState
+            HealthCareGetEggButtonView(
+                buttonState: eggButtonState,
+                action: {
+                    switch eggButtonState {
+                    case .available:
+                        return appCoordinator.push(AppScene.egg)
+                    case .pending:
+                        return showTooltip.toggle()
+                    case .received:
+                        return ()
+                    }
+                }
+            )
+            .padding(.top, isConsecutiveToday ? 48 : 12)
+            .padding(.trailing, 16)
+            
+            if showTooltip {
                 VStack(
+                    alignment: .trailing,
                     spacing: 0
                 ) {
-                    Image(.icFirebadge)
+                    Image(.icTip)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 40, height: 40)
+                        .frame(width: 10, height: 8)
+                        .padding(.trailing, 18)
                     
-                    Text("달성")
-                        .font(.C1)
-                        .foregroundColor(WalkieCommonAsset.blue400.swiftUIColor)
+                    Text("걸음 수를 채우면 알을 받아요")
+                        .font(.B2)
+                        .foregroundColor(.white)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 12)
+                        .background(WalkieCommonAsset.gray600.swiftUIColor)
+                        .cornerRadius(8, corners: .allCorners)
                 }
-                .padding(.top, isConsecutiveToday ? 52 : 16)
-                .padding(.trailing, 16)
+                .padding(.top, isConsecutiveToday ? 108 : 72)
+                .padding(.trailing, 12)
             }
         }
         .frame(width: screenWidth - 32)
         .background(.white)
         .cornerRadius(20, corners: .allCorners)
+        .onChange(of: infoState.eggButtonState) { _, newValue in
+            guard case .pending = newValue else {
+                showTooltip = false
+                return
+            }
+        }
     }
 }

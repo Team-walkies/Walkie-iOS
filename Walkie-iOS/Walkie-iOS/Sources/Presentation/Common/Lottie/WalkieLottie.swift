@@ -14,6 +14,7 @@ enum WalkieLottie {
     case healthcareInfo
     case healthkit
     case giveEggConfetti
+    case eggButton
     
     var filename: String {
         switch self {
@@ -33,6 +34,8 @@ enum WalkieLottie {
             return "walkie_Healthkit"
         case .giveEggConfetti:
             return "walkie_ConfettiColored"
+        case .eggButton:
+            return "walkie_EggButton"
         }
     }
 }
