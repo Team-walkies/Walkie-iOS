@@ -47,7 +47,11 @@ final class DefaultStepStatusStore: StepStatusStore {
     }
     
     func getLastUpdateTime() -> Date {
-        return lastUpdateTime ?? Date()
+        guard let lastUpdateTime else {
+            self.setLastUpdateTime(Date())
+            return Date()
+        }
+        return lastUpdateTime
     }
     
     func setNowStep(_ nowStep: Int) {
