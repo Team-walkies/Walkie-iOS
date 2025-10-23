@@ -74,6 +74,10 @@ extension DIContainer {
         return DefaultGetHealthLastDataDayUseCase(healthRepository: healthRepo)
     }
     
+    func resolveGetHealthCareEggAwardUseCase() -> GetHealthCareEggAwardUseCase {
+        return DefaultGetHealthCareEggAwardUseCase(eggRepository: eggRepo, stepStatusStore: stepStatusStore)
+    }
+    
     func resolveUpdateStepForegroundUseCase() -> UpdateStepForegroundUseCase {
         return updateStepForegroundUseCase
     }
@@ -260,7 +264,8 @@ extension DIContainer {
             putHealthUseCase: resolvePutHealthUseCase(),
             getHealthContinueDayUseCase: resolveGetHealthContinueDayUseCase(),
             getHealthDetailUseCase: resolveGetHealthDetailUseCase(),
-            getHealthLastDataDayUseCase: resolveGetHealthLastDataDayUseCase()
+            getHealthLastDataDayUseCase: resolveGetHealthLastDataDayUseCase(),
+            getHealthCareEggAwardUseCase: resolveGetHealthCareEggAwardUseCase()
         )
     }
     

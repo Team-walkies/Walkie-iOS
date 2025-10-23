@@ -8,5 +8,5 @@
 import Combine
 
 protocol GetHealthCareEggAwardUseCase {
-    func execute(latitude: Double, longitude: Double, dateString: String) -> AnyPublisher<EggType, NetworkError>
+    func execute(dateString: String) -> AnyPublisher<EggType, NetworkError>
 }

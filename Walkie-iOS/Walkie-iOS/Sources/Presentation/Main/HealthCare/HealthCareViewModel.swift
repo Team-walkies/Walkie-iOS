@@ -16,25 +16,29 @@ final class HealthCareViewModel: ViewModelable {
     private let getHealthContinueDayUseCase: GetHealthContinueDayUseCase
     private let getHealthDetailUseCase: GetHealthDetailUseCase
     private let getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase
+    private let getHealthCareEggAwardUseCase : GetHealthCareEggAwardUseCase
     private var continuousDay: Int = 0
     
     init(
-        coordinator: Coordinator,
+        coordinator: AppCoordinator,
         putHealthUseCase: PutHealthUseCase,
         getHealthContinueDayUseCase: GetHealthContinueDayUseCase,
         getHealthDetailUseCase: GetHealthDetailUseCase,
-        getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase
+        getHealthLastDataDayUseCase: GetHealthLastDataDayUseCase,
+        getHealthCareEggAwardUseCase : GetHealthCareEggAwardUseCase
     ) {
         self.coordinator = coordinator
         self.putHealthUseCase = putHealthUseCase
         self.getHealthContinueDayUseCase = getHealthContinueDayUseCase
         self.getHealthDetailUseCase = getHealthDetailUseCase
         self.getHealthLastDataDayUseCase = getHealthLastDataDayUseCase
+        self.getHealthCareEggAwardUseCase = getHealthCareEggAwardUseCase
     }
     
     enum Action {
         case viewWillAppear(onDone: () -> Void)
         case selectDateChanged(dateString: String)
+        case getEggButtonTapped(dateString: String)
     }
     
     // states
@@ -78,7 +82,7 @@ final class HealthCareViewModel: ViewModelable {
         case error
     }
     
-    var coordinator: Coordinator
+    var coordinator: AppCoordinator
     @Published var state: HealthCareInfoViewState = .loading
     @Published var calorieState: HealthCareCalorieViewState = .loading
     
@@ -88,6 +92,8 @@ final class HealthCareViewModel: ViewModelable {
             getHealthkitStep(completion: onDone)
         case .selectDateChanged(let dateString):
             load(dateString: dateString)
+        case .getEggButtonTapped(dateString: let dateString):
+            giveEgg(at: dateString)
         }
     }
 }
@@ -319,16 +325,18 @@ private extension HealthCareViewModel {
     }
     
     private func giveEgg(at dateString: String) {
-        Task {
-            do {
-                // TODO:  API 호출을 통해 알 타입 전달
-                let type: EggType = .epic // FIXME: 실제 리스폰스로 변경
-                self.coordinator.presentFullScreenCover(
-                    AppFullScreenCover.healthCareGiveEgg(type: type)
-                )
-            } catch {
-                dump(error)
-            }
-        }
+        getHealthCareEggAwardUseCase.execute(dateString: dateString)
+            .receive(on: DispatchQueue.main)
+            .walkieSink(
+                with: self,
+                receiveValue: { [weak self] _, eggType in
+                    guard let self = self else { return }
+                    self.load(dateString: dateString)
+                    self.coordinator.presentFullScreenCover(
+                        AppFullScreenCover.healthCareGiveEgg(type: eggType)
+                    )
+                }
+            )
+            .store(in: &cancellables)
     }
 }

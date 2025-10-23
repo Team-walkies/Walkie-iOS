@@ -31,7 +31,15 @@ struct HealthCareView: View {
                 case .loaded(let infoState):
                     HealthCareInfoView(
                         infoState: infoState,
-                        showTooltip: $showTooltip
+                        showTooltip: $showTooltip,
+                        onTapGiveEggButton: {
+                            viewModel.action(
+                                .getEggButtonTapped(
+                                    dateString: calendarViewModel.state.selectedDate.ymdKST
+                                )
+                            )
+                            // TODO: 캘린더 상태 업데이트
+                        }
                     )
                     .padding(.horizontal, 16)
                     .background(WalkieCommonAsset.gray50.swiftUIColor)

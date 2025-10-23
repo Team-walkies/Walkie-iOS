@@ -15,6 +15,7 @@ struct HealthCareInfoView: View {
     @Environment(\.screenWidth) var screenWidth
     @AppStorage(DefaultsKey.targetStep) private var targetStepStore = 6000
     @Binding var showTooltip: Bool
+    let onTapGiveEggButton: () -> Void
     
     var targetStep: TargetStep {
         if infoState.isToday {
@@ -155,7 +156,7 @@ struct HealthCareInfoView: View {
                 action: {
                     switch eggButtonState {
                     case .available:
-                        return appCoordinator.push(AppScene.egg)
+                        onTapGiveEggButton()
                     case .pending:
                         return showTooltip.toggle()
                     case .received:
