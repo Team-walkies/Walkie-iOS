@@ -115,30 +115,19 @@ extension DefaultEggRepository: EggRepository {
     }
     
     func getHealthCareEggAward(dateString: String) -> AnyPublisher<EggType, NetworkError> {
-        if let location = LocationManager.shared.getCurrentLocation() {
-            return eggService.postHealthCareEggAward(
-                requestBody: PostHealthCareEggAwardRequestDto(
-                    latitude: location.coordinate.latitude,
-                    longitude: location.coordinate.longitude,
-                    healthcareEggAcquiredAt: dateString
-                )
+        let location = LocationManager.shared.getCurrentLocation()
+        let latitude = location?.coordinate.latitude ?? 0
+        let longitude = location?.coordinate.longitude ?? 0
+        return eggService.postHealthCareEggAward(
+            requestBody: PostHealthCareEggAwardRequestDto(
+                latitude: latitude,
+                longitude: longitude,
+                healthcareEggAcquiredAt: dateString
             )
-            .map { dto in
-                return EggType.from(number: dto.rank)
-            }
-            .mapToNetworkError()
-        } else {
-            return eggService.postHealthCareEggAward(
-                requestBody: PostHealthCareEggAwardRequestDto(
-                    latitude: 0,
-                    longitude: 0,
-                    healthcareEggAcquiredAt: dateString
-                )
-            )
-            .map { dto in
-                return EggType.from(number: dto.rank)
-            }
-            .mapToNetworkError()
+        )
+        .map { dto in
+            return EggType.from(number: dto.rank)
         }
+        .mapToNetworkError()
     }
 }
