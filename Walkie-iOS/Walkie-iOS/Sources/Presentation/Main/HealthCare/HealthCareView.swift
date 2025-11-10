@@ -38,7 +38,8 @@ struct HealthCareView: View {
                                     dateString: calendarViewModel.state.selectedDate.ymdKST
                                 )
                             )
-                            // TODO: 캘린더 상태 업데이트
+                            calendarViewModel.state.healthCareData[calendarViewModel.state.selectedDate]?.hasEggToReceive
+                            = false
                         }
                     )
                     .padding(.horizontal, 16)

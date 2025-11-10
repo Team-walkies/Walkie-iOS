@@ -114,7 +114,8 @@ final class HealthCareCalendarViewModel: ViewModelable {
             result[day] = HealthDayEntity(
                 nowStep: entity.nowStep,
                 targetStep: entity.targetStep,
-                hasEggToReceive: entity.eggButtonState == .available
+                hasEggToReceive: entity.eggButtonState == .broken
+                || entity.eggButtonState == .pending && (entity.nowStep > entity.targetStep)
             )
         }
         

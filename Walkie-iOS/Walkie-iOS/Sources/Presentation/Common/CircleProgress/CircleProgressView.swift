@@ -51,7 +51,7 @@ struct CircleProgressView: View {
             switch type {
             case .inCalendar:
                 if hasEggToReceive {
-                    Image(.icEggReceive)
+                    Image(isToday ? .icEggReceive : .icEggBroken)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 20, height: 20)
