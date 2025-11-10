@@ -189,7 +189,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
                     self.state.healthCareData[today] = HealthDayEntity(
                         nowStep: todayData.steps,
                         targetStep: UserManager.shared.getTargetStep,
-                        hasEggToReceive: todayData.steps >= UserManager.shared.getTargetStep && awardState == .available
+                        hasEggToReceive: todayData.steps >= UserManager.shared.getTargetStep && awardState == .pending
                     )
                 case .failure:
                     break

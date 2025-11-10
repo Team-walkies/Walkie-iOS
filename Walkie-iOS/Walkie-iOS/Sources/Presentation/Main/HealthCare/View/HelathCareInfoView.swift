@@ -26,13 +26,13 @@ struct HealthCareInfoView: View {
     }
     
     var eggButtonState: GetEggButtonState {
-        if infoState.isToday {
-            if infoState.nowSteps >= self.targetStep.rawValue {
-                return infoState.eggButtonState == .received ? .received : .available
-            } else {
-                return infoState.eggButtonState
+        if infoState.isToday { // 오늘일 때
+            if infoState.nowSteps >= self.targetStep.rawValue { // 목표 달성 시
+                return infoState.eggButtonState == .received ? .received : .available // 받은 경우 받음 처리
+            } else { // 목표 미달성 시
+                return infoState.eggButtonState // 그대로(받은 이후 목표설정 바꾼 경우에도 상태 유지)
             }
-        } else {
+        } else { // 과거일 때
             return infoState.eggButtonState
         }
     }
@@ -159,7 +159,7 @@ struct HealthCareInfoView: View {
                         onTapGiveEggButton()
                     case .pending:
                         return showTooltip.toggle()
-                    case .received:
+                    case .received, .broken:
                         return ()
                     }
                 }
