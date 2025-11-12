@@ -13,6 +13,7 @@ enum WalkieLottie {
     case eggYellow
     case healthcareInfo
     case healthkit
+    case healthkit26
     case giveEggConfetti
     case eggButton
     
@@ -32,6 +33,8 @@ enum WalkieLottie {
             return "walkie_HealthcareInfo"
         case .healthkit:
             return "walkie_Healthkit"
+        case .healthkit26:
+            return "walkie_Healthkit_ios26"
         case .giveEggConfetti:
             return "walkie_ConfettiColored"
         case .eggButton:
