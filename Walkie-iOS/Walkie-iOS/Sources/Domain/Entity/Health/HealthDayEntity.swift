@@ -6,7 +6,15 @@
 //
 
 struct HealthDayEntity {
-    var nowStep: Int
-    var targetStep: Int
-    var hasEggToReceive: Bool
+    let nowStep: Int
+    let targetStep: Int
+    let hasEggToReceive: Bool
+    
+    func withEggReceived() -> HealthDayEntity {
+        HealthDayEntity(
+            nowStep: nowStep,
+            targetStep: targetStep,
+            hasEggToReceive: false
+        )
+    }
 }

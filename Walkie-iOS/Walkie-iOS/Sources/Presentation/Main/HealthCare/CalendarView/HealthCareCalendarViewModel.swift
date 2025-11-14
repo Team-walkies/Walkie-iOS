@@ -27,6 +27,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
         case scrollToFuture
         case willCloseDatePicker
         case updateStepData([String: HealthWeekEntity])
+        case updateEggReceived(date: Date)
     }
     
     var state: State
@@ -100,6 +101,10 @@ final class HealthCareCalendarViewModel: ViewModelable {
         case let .updateStepData(data):
             let converted = convertStepDataToDateKeys(data)
             state.healthCareData.merge(converted, uniquingKeysWith: { _, new in new })
+        case let .updateEggReceived(date):
+            if let data = state.healthCareData[date]?.withEggReceived() {
+                state.healthCareData[date]? = data
+            }
         }
     }
     
@@ -115,7 +120,7 @@ final class HealthCareCalendarViewModel: ViewModelable {
                 nowStep: entity.nowStep,
                 targetStep: entity.targetStep,
                 hasEggToReceive: entity.eggButtonState == .broken
-                || entity.eggButtonState == .pending && (entity.nowStep > entity.targetStep)
+                || (entity.eggButtonState == .pending && entity.nowStep >= entity.targetStep)
             )
         }
         

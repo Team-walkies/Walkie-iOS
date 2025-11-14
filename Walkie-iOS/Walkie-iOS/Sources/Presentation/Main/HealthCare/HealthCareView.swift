@@ -38,8 +38,9 @@ struct HealthCareView: View {
                                     dateString: calendarViewModel.state.selectedDate.ymdKST
                                 )
                             )
-                            calendarViewModel.state.healthCareData[calendarViewModel.state.selectedDate]?.hasEggToReceive
-                            = false
+                            calendarViewModel.action(
+                                .updateEggReceived(date: calendarViewModel.state.selectedDate)
+                            )
                         }
                     )
                     .padding(.horizontal, 16)
