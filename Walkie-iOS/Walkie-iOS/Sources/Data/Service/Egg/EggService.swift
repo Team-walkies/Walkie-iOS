@@ -13,4 +13,5 @@ protocol EggService {
     func patchEggStep(requestBody: PatchEggStepRequestDto) -> AnyPublisher<GetEggPlayingDto, Error>
     func getEggsCount() -> AnyPublisher<EggCountDto, Error>
     func getEventEgg() -> AnyPublisher<GetEventEggDto, Error>
+    func postHealthCareEggAward(requestBody: PostHealthCareEggAwardRequestDto) -> AnyPublisher<PostHealthCareEggAwardDto, Error>
 }

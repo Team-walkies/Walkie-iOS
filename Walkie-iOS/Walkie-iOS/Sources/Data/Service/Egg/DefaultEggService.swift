@@ -51,6 +51,7 @@ extension DefaultEggService: EggService {
                 .patchEggStep(requestBody: requestBody),
                 reissueService: reissueService
             )
+            .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetEggPlayingDto.self)
             
     }
@@ -61,6 +62,7 @@ extension DefaultEggService: EggService {
                 .getEggsCount,
                 reissueService: reissueService
             )
+            .filterSuccessfulStatusCodes()
             .mapWalkieResponse(EggCountDto.self)
     }
     
@@ -70,6 +72,17 @@ extension DefaultEggService: EggService {
                 .getEventEgg,
                 reissueService: reissueService
             )
+            .filterSuccessfulStatusCodes()
             .mapWalkieResponse(GetEventEggDto.self)
+    }
+    
+    func postHealthCareEggAward(requestBody: PostHealthCareEggAwardRequestDto) -> AnyPublisher<PostHealthCareEggAwardDto, Error> {
+        eggProvider
+            .requestPublisher(
+                .postHealthCareEggAward(requestBody: requestBody),
+                reissueService: reissueService
+            )
+            .filterSuccessfulStatusCodes()
+            .mapWalkieResponse(PostHealthCareEggAwardDto.self)
     }
 }

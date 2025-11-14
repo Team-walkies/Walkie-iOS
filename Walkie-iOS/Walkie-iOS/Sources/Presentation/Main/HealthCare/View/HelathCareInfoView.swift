@@ -15,12 +15,25 @@ struct HealthCareInfoView: View {
     @Environment(\.screenWidth) var screenWidth
     @AppStorage(DefaultsKey.targetStep) private var targetStepStore = 6000
     @Binding var showTooltip: Bool
+    let onTapGiveEggButton: () -> Void
     
     var targetStep: TargetStep {
         if infoState.isToday {
             return TargetStep(rawValue: targetStepStore) ?? .six
         } else {
             return infoState.targetSteps
+        }
+    }
+    
+    var eggButtonState: GetEggButtonState {
+        if infoState.isToday { // 오늘일 때
+            if infoState.nowSteps >= self.targetStep.rawValue { // 목표 달성 시
+                return infoState.eggButtonState == .received ? .received : .available // 받은 경우 받음 처리
+            } else { // 목표 미달성 시
+                return infoState.eggButtonState // 그대로(받은 이후 목표설정 바꾼 경우에도 상태 유지)
+            }
+        } else { // 과거일 때
+            return infoState.eggButtonState
         }
     }
     
@@ -138,14 +151,13 @@ struct HealthCareInfoView: View {
                 .padding(.bottom, 16)
             }
             
-            let eggButtonState = infoState.eggButtonState
             HealthCareGetEggButtonView(
                 buttonState: eggButtonState,
                 action: {
                     switch eggButtonState {
                     case .available:
-                        return appCoordinator.push(AppScene.egg)
-                    case .pending:
+                        onTapGiveEggButton()
+                    case .pending, .missed:
                         return showTooltip.toggle()
                     case .received:
                         return ()
@@ -156,26 +168,12 @@ struct HealthCareInfoView: View {
             .padding(.trailing, 16)
             
             if showTooltip {
-                VStack(
-                    alignment: .trailing,
-                    spacing: 0
-                ) {
-                    Image(.icTip)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10, height: 8)
-                        .padding(.trailing, 18)
-                    
-                    Text("걸음 수를 채우면 알을 받아요")
-                        .font(.B2)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .background(WalkieCommonAsset.gray600.swiftUIColor)
-                        .cornerRadius(8, corners: .allCorners)
-                }
-                .padding(.top, isConsecutiveToday ? 108 : 72)
-                .padding(.trailing, 12)
+                ToolTipView(
+                    text: eggButtonState == .missed
+                    ? "알은 걸음 수를 채운 당일에만 받을 수 있어요"
+                    : "걸음 수를 채우면 알을 받아요",
+                    isConsecutiveToday: isConsecutiveToday
+                )
             }
         }
         .frame(width: screenWidth - 32)
@@ -187,5 +185,34 @@ struct HealthCareInfoView: View {
                 return
             }
         }
+    }
+}
+
+private struct ToolTipView: View {
+    
+    let text: String
+    let isConsecutiveToday: Bool
+    
+    var body: some View {
+            VStack(
+                alignment: .trailing,
+                spacing: 0
+            ) {
+                Image(.icTip)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 10, height: 8)
+                    .padding(.trailing, 18)
+                
+                Text(text)
+                    .font(.B2)
+                    .foregroundColor(.white)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(WalkieCommonAsset.gray600.swiftUIColor)
+                    .cornerRadius(8, corners: .allCorners)
+            }
+            .padding(.top, isConsecutiveToday ? 108 : 72)
+            .padding(.trailing, 12)
     }
 }

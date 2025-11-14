@@ -113,4 +113,21 @@ extension DefaultEggRepository: EggRepository {
             }
             .mapToNetworkError()
     }
+    
+    func getHealthCareEggAward(dateString: String) -> AnyPublisher<EggType, NetworkError> {
+        let location = LocationManager.shared.getCurrentLocation()
+        let latitude = location?.coordinate.latitude ?? 0
+        let longitude = location?.coordinate.longitude ?? 0
+        return eggService.postHealthCareEggAward(
+            requestBody: PostHealthCareEggAwardRequestDto(
+                latitude: latitude,
+                longitude: longitude,
+                healthcareEggAcquiredAt: dateString
+            )
+        )
+        .map { dto in
+            return EggType.from(number: dto.rank)
+        }
+        .mapToNetworkError()
+    }
 }

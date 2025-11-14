@@ -7,18 +7,17 @@
 
 enum AwardEnum: String, Codable {
     case received = "RECEIVED"
-    case available = "AVAILABLE"
     case pending = "PENDING"
-    case unknown
+    case missed = "MISSED"
     
     var toEggButtonState: GetEggButtonState {
         switch self {
         case .received:
-            return .received
-        case .available:
-            return .available
-        case .pending, .unknown:
-            return .pending
+            .received
+        case .pending:
+            .pending // available은 나중에 걸음 수와 비교하여 할당
+        case .missed:
+            .missed
         }
     }
 }

@@ -89,7 +89,8 @@ let project = Project(
                         "fetch",
                         "processing",
                         "location"
-                    ]
+                    ],
+                    "UIDesignRequiresCompatibility": true
                 ]
             ),
             sources: ["Walkie-iOS/Sources/**"],
