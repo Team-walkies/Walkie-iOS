@@ -17,7 +17,7 @@ enum AwardEnum: String, Codable {
         case .pending:
             .pending // available은 나중에 걸음 수와 비교하여 할당
         case .missed:
-            .broken
+            .missed
         }
     }
 }

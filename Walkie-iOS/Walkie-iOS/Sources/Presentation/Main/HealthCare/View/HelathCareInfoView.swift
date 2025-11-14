@@ -157,7 +157,7 @@ struct HealthCareInfoView: View {
                     switch eggButtonState {
                     case .available:
                         onTapGiveEggButton()
-                    case .pending, .broken:
+                    case .pending, .missed:
                         return showTooltip.toggle()
                     case .received:
                         return ()
@@ -169,7 +169,7 @@ struct HealthCareInfoView: View {
             
             if showTooltip {
                 ToolTipView(
-                    text: eggButtonState == .broken
+                    text: eggButtonState == .missed
                     ? "알은 걸음 수를 채운 당일에만 받을 수 있어요"
                     : "걸음 수를 채우면 알을 받아요",
                     isConsecutiveToday: isConsecutiveToday

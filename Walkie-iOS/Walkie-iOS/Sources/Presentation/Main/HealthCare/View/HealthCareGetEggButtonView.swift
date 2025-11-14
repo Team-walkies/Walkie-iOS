@@ -12,13 +12,13 @@ enum GetEggButtonState {
     case received // 목표 달성, 받음
     case available // 오늘 - 목표 달성, 받지 않음
     case pending // 목표 미 달성
-    case broken // 과거 - 목표 달성, 받지 않음
+    case missed // 과거 - 목표 달성, 받지 않음
     
     var title: String {
         switch self {
         case .received:
             return "완료"
-        case .broken:
+        case .missed:
             return "알 깨짐"
         default:
             return "알 받기"
@@ -27,7 +27,7 @@ enum GetEggButtonState {
     
     var titleColor: Color {
         switch self {
-        case .received, .broken:
+        case .received, .missed:
             return WalkieCommonAsset.gray500.swiftUIColor
         case .available:
             return WalkieCommonAsset.blue400.swiftUIColor
@@ -68,7 +68,7 @@ struct HealthCareGetEggButtonView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 40, height: 40)
-                case .broken:
+                case .missed:
                     Image(.icEggBroken)
                         .resizable()
                         .scaledToFit()
