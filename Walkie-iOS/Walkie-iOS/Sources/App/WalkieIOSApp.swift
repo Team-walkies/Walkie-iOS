@@ -1,12 +1,9 @@
 import SwiftUI
-import BackgroundTasks
 import KakaoSDKCommon
-import FirebaseCore
 
 @main
 struct WalkieIOSApp: App {
     
-    @Environment(\.scenePhase) private var scenePhase
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
@@ -47,23 +44,7 @@ struct WalkieIOSApp: App {
                         .ignoresSafeArea(.all)
                 }
             }
-            .onAppear {
-                BGTaskManager.shared.registerBackgroundTasks(.step) { task in
-                    appCoordinator.handleStepRefresh(task: task)
-                }
-                BGTaskManager.shared.registerBackgroundTasks(.stepGoal) { task in
-                    appCoordinator.handleStepGoalAchieved(task: task)
-                }
-            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .onChange(of: scenePhase) { _, newValue in
-            switch newValue {
-            case .background:
-                appCoordinator.executeBackgroundActions()
-            default:
-                break
-            }
         }
     }
 }

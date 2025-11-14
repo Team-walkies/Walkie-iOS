@@ -15,7 +15,6 @@ final class DefaultHatchEggUseCase: BaseEggUseCase, HatchEggUseCase {
                 receiveValue: { _, _ in
                     print("🥚 알 부화 완료 🥚")
                     self.stepStatusStore.resetStepStatus() // 걸음 수 데이터 모두 초기화
-                    NotificationManager.shared.notified = false
                 },
                 receiveFailure: { _, error in
                     print("🥚 알 부화 실패 : \(String(describing: error?.localizedDescription)) 🥚")

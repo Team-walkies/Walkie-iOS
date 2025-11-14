@@ -21,6 +21,7 @@ final class UserManager {
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
     @UserDefaultsWrapper<Date>(key: "lastNotifiedHealthCareDate") var lastNotifiedHealthCareDate
+    @UserDefaultsWrapper<Bool>(key: "notifiedEggHatch") private var notifiedEggHatch
     
     private init() {}
 }
@@ -72,6 +73,16 @@ extension UserManager {
         lastNotifiedHealthCareDate = Date()
     }
     
+    /// 부화 알림을 보냈는지 확인
+    func hasNotifiedEggHatch() -> Bool {
+        return notifiedEggHatch ?? false
+    }
+    
+    /// 부화 알림 전송 완료 표시
+    func markEggHatchNotificationSent() {
+        notifiedEggHatch = true
+    }
+    
     func setShowHealthcare() {
         showHealthcare = true
     }
@@ -88,5 +99,6 @@ extension UserManager {
         }
         showHealthcare = false
         nickname = nil
+        notifiedEggHatch = nil
     }
 }

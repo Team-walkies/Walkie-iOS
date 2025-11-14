@@ -8,20 +8,41 @@
 import Foundation
 import Firebase
 import UserNotifications
+import BackgroundTasks
+import UIKit
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+    
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         FirebaseApp.configure()
         UNUserNotificationCenter.current().delegate = self
-        
-        let _: UNAuthorizationOptions = [.alert, .badge, .sound]
         application.registerForRemoteNotifications()
         Messaging.messaging().delegate = self
         
+        registerBackgroundTasks()
+        
         return true
+    }
+    
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let sceneConfiguration = UISceneConfiguration(
+            name: "Default Configuration",
+            sessionRole: connectingSceneSession.role
+        )
+        sceneConfiguration.delegateClass = SceneDelegate.self
+        return sceneConfiguration
+    }
+    
+    private func registerBackgroundTasks() {
+        BGTaskManager.shared.registerBackgroundTasks(.step)
+        BGTaskManager.shared.registerBackgroundTasks(.stepGoal)
     }
 }
 

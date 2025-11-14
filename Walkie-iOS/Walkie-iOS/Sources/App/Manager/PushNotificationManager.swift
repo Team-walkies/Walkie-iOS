@@ -9,7 +9,6 @@ final class NotificationManager {
     static let shared = NotificationManager()
     
     @UserDefaultsWrapper<Bool>(key: "notifyEggHatch") private var notifyEggHatch
-    @UserDefaultsWrapper<Bool>(key: "notified") var notified
     
     func getNotificationMode() -> Bool {
         guard let notifyEggHatch else {
@@ -36,67 +35,43 @@ final class NotificationManager {
             }
     }
     
-    /// 로컬 푸시 알림 스케줄링 (즉시 또는 특정 시간) - 부화 알림용
-    func scheduleNotification(title: String, body: String) {
-        /// 알림 송신 조건
-        /// 1. 아직 알림을 보내지 않았음
-        /// 2. 부화 알림 권한 허용
-        /// 3. 앱 알림 권한 허용
-        if let notified = notified, !notified {
-            if NotificationManager.shared.getNotificationMode() {
-                let identifier = UUID().uuidString
-                
-                // 내용
-                let content = UNMutableNotificationContent()
-                content.title = title
-                content.body = body
-                content.sound = .default
-                content.badge = 1
-                
-                // 10초 후
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
-                
-                // 알림 요청 생성
-                let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-                
-                // 알림 요청
-                UNUserNotificationCenter.current().add(request)
-                
-                // 알림 요청 완료 플래그
-                self.notified = true
-            }
-        }
-    }
-    
-    /// 목표 걸음 달성 알림 스케줄링
-    func scheduleStepGoalNotification(title: String, body: String) {
-        // 알림 권한 확인
+    func scheduleNotification(title: String, body: String, type: NotificationType = .eggHatch) {
         guard getNotificationMode() else {
-            print("🛎️ 목표 걸음 달성 알림 권한 없음 🛎️")
+            print("🛎️ 알림 권한 없음 🛎️")
             return
         }
         
-        let identifier = "step-goal-\(Date().timeIntervalSince1970)"
+        if type == .eggHatch {
+            if UserManager.shared.hasNotifiedEggHatch() {
+                return
+            }
+        } else if type == .stepGoal {
+            if UserManager.shared.hasNotifiedStepGoalToday() {
+                return
+            }
+        }
         
-        // 내용
+        let identifier = type == .eggHatch ? UUID().uuidString : "step-goal-\(Date().timeIntervalSince1970)"
+        let timeInterval = type == .eggHatch ? 10.0 : 1.0
+        
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
         content.badge = 1
         
-        // 즉시 전송
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        
-        // 알림 요청 생성
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         
-        // 알림 요청
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("🛎️ 목표 걸음 달성 알림 전송 실패: \(error.localizedDescription) 🛎️")
+                print("🛎️ 알림 전송 실패: \(error.localizedDescription) 🛎️")
             } else {
-                print("🛎️ 목표 걸음 달성 알림 전송 성공 🛎️")
+                if type == .eggHatch {
+                    UserManager.shared.markEggHatchNotificationSent()
+                } else {
+                    UserManager.shared.markStepGoalNotificationSent()
+                }
             }
         }
     }
@@ -148,13 +123,16 @@ final class NotificationManager {
     }
 }
 
-enum NotificationLiterals {
+enum NotificationType {
     case eggHatch
+    case stepGoal
     
     var title: String {
         switch self {
         case .eggHatch:
             return "알이 부화하려고 해요!"
+        case .stepGoal:
+            return "목표 걸음 수를 채웠어요!"
         }
     }
     
@@ -162,6 +140,8 @@ enum NotificationLiterals {
         switch self {
         case .eggHatch:
             return "어서 가서 깨워주세요"
+        case .stepGoal:
+            return "지금 바로 알을 얻어보세요"
         }
     }
 }

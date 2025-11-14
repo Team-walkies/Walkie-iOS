@@ -14,6 +14,8 @@ import Observation
 
 extension Notification.Name {
     static let reissueFailed = Notification.Name("reissueFailed")
+    static let appDidEnterBackground = Notification.Name("appDidEnterBackground")
+    static let appWillEnterForeground = Notification.Name("appWillEnterForeground")
 }
 
 @Observable
@@ -54,11 +56,31 @@ final class AppCoordinator: Coordinator, ObservableObject {
         self.diContainer = diContainer
         self.remoteConfigManager = remoteConfigManager
         initializeCoordinator()
+        bindNotifications()
+    }
+    
+    private func bindNotifications() {
         NotificationCenter.default
             .publisher(for: .reissueFailed)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.changeToSplash()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default
+            .publisher(for: .appDidEnterBackground)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.executeBackgroundActions()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default
+            .publisher(for: .appWillEnterForeground)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.executeForegroundActions()
             }
             .store(in: &cancellables)
     }
@@ -357,30 +379,16 @@ final class AppCoordinator: Coordinator, ObservableObject {
         stepCoordinator?.stopStepUpdates()
     }
     
-    func handleStepRefresh(task: BGAppRefreshTask) {
-        stepCoordinator?.handleStepRefresh(task: task)
-    }
-    
-    func handleStepGoalAchieved(task: BGAppRefreshTask) {
-        stepCoordinator?.handleCheckStepGoalOnToday(task: task)
-    }
-    
     func executeForegroundActions() {
         if UserManager.shared.hasUserToken {
-            // 포그라운드 실시간 걸음 수 추적 시작
             self.startStepUpdates()
-            // 백그라운드 스케줄링 모두 취소
             BGTaskManager.shared.cancelAll()
         }
     }
     
     func executeBackgroundActions() {
         if UserManager.shared.hasUserToken {
-            // 포그라운드 실시간 걸음 수 추적 종료
             self.stopStepUpdates()
-            // 백그라운드 작업 스케줄링
-            BGTaskManager.shared.scheduleAppRefresh(.step)
-            BGTaskManager.shared.scheduleAppRefresh(.stepGoal)
         }
     }
 }
