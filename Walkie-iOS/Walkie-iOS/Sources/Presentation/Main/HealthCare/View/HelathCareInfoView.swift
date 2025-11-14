@@ -157,9 +157,9 @@ struct HealthCareInfoView: View {
                     switch eggButtonState {
                     case .available:
                         onTapGiveEggButton()
-                    case .pending:
+                    case .pending, .broken:
                         return showTooltip.toggle()
-                    case .received, .broken:
+                    case .received:
                         return ()
                     }
                 }
@@ -168,26 +168,12 @@ struct HealthCareInfoView: View {
             .padding(.trailing, 16)
             
             if showTooltip {
-                VStack(
-                    alignment: .trailing,
-                    spacing: 0
-                ) {
-                    Image(.icTip)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 10, height: 8)
-                        .padding(.trailing, 18)
-                    
-                    Text("걸음 수를 채우면 알을 받아요")
-                        .font(.B2)
-                        .foregroundColor(.white)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 12)
-                        .background(WalkieCommonAsset.gray600.swiftUIColor)
-                        .cornerRadius(8, corners: .allCorners)
-                }
-                .padding(.top, isConsecutiveToday ? 108 : 72)
-                .padding(.trailing, 12)
+                ToolTipView(
+                    text: eggButtonState == .broken
+                    ? "알은 걸음 수를 채운 당일에만 받을 수 있어요"
+                    : "걸음 수를 채우면 알을 받아요",
+                    isConsecutiveToday: isConsecutiveToday
+                )
             }
         }
         .frame(width: screenWidth - 32)
@@ -199,5 +185,34 @@ struct HealthCareInfoView: View {
                 return
             }
         }
+    }
+}
+
+private struct ToolTipView: View {
+    
+    let text: String
+    let isConsecutiveToday: Bool
+    
+    var body: some View {
+            VStack(
+                alignment: .trailing,
+                spacing: 0
+            ) {
+                Image(.icTip)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 10, height: 8)
+                    .padding(.trailing, 18)
+                
+                Text(text)
+                    .font(.B2)
+                    .foregroundColor(.white)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 12)
+                    .background(WalkieCommonAsset.gray600.swiftUIColor)
+                    .cornerRadius(8, corners: .allCorners)
+            }
+            .padding(.top, isConsecutiveToday ? 108 : 72)
+            .padding(.trailing, 12)
     }
 }
