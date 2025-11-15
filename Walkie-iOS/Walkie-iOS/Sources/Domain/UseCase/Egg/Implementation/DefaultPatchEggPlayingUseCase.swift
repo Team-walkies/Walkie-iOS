@@ -9,9 +9,7 @@ import Combine
 
 final class DefaultPatchEggPlayingUseCase: BaseMemberUseCase, PatchEggPlayingUseCase {
     func execute(eggId: Int) -> AnyPublisher<EggEntity, NetworkError> {
-        let data = memberRepository.patchEggPlaying(eggId: eggId)
-            .mapToNetworkError()
-        return data
+        return memberRepository.patchEggPlaying(eggId: eggId)
             .handleEvents(receiveOutput: { entity in
                 self.stepStatusStore.resetStepStatus()
                 self.stepStatusStore.setNowStep(entity.nowStep)

@@ -11,6 +11,5 @@ final class DefaultGetHealthCareEggAwardUseCase: BaseEggUseCase, GetHealthCareEg
     func execute(dateString: String) -> AnyPublisher<EggType, NetworkError> {
         eggRepository
             .getHealthCareEggAward(dateString: dateString)
-            .mapToNetworkError()
     }
 }
