@@ -20,6 +20,8 @@ final class UserManager {
     @UserDefaultsWrapper<Date>(key: "startExploreDate") private(set) var startExploreDate
     @UserDefaultsWrapper<Date>(key: "lastVisitedDate") private(set) var lastVisitedDate
     @UserDefaultsWrapper<Bool>(key: "showHealthcare") private(set) var showHealthcare
+    @UserDefaultsWrapper<Date>(key: "lastNotifiedHealthCareDate") var lastNotifiedHealthCareDate
+    @UserDefaultsWrapper<Bool>(key: "notifiedEggHatch") private var notifiedEggHatch
     
     private init() {}
 }
@@ -53,6 +55,32 @@ extension UserManager {
     
     func setTargetStep(_ step: Int) {
         UserDefaults.standard.set(step, forKey: DefaultsKey.targetStep)
+        // 목표 걸음 수가 변경되면 오늘 알림 여부 초기화
+        // 새로운 목표에 대해 다시 알림을 받을 수 있도록 함
+        self.lastNotifiedHealthCareDate = nil
+    }
+    
+    /// 목표 걸음 달성 알림을 오늘 보냈는지 확인
+    func hasNotifiedStepGoalToday() -> Bool {
+        guard let lastNotifiedDate = lastNotifiedHealthCareDate else {
+            return false
+        }
+        return lastNotifiedDate.isToday()
+    }
+    
+    /// 목표 걸음 달성 알림 날짜 기록
+    func markStepGoalNotificationSent() {
+        lastNotifiedHealthCareDate = Date()
+    }
+    
+    /// 부화 알림을 보냈는지 확인
+    func hasNotifiedEggHatch() -> Bool {
+        return notifiedEggHatch ?? false
+    }
+    
+    /// 부화 알림 전송 완료 표시
+    func markEggHatchNotificationSent() {
+        notifiedEggHatch = true
     }
     
     func setShowHealthcare() {
@@ -71,5 +99,6 @@ extension UserManager {
         }
         showHealthcare = false
         nickname = nil
+        notifiedEggHatch = nil
     }
 }

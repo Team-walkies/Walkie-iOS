@@ -1,12 +1,9 @@
 import SwiftUI
-import BackgroundTasks
 import KakaoSDKCommon
-import FirebaseCore
 
 @main
 struct WalkieIOSApp: App {
     
-    @Environment(\.scenePhase) private var scenePhase
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var appCoordinator: AppCoordinator = AppCoordinator(diContainer: DIContainer.shared)
     
@@ -14,7 +11,6 @@ struct WalkieIOSApp: App {
         NotificationManager.shared.clearBadge()
         let kakaoNativeAppKey = (Bundle.main.infoDictionary?["KAKAO_NATIVE_APP_KEY"] as? String) ?? ""
         KakaoSDK.initSDK(appKey: kakaoNativeAppKey)
-        initiateBackgroundTask()
     }
     
     var body: some Scene {
@@ -49,20 +45,6 @@ struct WalkieIOSApp: App {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .onChange(of: scenePhase) { _, newValue in
-            switch newValue {
-            case .background:
-                appCoordinator.executeBackgroundActions()
-            default:
-                break
-            }
-        }
-    }
-    
-    private func initiateBackgroundTask() {
-        BGTaskManager.shared.registerBackgroundTasks(.step) { [self] task in
-            appCoordinator.handleStepRefresh(task: task)
         }
     }
 }

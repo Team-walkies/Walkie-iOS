@@ -8,5 +8,5 @@
 import Foundation
 
 protocol UpdateStepBackgroundUseCase {
-    func execute()
+    func execute(completion: @escaping () -> Void)
 }

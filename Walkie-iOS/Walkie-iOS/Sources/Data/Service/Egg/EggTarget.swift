@@ -56,4 +56,11 @@ extension EggTarget {
         method: .get,
         task: .requestPlain
     )
+    static func postHealthCareEggAward(requestBody: PostHealthCareEggAwardRequestDto) -> EggTarget {
+        EggTarget(
+            path: URLConstant.eggAwards,
+            method: .post,
+            task: .requestJSONEncodable(requestBody)
+        )
+    }
 }
